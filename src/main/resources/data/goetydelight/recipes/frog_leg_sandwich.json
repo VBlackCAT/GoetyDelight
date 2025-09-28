@@ -1,0 +1,39 @@
+{
+
+  "type": "minecraft:crafting_shaped",
+
+  "pattern": [
+
+    " B ",
+
+    " F ",
+
+    " B "
+
+  ],
+
+  "key": {
+
+    "B": {
+
+      "item": "minecraft:bread"
+
+    },
+
+    "F": {
+
+      "item": "goety:cooked_feet_of_frog"
+
+    }
+
+  },
+
+  "result": {
+
+    "item": "goetydelight:frog_leg_sandwich",
+
+    "count": 1
+
+  }
+
+}

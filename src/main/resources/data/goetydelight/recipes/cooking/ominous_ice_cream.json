@@ -1,0 +1,29 @@
+{
+  "type": "farmersdelight:cooking",
+  "cookingtime": 100,
+  "experience": 0.8,
+  "ingredients": [
+    {
+      "item": "goety:ominous_orb"
+    },
+    {
+      "item": "minecraft:ice"
+    },
+    {
+      "item": "minecraft:ice"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "goety:magic_emerald"
+    }
+  ],
+  "recipe_book_tab": "misc",
+  "result": {
+    "item": "goetydelight:ominous_ice_cream"
+  },
+  "container": {
+    "item": "minecraft:bowl"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "goetydelight:block/pointed_dripmarble",
+  "textures": {
+    "cross": "goetydelight:block/pointed_dripmarble_down_frustum"
+  }
+}

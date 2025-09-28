@@ -1,0 +1,51 @@
+{
+
+  "type": "farmersdelight:cooking",
+
+  "cookingtime": 200,
+
+  "experience": 1.0,
+
+  "ingredients": [
+
+    {
+
+      "item": "goety:feet_of_frog"
+
+    },
+
+    {
+
+      "item": "goety:feet_of_frog"
+
+    },
+
+    {
+
+      "tag": "forge:crops/cabbage"
+
+    },
+
+    {
+
+      "tag": "goety:meat"
+
+    }
+
+  ],
+
+  "recipe_book_tab": "meals",
+
+  "result": {
+
+    "item": "goetydelight:grill_frog_leg"
+
+  },
+
+  "container": {
+
+    "item": "minecraft:stick"
+
+  }
+
+}

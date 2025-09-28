@@ -1,0 +1,57 @@
+{
+
+  "type": "farmersdelight:cooking",
+
+  "cookingtime": 250,
+
+  "experience": 1.5,
+
+  "ingredients": [
+
+    {
+
+      "item": "goety:heart_of_the_night"
+
+    },
+
+    {
+
+      "tag": "forge:crops/tomato"
+
+    },
+
+    {
+
+      "tag": "goety:meat"
+
+    },
+
+    {
+
+      "item": "minecraft:water_bucket"
+
+    },
+
+    {
+
+      "tag": "forge:crops/onion"
+
+    }
+
+  ],
+
+  "recipe_book_tab": "meals",
+
+  "result": {
+
+    "item": "goetydelight:night_heart_pea_soup"
+
+  },
+
+  "container": {
+
+    "item": "minecraft:bowl"
+
+  }
+
+}

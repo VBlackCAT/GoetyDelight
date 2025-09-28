@@ -1,0 +1,28 @@
+{
+  "type": "farmersdelight:cooking",
+  "ingredients": [
+    {
+      "item": "minecraft:wheat"
+    },
+    {
+      "item": "minecraft:wheat"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:dye"
+    },
+    {
+      "item": "goety:hail_focus"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:crying_shark_sugar_pack"
+  },
+  "container": {
+    "item": "minecraft:bowl"
+  },
+  "experience": 1.5,
+  "cookingtime": 200
+}

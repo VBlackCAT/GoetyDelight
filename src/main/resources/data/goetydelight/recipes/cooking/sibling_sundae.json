@@ -1,0 +1,32 @@
+{
+  "type": "farmersdelight:cooking",
+  "ingredients": [
+    {
+      "item": "goety:mystic_core"
+    },
+    {
+      "item": "goety:forbidden_piece"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:weather"
+    },
+    {
+      "tag": "forge:milk"
+    },
+    {
+      "item": "minecraft:egg"
+    }
+
+  ],
+  "result": {
+    "item": "goetydelight:sibling_sundae"
+  },
+  "container": {
+    "item": "minecraft:bowl"
+  },
+  "experience": 1.5,
+  "cookingtime": 200
+}

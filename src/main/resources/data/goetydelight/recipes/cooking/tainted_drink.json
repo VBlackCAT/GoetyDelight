@@ -1,0 +1,23 @@
+{
+  "type": "farmersdelight:cooking",
+  "cookingtime": 200,
+  "experience": 1.0,
+  "ingredients": [
+    {
+      "item": "goety:unholy_blood"
+    },
+    {
+      "item": "goety:soul_ruby"
+    },
+    {
+      "item": "goety:brew"
+    },
+    {
+      "item": "goety:mystic_core"
+    }
+  ],
+  "recipe_book_tab": "misc",
+  "result": {
+    "item": "goetydelight:tainted_drink"
+  }
+}

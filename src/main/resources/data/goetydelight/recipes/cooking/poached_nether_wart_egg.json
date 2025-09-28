@@ -1,0 +1,49 @@
+{
+
+  "type": "farmersdelight:cooking",
+
+  "cookingtime": 180,
+
+  "experience": 1.0,
+
+  "ingredients": [
+
+    {
+
+      "item": "goety:wartful_egg"
+
+    },
+
+    {
+
+      "type": "forge:nbt",
+      "item": "minecraft:potion",
+      "nbt": {
+        "Potion": "minecraft:water"
+      }
+
+    },
+
+    {
+
+      "item": "minecraft:crimson_fungus"
+
+    },
+
+    {
+
+      "item": "minecraft:warped_fungus"
+
+    }
+
+  ],
+
+  "recipe_book_tab": "meals",
+
+  "result": {
+
+    "item": "goetydelight:poached_nether_wart_egg"
+
+  }
+
+}

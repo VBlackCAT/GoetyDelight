@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "goetydelight:block/marble_slab"
+    },
+    "type=double": {
+      "model": "goetydelight:block/marble"
+    },
+    "type=top": {
+      "model": "goetydelight:block/marble_slab_top"
+    }
+  }
+}

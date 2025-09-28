@@ -1,0 +1,26 @@
+{
+  "type": "farmersdelight:cooking",
+  "ingredients": [
+    {
+      "item": "goety:soul_ruby"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:sugar"
+    }
+  ,
+    {
+      "item": "goety:soul_emerald"
+    },
+    {
+      "item": "minecraft:honey_bottle"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:ruby_hard_candy"
+  },
+  "experience": 1.2,
+  "cookingtime": 200
+}

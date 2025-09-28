@@ -1,0 +1,73 @@
+{
+
+  "type": "goety:ritual",
+
+  "ritual_type": "goety:craft",
+
+  "activation_item": {
+
+    "item": "minecraft:bone"
+
+  },
+
+  "craftType": "necroturgy",
+
+  "entity_to_sacrifice": {
+
+    "tag": "goety:bone_lord",
+
+    "display_name": "entity.goety.bone_lord"
+
+  },
+
+  "soulCost": 100,
+
+  "duration": 20,
+
+  "ingredients": [
+
+    {
+
+      "item": "goety:cursed_ingot"
+
+    },
+
+    {
+
+      "item": "goety:cursed_ingot"
+
+    },
+
+    {
+
+      "item": "goety:cursed_ingot"
+
+    },
+
+    {
+
+      "item": "goety:cursed_ingot"
+
+    },
+
+    {
+
+      "item": "goety:great_hammer"
+
+    },
+
+    {
+
+      "item": "farmersdelight:cooked_rice"
+
+    }
+
+  ],
+
+  "result": {
+
+    "item": "goetydelight:bone_lord_ash_rice"
+
+  }
+
+}

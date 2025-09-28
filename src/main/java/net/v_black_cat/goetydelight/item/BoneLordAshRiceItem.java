@@ -1,0 +1,154 @@
+package net.v_black_cat.goetydelight.item;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.UUID;
+
+@Mod.EventBusSubscriber(modid = "goetydelight")
+public class BoneLordAshRiceItem extends Item {
+
+     
+    private static final UUID ARMOR_BONUS_UUID = UUID.fromString("a1b2c3d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d");
+    private static final UUID ARMOR_TOUGHNESS_BONUS_UUID = UUID.fromString("d4c3b2a1-f6e5-b8a7-d0c9-f2e1b4a3c5d6");
+
+     
+    private static final String BONUS_ACTIVE_TAG = "BoneLordAshRiceActive";
+    private static final String ACTIVATION_TIME_TAG = "BoneLordAshRiceActivationTime";
+
+     
+    private static final int DURATION_TICKS = 20 * 60 * 5;  
+
+    public BoneLordAshRiceItem(Properties properties) {
+        super(properties);
+    }
+
+    @Override
+    public @NotNull ItemStack finishUsingItem(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity entity) {
+        ItemStack resultStack = super.finishUsingItem(stack, level, entity);
+
+        if (!level.isClientSide && entity instanceof Player player) {
+             
+            CompoundTag persistentData = player.getPersistentData();
+
+             
+            if (persistentData.getBoolean(BONUS_ACTIVE_TAG)) {
+                removeBonusAttributes(player);
+            }
+
+             
+            addBonusAttributes(player);
+
+             
+            persistentData.putBoolean(BONUS_ACTIVE_TAG, true);
+            persistentData.putLong(ACTIVATION_TIME_TAG, level.getGameTime());
+
+             
+            player.displayClientMessage(Component.literal("骨头领主骨灰拌饭的力量被激活！获得15点护甲和10点护甲韧性，持续5分钟。"), true);
+        }
+
+        return resultStack;
+    }
+
+     
+    private void addBonusAttributes(Player player) {
+        AttributeInstance armorAttribute = player.getAttribute(Attributes.ARMOR);
+        if (armorAttribute != null) {
+            AttributeModifier modifier = new AttributeModifier(
+                    ARMOR_BONUS_UUID,
+                    "Bone Lord Ash Rice Armor Bonus",
+                    15.0,
+                    AttributeModifier.Operation.ADDITION
+            );
+            armorAttribute.addTransientModifier(modifier);
+        }
+
+        AttributeInstance toughnessAttribute = player.getAttribute(Attributes.ARMOR_TOUGHNESS);
+        if (toughnessAttribute != null) {
+            AttributeModifier modifier = new AttributeModifier(
+                    ARMOR_TOUGHNESS_BONUS_UUID,
+                    "Bone Lord Ash Rice Toughness Bonus",
+                    10.0,
+                    AttributeModifier.Operation.ADDITION
+            );
+            toughnessAttribute.addTransientModifier(modifier);
+        }
+    }
+
+     
+    private void removeBonusAttributes(Player player) {
+        AttributeInstance armorAttribute = player.getAttribute(Attributes.ARMOR);
+        if (armorAttribute != null && armorAttribute.getModifier(ARMOR_BONUS_UUID) != null) {
+            armorAttribute.removeModifier(ARMOR_BONUS_UUID);
+        }
+
+        AttributeInstance toughnessAttribute = player.getAttribute(Attributes.ARMOR_TOUGHNESS);
+        if (toughnessAttribute != null && toughnessAttribute.getModifier(ARMOR_TOUGHNESS_BONUS_UUID) != null) {
+            toughnessAttribute.removeModifier(ARMOR_TOUGHNESS_BONUS_UUID);
+        }
+
+         
+        player.getPersistentData().remove(BONUS_ACTIVE_TAG);
+        player.getPersistentData().remove(ACTIVATION_TIME_TAG);
+    }
+
+     
+    @SubscribeEvent
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) return;
+
+        Player player = event.player;
+        Level level = player.level();
+
+        if (!level.isClientSide) {
+            CompoundTag persistentData = player.getPersistentData();
+
+            if (persistentData.getBoolean(BONUS_ACTIVE_TAG)) {
+                long activationTime = persistentData.getLong(ACTIVATION_TIME_TAG);
+                long currentTime = level.getGameTime();
+
+                 
+                if (currentTime - activationTime >= DURATION_TICKS) {
+                     
+                    BoneLordAshRiceItem item = (BoneLordAshRiceItem) net.v_black_cat.goetydelight.item.ModItems.BONE_LORD_ASH_RICE.get();
+                    item.removeBonusAttributes(player);
+
+                     
+                    player.displayClientMessage(Component.literal("骨头领主骨灰拌饭的效果已结束。"), true);
+                }
+            }
+        }
+    }
+
+     
+    @SubscribeEvent
+    public static void onPlayerDeath(net.minecraftforge.event.entity.living.LivingDeathEvent event) {
+        if (event.getEntity() instanceof Player player) {
+             
+            BoneLordAshRiceItem item = (BoneLordAshRiceItem) net.v_black_cat.goetydelight.item.ModItems.BONE_LORD_ASH_RICE.get();
+            if (player.getPersistentData().getBoolean(BONUS_ACTIVE_TAG)) {
+                item.removeBonusAttributes(player);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerRespawn(net.minecraftforge.event.entity.player.PlayerEvent.PlayerRespawnEvent event) {
+        Player player = event.getEntity();
+         
+        player.getPersistentData().remove(BONUS_ACTIVE_TAG);
+        player.getPersistentData().remove(ACTIVATION_TIME_TAG);
+    }
+}
