@@ -179,7 +179,7 @@ dependencies {
     runtimeOnly fg.deobf("blank:oculus:mc1.20.1-1.8.0")
     runtimeOnly fg.deobf("blank:kotlinforforge:4.11.0-all")
     runtimeOnly fg.deobf("blank:radium:mc1.20.1-0.12.4+git.26c9d8e")
-    runtimeOnly fg.deobf("blank:BadOptimizations:2.3.0-1.20.1")
+//    runtimeOnly fg.deobf("blank:BadOptimizations:2.3.0-1.20.1")
     runtimeOnly fg.deobf("blank:cloth-config:11.1.136-forge")
     runtimeOnly fg.deobf("blank:fzzy_config:0.7.1+1.20.1+forge")
 
