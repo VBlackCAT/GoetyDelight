@@ -161,7 +161,7 @@ public class ModItems {
         CUP = ITEMS.register("cup",
                 () -> simpleFoodItem(1, 1, true)); 
         TOXIC_MEAL = ITEMS.register("toxic_meal",
-                () -> new Item(basicItem().stacksTo(1).food(
+                () -> new ToxicMealItem(basicItem().stacksTo(1).food(
                         simpleFoodItemProperties(8, 4)
                                 .effect(() -> new MobEffectInstance(MobEffects.CONFUSION, 2000, 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.POISON, 2000, 9), 1.0F)
