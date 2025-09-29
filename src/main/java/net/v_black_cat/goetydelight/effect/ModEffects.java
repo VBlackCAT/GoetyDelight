@@ -28,7 +28,7 @@ public class ModEffects {
     public static final RegistryObject<MobEffect> NIGHT_HEART_PEA_SOUP =
             EFFECTS.register("night_heart_pea_soup", NightHeartPeaSoupEffect::new);
     public static final RegistryObject<MobEffect> SOUL_CONVERGENCE_ROOM =
-            EFFECTS.register("soul_convergence_room", SoulConvergenceRoomEffect::new);
+            EFFECTS.register("gathering_soul_embryos", SoulConvergenceRoomEffect::new);
 
     public static void register(IEventBus bus) {
         EFFECTS.register(bus);

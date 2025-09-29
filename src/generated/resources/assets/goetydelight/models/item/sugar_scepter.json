@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "goetydelight:item/sibling_sundae"
+    "layer0": "goetydelight:item/sugar_scepter"
   }
 }

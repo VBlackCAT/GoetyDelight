@@ -26,6 +26,7 @@ public class ModCreativeModTabs {
 
          BLACKLIST.add(ModItems.APOCALYPTIUM_KNIFE2);
          BLACKLIST.add(ModItems.APOCALYPTIUM_KNIFE1);
+         BLACKLIST.add(ModItems.GOETYDELIGHT_ICON);
 
          BLACKLIST.add(ModBlocks.NIGHT_STOVE);
          BLACKLIST.add(ModBlocks.APOCALYPTIUM_COOKING_POT_PARTS);
