@@ -30,6 +30,8 @@ public class ModItems {
     // 块物品
     public static final RegistryObject<Item> EXAMPLE_BLOCK_ITEM;
 
+
+    public static final RegistryObject<Item> BRUSH;
     // 刀具物品
     public static final RegistryObject<Item> APOCALYPTIUM_KNIFE0;
     public static final RegistryObject<Item> VENOMOUS_SPIDER_KNIFE;
@@ -73,7 +75,6 @@ public class ModItems {
     public static final RegistryObject<Item> OMINOUS_ICE_CREAM;
     public static final RegistryObject<Item> ECTOPLASMIC_MELON;
     public static final RegistryObject<Item> BLUE_ECTOPLASMIC_SUNDAE;
-    public static final RegistryObject<Item> BRUSH;
     public static final RegistryObject<Item> SKULL_SHOT;
     public static final RegistryObject<Item> NIGHT_HEART_PEA_SOUP;
     public static final RegistryObject<Item> POACHED_SPIDER_EGG;

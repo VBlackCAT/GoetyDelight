@@ -4,121 +4,83 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
-import net.v_black_cat.goetydelight.block.*;
+import net.v_black_cat.goetydelight.block.ModBlocks;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ModCreativeModTabs {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, GoetyDelight.MODID);
 
-    public static final RegistryObject<CreativeModeTab> GOETYDELIGHT_TAB = CREATIVE_MODE_TABS.register("goetydelight_tab",
-            () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModItems.GOETYDELIGHT_ICON.get()))
-                    .title(Component.translatable("creativetab.goetydelight_tab"))
-                    .displayItems((pParameters, pOutput) -> {
+    // 阻止列表 - 包含不应该出现在创造模式标签页的物品
+    private static final Set<RegistryObject<?>> BLACKLIST = new HashSet<>();
 
-                        List<RegistryObject<? extends ItemLike>> allItems = Arrays.asList(
+    static {
+         BLACKLIST.add(ModItems.EXAMPLE_ITEM);
+         BLACKLIST.add(ModItems.Marble_OP_SWORD);
 
+         BLACKLIST.add(ModItems.APOCALYPTIUM_KNIFE2);
+         BLACKLIST.add(ModItems.APOCALYPTIUM_KNIFE1);
 
-
-                                // 物品
-                                //ModItems.EXAMPLE_ITEM,
-                                //ModItems.Marble_OP_SWORD,
-                                ModItems.CAKE,
-                                ModItems.SEVEN_LEAF_PUDDING,
-                                ModItems.TAINTED_DRINK,
-                                ModItems.OMINOUS_ICE_CREAM,
-                                ModItems.ECTOPLASMIC_MELON,
-                                ModItems.CRYING_SHARK_SUGAR_PACK,
-                                ModItems.SKULL_SHOT,
-                                ModItems.REJECTED_DARK_MEAT_SOUP,
-                                ModItems.SIBLING_SUNDAE,
-                                ModItems.PROMOTION_HARD_CANDY,
-                                ModItems.NIGHT_HEART_PEA_SOUP,
-                                ModItems.CUP,
-                                ModItems.BLUE_ECTOPLASMIC_SUNDAE,
-                                ModItems.TOXIC_MEAL,
-                                ModItems.POACHED_NETHER_WART_EGG,
-                                ModItems.POACHED_SPIDER_EGG,
-                                ModItems.ECTOPLASM_JELLY,
-                                ModItems.ROASTED_CORPSE_MAGGOTS,
-                                ModItems.GRILL_FROG_LEG,
-                                ModItems.BEAR_PAW,
-                                ModItems.FRENZIED_FUNGUS_POP_ROCKS,
-                                ModItems.WHITE_SHARK_CANDY,
-                                ModItems.WHITE_SHARK_SUGAR_PACK,
-                                ModItems.CANDY_FISH,
-                                ModItems.SOUL_CONVERGENCE_ROOM,
-                                ModItems.SOUL_CONVERGENCE_ROOM_2,
-                                ModItems.GRAPE_SLUSH,
-                                ModItems.FROG_LEG_SANDWICH,
-                                //ModItems.SPIDER_EGG_BUBBLE_TEA,
-                                //ModItems.SPIDER_EGG_BUBBLE_TEA_2,
-                                ModItems.SAUCE_GRILLED_CANDY_FISH,
-                                ModItems.BONE_LORD_ASH_RICE,
-                                ModItems.RUBY_HARD_CANDY,
-                                ModItems.CRISP_BISCUIT,
-                                ModItems.ROTTEN_CORPSE_MAGGOT_FEAST,
-                                ModItems.CORPSE_MAGGOT,
-
-                                //工具
-                                ModItems.APOCALYPTIUM_KNIFE0,
-                                ModItems.VENOMOUS_SPIDER_KNIFE,
-                                ModItems.SPECTRE_KNIFE,
-//                                ModItems.APOCALYPTIUM_KNIFE2,
-                                //ModItems.APOCALYPTIUM_KNIFE1,
-                                ModItems.BLACK_IRON_KNIFE,
-                                ModItems.DARK_KNIFE,
-
-                                ModItems.BRUSH
-
-                                // 方块
-//                                ModBlocks.NIGHT_STOVE
-//                                ModBlocks.APOCALYPTIUM_COOKING_POT_PARTS,
-//                                ModBlocks.BLACK_IRON_COOKING_POT
-
-
-
-                                //ModBlocks.EXAMPLE_BLOCK,
-                                //ModBlocks.MARBLE,
-//                                ModBlocks.JUNGLE_MARBLE,
-//                                ModBlocks.BLUE_MARBLE,
-//                                ModBlocks.NETHER_MARBLE,
-//                                ModBlocks.DRIPMARBLE_BLOCK,
-//                                ModBlocks.POINTED_DRIPMARBLE,
-//                                ModBlocks.MARBLE_STAIRS,
-//                                ModBlocks.MARBLE_SLAB,
-                                //ModBlocks.MARBLE_BUTTON,
-//                                ModBlocks.MARBLE_PRESSURE_PLATE,
-                                //ModBlocks.MARBLE_FENCE,
-//                                ModBlocks.MARBLE_FENCE_GATE,
-                                //ModBlocks.MARBLE_WALL,
-//                                ModBlocks.MARBLE_DOOR,
-//                                ModBlocks.MARBLE_TRAPDOOR
-                        );
-
-
-                        for (RegistryObject<? extends ItemLike> item : allItems) {
-                            pOutput.accept(stackOf(item));
-                        }
-
-                    })
-                    .build());
-
-
-    private static ItemStack stackOf(RegistryObject<? extends ItemLike> registryObject) {
-        return new ItemStack(registryObject.get(), 1);
+         BLACKLIST.add(ModBlocks.NIGHT_STOVE);
+         BLACKLIST.add(ModBlocks.APOCALYPTIUM_COOKING_POT_PARTS);
+         BLACKLIST.add(ModBlocks.BLACK_IRON_COOKING_POT);
+         BLACKLIST.add(ModBlocks.EXAMPLE_BLOCK);
+         BLACKLIST.add(ModBlocks.NETHER_MARBLE);
+         BLACKLIST.add(ModBlocks.POINTED_DRIPMARBLE);
+         BLACKLIST.add(ModBlocks.DRIPMARBLE_BLOCK);
+         BLACKLIST.add(ModBlocks.MARBLE_STAIRS);
+         BLACKLIST.add(ModBlocks.MARBLE_SLAB);
+         BLACKLIST.add(ModBlocks.MARBLE_BUTTON);
+         BLACKLIST.add(ModBlocks.MARBLE);
+         BLACKLIST.add(ModBlocks.MARBLE_PRESSURE_PLATE);
+         BLACKLIST.add(ModBlocks.MARBLE_FENCE);
+         BLACKLIST.add(ModBlocks.MARBLE_WALL);
+         BLACKLIST.add(ModBlocks.MARBLE_FENCE_GATE);
+         BLACKLIST.add(ModBlocks.MARBLE_DOOR);
+         BLACKLIST.add(ModBlocks.SILT_MARBLE_HEAVY);
+         BLACKLIST.add(ModBlocks.BLUE_MARBLE);
+         BLACKLIST.add(ModBlocks.JUNGLE_MARBLE);
+         BLACKLIST.add(ModBlocks.MARBLE_TRAPDOOR);
     }
 
+    public static final RegistryObject<CreativeModeTab> GOETYDELIGHT_TAB = CREATIVE_MODE_TABS.register("goetydelight_tab",
+            () -> CreativeModeTab.builder()
+                    .icon(() -> new ItemStack(ModItems.GOETYDELIGHT_ICON.get()))
+                    .title(Component.translatable("creativetab.goetydelight_tab"))
+                    .displayItems((parameters, output) -> {
+                        // 添加所有物品，但排除阻止列表中的物品
+                        ModItems.ITEMS.getEntries().forEach(item -> {
+                            if (item.isPresent() && !BLACKLIST.contains(item)) {
+                                output.accept(item.get());
+                            }
+                        });
+
+                        // 添加所有方块，但排除阻止列表中的方块
+                        ModBlocks.BLOCKS.getEntries().forEach(block -> {
+                            if (block.isPresent() && !BLACKLIST.contains(block)) {
+                                output.accept(block.get());
+                            }
+                        });
+                    })
+                    .build());
 
     public static void register(IEventBus eventBus) {
         CREATIVE_MODE_TABS.register(eventBus);
     }
 
+    // 辅助方法：添加物品到阻止列表
+    public static void addToBlacklist(RegistryObject<?> item) {
+        BLACKLIST.add(item);
+    }
+
+    // 辅助方法：从阻止列表移除物品
+    public static void removeFromBlacklist(RegistryObject<?> item) {
+        BLACKLIST.remove(item);
+    }
 }

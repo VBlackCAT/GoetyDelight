@@ -1,0 +1,20 @@
+{
+  "values": [
+    "goety:bear_servant",
+    "goety:polar_bear_servant",
+    "minecraft:panda",
+    "minecraft:polar_bear",
+    {
+      "id": "jerotesvillage:scaly_bear",
+      "required": false
+    },
+    {
+      "id": "alexsmobs:grizzly_bear",
+      "required": false
+    },
+    {
+      "id": "alexsmobs:dropbear",
+      "required": false
+    }
+  ]
+}

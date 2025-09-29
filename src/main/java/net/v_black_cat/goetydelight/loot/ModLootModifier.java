@@ -35,10 +35,8 @@ public class ModLootModifier extends LootModifier {
                     inst.group(
                             ForgeRegistries.ITEMS.getCodec().fieldOf("itemToAdd").forGetter(m -> m.itemToAdd),
                             Codec.FLOAT.fieldOf("chance").forGetter(m -> m.chance),
-                            // 定义如何读取 JSON 中的 min 和 max 字段
                             Codec.INT.fieldOf("min").forGetter(m -> m.minCount),
                             Codec.INT.fieldOf("max").forGetter(m -> m.maxCount),
-                            // 新增：读取 looting_multiplier 字段，默认值为 0（即不生效）
                             Codec.FLOAT.optionalFieldOf("looting_multiplier", 0.0F).forGetter(m -> m.lootingMultiplier)
                     )).apply(inst, ModLootModifier::new)
             ));
@@ -72,7 +70,7 @@ public class ModLootModifier extends LootModifier {
             }
         }
 
-        // 判断是否掉落
+
         if (context.getRandom().nextFloat() < finalChance) {
             int randomCount = minCount + context.getRandom().nextInt(maxCount - minCount + 1);
 

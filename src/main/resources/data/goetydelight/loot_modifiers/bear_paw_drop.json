@@ -2,16 +2,14 @@
   "type": "goetydelight:goetydelight_loot_modifier",
   "conditions": [
     {
-      "condition": "minecraft:entity_properties",
-      "entity": "this",
-      "predicate": {
-        "tag": "goetydelight:bear"
-      }
+      "condition": "goetydelight:entity_tag",
+      "tag": "goetydelight:bear"
+
     }
   ],
   "itemToAdd": "goetydelight:bear_paw",
   "chance": 0.1,
   "min": 1,
   "max": 2,
-  "looting_multiplier": 0.01
+  "looting_multiplier": 0.025
 }
