@@ -8,18 +8,18 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BrushableBlockEntity;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
-import net.v_black_cat.goetydelight.item.ModItems; // 导入您的自定义物品注册类
+import net.v_black_cat.goetydelight.item.ModItems;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
@@ -34,6 +34,8 @@ public abstract class BrushableBlockEntityMixin {
 
     @Shadow
     private long lootTableSeed;
+    @Shadow
+    private int brushCount;
 
     // 添加一个字段来存储当前刷扫的玩家
     private Player currentBrushingPlayer;
@@ -48,6 +50,32 @@ public abstract class BrushableBlockEntityMixin {
     }
 
     @Inject(
+            method = "brush",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/level/block/entity/BrushableBlockEntity;getCompletionState()I",
+                    ordinal = 0,  // 第一个 getCompletionState() 调用之后
+                    shift = At.Shift.AFTER
+            )
+    )
+    private void beforeCompletionCheck(long pStartTick, Player pPlayer, Direction pHitDirection, CallbackInfoReturnable<Boolean> cir) {
+        if (this.currentBrushingPlayer != null) {
+
+
+            if(currentBrushingPlayer.getMainHandItem().getItem() == ModItems.BRUSH.get()){
+
+                if(this.brushCount==7){
+                    this.brushCount=10;
+                }
+            }
+
+        }
+
+
+    }
+
+
+    @Inject(
             method = "dropContent",
             at = @At(
                     value = "INVOKE",
@@ -58,6 +86,8 @@ public abstract class BrushableBlockEntityMixin {
     )
     private void onDropContent(Player player, CallbackInfo ci) {
         BrushableBlockEntity blockEntity = (BrushableBlockEntity) (Object) this;
+
+
 
         // 只在服务器端执行，并且有战利品表时
         if (blockEntity.getLevel() instanceof ServerLevel serverLevel && this.lootTable != null) {
