@@ -1,12 +1,7 @@
 {
   "values": [
     "goety:bear_servant",
-    "goety:polar_bear_servant",
-    "minecraft:panda",
-    "minecraft:polar_bear",
-    "jerotesvillage:scaly_bear",
-    "alexsmobs:grizzly_bear",
-    "alexsmobs:dropbear"
+    "goety:polar_bear_servant"
 
   ]
 }
