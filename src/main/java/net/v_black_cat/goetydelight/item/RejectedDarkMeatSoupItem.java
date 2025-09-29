@@ -8,6 +8,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrownPotion;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ThrowablePotionItem;
 import net.minecraft.world.item.alchemy.PotionUtils;
@@ -18,7 +19,7 @@ import java.util.Arrays;
 
 import static net.v_black_cat.goetydelight.util.TimeConverter.sToTick;
 
-public class RejectedDarkMeatSoupItem extends ThrowablePotionItem {
+public class RejectedDarkMeatSoupItem extends Item {
 
     public RejectedDarkMeatSoupItem(Properties pProperties) {
         super(pProperties);
@@ -47,20 +48,6 @@ public class RejectedDarkMeatSoupItem extends ThrowablePotionItem {
         return false;
     }
 
-    // 重写右键使用方法 - 现在只用于食用
-    public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {
-        ItemStack itemstack = pPlayer.getItemInHand(pHand);
-        if (itemstack.isEdible()) {
-            if (pPlayer.canEat(itemstack.getFoodProperties(pPlayer).canAlwaysEat())) {
-                pPlayer.startUsingItem(pHand);
-                return InteractionResultHolder.consume(itemstack);
-            } else {
-                return InteractionResultHolder.fail(itemstack);
-            }
-        } else {
-            return InteractionResultHolder.pass(pPlayer.getItemInHand(pHand));
-        }
-    }
 
     // 投掷逻辑封装
     private void throwPotion(ItemStack stack, Level level, Player player) {
