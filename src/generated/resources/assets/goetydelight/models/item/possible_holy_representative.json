@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "goetydelight:item/seven_leaf_pudding"
+    "layer0": "goetydelight:item/possible_holy_representative"
   }
 }

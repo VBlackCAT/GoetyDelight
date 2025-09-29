@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "goetydelight:item/brush"
+    "layer0": "goetydelight:item/sweet_berry_pudding"
   }
 }

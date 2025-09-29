@@ -159,7 +159,7 @@ public class ModItems {
 
         PROMOTION_HARD_CANDY = ITEMS.register("promotion_hard_candy",
                 () -> simpleFoodItem(1, 1, true)); 
-        CUP = ITEMS.register("cup",
+        CUP = ITEMS.register("eternal_refusal_of_black_meat_soup",
                 () -> simpleFoodItem(1, 1, true)); 
         TOXIC_MEAL = ITEMS.register("toxic_meal",
                 () -> new ToxicMealItem(basicItem().stacksTo(1).food(
@@ -174,9 +174,9 @@ public class ModItems {
         ECTOPLASM_JELLY = ITEMS.register("ectoplasm_jelly",
                 () -> simpleFastFoodItem(4, 6, true)); 
 
-        WHITE_SHARK_CANDY = ITEMS.register("white_shark_candy",
+        WHITE_SHARK_CANDY = ITEMS.register("sugar_scepter",
                 () -> simpleFoodItem(1, 1, true)); 
-        WHITE_SHARK_SUGAR_PACK = ITEMS.register("white_shark_sugar_pack",
+        WHITE_SHARK_SUGAR_PACK = ITEMS.register("sugar_pack",
                 () -> simpleFoodItem(1, 1, true)); 
         CANDY_FISH = ITEMS.register("candy_fish",
                 () -> simpleFoodItem(1, 1, true)); 
@@ -195,7 +195,7 @@ public class ModItems {
 
 
 
-        SIBLING_SUNDAE = ITEMS.register("sibling_sundae",
+        SIBLING_SUNDAE = ITEMS.register("possible_holy_representative",
                 () -> new SiblingSundaeItem(basicItem().food(
                         simpleFoodItemProperties(6, 5)
                                 .effect(() -> new MobEffectInstance(INSIGHT.get(), minToTick(2.5F), 3), 1.0F)
@@ -214,7 +214,7 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(MobEffects.CONFUSION, sToTick(10), 0), 1.0F)
                                 .build())));
 
-        CRYING_SHARK_SUGAR_PACK = ITEMS.register("crying_shark_sugar_pack",
+        CRYING_SHARK_SUGAR_PACK = ITEMS.register("cry_sugar_pack",
                 () -> new Item(basicItem().food(
                         simpleFoodItemProperties(7, 5)
                                 .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(1), 1), 1.0F)
@@ -222,7 +222,7 @@ public class ModItems {
                                 .build())));
 
 
-        SEVEN_LEAF_PUDDING = ITEMS.register("seven_leaf_pudding",
+        SEVEN_LEAF_PUDDING = ITEMS.register("sweet_berry_pudding",
                 () -> new SevenLeafPuddingItem(basicItem().food(
                         simpleFoodItemProperties(7, 9)
                                 .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(5), 1), 1.0F)
@@ -236,7 +236,7 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), 6000, 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(RAMPAGE_EFFECT_SUPPLIER.get(), 2400, 0), 1.0F)
                                 .build())));
-        CAKE = ITEMS.register("cake",
+        CAKE = ITEMS.register("royal_cake",
                 () -> new CakeItem(basicItem().stacksTo(1).food(
                         simpleFoodItemProperties(16, 20)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), 36000, 0), 1.0F)
@@ -262,7 +262,7 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 2400, 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(CHILL_HIDE_EFFECT_SUPPLIER.get(), 2400, 0), 1.0F)
                                 .build())));
-        BRUSH = ITEMS.register("brush",
+        BRUSH = ITEMS.register("cursed_metal_brush",
                 () -> new CursedIngotBrushItem(basicItem().durability(64)));
         SKULL_SHOT = ITEMS.register("skull_shot",
                 () -> simpleFoodItem(6, 7, CORPSE_EATER_EFFECT_SUPPLIER, 1200, 0, true)); 
@@ -291,13 +291,13 @@ public class ModItems {
                 () -> new FrenziedFungusPopRocksItem(basicItem().stacksTo(1).food(
                         simpleFoodItemProperties(6, 8)
                                 .build())));
-        SOUL_CONVERGENCE_ROOM = ITEMS.register("soul_convergence_room",
+        SOUL_CONVERGENCE_ROOM = ITEMS.register("gathering_soul_embryos",
                 () -> new Item(basicItem().food( 
                         simpleFoodItemProperties(8, 12)
                                 .effect(() -> new MobEffectInstance(MobEffects.HUNGER, 200, 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(SOUL_ARMOR_EFFECT_SUPPLIER.get(), 1200, 1), 1.0F)
                                 .build())));
-        SOUL_CONVERGENCE_ROOM_2 = ITEMS.register("soul_convergence_room_2",
+        SOUL_CONVERGENCE_ROOM_2 = ITEMS.register("soul_convergence_room",
                 () -> new Item(basicItem().food( 
                         simpleFoodItemProperties(20, 30)
                                 .effect(() -> new MobEffectInstance(SOUL_ARMOR_EFFECT_SUPPLIER.get(), 6000, 4), 1.0F)
