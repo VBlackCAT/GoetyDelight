@@ -14,21 +14,21 @@ public class ModEffects {
 
     public static final RegistryObject<MobEffect> IT_STINKS =
             EFFECTS.register("it_stinks", ItStinksEffect::new);
-    public static final RegistryObject<MobEffect> TAINTED_DRINK =
-            EFFECTS.register("tainted_drink", TaintedDrinkEffect::new);
+    public static final RegistryObject<MobEffect> THE_PALE_MESSRNGER =
+            EFFECTS.register("the_pale_messenger", TaintedDrinkEffect::new);
 
-    public static final RegistryObject<MobEffect> TAINTED_PIG =
-            EFFECTS.register("tainted_pig", TaintedPigEffect::new);
+    public static final RegistryObject<MobEffect> ZOMBIFIED_PIGLIN_BRUTE_SERVANT_SUPPORT =
+            EFFECTS.register("zombified_piglin_brute_servant_support", TaintedPigEffect::new);
 
     public static final RegistryObject<MobEffect> SPELL_MASTERY =
             EFFECTS.register("spell_mastery", SpellMasteryEffect::new);
     public static final RegistryObject<MobEffect> SPELL_DURATION =
             EFFECTS.register("spell_duration", SpellDurationEffect::new);
 
-    public static final RegistryObject<MobEffect> NIGHT_HEART_PEA_SOUP =
-            EFFECTS.register("night_heart_pea_soup", NightHeartPeaSoupEffect::new);
-    public static final RegistryObject<MobEffect> SOUL_CONVERGENCE_ROOM =
-            EFFECTS.register("gathering_soul_embryos", SoulConvergenceRoomEffect::new);
+    public static final RegistryObject<MobEffect> SERVANT_REINFORCEMENT =
+            EFFECTS.register("servant_reinforcement", NightHeartPeaSoupEffect::new);
+    public static final RegistryObject<MobEffect> HUNTING_DENIAL =
+            EFFECTS.register("hunting_denial", SoulConvergenceRoomEffect::new);
 
     public static void register(IEventBus bus) {
         EFFECTS.register(bus);

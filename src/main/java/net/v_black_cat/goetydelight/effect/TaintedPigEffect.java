@@ -80,7 +80,7 @@ public class TaintedPigEffect extends MobEffect {
             LivingEntity entity = event.getEntity();
 
             // 处理SummonZombifiedPiglin效果的召唤功能
-            if (entity.hasEffect(ModEffects.TAINTED_PIG.get())) {
+            if (entity.hasEffect(ModEffects.ZOMBIFIED_PIGLIN_BRUTE_SERVANT_SUPPORT.get())) {
                 // 50%概率生成僵尸猪灵蛮兵仆从
                 if (entity.getRandom().nextFloat() < 0.5f) {
                     Level level = entity.level();
@@ -89,14 +89,14 @@ public class TaintedPigEffect extends MobEffect {
                     createZombifiedPiglinMinion(level, entity);
 
                     // 每召唤一只仆从，缩减效果持续时间1分钟（1200 ticks）
-                    MobEffectInstance effectInstance = entity.getEffect(ModEffects.TAINTED_PIG.get());
+                    MobEffectInstance effectInstance = entity.getEffect(ModEffects.ZOMBIFIED_PIGLIN_BRUTE_SERVANT_SUPPORT.get());
                     if (effectInstance != null) {
                         int newDuration = effectInstance.getDuration() - 1200; // 减少1分钟
                         if (newDuration <= 0) {
-                            entity.removeEffect(ModEffects.TAINTED_PIG.get());
+                            entity.removeEffect(ModEffects.ZOMBIFIED_PIGLIN_BRUTE_SERVANT_SUPPORT.get());
                         } else {
                             entity.addEffect(new MobEffectInstance(
-                                    ModEffects.TAINTED_PIG.get(),
+                                    ModEffects.ZOMBIFIED_PIGLIN_BRUTE_SERVANT_SUPPORT.get(),
                                     newDuration,
                                     effectInstance.getAmplifier(),
                                     effectInstance.isAmbient(),

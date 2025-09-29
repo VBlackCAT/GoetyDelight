@@ -14,7 +14,7 @@ public class BlockFinderMixin {
 
     @Inject(method = "findIllagerWard", at = @At("HEAD"), cancellable = true, remap = false)
     private static void onFindIllagerWard(ServerLevel level, Player player, int soulEnergy, CallbackInfoReturnable<Boolean> cir) {
-        if (player.hasEffect(ModEffects.SOUL_CONVERGENCE_ROOM.get())) {
+        if (player.hasEffect(ModEffects.HUNTING_DENIAL.get())) {
             cir.setReturnValue(true);
         }
     }

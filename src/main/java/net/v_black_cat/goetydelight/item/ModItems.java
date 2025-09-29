@@ -142,8 +142,8 @@ public class ModItems {
                         simpleFoodItemProperties(4, 4)
                                 .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 600, 3), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1200, 3), 1.0F)
-                                .effect(() -> new MobEffectInstance(ModEffects.TAINTED_DRINK.get(), minToTick(15), 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(ModEffects.TAINTED_PIG.get(), minToTick(30), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), minToTick(15), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(ModEffects.ZOMBIFIED_PIGLIN_BRUTE_SERVANT_SUPPORT.get(), minToTick(30), 0), 1.0F)
                                 .build())));
 
         REJECTED_DARK_MEAT_SOUP = ITEMS.register("rejected_dark_meat_soup",
@@ -302,7 +302,7 @@ public class ModItems {
                         simpleFoodItemProperties(20, 30)
                                 .effect(() -> new MobEffectInstance(SOUL_ARMOR_EFFECT_SUPPLIER.get(), 6000, 4), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.HEALTH_BOOST, 6000, 2), 1.0F)
-                                .effect(() -> new MobEffectInstance(ModEffects.SOUL_CONVERGENCE_ROOM.get(), minToTick(10), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(ModEffects.HUNTING_DENIAL.get(), minToTick(10), 0), 1.0F)
                                 .build())));
         BONE_LORD_ASH_RICE = ITEMS.register("bone_lord_ash_rice",
                 () -> new BoneLordAshRiceItem(basicItem().stacksTo(1).food( 

@@ -62,7 +62,7 @@ public class TaintedDrinkEffect extends MobEffect {
             MobEffectInstance effectInstance = event.getEffectInstance();
 
             if (entity != null &&
-                    entity.hasEffect(ModEffects.TAINTED_DRINK.get()) &&
+                    entity.hasEffect(ModEffects.THE_PALE_MESSRNGER.get()) &&
                     effectInstance != null &&
                     effectInstance.getEffect().getCategory() == MobEffectCategory.HARMFUL) {
                 event.setResult(Event.Result.DENY);
@@ -75,7 +75,7 @@ public class TaintedDrinkEffect extends MobEffect {
             LivingEntity livingAttacker = attacker;
             Entity target = event.getTarget();
             if (target instanceof LivingEntity livingTarget) {
-                if (livingAttacker.hasEffect(ModEffects.TAINTED_DRINK.get())) {
+                if (livingAttacker.hasEffect(ModEffects.THE_PALE_MESSRNGER.get())) {
                     BlockPos targetPos = livingTarget.blockPosition();
                     Level level = livingTarget.level();
                     Vec3 vec3 = new Vec3(targetPos.getX() + 0.5, targetPos.getY(), targetPos.getZ() + 0.5);
@@ -89,7 +89,7 @@ public class TaintedDrinkEffect extends MobEffect {
         @SubscribeEvent
         public static void onLivingHurt(LivingHurtEvent event) {
             LivingEntity entity = event.getEntity();
-            if (entity.hasEffect(ModEffects.TAINTED_DRINK.get())) {
+            if (entity.hasEffect(ModEffects.THE_PALE_MESSRNGER.get())) {
                 float originalDamage = event.getAmount();
                 float reducedDamage = originalDamage * 0.5f;
                 event.setAmount(reducedDamage);

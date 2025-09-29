@@ -1,0 +1,11 @@
+{
+  "name":"Royal Cake",
+  "icon":"goetydelight:royal_cake",
+  "category":"goety:goetydelight/food",
+  "advancement":"goety:goety/kill_a_vizier",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "wuwuwuwuwu"
+    }]
+}
