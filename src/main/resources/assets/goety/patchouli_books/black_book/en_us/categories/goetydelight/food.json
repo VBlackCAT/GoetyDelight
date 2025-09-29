@@ -1,0 +1,7 @@
+{
+  "name": "Food",
+  "description": "The power hidden deeply...",
+  "icon": "goetydelight:royal_cake",
+  "parent": "goety:goetydelight",
+  "sortnum": 1
+}

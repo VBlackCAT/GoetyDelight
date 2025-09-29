@@ -55,8 +55,10 @@
   "item.goetydelight.rotten_corpse_maggot_feast": "Rotten Corpse Maggot Feast",
   "effect.goetydelight.spell_duration": "Spell Duration",
   "effect.goetydelight.spell_mastery": "Spell Mastery",
-  "effect.goetydelight.tainted_drink": "Tainted Drink",
-  "effect.goetydelight.tainted_pig": "Tainted Pig",
-  "effect.goetydelight.soul_convergence_room": "Hunting Denial"
+  "effect.goetydelight.the_pale_messenger": "The Pale Messenger",
+  "effect.goetydelight.zombified_piglin_brute_servant_support": "Zombie Pig Spirit Support",
+  "effect.goetydelight.hunting_denial": "Hunting Denial",
+  "effect.goetydelight.servant_reinforcement": "Servant Reinforcement",
+  "effect.goetydelight.hydration": "hydration"
 
 }

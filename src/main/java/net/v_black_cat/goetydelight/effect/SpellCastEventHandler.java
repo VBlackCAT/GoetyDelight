@@ -21,7 +21,7 @@ public class SpellCastEventHandler {
         ISpell spell = event.getSpell();
 
         // 1. 检查施法者是否拥有 NIGHT_HEART_PEA_SOUP 效果
-        MobEffectInstance effectInstance = caster.getEffect(ModEffects.NIGHT_HEART_PEA_SOUP.get()); // 请根据实际注册类调整
+        MobEffectInstance effectInstance = caster.getEffect(ModEffects.SERVANT_REINFORCEMENT.get()); // 请根据实际注册类调整
         if (effectInstance != null) {
             if (spell instanceof SummonSpell summonSpell) {
 

@@ -56,7 +56,10 @@
   "item.goetydelight.rotten_corpse_maggot_feast": "腐尸蛆虫盛宴",
   "effect.goetydelight.spell_duration": "法术长续",
   "effect.goetydelight.spell_mastery": "法术精通",
-  "effect.goetydelight.tainted_drink": "苍白使者",
-  "effect.goetydelight.tainted_pig": "猪灵支援",
-  "effect.goetydelight.soul_convergence_room": "猎杀拒止"
+  "effect.goetydelight.the_pale_messenger": "苍白使者",
+  "effect.goetydelight.zombified_piglin_brute_servant_support": "猪灵支援",
+  "effect.goetydelight.hunting_denial": "猎杀拒止",
+  "effect.goetydelight.servant_reinforcement": "仆从强化",
+  "effect.goetydelight.hydration": "水合作用"
+
 }
