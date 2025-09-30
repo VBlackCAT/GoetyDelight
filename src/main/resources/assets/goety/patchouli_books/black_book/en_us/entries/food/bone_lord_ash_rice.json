@@ -1,8 +1,8 @@
 {
-  "name":"Tainted Drink",
-  "icon":"goetydelight:tainted_drink",
+  "name":"Bone Lord's Ash Rice",
+  "icon":"goetydelight:bone_lord_ash_rice",
   "category":"goety:goetydelight/food",
-  "advancement":"goety:goety/kill_a_apostle",
+  "advancement":"goety:goety/kill_a_skull_lord",
   "pages": [
     {
       "type": "patchouli:text",

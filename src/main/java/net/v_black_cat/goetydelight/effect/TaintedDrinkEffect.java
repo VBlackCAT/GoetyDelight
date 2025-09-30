@@ -32,7 +32,7 @@ public class TaintedDrinkEffect extends MobEffect {
         Level level = entity.level();
 
         if (level.isClientSide) {
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 1; i++) {
                 double x = entity.getX() + (level.random.nextDouble() - 0.5) * 2.0;
                 double y = entity.getY() + entity.getEyeHeight() + (level.random.nextDouble() - 0.5);
                 double z = entity.getZ() + (level.random.nextDouble() - 0.5) * 2.0;
