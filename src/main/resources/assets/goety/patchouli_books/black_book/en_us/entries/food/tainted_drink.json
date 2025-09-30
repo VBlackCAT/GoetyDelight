@@ -1,0 +1,10 @@
+{
+  "name":"Tainted Drink",
+  "icon":"goetydelight:tainted_drink",
+  "category":"goety:goetydelight/food",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "wuwuwuwuwu"
+    }]
+}
