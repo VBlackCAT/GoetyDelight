@@ -1,8 +1,8 @@
 {
-  "name":"Tainted Drink",
-  "icon":"goetydelight:tainted_drink",
+  "name":"Ruby Hard Candy",
+  "icon":"goetydelight:ruby_hard_candy",
   "category":"goety:goetydelight/food",
-  "advancement":"goety:goety/kill_a_apostle",
+  "advancement":"goety:goety/kill_a_vizier",
   "pages": [
     {
       "type": "patchouli:text",

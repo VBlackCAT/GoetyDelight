@@ -1,0 +1,7 @@
+{
+  "name": "Buff",
+  "description": "some new and maybe useful buff",
+  "icon": "goetydelight:tainted_drink",
+  "parent": "goety:goetydelight",
+  "sortnum": 3
+}

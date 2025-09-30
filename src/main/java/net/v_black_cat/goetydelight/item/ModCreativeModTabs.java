@@ -27,6 +27,10 @@ public class ModCreativeModTabs {
          BLACKLIST.add(ModItems.APOCALYPTIUM_KNIFE2);
          BLACKLIST.add(ModItems.APOCALYPTIUM_KNIFE1);
          BLACKLIST.add(ModItems.GOETYDELIGHT_ICON);
+         BLACKLIST.add(ModItems.ROASTED_CORPSE_MAGGOTS);
+         BLACKLIST.add(ModItems.ROTTEN_CORPSE_MAGGOT_FEAST);
+         BLACKLIST.add(ModItems.CORPSE_MAGGOT);
+
 
          BLACKLIST.add(ModBlocks.NIGHT_STOVE);
          BLACKLIST.add(ModBlocks.APOCALYPTIUM_COOKING_POT_PARTS);
@@ -48,6 +52,7 @@ public class ModCreativeModTabs {
          BLACKLIST.add(ModBlocks.BLUE_MARBLE);
          BLACKLIST.add(ModBlocks.JUNGLE_MARBLE);
          BLACKLIST.add(ModBlocks.MARBLE_TRAPDOOR);
+
     }
 
     public static final RegistryObject<CreativeModeTab> GOETYDELIGHT_TAB = CREATIVE_MODE_TABS.register("goetydelight_tab",
