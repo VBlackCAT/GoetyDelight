@@ -29,6 +29,8 @@ public class ModEffects {
             EFFECTS.register("servant_reinforcement", NightHeartPeaSoupEffect::new);
     public static final RegistryObject<MobEffect> HUNTING_DENIAL =
             EFFECTS.register("hunting_denial", SoulConvergenceRoomEffect::new);
+    public static final RegistryObject<MobEffect> HYDRATION =
+            EFFECTS.register("hydration", HydrationEffect::new);
 
     public static void register(IEventBus bus) {
         EFFECTS.register(bus);

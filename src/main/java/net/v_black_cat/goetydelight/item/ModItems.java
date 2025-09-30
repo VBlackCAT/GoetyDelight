@@ -217,7 +217,7 @@ public class ModItems {
         CRYING_SHARK_SUGAR_PACK = ITEMS.register("cry_sugar_pack",
                 () -> new Item(basicItem().food(
                         simpleFoodItemProperties(7, 4)
-                                .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(1), 1), 1.0F)
+                                .effect(() -> new MobEffectInstance(ModEffects.HYDRATION.get(), minToTick(1), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .build())));
 
