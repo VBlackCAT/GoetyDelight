@@ -17,6 +17,7 @@ import net.v_black_cat.goetydelight.item.ModCreativeModTabs;
 import net.v_black_cat.goetydelight.loot.RegHelper;
 import net.v_black_cat.goetydelight.network.NetworkHandler;
 import net.v_black_cat.goetydelight.recipe.ModRecipeSerializers;
+import net.v_black_cat.goetydelight.render.animation.RotationEffectHandler;
 import org.slf4j.Logger;
 
 import static net.v_black_cat.goetydelight.loot.ModLootModifier.GLOBAL_LOOT_MODIFIER_CODECS;
@@ -92,6 +93,8 @@ public class GoetyDelight
             // Some client setup code
            // LOGGER.info("HELLO FROM CLIENT SETUP");
            // LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+            MinecraftForge.EVENT_BUS.addListener(RotationEffectHandler::onRenderTick);
+            MinecraftForge.EVENT_BUS.addListener(RotationEffectHandler::onRenderLivingEvent);
         }
     }
 }
