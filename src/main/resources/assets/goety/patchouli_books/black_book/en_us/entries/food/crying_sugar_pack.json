@@ -1,0 +1,10 @@
+{
+  "name":"Crying Sugar Pack",
+  "icon":"goetydelight:crying_sugar_pack",
+  "category":"goety:goetydelight/food",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "wuwuwuwuwu"
+    }]
+}

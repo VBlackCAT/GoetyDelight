@@ -1,0 +1,10 @@
+{
+  "name":"Ectoplasmic Melon",
+  "icon":"goetydelight:ectoplasmic_melon",
+  "category":"goety:goetydelight/food",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "wuwuwuwuwu"
+    }]
+}
