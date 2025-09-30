@@ -30,7 +30,7 @@ public class GoetyDelight
     // Define mod id in a common place for everything to reference
     public static final String MODID = "goetydelight";
     // Directly reference a slf4j logger
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
 
 
 

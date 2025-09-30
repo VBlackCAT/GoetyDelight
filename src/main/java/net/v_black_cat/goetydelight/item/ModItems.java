@@ -274,6 +274,7 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 6000, 2), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), 12000, 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(COMFORT_EFFECT_SUPPLIER.get(), 12000, 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(ModEffects.SERVANT_REINFORCEMENT.get(), minToTick(5), 0), 1.0F)
                                 .build())));
         POACHED_SPIDER_EGG = ITEMS.register("poached_spider_egg",
                 () -> new Item(basicItem().food( 

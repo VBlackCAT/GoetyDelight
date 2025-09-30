@@ -23,5 +23,6 @@ eclipse
 run
 libs
 run-data
+/src/test
 # Files from Forge MDK
 forge*changelog.txt
