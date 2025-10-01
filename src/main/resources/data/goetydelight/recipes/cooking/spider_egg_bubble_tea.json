@@ -2,27 +2,23 @@
   "type": "farmersdelight:cooking",
   "ingredients": [
     {
-      "item": "goety:mystic_core"
+      "item": "goety:spider_egg"
     },
     {
-      "item": "goety:forbidden_piece"
+      "item": "goety:spider_egg"
     },
     {
-      "item": "minecraft:sugar"
+      "item": "minecraft:glow_berries"
     },
     {
       "item": "minecraft:wheat"
     },
     {
       "tag": "forge:milk"
-    },
-    {
-      "item": "minecraft:egg"
     }
-
   ],
   "result": {
-    "item": "goetydelight:possible_holy_representative"
+    "item": "goetydelight:spider_egg_bubble_tea"
   },
   "container": {
     "item": "minecraft:glass_bottle"

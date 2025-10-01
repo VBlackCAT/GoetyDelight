@@ -1,0 +1,15 @@
+{
+  "name": "可能性圣代",
+  "icon": "goetydelight:possible_holy_representative",
+  "category": "goety:goetydelight/food",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "文本"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "文本2"
+    }
+  ]
+}

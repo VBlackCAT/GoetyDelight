@@ -1,0 +1,15 @@
+{
+  "name": "聚魂胚",
+  "icon": "goetydelight:gathering_soul_embryos",
+  "category": "goety:goetydelight/food",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "文本1"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "文本2"
+    }
+  ]
+}

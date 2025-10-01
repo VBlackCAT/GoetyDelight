@@ -105,7 +105,7 @@ public class ModItems {
     private static final Supplier<MobEffect> SOUL_ARMOR_EFFECT_SUPPLIER = goetyBuff("soul_armor");
     private static final Supplier<MobEffect> BUFF_EFFECT_SUPPLIER = goetyBuff("buff");
     private static final Supplier<MobEffect> SAVE_EFFECTS_SUPPLIER = goetyBuff("save_effects");
-    private static final Supplier<MobEffect> PHOTOSYNTHESIS = goetyBuff("photosynthesis");
+    private static final Supplier<MobEffect> PHOTOSYNTHESIS_SUPPLIER = goetyBuff("photosynthesis");
 
     // ==================== 静态初始化块：物品定义区域 ====================
     static {
@@ -231,13 +231,21 @@ public class ModItems {
         SUNSHINE_SUGAR_BUN = ITEMS.register("sunshine_sugar_bun",
                 () -> new Item(basicItem().food(
                         simpleFoodItemProperties(7, 4)
-                                .effect(() -> new MobEffectInstance(PHOTOSYNTHESIS.get(), minToTick(1), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(PHOTOSYNTHESIS_SUPPLIER.get(), minToTick(1), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
+                                .build())));
+
+        GRAPE_SLUSH = ITEMS.register("grape_slush",
+                () -> new SevenLeafPuddingItem(basicItem().food(
+                        simpleFoodItemProperties(9, 6)
+                                .effect(() -> new MobEffectInstance(CHILL_HIDE_EFFECT_SUPPLIER.get(),, 1), 1.0F)
+                                .effect(() -> new MobEffectInstance(.get(), minToTick(5), 1), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
                                 .build())));
 
         SEVEN_LEAF_PUDDING = ITEMS.register("sweet_berry_pudding",
                 () -> new SevenLeafPuddingItem(basicItem().food(
-                        simpleFoodItemProperties(7, 9)
+                        simpleFoodItemProperties(7, 5)
                                 .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(5), 1), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .build())));
@@ -251,7 +259,7 @@ public class ModItems {
                                 .build())));
         CAKE = ITEMS.register("royal_cake",
                 () -> new CakeItem(basicItem().stacksTo(1).food(
-                        simpleFoodItemProperties(16, 10)
+                        simpleFoodItemProperties(16, 8)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), 36000, 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(FORTUNATE_EFFECT_SUPPLIER.get(), 12000, 0), 1.0F)
                                 .build())));
@@ -270,7 +278,7 @@ public class ModItems {
                                 .build())));
         BLUE_ECTOPLASMIC_SUNDAE = ITEMS.register("blue_ectoplasmic_sundae",
                 () -> new Item(basicItem().stacksTo(1).food( 
-                        simpleFoodItemProperties(10, 7)
+                        simpleFoodItemProperties(10, 6)
                                 .effect(() -> new MobEffectInstance(FORTUNATE_EFFECT_SUPPLIER.get(), 12000, 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 2400, 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(CHILL_HIDE_EFFECT_SUPPLIER.get(), 2400, 0), 1.0F)
@@ -278,7 +286,7 @@ public class ModItems {
         BRUSH = ITEMS.register("cursed_metal_brush",
                 () -> new CursedIngotBrushItem(basicItem().durability(64)));
         SKULL_SHOT = ITEMS.register("skull_shot",
-                () -> simpleFoodItem(6, 7, CORPSE_EATER_EFFECT_SUPPLIER, 1200, 0, true)); 
+                () -> simpleFoodItem(6, 4, CORPSE_EATER_EFFECT_SUPPLIER, 1200, 0, true));
         NIGHT_HEART_PEA_SOUP = ITEMS.register("night_heart_pea_soup",
                 () -> new NightHeartPeaSoupItem(basicItem().stacksTo(1).food( 
                         simpleFoodItemProperties(16, 24)

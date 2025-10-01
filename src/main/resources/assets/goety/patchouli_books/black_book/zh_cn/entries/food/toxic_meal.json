@@ -1,0 +1,15 @@
+{
+  "name": "毒物饭",
+  "icon": "goetydelight:toxic_meal",
+  "category": "goety:goetydelight/food",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "文本"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "文本2"
+    }
+  ]
+}
