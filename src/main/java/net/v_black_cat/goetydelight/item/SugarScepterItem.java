@@ -1,0 +1,97 @@
+package net.v_black_cat.goetydelight.item;
+
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.v_black_cat.goetydelight.ability.AbilityRegistry;
+import net.v_black_cat.goetydelight.ability.TimedAbilitySystem;
+
+public class SugarScepterItem extends Item {
+    // 冷却时间（20秒，以tick为单位）
+    private static final int COOLDOWN_TICKS = 20 * 20;
+
+    public SugarScepterItem(Properties pProperties) {
+        super(pProperties);
+    }
+
+    @Override
+    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
+        if (!level.isClientSide && entity instanceof Player player) {
+            // 检查冷却时间
+            if (player.getCooldowns().isOnCooldown(this)) {
+                return super.finishUsingItem(stack, level, entity);
+            }
+
+            // 添加免疫能力（持续20秒）
+            boolean success = TimedAbilitySystem.addAbilityToEntity(
+                    entity,
+                    AbilityRegistry.SUGAR_SCEPTER_IMMUNITY,
+                    COOLDOWN_TICKS
+            );
+
+            if (success) {
+                // 设置物品冷却时间（20秒）
+                player.getCooldowns().addCooldown(this, COOLDOWN_TICKS);
+
+                // 消耗物品（如果不是创造模式）
+                if (!player.getAbilities().instabuild) {
+                    stack.shrink(1);
+                }
+            }
+        }
+
+        return super.finishUsingItem(stack, level, entity);
+    }
+
+    @Mod.EventBusSubscriber
+    public static class DamageImmunityHandler {
+
+        @SubscribeEvent
+        public static void onLivingAttack(LivingAttackEvent event) {
+            LivingEntity entity = event.getEntity();
+
+            // 只在服务端处理
+            if (entity.level().isClientSide) return;
+
+            // 检查实体是否有免疫能力
+            boolean hasImmunity = TimedAbilitySystem.hasAbility(
+                    entity,
+                    AbilityRegistry.SUGAR_SCEPTER_IMMUNITY
+            );
+
+            // 如果有免疫能力，取消伤害并移除能力
+            if (hasImmunity) {
+                // 添加击退效果（类似于示例代码中的击退逻辑）
+                if (event.getSource().getEntity() instanceof LivingEntity attacker) {
+                    // 计算击退方向
+                    double dx =   attacker.getX()-entity.getX();
+                    double dz =   attacker.getZ()-entity.getZ();
+
+                    // 标准化方向向量
+                    double length = Math.sqrt(dx * dx + dz * dz);
+                    if (length > 0) {
+                        dx /= length;
+                        dz /= length;
+                    }
+
+                    // 应用击退
+                    attacker.push(dx * 5.0, 0.2, dz * 5.0);
+                    attacker.hurtMarked = true;
+                }
+
+                // 取消伤害事件
+                event.setCanceled(true);
+
+                // 移除免疫能力（一次性使用）
+                TimedAbilitySystem.removeAbilityFromEntity(entity, AbilityRegistry.SUGAR_SCEPTER_IMMUNITY);
+            }
+        }
+    }
+}
