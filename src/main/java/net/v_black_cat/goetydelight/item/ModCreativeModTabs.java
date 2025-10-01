@@ -30,6 +30,7 @@ public class ModCreativeModTabs {
          BLACKLIST.add(ModItems.ROASTED_CORPSE_MAGGOTS);
          BLACKLIST.add(ModItems.ROTTEN_CORPSE_MAGGOT_FEAST);
          BLACKLIST.add(ModItems.CORPSE_MAGGOT);
+         BLACKLIST.add(ModItems.SPIDER_EGG_BUBBLE_TEA_2);
 
 
          BLACKLIST.add(ModBlocks.NIGHT_STOVE);

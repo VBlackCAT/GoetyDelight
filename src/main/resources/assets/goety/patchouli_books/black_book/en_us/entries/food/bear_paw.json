@@ -1,10 +1,15 @@
 {
-  "name":"Bear Paw",
-  "icon":"goetydelight:bear_paw",
-  "category":"goety:goetydelight/food",
+  "name": "Bear Paw",
+  "icon": "goetydelight:bear_paw",
+  "category": "goety:goetydelight/food",
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "wuwuwuwuwu"
-    }]
+      "text": "wuwuwu"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "文本2"
+    }
+  ]
 }

@@ -14,11 +14,14 @@
       "item": "minecraft:cocoa_beans"
     },
     {
-      "item": "goety:hail_focus"
+      "item": "minecraft:sunflower"
+    },
+    {
+      "item": "minecraft:shroomlight"
     }
   ],
   "result": {
-    "item": "goetydelight:cry_sugar_pack"
+    "item": "goetydelight:sunshine_sugar_bun"
   },
   "container": {
     "item": "minecraft:bowl"

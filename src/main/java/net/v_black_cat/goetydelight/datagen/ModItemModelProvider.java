@@ -72,6 +72,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.RUBY_HARD_CANDY);
         simpleItem(ModItems.CRISP_BISCUIT);
         simpleItem(ModItems.ROTTEN_CORPSE_MAGGOT_FEAST);
+        simpleItem(ModItems.SUNSHINE_SUGAR_BUN);
 
 
 
