@@ -44,7 +44,7 @@ public class RotationEffectHandler {
                 event.getEntity(),
                 AbilityRegistry.SUGAR_SCEPTER_IMMUNITY
         );
-        hasImmunity =true;
+//        hasImmunity =true;
         // 只对拥有免疫能力的实体显示特效
         if (!hasImmunity) return;
 
