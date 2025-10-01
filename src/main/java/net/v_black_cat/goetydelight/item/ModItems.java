@@ -177,15 +177,9 @@ public class ModItems {
                         simpleFoodItemProperties(7, 2).fast().build())));
         ECTOPLASM_JELLY = ITEMS.register("ectoplasm_jelly",
                 () -> simpleFastFoodItem(4, 4, true));
-
-        WHITE_SHARK_CANDY = ITEMS.register("sugar_scepter",
-                () -> simpleFoodItem(1, 1, true)); 
-        WHITE_SHARK_SUGAR_PACK = ITEMS.register("sugar_pack",
-                () -> simpleFoodItem(6, 4, true));
-        CANDY_FISH = ITEMS.register("candy_fish",
-                () -> simpleFoodItem(1, 1, true));
         FROG_LEG_SANDWICH = ITEMS.register("frog_leg_sandwich",
                 () -> simpleFoodItem(8, 6, true));
+
         SPIDER_EGG_BUBBLE_TEA_2 = ITEMS.register("spider_egg_bubble_tea_2",
                 () -> simpleFoodItem(1, 1, true)); 
         SAUCE_GRILLED_CANDY_FISH = ITEMS.register("sauce_grilled_candy_fish",
@@ -193,7 +187,29 @@ public class ModItems {
 
         // 特殊效果食物物品初始化
 
+        SPIDER_EGG_BUBBLE_TEA = ITEMS.register("spider_egg_bubble_tea",
+                () -> new Item(basicItem().food(
+                        simpleFoodItemProperties(6, 4)
+                                .effect(() -> new MobEffectInstance(CLIMBING_EFFECT_SUPPLIER.get(), minToTick(7), 0), 1.0F)
+                                .build())));
 
+        CANDY_FISH = ITEMS.register("candy_fish",
+                () -> new CandyFishItem(basicItem().food(
+                        simpleFoodItemProperties(6, 4)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(7), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.WATER_BREATHING, minToTick(5), 0), 1.0F)
+                                .build())));
+
+        WHITE_SHARK_SUGAR_PACK = ITEMS.register("sugar_pack",
+                () -> new Item(basicItem().food(
+                        simpleFoodItemProperties(6, 4)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(4), 0), 1.0F)
+                                .build())));
+
+        WHITE_SHARK_CANDY = ITEMS.register("sugar_scepter",
+                () ->  new SugarScepterItem(basicItem().food(
+                        simpleFoodItemProperties(5, 5)
+                                .build())));
 
         SIBLING_SUNDAE = ITEMS.register("possible_holy_representative",
                 () -> new SiblingSundaeItem(basicItem().food(
@@ -214,11 +230,6 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(MobEffects.CONFUSION, sToTick(10), 0), 1.0F)
                                 .build())));
 
-        SPIDER_EGG_BUBBLE_TEA = ITEMS.register("spider_egg_bubble_tea",
-                () -> new Item(basicItem().food(
-                        simpleFoodItemProperties(7, 4)
-                                .effect(() -> new MobEffectInstance(CLIMBING_EFFECT_SUPPLIER.get(), minToTick(1), 0), 1.0F)
-                                .build())));
 
         CRYING_SHARK_SUGAR_PACK = ITEMS.register("cry_sugar_pack",
                 () -> new Item(basicItem().food(

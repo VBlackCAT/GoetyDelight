@@ -1,0 +1,25 @@
+{
+  "type": "farmersdelight:cooking",
+  "ingredients": [
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "goety:soul_emerald"
+    },
+    {
+      "item": "goety:animation_core"
+    },
+    {
+      "item": "minecraft:golden_apple"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:sugar_scepter"
+  },
+  "experience": 1.5,
+  "cookingtime": 200
+}
