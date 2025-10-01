@@ -17,9 +17,6 @@
   "result": {
     "item": "goetydelight:sugar_pack"
   },
-  "container": {
-    "item": "minecraft:bowl"
-  },
   "experience": 1.5,
   "cookingtime": 200
 }

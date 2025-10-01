@@ -106,6 +106,7 @@ public class ModItems {
     private static final Supplier<MobEffect> BUFF_EFFECT_SUPPLIER = goetyBuff("buff");
     private static final Supplier<MobEffect> SAVE_EFFECTS_SUPPLIER = goetyBuff("save_effects");
     private static final Supplier<MobEffect> PHOTOSYNTHESIS_SUPPLIER = goetyBuff("photosynthesis");
+    private static final Supplier<MobEffect> FROSTY_AURA_SUPPLIER = goetyBuff("frosty_aura");
 
     // ==================== 静态初始化块：物品定义区域 ====================
     static {
@@ -182,9 +183,7 @@ public class ModItems {
         WHITE_SHARK_SUGAR_PACK = ITEMS.register("sugar_pack",
                 () -> simpleFoodItem(6, 4, true));
         CANDY_FISH = ITEMS.register("candy_fish",
-                () -> simpleFoodItem(1, 1, true)); 
-        GRAPE_SLUSH = ITEMS.register("grape_slush",
-                () -> simpleFoodItem(1, 1, true)); 
+                () -> simpleFoodItem(1, 1, true));
         FROG_LEG_SANDWICH = ITEMS.register("frog_leg_sandwich",
                 () -> simpleFoodItem(8, 6, true));
         SPIDER_EGG_BUBBLE_TEA_2 = ITEMS.register("spider_egg_bubble_tea_2",
@@ -236,10 +235,10 @@ public class ModItems {
                                 .build())));
 
         GRAPE_SLUSH = ITEMS.register("grape_slush",
-                () -> new SevenLeafPuddingItem(basicItem().food(
+                () -> new Item(basicItem().food(
                         simpleFoodItemProperties(9, 6)
-                                .effect(() -> new MobEffectInstance(CHILL_HIDE_EFFECT_SUPPLIER.get(),, 1), 1.0F)
-                                .effect(() -> new MobEffectInstance(.get(), minToTick(5), 1), 1.0F)
+                                .effect(() -> new MobEffectInstance(CHILL_HIDE_EFFECT_SUPPLIER.get(),4200, 1), 1.0F)
+                                .effect(() -> new MobEffectInstance(FROSTY_AURA_SUPPLIER.get(), 600, 1), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
                                 .build())));
 
