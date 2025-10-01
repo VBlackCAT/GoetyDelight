@@ -14,6 +14,7 @@ import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.effect.ModEffects;
 import vectorwing.farmersdelight.common.item.KnifeItem;
 
+import java.util.Random;
 import java.util.function.Supplier;
 
 import static com.Polarice3.Goety.common.effects.GoetyEffects.*;
@@ -60,6 +61,7 @@ public class ModItems {
     public static final RegistryObject<Item> ROASTED_CORPSE_MAGGOTS;
     public static final RegistryObject<Item> WHITE_SHARK_CANDY;
     public static final RegistryObject<Item> WHITE_SHARK_SUGAR_PACK;
+    public static final RegistryObject<Item> SUNSHINE_SUGAR_BUN;
     public static final RegistryObject<Item> CANDY_FISH;
     public static final RegistryObject<Item> GRAPE_SLUSH;
     public static final RegistryObject<Item> FROG_LEG_SANDWICH;
@@ -103,6 +105,7 @@ public class ModItems {
     private static final Supplier<MobEffect> SOUL_ARMOR_EFFECT_SUPPLIER = goetyBuff("soul_armor");
     private static final Supplier<MobEffect> BUFF_EFFECT_SUPPLIER = goetyBuff("buff");
     private static final Supplier<MobEffect> SAVE_EFFECTS_SUPPLIER = goetyBuff("save_effects");
+    private static final Supplier<MobEffect> PHOTOSYNTHESIS = goetyBuff("photosynthesis");
 
     // ==================== 静态初始化块：物品定义区域 ====================
     static {
@@ -151,7 +154,7 @@ public class ModItems {
                         simpleFoodItemProperties(10, 4)
                                 .effect(() -> new MobEffectInstance(MobEffects.CONFUSION, 600, 0), 1.0F)
                                 .effect(() -> {
-                                    int randomAmplifier = new java.util.Random().nextInt(5);
+                                    int randomAmplifier = new Random().nextInt(5);
                                     return new MobEffectInstance(MobEffects.POISON, 600, randomAmplifier, false, true);
                                 }, 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.WEAKNESS, 600, 1), 1.0F)
@@ -177,15 +180,13 @@ public class ModItems {
         WHITE_SHARK_CANDY = ITEMS.register("sugar_scepter",
                 () -> simpleFoodItem(1, 1, true)); 
         WHITE_SHARK_SUGAR_PACK = ITEMS.register("sugar_pack",
-                () -> simpleFoodItem(1, 1, true)); 
+                () -> simpleFoodItem(6, 4, true));
         CANDY_FISH = ITEMS.register("candy_fish",
                 () -> simpleFoodItem(1, 1, true)); 
         GRAPE_SLUSH = ITEMS.register("grape_slush",
                 () -> simpleFoodItem(1, 1, true)); 
         FROG_LEG_SANDWICH = ITEMS.register("frog_leg_sandwich",
                 () -> simpleFoodItem(8, 6, true));
-        SPIDER_EGG_BUBBLE_TEA = ITEMS.register("spider_egg_bubble_tea",
-                () -> simpleFoodItem(1, 1, true)); 
         SPIDER_EGG_BUBBLE_TEA_2 = ITEMS.register("spider_egg_bubble_tea_2",
                 () -> simpleFoodItem(1, 1, true)); 
         SAUCE_GRILLED_CANDY_FISH = ITEMS.register("sauce_grilled_candy_fish",
@@ -214,6 +215,12 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(MobEffects.CONFUSION, sToTick(10), 0), 1.0F)
                                 .build())));
 
+        SPIDER_EGG_BUBBLE_TEA = ITEMS.register("spider_egg_bubble_tea",
+                () -> new Item(basicItem().food(
+                        simpleFoodItemProperties(7, 4)
+                                .effect(() -> new MobEffectInstance(CLIMBING_EFFECT_SUPPLIER.get(), minToTick(1), 0), 1.0F)
+                                .build())));
+
         CRYING_SHARK_SUGAR_PACK = ITEMS.register("cry_sugar_pack",
                 () -> new Item(basicItem().food(
                         simpleFoodItemProperties(7, 4)
@@ -221,6 +228,12 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .build())));
 
+        SUNSHINE_SUGAR_BUN = ITEMS.register("sunshine_sugar_bun",
+                () -> new Item(basicItem().food(
+                        simpleFoodItemProperties(7, 4)
+                                .effect(() -> new MobEffectInstance(PHOTOSYNTHESIS.get(), minToTick(1), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
+                                .build())));
 
         SEVEN_LEAF_PUDDING = ITEMS.register("sweet_berry_pudding",
                 () -> new SevenLeafPuddingItem(basicItem().food(

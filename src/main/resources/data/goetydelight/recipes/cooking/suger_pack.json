@@ -12,13 +12,10 @@
     },
     {
       "item": "minecraft:cocoa_beans"
-    },
-    {
-      "item": "goety:hail_focus"
     }
   ],
   "result": {
-    "item": "goetydelight:cry_sugar_pack"
+    "item": "goetydelight:sugar_pack"
   },
   "container": {
     "item": "minecraft:bowl"
