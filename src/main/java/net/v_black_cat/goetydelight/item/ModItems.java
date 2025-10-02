@@ -210,7 +210,7 @@ public class ModItems {
 
         QUICK_GROWING_SEED_POPCORN = ITEMS.register("quick_growing_seed_popcorn",
                 () -> new Item(basicItem().food(
-                        simpleFoodItemProperties(6, 4)
+                        simpleFoodItemProperties(8, 5)
                                 .effect(() -> new MobEffectInstance(MobEffects.SATURATION, 600, 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(COMFORT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(PHOTOSYNTHESIS_SUPPLIER.get(), minToTick(5), 0), 1.0F)
