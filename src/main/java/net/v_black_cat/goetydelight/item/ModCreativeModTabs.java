@@ -33,7 +33,6 @@ public class ModCreativeModTabs {
          BLACKLIST.add(ModItems.SPIDER_EGG_BUBBLE_TEA_2);
 
 
-         BLACKLIST.add(ModBlocks.NIGHT_STOVE);
 
          BLACKLIST.add(ModBlocks.APOCALYPTIUM_POT);
          BLACKLIST.add(ModBlocks.SHADE_STOVE);
