@@ -1,11 +1,6 @@
 package net.v_black_cat.goetydelight.datagen;
 
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
-import net.minecraft.world.item.alchemy.Potions;
 import net.v_black_cat.goetydelight.GoetyDelight;
-import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.v_black_cat.goetydelight.item.ModItems;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
@@ -19,7 +14,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class ModRecipeProvider extends RecipeProvider implements IConditionBuilder {
-    private static final List<ItemLike>  Marble_OP_SWORD_SMELTABLES = List.of(ModItems.Marble_OP_SWORD.get());
+    private static final List<ItemLike>  Marble_OP_SWORD_SMELTABLES = List.of(ModItems.MARBLE_OP_SWORD.get());
 
     public ModRecipeProvider(PackOutput pOutput) {
         super(pOutput);

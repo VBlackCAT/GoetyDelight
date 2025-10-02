@@ -63,8 +63,20 @@ public abstract class BrushableBlockEntityMixin {
 
             if(currentBrushingPlayer.getMainHandItem().getItem() == ModItems.CURSED_METAL_BRUSH.get()){
 
-                if(this.brushCount==7){
+                if(this.brushCount==3){
+                    this.brushCount=4;
+                }
+                if(this.brushCount==6){
+                    this.brushCount=7;
+                }
+                if(this.brushCount==8){
                     this.brushCount=10;
+                }
+            }
+            if(currentBrushingPlayer.getMainHandItem().getItem() == ModItems.DARK_BRUSH.get()){
+
+                if (this.brushCount % 2 == 1 && this.brushCount < 10) {
+                    this.brushCount++;
                 }
             }
 
