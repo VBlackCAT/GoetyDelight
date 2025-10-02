@@ -93,6 +93,9 @@ public class ModItems {
     public static final RegistryObject<Item> ROTTEN_CORPSE_MAGGOT_FEAST;
     public static final RegistryObject<Item> CORPSE_MAGGOT;
     public static final RegistryObject<Item> QUICK_GROWING_SEED_POPCORN;
+    public static final RegistryObject<Item> NETHER_STYLE_FRIED_EGG_SANDWICH;
+    public static final RegistryObject<Item> EXOTIC_BREAKFAST;
+    public static final RegistryObject<Item> JUNGLE_SALAD;
 
     // ==================== 效果供应商常量 ====================
     private static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
@@ -215,6 +218,25 @@ public class ModItems {
                 () -> new Item(basicItem().food(
                         simpleFoodItemProperties(6, 4)
                                 .effect(() -> new MobEffectInstance(CLIMBING_EFFECT_SUPPLIER.get(), minToTick(7), 0), 1.0F)
+                                .build())));
+
+        NETHER_STYLE_FRIED_EGG_SANDWICH = ITEMS.register("nether_style_fried_egg_sandwich",
+                () -> new Item(basicItem().food(
+                        simpleFoodItemProperties(6, 4)
+                                .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, minToTick(8), 0), 1.0F)
+                                .build())));
+
+        EXOTIC_BREAKFAST = ITEMS.register("exotic_breakfast",
+                () -> new Item(basicItem().food(
+                        simpleFoodItemProperties(6, 4)
+                                .effect(() -> new MobEffectInstance(CLIMBING_EFFECT_SUPPLIER.get(), minToTick(7), 0), 1.0F)
+                                .build())));
+
+        JUNGLE_SALAD = ITEMS.register("jungle_salad",
+                () -> new Item(basicItem().food(
+                        simpleFoodItemProperties(6, 4)
+                                .effect(() -> new MobEffectInstance(CLIMBING_EFFECT_SUPPLIER.get(), minToTick(7), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(1), 0), 1.0F)
                                 .build())));
 
         QUICK_GROWING_SEED_POPCORN = ITEMS.register("quick_growing_seed_popcorn",
