@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
@@ -19,8 +20,13 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.item.ModItems;
+import vectorwing.farmersdelight.common.block.CookingPotBlock;
+import vectorwing.farmersdelight.common.block.StoveBlock;
 
 import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
+
+import static vectorwing.farmersdelight.common.registry.ModBlocks.STOVE;
 
 public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS =
@@ -37,6 +43,8 @@ public class ModBlocks {
     public static final RegistryObject<Block> BLUE_MARBLE= registerBlock("blue_marble",() -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.AMETHYST)));
     public static final RegistryObject<Block> JUNGLE_MARBLE = registerBlock("jungle_marble",() -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.AMETHYST)));
     public static final RegistryObject<Block> NETHER_MARBLE = registerBlock("nether_marble",() -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.AMETHYST)));
+
+
     public static final RegistryObject<Block> DRIPMARBLE_BLOCK = registerBlock("dripmarble_block",() -> new Block(BlockBehaviour.Properties.copy(Blocks.DRIPSTONE_BLOCK).sound(SoundType.AMETHYST).noOcclusion()));
     public static final RegistryObject<Block> POINTED_DRIPMARBLE = registerBlock("pointed_dripmarble",() ->  new PointedDripstoneBlock(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_BROWN).forceSolidOn().instrument(NoteBlockInstrument.BASEDRUM).noOcclusion().sound(SoundType.POINTED_DRIPSTONE).randomTicks().strength(1.5F, 3.0F).dynamicShape().offsetType(BlockBehaviour.OffsetType.XZ).pushReaction(PushReaction.DESTROY).isRedstoneConductor(ModBlocks::never)));
    
@@ -54,12 +62,34 @@ public class ModBlocks {
     public static final RegistryObject<Block> MARBLE_TRAPDOOR = registerBlock("marble_trapdoor", () -> new TrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.AMETHYST).noOcclusion(), BlockSetType.IRON));
 
 
+    //暗夜炉灶
+    public static final RegistryObject<Block> NIGHT_STOVE = registerBlock("night_stove",() ->
+            new StoveBlock(BlockBehaviour.Properties
+                    .copy(STOVE.get())
+                    .sound(SoundType.AMETHYST)
+                    .strength(50f, 5000f) // 设置硬度和爆炸抗性
+                    .requiresCorrectToolForDrops() //需要json中配置的正确工具才能掉落
+                    .lightLevel(litBlockEmission(13))));
+
+    //诅咒金属锅
+    public static final RegistryObject<Block> CURSED_INGOT_POT = registerBlock("cursed_ingot_pot",() ->
+            new CookingPotBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL)
+                    .strength(0.5F, 6.0F)
+                    .sound(SoundType.LANTERN)));
 
 
-    public static final RegistryObject<Block> NIGHT_STOVE = BLOCKS.register("night_stove", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).noLootTable()));
-    public static final RegistryObject<Block> APOCALYPTIUM_COOKING_POT_PARTS = BLOCKS.register("apocalyptium_cooking_pot_parts", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).noLootTable()));
-    public static final RegistryObject<Block> BLACK_IRON_COOKING_POT = BLOCKS.register("black_iron_cooking_pot", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).noLootTable()));
+    public static final RegistryObject<Block> APOCALYPTIUM_POT = registerBlock("apocalyptium_pot",() -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.AMETHYST)));
+    public static final RegistryObject<Block> SHADE_STOVE = registerBlock("shade_stove",() -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.AMETHYST)));
 
+
+
+    //照抄的农夫乐事设置方块亮度的方法
+    private static ToIntFunction<BlockState> litBlockEmission(int lightValue) {
+        return (state) -> {
+            return (Boolean)state.getValue(BlockStateProperties.LIT) ? lightValue : 0;
+        };
+    }
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);registerBlockItem(name, toReturn);
