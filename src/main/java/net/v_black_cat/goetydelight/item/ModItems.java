@@ -1,5 +1,6 @@
 package net.v_black_cat.goetydelight.item;
 
+import com.Polarice3.Goety.common.items.ModTiers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -32,15 +33,16 @@ public class ModItems {
     public static final RegistryObject<Item> EXAMPLE_BLOCK_ITEM;
 
 
-    public static final RegistryObject<Item> BRUSH;
+    public static final RegistryObject<Item> CURSED_METAL_BRUSH;
     // 刀具物品
-    public static final RegistryObject<Item> APOCALYPTIUM_KNIFE0;
+    public static final RegistryObject<Item> APOCALYPTIUM_KNIFE;
     public static final RegistryObject<Item> VENOMOUS_SPIDER_KNIFE;
     public static final RegistryObject<Item> SPECTRE_KNIFE;
     public static final RegistryObject<Item> APOCALYPTIUM_KNIFE2;
     public static final RegistryObject<Item> APOCALYPTIUM_KNIFE1;
-    public static final RegistryObject<Item> BLACK_IRON_KNIFE;
+    public static final RegistryObject<Item> CURSED_INGOT_KNIFE;
     public static final RegistryObject<Item> DARK_KNIFE;
+    public static final RegistryObject<Item> APOCALYPTIUM_INGOT_BRUSH;
 
     // 武器物品
     public static final RegistryObject<Item> Marble_OP_SWORD;
@@ -113,11 +115,12 @@ public class ModItems {
     static {
         // 块物品初始化
         EXAMPLE_BLOCK_ITEM = ITEMS.register("example_block",
-                () -> new BlockItem(EXAMPLE_BLOCK.get(), basicItem().stacksTo(1))); 
+                () -> new BlockItem(EXAMPLE_BLOCK.get(), basicItem().stacksTo(1)));
 
+        //神金刀
+        APOCALYPTIUM_KNIFE = registerWithTab("apocalyptium_knife",
+                () -> new KnifeItem(Tiers.NETHERITE, 4F, -2.0F, basicItem().durability(1666)));
 
-        APOCALYPTIUM_KNIFE0 = registerWithTab("apocalyptium_knife0",
-                () -> new KnifeItem(Tiers.IRON, 0.5F, -2.0F, basicItem()));
         VENOMOUS_SPIDER_KNIFE = registerWithTab("venomous_spider_knife",
                 () -> new KnifeItem(Tiers.IRON, 0.5F, -2.0F, basicItem()));
         SPECTRE_KNIFE = registerWithTab("spectre_knife",
@@ -126,11 +129,22 @@ public class ModItems {
                 () -> new KnifeItem(Tiers.IRON, 0.5F, -2.0F, basicItem()));
         APOCALYPTIUM_KNIFE1 = registerWithTab("apocalyptium_knife1",
                 () -> new KnifeItem(Tiers.IRON, 0.5F, -2.0F, basicItem()));
-        BLACK_IRON_KNIFE = registerWithTab("black_iron_knife",
-                () -> new KnifeItem(Tiers.IRON, 0.5F, -2.0F, basicItem()));
-        DARK_KNIFE = registerWithTab("dark_knife",
-                () -> new KnifeItem(Tiers.IRON, 0.5F, -2.0F, basicItem()));
 
+
+        //诅咒金属刀
+        CURSED_INGOT_KNIFE = registerWithTab("cursed_ingot_knife",
+                () -> new KnifeItem(Tiers.IRON, 4F, -2.0F, basicItem().durability(256)));
+
+        //黑暗金属刀
+        DARK_KNIFE = registerWithTab("dark_knife",
+                () -> new KnifeItem(ModTiers.DARK, 5F, -2.0F, basicItem().durability(512)));
+
+
+        CURSED_METAL_BRUSH = ITEMS.register("cursed_metal_brush",
+                () -> new CursedIngotBrushItem(basicItem().durability(64)));
+
+        APOCALYPTIUM_INGOT_BRUSH = ITEMS.register("apocalyptium_ingot_brush",
+                () -> new CursedIngotBrushItem(basicItem().durability(64)));
 
         Marble_OP_SWORD = ITEMS.register("marble_op_sword",
                 () -> new SwordItem(Tiers.WOOD, Integer.MAX_VALUE, 2, basicItem()));
@@ -303,8 +317,7 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 2400, 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(CHILL_HIDE_EFFECT_SUPPLIER.get(), 2400, 0), 1.0F)
                                 .build())));
-        BRUSH = ITEMS.register("cursed_metal_brush",
-                () -> new CursedIngotBrushItem(basicItem().durability(64)));
+
         SKULL_SHOT = ITEMS.register("skull_shot",
                 () -> simpleFoodItem(6, 4, CORPSE_EATER_EFFECT_SUPPLIER, 1200, 0, true));
         NIGHT_HEART_PEA_SOUP = ITEMS.register("night_heart_pea_soup",

@@ -24,12 +24,12 @@ public class ModItemModelProvider extends ItemModelProvider {
     @Override
     protected void registerModels() {
 
-        simpleItem(ModItems.APOCALYPTIUM_KNIFE0);
+        simpleItem(ModItems.APOCALYPTIUM_KNIFE);
         simpleItem(ModItems.VENOMOUS_SPIDER_KNIFE);
         simpleItem(ModItems.SPECTRE_KNIFE);
         simpleItem(ModItems.APOCALYPTIUM_KNIFE2);
         simpleItem(ModItems.APOCALYPTIUM_KNIFE1);
-        simpleItem(ModItems.BLACK_IRON_KNIFE);
+        simpleItem(ModItems.CURSED_INGOT_KNIFE);
         simpleItem(ModItems.DARK_KNIFE);
         simpleItem(ModItems.CORPSE_MAGGOT);
 
@@ -41,7 +41,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.TAINTED_DRINK);
         simpleItem(ModItems.OMINOUS_ICE_CREAM);
         simpleItem(ModItems.ECTOPLASMIC_MELON);
-        simpleItem(ModItems.BRUSH);
+        simpleItem(ModItems.CURSED_METAL_BRUSH);
         simpleItem(ModItems.CRYING_SHARK_SUGAR_PACK);
         simpleItem(ModItems.SKULL_SHOT);
         simpleItem(ModItems.REJECTED_DARK_MEAT_SOUP);
