@@ -33,9 +33,10 @@ public class ModCreativeModTabs {
          BLACKLIST.add(ModItems.SPIDER_EGG_BUBBLE_TEA_2);
 
 
-         BLACKLIST.add(ModBlocks.NIGHT_STOVE);
-         BLACKLIST.add(ModBlocks.APOCALYPTIUM_COOKING_POT_PARTS);
-         BLACKLIST.add(ModBlocks.BLACK_IRON_COOKING_POT);
+
+         BLACKLIST.add(ModBlocks.APOCALYPTIUM_POT);
+         BLACKLIST.add(ModBlocks.SHADE_STOVE);
+
          BLACKLIST.add(ModBlocks.EXAMPLE_BLOCK);
          BLACKLIST.add(ModBlocks.NETHER_MARBLE);
          BLACKLIST.add(ModBlocks.POINTED_DRIPMARBLE);
