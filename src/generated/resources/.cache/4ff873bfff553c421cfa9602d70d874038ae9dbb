@@ -1,15 +1,15 @@
-// 1.20.1	2025-09-29T17:15:19.638917	Item Models: goetydelight
-1ddc3f13e7583bf0f50cb07fd3100f79855f8ade assets/goetydelight/models/item/apocalyptium_knife0.json
+// 1.20.1	2025-10-02T10:37:46.5281134	Item Models: goetydelight
+277d2eb40bc6e6dab59bb7e92123096ade6ae2f3 assets/goetydelight/models/item/apocalyptium_knife.json
 8e6cae16a47cf5cd21ab8f72f92bb6196174e4bb assets/goetydelight/models/item/apocalyptium_knife1.json
 6e1bee9896679bb93cb6dc5f33a4fb851a563795 assets/goetydelight/models/item/apocalyptium_knife2.json
 4228eaf4f45f9d7cf868d6a09b25f59f63083607 assets/goetydelight/models/item/bear_paw.json
-fbc8bbc0f122a7df1eb12ee153efe7c516cd1853 assets/goetydelight/models/item/black_iron_knife.json
 9018caf188b34c071871982d7778ba671b8a5dbd assets/goetydelight/models/item/blue_ectoplasmic_sundae.json
 4bd4fa52fa3d485aedef53a1dc3b06e16ac26619 assets/goetydelight/models/item/bone_lord_ash_rice.json
 c5faa807d3884500cb7cb37369982b2a685c87cd assets/goetydelight/models/item/candy_fish.json
 190ceea46cbdef12c317d3f726c86afee2f64e81 assets/goetydelight/models/item/corpse_maggot.json
 a848a9f5bab4140e78393434c9156ffe86bf8270 assets/goetydelight/models/item/crisp_biscuit.json
 589b24de17bf10cb2df891579c38ee492924418a assets/goetydelight/models/item/cry_sugar_pack.json
+ac3cf37be81ea8a22eca248357ae7c14b037fa06 assets/goetydelight/models/item/cursed_ingot_knife.json
 f474d479444b0009802857a5190b05336efdf114 assets/goetydelight/models/item/cursed_metal_brush.json
 192b8f45ef32353b77899d608fd34293cde184a7 assets/goetydelight/models/item/dark_knife.json
 007c80462e8272d2279aa4e0f22eaecbb05cc891 assets/goetydelight/models/item/ectoplasmic_melon.json
@@ -47,6 +47,7 @@ dade947d09f02be777a65ae634b68eea58defbc3 assets/goetydelight/models/item/spider_
 67504c3fb66d4b9094b10c197b7db7eacc2a85d4 assets/goetydelight/models/item/spider_egg_bubble_tea_2.json
 803063d0ee7008750aaf6273b54219f67ead977d assets/goetydelight/models/item/sugar_pack.json
 5d4024d5e95d2e98b6db81e6dbb83a334a6dcf81 assets/goetydelight/models/item/sugar_scepter.json
+6b305cbfa5974a1c8dec46ee752e370b97f6f2a2 assets/goetydelight/models/item/sunshine_sugar_bun.json
 05986a9e866ae349c30bb1c5723dd6374a4f8026 assets/goetydelight/models/item/sweet_berry_pudding.json
 4d9a9357450201437b4a25fd229d29838f0743a2 assets/goetydelight/models/item/tainted_drink.json
 ce686faca964143ef8a8c41aa76bb4953f134268 assets/goetydelight/models/item/toxic_meal.json

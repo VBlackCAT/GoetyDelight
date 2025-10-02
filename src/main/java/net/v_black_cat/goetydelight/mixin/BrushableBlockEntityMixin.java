@@ -19,7 +19,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
@@ -62,7 +61,7 @@ public abstract class BrushableBlockEntityMixin {
         if (this.currentBrushingPlayer != null) {
 
 
-            if(currentBrushingPlayer.getMainHandItem().getItem() == ModItems.BRUSH.get()){
+            if(currentBrushingPlayer.getMainHandItem().getItem() == ModItems.CURSED_METAL_BRUSH.get()){
 
                 if(this.brushCount==7){
                     this.brushCount=10;
