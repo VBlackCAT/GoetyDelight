@@ -89,6 +89,7 @@ public class ModItems {
     public static final RegistryObject<Item> CRISP_BISCUIT;
     public static final RegistryObject<Item> ROTTEN_CORPSE_MAGGOT_FEAST;
     public static final RegistryObject<Item> CORPSE_MAGGOT;
+    public static final RegistryObject<Item> QUICK_GROWING_SEED_POPCORN;
 
     // ==================== 效果供应商常量 ====================
     private static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
@@ -191,6 +192,15 @@ public class ModItems {
                 () -> new Item(basicItem().food(
                         simpleFoodItemProperties(6, 4)
                                 .effect(() -> new MobEffectInstance(CLIMBING_EFFECT_SUPPLIER.get(), minToTick(7), 0), 1.0F)
+                                .build())));
+
+        QUICK_GROWING_SEED_POPCORN = ITEMS.register("quick_growing_seed_popcorn",
+                () -> new Item(basicItem().food(
+                        simpleFoodItemProperties(6, 4)
+                                .effect(() -> new MobEffectInstance(MobEffects.SATURATION, 600, 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(COMFORT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(PHOTOSYNTHESIS_SUPPLIER.get(), minToTick(5), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
                                 .build())));
 
         CANDY_FISH = ITEMS.register("candy_fish",

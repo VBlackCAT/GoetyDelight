@@ -73,7 +73,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.CRISP_BISCUIT);
         simpleItem(ModItems.ROTTEN_CORPSE_MAGGOT_FEAST);
         simpleItem(ModItems.SUNSHINE_SUGAR_BUN);
-
+        simpleItem(ModItems.QUICK_GROWING_SEED_POPCORN);
 
 
 
