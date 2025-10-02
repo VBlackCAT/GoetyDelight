@@ -34,6 +34,7 @@ public class ModItems {
 
 
     public static final RegistryObject<Item> CURSED_METAL_BRUSH;
+    public static final RegistryObject<Item> DARK_BRUSH;
     // 刀具物品
     public static final RegistryObject<Item> APOCALYPTIUM_KNIFE;
     public static final RegistryObject<Item> VENOMOUS_SPIDER_KNIFE;
@@ -45,7 +46,7 @@ public class ModItems {
     public static final RegistryObject<Item> APOCALYPTIUM_INGOT_BRUSH;
 
     // 武器物品
-    public static final RegistryObject<Item> Marble_OP_SWORD;
+    public static final RegistryObject<Item> MARBLE_OP_SWORD;
 
     // 基础食物物品
     public static final RegistryObject<Item> EXAMPLE_ITEM;
@@ -133,20 +134,26 @@ public class ModItems {
 
         //诅咒金属刀
         CURSED_INGOT_KNIFE = registerWithTab("cursed_ingot_knife",
-                () -> new KnifeItem(Tiers.IRON, 4F, -2.0F, basicItem().durability(256)));
+                () -> new KnifeItem(ModTiers.SPECIAL, 0F, -2.0F, basicItem().durability(256)));
 
         //黑暗金属刀
         DARK_KNIFE = registerWithTab("dark_knife",
-                () -> new KnifeItem(ModTiers.DARK, 5F, -2.0F, basicItem().durability(512)));
+                () -> new KnifeItem(ModTiers.DARK, 1F, -2.0F, basicItem().durability(512)));
 
-
+        //诅咒金属刷子
         CURSED_METAL_BRUSH = ITEMS.register("cursed_metal_brush",
                 () -> new CursedIngotBrushItem(basicItem().durability(64)));
 
-        APOCALYPTIUM_INGOT_BRUSH = ITEMS.register("apocalyptium_ingot_brush",
+        //黑暗金属刷子
+        DARK_BRUSH = ITEMS.register("dark_brush",
                 () -> new CursedIngotBrushItem(basicItem().durability(64)));
 
-        Marble_OP_SWORD = ITEMS.register("marble_op_sword",
+        //神金刷子
+        APOCALYPTIUM_INGOT_BRUSH = ITEMS.register("apocalyptium_ingot_brush",
+                () -> new CursedIngotBrushItem(basicItem().durability(166)));
+
+        //大理石op剑
+        MARBLE_OP_SWORD = ITEMS.register("marble_op_sword",
                 () -> new SwordItem(Tiers.WOOD, Integer.MAX_VALUE, 2, basicItem()));
 
 
@@ -197,10 +204,12 @@ public class ModItems {
 
         SPIDER_EGG_BUBBLE_TEA_2 = ITEMS.register("spider_egg_bubble_tea_2",
                 () -> simpleFoodItem(1, 1, true)); 
-        SAUCE_GRILLED_CANDY_FISH = ITEMS.register("sauce_grilled_candy_fish",
-                () -> simpleFoodItem(1, 1, true)); 
+
 
         // 特殊效果食物物品初始化
+
+
+
 
         SPIDER_EGG_BUBBLE_TEA = ITEMS.register("spider_egg_bubble_tea",
                 () -> new Item(basicItem().food(
@@ -215,6 +224,14 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(COMFORT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(PHOTOSYNTHESIS_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .build())));
+
+
+        SAUCE_GRILLED_CANDY_FISH = ITEMS.register("sauce_grilled_candy_fish",
+                () ->  new CandyFishItem(basicItem().food(
+                        simpleFoodItemProperties(9, 6)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(8), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(FIERY_AURA.get(), minToTick(5), 0), 1.0F)
                                 .build())));
 
         CANDY_FISH = ITEMS.register("candy_fish",
