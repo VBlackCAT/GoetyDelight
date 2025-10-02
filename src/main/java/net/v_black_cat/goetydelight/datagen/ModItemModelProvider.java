@@ -74,6 +74,9 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.ROTTEN_CORPSE_MAGGOT_FEAST);
         simpleItem(ModItems.SUNSHINE_SUGAR_BUN);
         simpleItem(ModItems.QUICK_GROWING_SEED_POPCORN);
+        simpleItem(ModItems.CURSED_METAL_BRUSH);
+        simpleItem(ModItems.DARK_BRUSH);
+        simpleItem(ModItems.APOCALYPTIUM_INGOT_BRUSH);
 
 
 
