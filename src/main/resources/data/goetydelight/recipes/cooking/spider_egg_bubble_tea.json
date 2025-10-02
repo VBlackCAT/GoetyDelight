@@ -17,6 +17,9 @@
       "tag": "forge:milk"
     }
   ],
+
+  "recipe_book_tab": "drinks",
+
   "result": {
     "item": "goetydelight:spider_egg_bubble_tea"
   },
