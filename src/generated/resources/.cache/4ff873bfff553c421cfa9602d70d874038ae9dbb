@@ -1,4 +1,5 @@
-// 1.20.1	2025-10-02T10:37:46.5281134	Item Models: goetydelight
+// 1.20.1	2025-10-02T16:56:30.8955216	Item Models: goetydelight
+2ff3a4e2c1e26ec353ee3321147e7616652d643f assets/goetydelight/models/item/apocalyptium_ingot_brush.json
 277d2eb40bc6e6dab59bb7e92123096ade6ae2f3 assets/goetydelight/models/item/apocalyptium_knife.json
 8e6cae16a47cf5cd21ab8f72f92bb6196174e4bb assets/goetydelight/models/item/apocalyptium_knife1.json
 6e1bee9896679bb93cb6dc5f33a4fb851a563795 assets/goetydelight/models/item/apocalyptium_knife2.json
@@ -11,6 +12,7 @@ a848a9f5bab4140e78393434c9156ffe86bf8270 assets/goetydelight/models/item/crisp_b
 589b24de17bf10cb2df891579c38ee492924418a assets/goetydelight/models/item/cry_sugar_pack.json
 ac3cf37be81ea8a22eca248357ae7c14b037fa06 assets/goetydelight/models/item/cursed_ingot_knife.json
 f474d479444b0009802857a5190b05336efdf114 assets/goetydelight/models/item/cursed_metal_brush.json
+edc5de8d3c8b8c46fe5efb6ca35f163ea672b850 assets/goetydelight/models/item/dark_brush.json
 192b8f45ef32353b77899d608fd34293cde184a7 assets/goetydelight/models/item/dark_knife.json
 007c80462e8272d2279aa4e0f22eaecbb05cc891 assets/goetydelight/models/item/ectoplasmic_melon.json
 94535d05212ff6f99b0eb579f322488569a7c71c assets/goetydelight/models/item/ectoplasm_jelly.json
@@ -33,6 +35,7 @@ f90111c6de710896066b99d58b3d036b564e55bc assets/goetydelight/models/item/marble_
 4058ecee2938069c27ef33a1f37562e410763bed assets/goetydelight/models/item/poached_spider_egg.json
 6f27d2dbbc9308101c0c5a749524ec2eb2d22a60 assets/goetydelight/models/item/possible_holy_representative.json
 e40b98f5a7ee06ca50ec513700c5285be09da28e assets/goetydelight/models/item/promotion_hard_candy.json
+23aa80d8caa18c8bcd1dc4f9a1416ff0f017d235 assets/goetydelight/models/item/quick_growing_seed_popcorn.json
 6567cd41fc31172b7d058bfcf6c754851338f517 assets/goetydelight/models/item/rejected_dark_meat_soup.json
 205432e0d21dd6b00c1f265c872e796a7dbd6d76 assets/goetydelight/models/item/roasted_corpse_maggots.json
 d47d79877c51c2a4eec063a04b68f5ead7b357ae assets/goetydelight/models/item/rotten_corpse_maggot_feast.json

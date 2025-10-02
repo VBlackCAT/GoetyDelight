@@ -22,7 +22,7 @@ public class ModCreativeModTabs {
 
     static {
          BLACKLIST.add(ModItems.EXAMPLE_ITEM);
-         BLACKLIST.add(ModItems.Marble_OP_SWORD);
+         BLACKLIST.add(ModItems.MARBLE_OP_SWORD);
 
          BLACKLIST.add(ModItems.APOCALYPTIUM_KNIFE2);
          BLACKLIST.add(ModItems.APOCALYPTIUM_KNIFE1);
