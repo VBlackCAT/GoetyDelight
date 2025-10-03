@@ -6,6 +6,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -32,34 +33,42 @@ public class CursedIngotPotBlock extends CookingPotBlock {
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return ModBlockEntities.CURSED_INGOT_POT_BE.get().create(pos, state);
     }
+
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
         ItemStack heldStack = player.getItemInHand(hand);
+
+        // 处理Shift+右键切换支持状态
         if (heldStack.isEmpty() && player.isShiftKeyDown()) {
-            level.setBlockAndUpdate(pos, (BlockState)state.setValue(SUPPORT, ((CookingPotSupport)state.getValue(SUPPORT)).equals(CookingPotSupport.HANDLE) ? this.getTrayState(level, pos) : CookingPotSupport.HANDLE));
-            level.playSound((Player)null, pos, SoundEvents.LANTERN_PLACE, SoundSource.BLOCKS, 0.7F, 1.0F);
-        } else if (!level.isClientSide) {
+            level.setBlockAndUpdate(pos, state.setValue(SUPPORT,
+                    state.getValue(SUPPORT).equals(CookingPotSupport.HANDLE) ?
+                            getTrayState(level, pos) : CookingPotSupport.HANDLE));
+            level.playSound(null, pos, SoundEvents.LANTERN_PLACE, SoundSource.BLOCKS, 0.7F, 1.0F);
+            return InteractionResult.SUCCESS;
+        }
+        // 服务器端处理
+        else if (!level.isClientSide) {
             BlockEntity tileEntity = level.getBlockEntity(pos);
-            if (tileEntity instanceof CookingPotBlockEntity) {
-                CursedIngotPotBlockEntity cookingPotEntity = (CursedIngotPotBlockEntity)tileEntity;
+            if (tileEntity instanceof CursedIngotPotBlockEntity) {
+                CursedIngotPotBlockEntity cookingPotEntity = (CursedIngotPotBlockEntity) tileEntity;
+
+                // 尝试使用手持物品取出食物
                 ItemStack servingStack = cookingPotEntity.useHeldItemOnMeal(heldStack);
                 if (servingStack != ItemStack.EMPTY) {
                     if (!player.getInventory().add(servingStack)) {
                         player.drop(servingStack, false);
                     }
-
-                    level.playSound((Player)null, pos, SoundEvents.ARMOR_EQUIP_GENERIC, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    level.playSound(null, pos, SoundEvents.ARMOR_EQUIP_GENERIC, SoundSource.BLOCKS, 1.0F, 1.0F);
                 } else {
-                    NetworkHooks.openScreen((ServerPlayer)player, cookingPotEntity, pos);
+                    // 打开GUI
+                    NetworkHooks.openScreen((ServerPlayer) player, cookingPotEntity, pos);
                 }
             }
-
             return InteractionResult.SUCCESS;
         }
 
         return InteractionResult.SUCCESS;
     }
-
 
     private CookingPotSupport getTrayState(LevelAccessor level, BlockPos pos) {
         return level.getBlockState(pos.below()).is(ModTags.TRAY_HEAT_SOURCES) ? CookingPotSupport.TRAY : CookingPotSupport.NONE;
