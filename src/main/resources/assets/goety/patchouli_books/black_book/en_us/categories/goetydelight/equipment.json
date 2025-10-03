@@ -1,7 +1,0 @@
-{
-  "name": "Cooking equipment",
-  "description": "High end dark cuisine often only requires cooking in the darkest way possible",
-  "icon": "farmersdelight:cooking_pot",
-  "parent": "goety:goetydelight",
-  "sortnum": 2
-}
