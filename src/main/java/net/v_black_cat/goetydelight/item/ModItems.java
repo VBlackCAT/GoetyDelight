@@ -13,6 +13,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.effect.ModEffects;
+import vectorwing.farmersdelight.common.item.DrinkableItem;
 import vectorwing.farmersdelight.common.item.KnifeItem;
 
 import java.util.Random;
@@ -213,17 +214,14 @@ public class ModItems {
 
         // 特殊效果食物物品初始化
 
-
-
-
         SPIDER_EGG_BUBBLE_TEA = ITEMS.register("spider_egg_bubble_tea",
-                () -> new Item(basicItem().food(
+                () -> new CustomDrinkItem(basicItem().food(
                         simpleFoodItemProperties(6, 4)
                                 .effect(() -> new MobEffectInstance(CLIMBING_EFFECT_SUPPLIER.get(), minToTick(7), 0), 1.0F)
                                 .build())));
 
         BOILING_BLOOD_BREW = ITEMS.register("boiling_blood_brew",
-                () -> new Item(basicItem().food(
+                () -> new DrinkableItem(basicItem().food(
                         simpleFoodItemProperties(6, 4)
                                 .effect(() -> new MobEffectInstance(FIERY_AURA_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(COMFORT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
@@ -367,8 +365,15 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(CHILL_HIDE_EFFECT_SUPPLIER.get(), 2400, 0), 1.0F)
                                 .build())));
 
+
         SKULL_SHOT = ITEMS.register("skull_shot",
-                () -> simpleFoodItem(6, 4, CORPSE_EATER_EFFECT_SUPPLIER, 1200, 0, true));
+                () -> new CustomDrinkItem(basicItem().stacksTo(1).food(
+                        simpleFoodItemProperties(6, 4)
+                                .effect(() -> new MobEffectInstance(CORPSE_EATER_EFFECT_SUPPLIER.get(), 1200, 0), 1.0F)
+                                .build())));
+
+
+
         NIGHT_HEART_PEA_SOUP = ITEMS.register("night_heart_pea_soup",
                 () -> new NightHeartPeaSoupItem(basicItem().stacksTo(1).food( 
                         simpleFoodItemProperties(16, 24)
