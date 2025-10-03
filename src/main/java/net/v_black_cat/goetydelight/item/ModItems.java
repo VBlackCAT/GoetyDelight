@@ -96,6 +96,7 @@ public class ModItems {
     public static final RegistryObject<Item> NETHER_STYLE_FRIED_EGG_SANDWICH;
     public static final RegistryObject<Item> EXOTIC_BREAKFAST;
     public static final RegistryObject<Item> JUNGLE_SALAD;
+    public static final RegistryObject<Item> BOILING_BLOOD_BREW;
 
     // ==================== 效果供应商常量 ====================
     private static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
@@ -114,6 +115,7 @@ public class ModItems {
     private static final Supplier<MobEffect> SAVE_EFFECTS_SUPPLIER = goetyBuff("save_effects");
     private static final Supplier<MobEffect> PHOTOSYNTHESIS_SUPPLIER = goetyBuff("photosynthesis");
     private static final Supplier<MobEffect> FROSTY_AURA_SUPPLIER = goetyBuff("frosty_aura");
+    private static final Supplier<MobEffect> FIERY_AURA_SUPPLIER = goetyBuff("fiery_aura");
 
     // ==================== 静态初始化块：物品定义区域 ====================
     static {
@@ -220,6 +222,13 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(CLIMBING_EFFECT_SUPPLIER.get(), minToTick(7), 0), 1.0F)
                                 .build())));
 
+        BOILING_BLOOD_BREW = ITEMS.register("boiling_blood_brew",
+                () -> new Item(basicItem().food(
+                        simpleFoodItemProperties(6, 4)
+                                .effect(() -> new MobEffectInstance(FIERY_AURA_SUPPLIER.get(), minToTick(5), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(COMFORT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
+                                .build())));
+
         NETHER_STYLE_FRIED_EGG_SANDWICH = ITEMS.register("nether_style_fried_egg_sandwich",
                 () -> new Item(basicItem().food(
                         simpleFoodItemProperties(6, 4)
@@ -229,13 +238,14 @@ public class ModItems {
         EXOTIC_BREAKFAST = ITEMS.register("exotic_breakfast",
                 () -> new Item(basicItem().food(
                         simpleFoodItemProperties(6, 4)
-                                .effect(() -> new MobEffectInstance(CLIMBING_EFFECT_SUPPLIER.get(), minToTick(7), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(WILD_RAGE_EFFECT_SUPPLIER.get(), minToTick(1), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(3), 0), 1.0F)
                                 .build())));
 
         JUNGLE_SALAD = ITEMS.register("jungle_salad",
                 () -> new Item(basicItem().food(
                         simpleFoodItemProperties(6, 4)
-                                .effect(() -> new MobEffectInstance(CLIMBING_EFFECT_SUPPLIER.get(), minToTick(7), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(PHOTOSYNTHESIS_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(1), 0), 1.0F)
                                 .build())));
 

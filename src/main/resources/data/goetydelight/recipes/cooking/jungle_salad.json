@@ -1,0 +1,28 @@
+{
+  "type": "farmersdelight:cooking",
+  "ingredients": [
+    {
+      "item": "goety:quick_growing_seed"
+    },
+    {
+      "item": "goety:corpse_blossom"
+    },
+    {
+      "tag": "forge:crops/onion"
+    },
+    {
+      "tag": "goety:meat"
+    },
+    {
+      "item": "minecraft:potato"
+    }
+  ],
+  "container": {
+    "item": "minecraft:bowl"
+  },
+  "result": {
+    "item": "goetydelight:jungle_salad"
+  },
+  "experience": 1.5,
+  "cookingtime": 200
+}

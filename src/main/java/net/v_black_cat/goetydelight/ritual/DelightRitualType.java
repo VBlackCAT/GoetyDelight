@@ -29,13 +29,13 @@ public class DelightRitualType implements IRitualType {
     @Override
     public String getName() {
         // 唯一标识符，用于后续注册
-        return "goetydelight";
+        return "culinary";
     }
 
     @Override
     public ItemStack getJeiIcon() {
         // JEI显示的图标
-        return new ItemStack(ModItems.GOETYDELIGHT_ICON.get());
+        return new ItemStack(ModBlocks.CURSED_INGOT_POT.get());
     }
 
     @Override
@@ -51,8 +51,8 @@ public class DelightRitualType implements IRitualType {
         // 创建方块要求映射：方块类型 -> 需要数量
         Map<Block, Integer> blockRequirements = new HashMap<>();
         blockRequirements.put(Blocks.HONEY_BLOCK, 5);      // 需要5个蜂蜜块
-        blockRequirements.put(Blocks.WHEAT, 3);      // 需要3个种植小麦
-        blockRequirements.put(ModBlocks.ROTTEN_CORPSE_MAGGOT_FEAST_BLOCK.get(), 3);      // 需要腐尸蛆虫盛宴方块
+        blockRequirements.put(ModBlocks.NIGHT_STOVE.get(), 1);      // 需要3个种植小麦
+        blockRequirements.put(ModBlocks.CURSED_INGOT_POT.get(), 1);      // 需要腐尸蛆虫盛宴方块
 
         // 创建计数器映射：方块类型 -> 当前计数
         Map<Block, Integer> blockCounts = new HashMap<>();
