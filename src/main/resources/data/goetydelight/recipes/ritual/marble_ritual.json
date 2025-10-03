@@ -1,0 +1,73 @@
+{
+
+  "type": "goety:ritual",
+
+  "ritual_type": "goety:craft",
+
+  "activation_item": {
+
+    "item": "goety:marble"
+
+  },
+
+  "craftType": "goetydelight",
+
+  "entity_to_sacrifice": {
+
+    "tag": "minecraft:dolphin",
+
+    "display_name": "entity.minecraft.dolphin"
+
+  },
+  "soulCost": 5,
+
+  "duration": 20,
+
+  "ingredients": [
+
+    {
+
+      "item": "goety:cursed_ingot"
+
+    },
+
+    {
+
+      "item": "minecraft:end_rod"
+
+    },
+    {
+      "type": "forge:nbt",
+      "item": "minecraft:potion",
+      "nbt": {
+        "Potion": "minecraft:water"
+      }
+    },
+    {
+      "type": "forge:nbt",
+      "item": "minecraft:potion",
+      "nbt": {
+        "Potion": "minecraft:poison"
+      }
+    },
+    {
+      "type": "forge:nbt",
+      "item": "goety:brew",
+      "nbt": {
+        "Potion": "minecraft:poison"
+      }
+    },
+    {
+
+      "tag":  "forge:crops/cabbage"
+
+    }
+  ],
+
+  "result": {
+
+    "item": "goety:silt_marble_heavy"
+
+  }
+
+}
