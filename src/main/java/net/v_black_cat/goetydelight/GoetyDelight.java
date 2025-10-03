@@ -13,6 +13,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.v_black_cat.goetydelight.ability.AbilityRegistry;
+import net.v_black_cat.goetydelight.block.ModBlockEntities;
 import net.v_black_cat.goetydelight.effect.ModEffects;
 import net.v_black_cat.goetydelight.entities.ModEntities;
 import net.v_black_cat.goetydelight.item.ModCreativeModTabs;
@@ -59,6 +60,7 @@ public class GoetyDelight
         ModRecipeSerializers.SERIALIZERS.register(modEventBus);
         ModEntities.register(modEventBus);
         AbilityRegistry.registerAbilities();
+        ModBlockEntities.register(modEventBus);
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
@@ -74,6 +76,7 @@ public class GoetyDelight
 
         //LOGGER.info(Config.magicNumberIntroduction + Config.magicNumber);
         NetworkHandler.register();
+
         //Config.items.forEach((item) -> LOGGER.info("ITEM >> {}", item.toString()));
     }
 

@@ -21,6 +21,7 @@ import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.item.ModItems;
 import vectorwing.farmersdelight.common.block.CookingPotBlock;
+import vectorwing.farmersdelight.common.block.RoastChickenBlock;
 import vectorwing.farmersdelight.common.block.StoveBlock;
 
 import java.util.function.Supplier;
@@ -73,10 +74,18 @@ public class ModBlocks {
 
     //诅咒金属锅
     public static final RegistryObject<Block> CURSED_INGOT_POT = registerBlock("cursed_ingot_pot",() ->
-            new CookingPotBlock(BlockBehaviour.Properties.of()
+            new CursedIngotPotBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.METAL)
                     .strength(0.5F, 6.0F)
                     .sound(SoundType.LANTERN)));
+
+
+    //腐尸蛆虫盛宴方块
+    public static final RegistryObject<Block> ROTTEN_CORPSE_MAGGOT_FEAST_BLOCK = registerBlock("rotten_corpse_maggot_feast_block",() ->
+            new RottenCorpseMaggotFeastBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
+                    ModItems.ROTTEN_CORPSE_MAGGOT_FEAST, true));
+
+
 
 
     public static final RegistryObject<Block> APOCALYPTIUM_POT = registerBlock("apocalyptium_pot",() -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.AMETHYST)));
