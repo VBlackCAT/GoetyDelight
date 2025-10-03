@@ -26,8 +26,9 @@ import com.Polarice3.Goety.client.particles.ModParticleTypes; // 导入粒子效
 import com.Polarice3.Goety.common.network.ModNetwork; // 导入网络包
 import com.Polarice3.Goety.common.network.server.SPlayPlayerSoundPacket; // 导入声音包
 import com.Polarice3.Goety.init.ModSounds; // 导入声音
+import vectorwing.farmersdelight.common.item.DrinkableItem;
 
-public class NightHeartPeaSoupItem extends Item implements IWand {
+public class NightHeartPeaSoupItem extends DrinkableItem implements IWand {
     public NightHeartPeaSoupItem(Properties pProperties) {
         super(pProperties);
     }
