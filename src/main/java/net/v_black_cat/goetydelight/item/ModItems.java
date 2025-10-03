@@ -432,10 +432,8 @@ public class ModItems {
         CRISP_BISCUIT = ITEMS.register("crisp_biscuit",
                 () -> new CrispBiscuitItem(basicItem().stacksTo(16).food(
                         simpleFoodItemProperties(9, 6)
-                                .effect(() -> new MobEffectInstance(CORPSE_EATER_EFFECT_SUPPLIER.get(), sToTick(30), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 2), 1.0F)
                                 .effect(() -> new MobEffectInstance(ModEffects.SPELL_MASTERY.get(), minToTick(2), 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(SAVE_EFFECTS_SUPPLIER.get(), minToTick(30), 0), 1.0F)
                                 .build())));
         ROTTEN_CORPSE_MAGGOT_FEAST = ITEMS.register("rotten_corpse_maggot_feast",
                 () -> new RottenCorpseMaggotFeastItem(basicItem().stacksTo(1).food( 
