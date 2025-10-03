@@ -21,6 +21,7 @@ import net.v_black_cat.goetydelight.loot.RegHelper;
 import net.v_black_cat.goetydelight.network.NetworkHandler;
 import net.v_black_cat.goetydelight.recipe.ModRecipeSerializers;
 import net.v_black_cat.goetydelight.render.animation.RotationEffectHandler;
+import net.v_black_cat.goetydelight.ritual.DelightRitualType;
 import org.slf4j.Logger;
 
 import static net.v_black_cat.goetydelight.loot.ModLootModifier.GLOBAL_LOOT_MODIFIER_CODECS;
@@ -76,7 +77,7 @@ public class GoetyDelight
 
         //LOGGER.info(Config.magicNumberIntroduction + Config.magicNumber);
         NetworkHandler.register();
-
+        DelightRitualType.registerRitualType();
         //Config.items.forEach((item) -> LOGGER.info("ITEM >> {}", item.toString()));
     }
 
