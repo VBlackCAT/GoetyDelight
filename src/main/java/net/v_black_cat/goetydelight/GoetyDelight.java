@@ -1,6 +1,7 @@
 package net.v_black_cat.goetydelight;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
@@ -22,7 +23,11 @@ import net.v_black_cat.goetydelight.network.NetworkHandler;
 import net.v_black_cat.goetydelight.recipe.ModRecipeSerializers;
 import net.v_black_cat.goetydelight.render.animation.RotationEffectHandler;
 import net.v_black_cat.goetydelight.ritual.DelightRitualType;
+import net.v_black_cat.goetydelight.screen.CursedIngotPotScreen;
+import net.v_black_cat.goetydelight.screen.ModMenuTypes;
 import org.slf4j.Logger;
+import vectorwing.farmersdelight.client.gui.CookingPotScreen;
+import vectorwing.farmersdelight.common.block.entity.container.CookingPotMenu;
 
 import static net.v_black_cat.goetydelight.loot.ModLootModifier.GLOBAL_LOOT_MODIFIER_CODECS;
 import static net.v_black_cat.goetydelight.item.ModItems.ITEMS;
@@ -62,6 +67,7 @@ public class GoetyDelight
         ModEntities.register(modEventBus);
         AbilityRegistry.registerAbilities();
         ModBlockEntities.register(modEventBus);
+        ModMenuTypes.register(modEventBus);
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
@@ -102,6 +108,7 @@ public class GoetyDelight
            // LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
             MinecraftForge.EVENT_BUS.addListener(RotationEffectHandler::onRenderTick);
             MinecraftForge.EVENT_BUS.addListener(RotationEffectHandler::onRenderLivingEvent);
+            MenuScreens.register(ModMenuTypes.CURSED_INGOT_POT.get(), CursedIngotPotScreen::new);
         }
     }
 }
