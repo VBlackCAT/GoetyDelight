@@ -4,7 +4,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
-import net.v_black_cat.goetydelight.item.RejectedDarkMeatSoupItem;
+import net.v_black_cat.goetydelight.item.food.RejectedDarkMeatSoupItem;
 
 import java.util.UUID;
 import java.util.function.Supplier;

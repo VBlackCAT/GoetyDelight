@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight;
+package net.v_black_cat.goetydelight.event;
 
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.block.Block;
@@ -6,6 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlocks;
 
 import java.util.function.Supplier;

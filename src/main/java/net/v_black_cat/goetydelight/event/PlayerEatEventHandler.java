@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight;
+package net.v_black_cat.goetydelight.event;
 
 import com.Polarice3.Goety.utils.SEHelper;
 import net.minecraft.world.entity.player.Player;
@@ -6,6 +6,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.v_black_cat.goetydelight.config.FoodSoulEnergyConfig;
+import net.v_black_cat.goetydelight.GoetyDelight;
 
 @Mod.EventBusSubscriber(modid = GoetyDelight.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class PlayerEatEventHandler {

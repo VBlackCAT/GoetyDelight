@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight;
+package net.v_black_cat.goetydelight.config;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
