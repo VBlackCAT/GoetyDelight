@@ -1,7 +1,0 @@
-{
-  "name": "Food",
-  "description": "Some foods that are either blasphemous or dark",
-  "icon": "goetydelight:royal_cake",
-  "parent": "goety:goetydelight",
-  "sortnum": 1
-}
