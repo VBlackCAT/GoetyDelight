@@ -40,10 +40,21 @@ public class RotationEffectHandler {
         if (player == null) return;
 
         // 检查被渲染的实体是否有免疫能力
-        boolean hasImmunity = TimedAbilitySystem.hasAbility(
-                event.getEntity(),
-                AbilityRegistry.SUGAR_SCEPTER_IMMUNITY
-        );
+//        boolean hasImmunity = TimedAbilitySystem.hasAbility(
+//                event.getEntity(),
+//                AbilityRegistry.SUGAR_SCEPTER_IMMUNITY
+//        );
+
+
+        boolean hasImmunity;
+        if (event.getEntity().level().isClientSide) {
+            // 在客户端，检查我们通过网络包设置的标记
+            hasImmunity = event.getEntity().getPersistentData().getBoolean("ClientSide_" + AbilityRegistry.SUGAR_SCEPTER_IMMUNITY);
+        } else {
+            // 在服务端，使用原来的能力系统检查
+            hasImmunity = TimedAbilitySystem.hasAbility(event.getEntity(), AbilityRegistry.SUGAR_SCEPTER_IMMUNITY);
+        }
+
 //        hasImmunity =true;
         // 只对拥有免疫能力的实体显示特效
         if (!hasImmunity) return;
