@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.item;
+package net.v_black_cat.goetydelight.item.food;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;

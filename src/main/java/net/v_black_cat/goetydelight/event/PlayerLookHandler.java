@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight;
+package net.v_black_cat.goetydelight.event;
 
 
 import net.minecraft.core.Direction;
@@ -15,6 +15,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.v_black_cat.goetydelight.util.ToolUtils;
 

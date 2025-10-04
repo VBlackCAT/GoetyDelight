@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.item;
+package net.v_black_cat.goetydelight.item.food;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

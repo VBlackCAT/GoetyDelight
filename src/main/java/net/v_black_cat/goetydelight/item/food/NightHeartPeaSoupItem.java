@@ -1,26 +1,17 @@
-package net.v_black_cat.goetydelight.item;
+package net.v_black_cat.goetydelight.item.food;
 
 import com.Polarice3.Goety.api.items.magic.IWand;
 import com.Polarice3.Goety.api.magic.SpellType;
-import com.Polarice3.Goety.common.enchantments.ModEnchantments;
 import com.Polarice3.Goety.common.magic.SpellStat;
 import com.Polarice3.Goety.utils.SEHelper;
-import com.Polarice3.Goety.utils.WandUtil;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
-import net.v_black_cat.goetydelight.effect.ModEffects;
-import com.Polarice3.Goety.common.effects.GoetyEffects; // 导入Goety的效果类
-import com.Polarice3.Goety.config.SpellConfig; // 导入配置类
 import com.Polarice3.Goety.utils.MathHelper; // 导入数学工具类
 import com.Polarice3.Goety.client.particles.ModParticleTypes; // 导入粒子效果
 import com.Polarice3.Goety.common.network.ModNetwork; // 导入网络包

@@ -13,6 +13,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.effect.ModEffects;
+import net.v_black_cat.goetydelight.item.food.*;
 import vectorwing.farmersdelight.common.item.DrinkableItem;
 import vectorwing.farmersdelight.common.item.KnifeItem;
 
@@ -414,7 +415,7 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(ModEffects.HUNTING_DENIAL.get(), minToTick(10), 0), 1.0F)
                                 .build())));
         BONE_LORD_ASH_RICE = ITEMS.register("bone_lord_ash_rice",
-                () -> new BoneLordAshRiceItem(basicItem().stacksTo(1).food( 
+                () -> new BoneLordAshRiceItem(basicItem().stacksTo(1).food(
                         simpleFoodItemProperties(12, 16)
                                 .effect(() -> new MobEffectInstance(CHILL_HIDE_EFFECT_SUPPLIER.get(), 6000, 1), 1.0F)
                                 .effect(() -> new MobEffectInstance(BUFF_EFFECT_SUPPLIER.get(), 6000, 2), 1.0F)

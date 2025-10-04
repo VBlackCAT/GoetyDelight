@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.item;
+package net.v_black_cat.goetydelight.item.food;
 
 import com.Polarice3.Goety.common.events.WightSpawner;
 import net.minecraft.server.level.ServerLevel;
