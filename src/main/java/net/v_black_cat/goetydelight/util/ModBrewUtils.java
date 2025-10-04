@@ -13,20 +13,29 @@ import static com.Polarice3.Goety.utils.BrewUtils.getBrewEffects;
 import static com.Polarice3.Goety.utils.BrewUtils.setCustomEffects;
 
 public class ModBrewUtils {
+
+    
     public static void increaseNegativeEffects(ItemStack brewStack) {
-        // 获取所有效果
+        increaseNegativeEffects(brewStack, 3); 
+    }
+
+    
+    public static void increaseNegativeEffects(ItemStack brewStack, int maxAmplifier) {
+        if (brewStack.isEmpty()) return;
+
+        
         List<MobEffectInstance> mobEffects = PotionUtils.getMobEffects(brewStack);
         List<BrewEffectInstance> brewEffects = getBrewEffects(brewStack);
 
-        // 创建新的效果列表
+        
         List<MobEffectInstance> newMobEffects = new ArrayList<>();
         List<BrewEffectInstance> newBrewEffects = new ArrayList<>();
 
-        // 处理原版负面效果
+        
         for (MobEffectInstance effect : mobEffects) {
-            if (effect.getEffect().getCategory() == MobEffectCategory.HARMFUL) {
-                // 提高负面效果等级（不超过最大等级3）
-                int newAmplifier = Math.min(effect.getAmplifier() + 1, 3);
+            if (effect != null && effect.getEffect().getCategory() == MobEffectCategory.HARMFUL) {
+                
+                int newAmplifier = Math.min(effect.getAmplifier() + 1, maxAmplifier);
                 newMobEffects.add(new MobEffectInstance(
                         effect.getEffect(),
                         effect.getDuration(),
@@ -35,26 +44,30 @@ public class ModBrewUtils {
                         effect.isVisible(),
                         effect.showIcon()
                 ));
-            } else {
+            } else if (effect != null) {
+                
                 newMobEffects.add(effect);
             }
         }
 
-        // 处理自定义负面效果
-        for (BrewEffectInstance effect : brewEffects) {
-            if (effect.getEffect().getCategory()==MobEffectCategory.HARMFUL) { // 假设BrewEffect有一个isHarmful方法
-                int newAmplifier = Math.min(effect.getAmplifier() + 1, 3);
-                newBrewEffects.add(new BrewEffectInstance(
-                        effect.getEffect(),
-                        effect.getDuration(),
-                        newAmplifier
-                ));
-            } else {
-                newBrewEffects.add(effect);
+        
+        if (brewEffects != null) {
+            for (BrewEffectInstance effect : brewEffects) {
+                if (effect != null && effect.getEffect().getCategory() == MobEffectCategory.HARMFUL) {
+                    int newAmplifier = Math.min(effect.getAmplifier() + 1, maxAmplifier);
+                    newBrewEffects.add(new BrewEffectInstance(
+                            effect.getEffect(),
+                            effect.getDuration(),
+                            newAmplifier
+                    ));
+                } else if (effect != null) {
+                    
+                    newBrewEffects.add(effect);
+                }
             }
         }
 
-        // 更新物品的效果
+        
         setCustomEffects(brewStack, newMobEffects, newBrewEffects);
     }
 }

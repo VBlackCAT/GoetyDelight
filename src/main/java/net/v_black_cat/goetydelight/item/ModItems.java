@@ -179,6 +179,18 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(ModEffects.ZOMBIFIED_PIGLIN_BRUTE_SERVANT_SUPPORT.get(), minToTick(30), 0), 1.0F)
                                 .build())));
 
+
+        CUP = ITEMS.register("eternal_refusal_of_black_meat_soup",
+                () -> new EternalRefusalOfBlackMeatSoupItem(basicItem().stacksTo(1).food(
+                        simpleFoodItemProperties(10, 4)
+                                .effect(() -> new MobEffectInstance(MobEffects.CONFUSION, 600, 0), 1.0F)
+                                .effect(() -> {
+                                    int randomAmplifier = new Random().nextInt(5);
+                                    return new MobEffectInstance(MobEffects.POISON, 600, randomAmplifier, false, true);
+                                }, 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.WEAKNESS, 600, 1), 1.0F)
+                                .build())));
+
         REJECTED_DARK_MEAT_SOUP = ITEMS.register("rejected_dark_meat_soup",
                 () -> new RejectedDarkMeatSoupItem(basicItem().stacksTo(1).food(
                         simpleFoodItemProperties(10, 4)
@@ -192,8 +204,7 @@ public class ModItems {
 
         PROMOTION_HARD_CANDY = ITEMS.register("promotion_hard_candy",
                 () -> simpleFoodItem(1, 1, true)); 
-        CUP = ITEMS.register("eternal_refusal_of_black_meat_soup",
-                () -> simpleFoodItem(1, 1, true)); 
+
         TOXIC_MEAL = ITEMS.register("toxic_meal",
                 () -> new ToxicMealItem(basicItem().stacksTo(1).food(
                         simpleFoodItemProperties(8, 4)
@@ -214,6 +225,9 @@ public class ModItems {
 
 
         // 特殊效果食物物品初始化
+
+
+
 
         SPIDER_EGG_BUBBLE_TEA = ITEMS.register("spider_egg_bubble_tea",
                 () -> new CustomDrinkItem(basicItem().food(
@@ -326,7 +340,7 @@ public class ModItems {
                                 .build())));
 
         SEVEN_LEAF_PUDDING = ITEMS.register("sweet_berry_pudding",
-                () -> new SevenLeafPuddingItem(basicItem().stacksTo(1).food(
+                () -> new SevenLeafPuddingItem(basicItem().stacksTo(1).craftRemainder(Items.BOWL).food(
                         simpleFoodItemProperties(7, 5)
                                 .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(5), 1), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)

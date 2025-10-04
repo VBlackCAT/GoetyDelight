@@ -3,7 +3,9 @@ package net.v_black_cat.goetydelight.recipe;
 import com.Polarice3.Goety.common.effects.brew.BrewEffectInstance;
 import com.Polarice3.Goety.common.items.brew.BrewItem;
 import com.google.gson.JsonObject;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -18,6 +20,7 @@ import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import net.v_black_cat.goetydelight.item.ModItems;
+import net.v_black_cat.goetydelight.item.food.EternalRefusalOfBlackMeatSoupItem;
 import net.v_black_cat.goetydelight.util.ModBrewUtils;
 
 import java.util.List;
@@ -39,16 +42,21 @@ public class PotionAmplifierRecipe extends CustomRecipe {
             ItemStack stack = pContainer.getItem(i);
             if (stack.isEmpty()) continue;
 
-            // 只检查女巫精酿（BrewItem），不再检查原版药水
             if (stack.getItem() == BREW.get()) {
-                // 检查女巫精酿是否有负面效果
                 if (hasNegativeEffects(stack)) {
                     hasWitchBrew = true;
                 }
-            } else if (stack.getItem() == ModItems.REJECTED_DARK_MEAT_SOUP.get()) {
-                hasAmplifier = true;
+            } else if (stack.getItem() == ModItems.REJECTED_DARK_MEAT_SOUP.get() ||
+                    stack.getItem() == ModItems.CUP.get()) {
+                if(stack.getItem() == ModItems.REJECTED_DARK_MEAT_SOUP.get()){
+                    hasAmplifier = true;
+                }else if (stack.getItem() instanceof EternalRefusalOfBlackMeatSoupItem cup){
+                    // 检查冷却状态
+                    if (!cup.isOnCooldown(stack, pLevel)){
+                        hasAmplifier = true;
+                    }
+                }
             } else {
-                // 如果有其他非空物品，则不匹配
                 return false;
             }
         }
@@ -59,24 +67,41 @@ public class PotionAmplifierRecipe extends CustomRecipe {
     @Override
     public ItemStack assemble(CraftingContainer pContainer, RegistryAccess pRegistryAccess) {
         ItemStack brewStack = ItemStack.EMPTY;
+        ItemStack amplifierStack = ItemStack.EMPTY;
+        Level level = Minecraft.getInstance().level;
 
-        // 找到女巫精酿堆栈
+        // 获取药水和放大器
         for (int i = 0; i < pContainer.getContainerSize(); i++) {
             ItemStack stack = pContainer.getItem(i);
             if (stack.getItem() == BREW.get()) {
                 brewStack = stack;
-                break;
+            } else if (stack.getItem() == ModItems.REJECTED_DARK_MEAT_SOUP.get() ||
+                    stack.getItem() == ModItems.CUP.get()) {
+                amplifierStack = stack;
             }
         }
 
-        if (brewStack.isEmpty()) return ItemStack.EMPTY;
+        if (brewStack.isEmpty() || amplifierStack.isEmpty()) return ItemStack.EMPTY;
 
-        // 创建新的女巫精酿堆栈，并增强负面效果
+        // 创建增强后的药水
         ItemStack result = brewStack.copy();
         result.setCount(1);
+        ModBrewUtils.increaseNegativeEffects(result, 5);
 
-        // 使用ModBrewUtils增强负面效果（包括原版和自定义效果）
-        ModBrewUtils.increaseNegativeEffects(result);
+        // 如果使用了永恒黑肉汤，返还一个带有冷却时间的汤
+        if (amplifierStack.getItem() instanceof EternalRefusalOfBlackMeatSoupItem) {
+            // 创建冷却的永恒黑肉汤
+            ItemStack cooledSoup = new ItemStack(ModItems.CUP.get());
+            EternalRefusalOfBlackMeatSoupItem soupItem = (EternalRefusalOfBlackMeatSoupItem) cooledSoup.getItem();
+
+            // 设置冷却时间（60秒）
+            soupItem.setCooldown(cooledSoup, level, 60 * 20);
+
+            // 将冷却的汤放入合成结果（需要特殊处理，因为原版合成只能返回一个物品）
+            // 这里我们使用NBT标记，然后在合成事件中处理
+            CompoundTag tag = result.getOrCreateTag();
+            tag.putBoolean("ReturnCooledSoup", true);
+        }
 
         return result;
     }
@@ -91,13 +116,10 @@ public class PotionAmplifierRecipe extends CustomRecipe {
         return ModRecipeSerializers.POTION_AMPLIFIER.get();
     }
 
-    // 检查女巫精酿是否有负面效果（包括原版效果和自定义效果）
     private boolean hasNegativeEffects(ItemStack brewStack) {
-        // 检查原版负面效果
         boolean hasNegativeMobEffects = PotionUtils.getMobEffects(brewStack).stream()
                 .anyMatch(effect -> effect.getEffect().getCategory() == MobEffectCategory.HARMFUL);
 
-        // 检查自定义负面效果
         boolean hasNegativeBrewEffects = false;
         List<BrewEffectInstance> brewEffects = getBrewEffects(brewStack);
         if (brewEffects != null) {
