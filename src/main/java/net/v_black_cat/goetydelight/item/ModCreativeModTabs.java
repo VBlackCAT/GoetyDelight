@@ -31,6 +31,9 @@ public class ModCreativeModTabs {
          BLACKLIST.add(ModItems.ROTTEN_CORPSE_MAGGOT_FEAST);
          BLACKLIST.add(ModItems.CORPSE_MAGGOT);
          BLACKLIST.add(ModItems.SPIDER_EGG_BUBBLE_TEA_2);
+         BLACKLIST.add(ModItems.APOCALYPTIUM_KNIFE);
+         BLACKLIST.add(ModItems.SPECTRE_KNIFE);
+         BLACKLIST.add(ModItems.APOCALYPTIUM_INGOT_BRUSH);
 
 
 
