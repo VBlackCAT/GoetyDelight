@@ -4,7 +4,8 @@
   "refmap": "refmap.goetydelight.json",
   "mixins": [
     "BlockFinderMixin",
-    "BrushableBlockEntityMixin"
+    "BrushableBlockEntityMixin",
+    "SummonSpellMixin"
   ],
   "client": [],
   "server": []

@@ -19,27 +19,33 @@ public class SpellCastEventHandler {
 
     @SubscribeEvent
     public static void onCastMagic(CastMagicEvent event) {
-
         LivingEntity caster = event.getEntity();
-        ISpell spell = event.getSpell();
 
-        MobEffectInstance effectInstance = caster.getEffect(ModEffects.ZOMBIFIED_PIGLIN_BRUTE_SERVANT_SUPPORT.get()); // 请根据实际注册类调整
-        if (effectInstance != null) {
-            if (spell instanceof SummonSpell summonSpell) {
-
-                summonSpell.SpellResult((ServerLevel) caster.level(), caster, event.getEntity().getMainHandItem(), event.getSpell().defaultStats());
-                caster.getEffect(GoetyEffects.SUMMON_DOWN.get());
-                caster.removeEffect(GoetyEffects.SUMMON_DOWN.get());
-                SEHelper.increaseSouls((Player) caster, spell.soulCost(caster, event.getEntity().getMainHandItem()));
-                SEHelper.sendSEUpdatePacket((Player) caster);
-            }
-
-
+        
+        if (caster.level().isClientSide()) {
+            return; 
         }
 
+        ISpell spell = event.getSpell();
+        MobEffectInstance effectInstance = caster.getEffect(ModEffects.SERVANT_REINFORCEMENT.get());
 
+        if (effectInstance != null && spell instanceof SummonSpell summonSpell) {
+            
+            ServerLevel serverLevel = (ServerLevel) caster.level();
 
+            summonSpell.SpellResult(serverLevel, caster,
+                    event.getEntity().getMainHandItem(),
+                    event.getSpell().defaultStats());
 
+            
+            caster.removeEffect(GoetyEffects.SUMMON_DOWN.get());
+
+            
+            if (caster instanceof Player player) {
+                SEHelper.increaseSouls(player, spell.soulCost(caster, event.getEntity().getMainHandItem()));
+                SEHelper.sendSEUpdatePacket(player);
+            }
+        }
 
     }
 }
