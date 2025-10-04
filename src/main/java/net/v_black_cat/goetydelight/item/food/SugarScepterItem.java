@@ -1,10 +1,17 @@
 package net.v_black_cat.goetydelight.item.food;
 
+import com.Polarice3.Goety.common.network.ModNetwork;
+import com.Polarice3.Goety.common.network.server.SPlayPlayerSoundPacket;
+import com.Polarice3.Goety.init.ModSounds;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -89,6 +96,15 @@ public class SugarScepterItem extends Item {
 
                 // 移除免疫能力（一次性使用）
                 TimedAbilitySystem.removeAbilityFromEntity(entity, AbilityRegistry.SUGAR_SCEPTER_IMMUNITY);
+                Vec3 pos = entity.position();
+                entity.level().playSound(
+                        null, // 无特定播放者
+                        pos.x, pos.y, pos.z, // 实体位置
+                        SoundEvents.TURTLE_EGG_CRACK, // 海龟蛋裂开音效
+                        SoundSource.PLAYERS, // 音源分类
+                        8.0F, // 音量
+                        1F // 音调
+                );
             }
         }
     }

@@ -4,6 +4,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -15,6 +16,9 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.PacketDistributor;
+import net.v_black_cat.goetydelight.network.NetworkHandler;
+import net.v_black_cat.goetydelight.network.SyncAbilityPacket;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -111,33 +115,7 @@ public class TimedAbilitySystem {
             );
         }
     }
-    // 添加能力到实体
-    public static boolean addAbilityToEntity(LivingEntity entity, String abilityId, int durationTicks) {
-        LazyOptional<EntityTimedAbilities> capabilities = entity.getCapability(ENTITY_TIMED_ABILITIES);
-        if (capabilities.isPresent()) {
-            EntityTimedAbilities abilities = capabilities.orElseThrow(IllegalStateException::new);
 
-            // 检查能力是否已注册
-            Optional<AbilityDefinition> definition = getAbilityDefinition(abilityId);
-            if (definition.isPresent()) {
-                AbilityDefinition def = definition.get();
-                abilities.addAbility(abilityId, durationTicks, def.applier, def.remover);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // 从实体移除能力
-    public static boolean removeAbilityFromEntity(LivingEntity entity, String abilityId) {
-        LazyOptional<EntityTimedAbilities> capabilities = entity.getCapability(ENTITY_TIMED_ABILITIES);
-        if (capabilities.isPresent()) {
-            EntityTimedAbilities abilities = capabilities.orElseThrow(IllegalStateException::new);
-            abilities.removeAbility(abilityId, entity);
-            return true;
-        }
-        return false;
-    }
 
     // 检查实体是否有能力
     public static boolean hasAbility(LivingEntity entity, String abilityId) {
@@ -328,5 +306,55 @@ public class TimedAbilitySystem {
     // 工具方法：获取实体能力
     public static LazyOptional<EntityTimedAbilities> getAbilities(LivingEntity entity) {
         return entity.getCapability(ENTITY_TIMED_ABILITIES);
+    }
+
+    // 在 TimedAbilitySystem 类中添加以下方法
+
+    public static void syncAbilityWithClient(LivingEntity entity, String abilityId, boolean added) {
+        if (!entity.level().isClientSide) {
+            // 只从服务端发送
+            NetworkHandler.INSTANCE.send(
+                    PacketDistributor.TRACKING_ENTITY.with(() -> entity),
+                    new SyncAbilityPacket(entity.getId(), abilityId, added)
+            );
+            // 如果实体是玩家自己，也需要给自己发送一份
+            if (entity instanceof ServerPlayer serverPlayer) {
+                NetworkHandler.INSTANCE.send(
+                        PacketDistributor.PLAYER.with(() -> serverPlayer),
+                        new SyncAbilityPacket(entity.getId(), abilityId, added)
+                );
+            }
+        }
+    }
+
+
+    public static boolean addAbilityToEntity(LivingEntity entity, String abilityId, int durationTicks) {
+        LazyOptional<EntityTimedAbilities> capabilities = entity.getCapability(ENTITY_TIMED_ABILITIES);
+        if (capabilities.isPresent()) {
+            EntityTimedAbilities abilities = capabilities.orElseThrow(IllegalStateException::new);
+            Optional<AbilityDefinition> definition = getAbilityDefinition(abilityId);
+            if (definition.isPresent()) {
+                AbilityDefinition def = definition.get();
+                abilities.addAbility(abilityId, durationTicks, def.applier, def.remover);
+                // +++ 新增：同步到客户端 +++
+                syncAbilityWithClient(entity, abilityId, true);
+                // +++++++++++++++++++++++
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean removeAbilityFromEntity(LivingEntity entity, String abilityId) {
+        LazyOptional<EntityTimedAbilities> capabilities = entity.getCapability(ENTITY_TIMED_ABILITIES);
+        if (capabilities.isPresent()) {
+            EntityTimedAbilities abilities = capabilities.orElseThrow(IllegalStateException::new);
+            abilities.removeAbility(abilityId, entity);
+            // +++ 新增：同步到客户端 +++
+            syncAbilityWithClient(entity, abilityId, false);
+            // +++++++++++++++++++++++
+            return true;
+        }
+        return false;
     }
 }

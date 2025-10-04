@@ -12,6 +12,9 @@ public class NetworkHandler {
         int id = 0;
         INSTANCE.registerMessage(
                 id++, ThrowSoupPacket.class, ThrowSoupPacket::encode, ThrowSoupPacket::decode, ThrowSoupPacket::handle);
+        INSTANCE.registerMessage(
+                id++, SyncAbilityPacket.class, SyncAbilityPacket::encode, SyncAbilityPacket::decode, SyncAbilityPacket::handle);
+
     }
     public static void sendToServer(ThrowSoupPacket packet) {
         INSTANCE.sendToServer(packet);
