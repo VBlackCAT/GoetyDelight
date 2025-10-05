@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 
 @Mod.EventBusSubscriber(modid = "goetydelight")
-public class ToxicMealItem extends Item {
+public class ToxicMealItem extends BowlFoodItem {
 
     // 只保留食用次数标签
     private static final String TOXIC_MEAL_COUNT = "ToxicMealCount";

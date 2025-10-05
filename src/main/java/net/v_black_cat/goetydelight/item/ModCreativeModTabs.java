@@ -34,6 +34,7 @@ public class ModCreativeModTabs {
          BLACKLIST.add(ModItems.APOCALYPTIUM_KNIFE);
          BLACKLIST.add(ModItems.SPECTRE_KNIFE);
          BLACKLIST.add(ModItems.APOCALYPTIUM_INGOT_BRUSH);
+         BLACKLIST.add(ModItems.VENOMOUS_SPIDER_KNIFE);
 
 
 

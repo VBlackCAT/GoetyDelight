@@ -15,6 +15,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import com.Polarice3.Goety.utils.MathHelper;
@@ -93,6 +94,20 @@ public class NightHeartPeaSoupItem extends DrinkableItem implements IWand {
 
                 // 给所有现有仆从应用加成
                 applyMinionBoosts(player, getSoupBoostCount(player));
+            }
+        }
+
+        // 处理碗的返还逻辑
+        if (entity instanceof Player player) {
+            if (player.getAbilities().instabuild) {
+                return result; // 创造模式不消耗物品
+            }
+
+            // 尝试将碗添加到玩家物品栏
+            if (result.isEmpty()) {
+                return new ItemStack(Items.BOWL); // 如果原物品已消耗完，直接返还碗
+            } else if (!player.getInventory().add(new ItemStack(Items.BOWL))) {
+                player.drop(new ItemStack(Items.BOWL), false); // 背包满时掉落碗
             }
         }
 

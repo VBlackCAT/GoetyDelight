@@ -9,6 +9,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -17,7 +18,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = "goetydelight")
-public class SevenLeafPuddingItem extends Item {
+public class SevenLeafPuddingItem extends BowlFoodItem {
 
     // UUIDs for attribute modifiers
     private static final UUID ATTACK_DAMAGE_BONUS_UUID = UUID.fromString("d3b1a8c2-4e5f-6a7b-8c9d-0e1f2a3b4c5d");

@@ -350,9 +350,9 @@ public class TimedAbilitySystem {
         if (capabilities.isPresent()) {
             EntityTimedAbilities abilities = capabilities.orElseThrow(IllegalStateException::new);
             abilities.removeAbility(abilityId, entity);
-            // +++ 新增：同步到客户端 +++
+
             syncAbilityWithClient(entity, abilityId, false);
-            // +++++++++++++++++++++++
+
             return true;
         }
         return false;
