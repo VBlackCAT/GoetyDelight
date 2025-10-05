@@ -66,7 +66,7 @@ public class ModBlocks {
     //暗夜炉灶
     public static final RegistryObject<Block> NIGHT_STOVE = registerBlock("night_stove",() ->
             new StoveBlock(BlockBehaviour.Properties
-                    .copy(STOVE.get())
+                    .copy(Blocks.IRON_BLOCK)
                     .sound(SoundType.AMETHYST)
                     .strength(50f, 5000f) // 设置硬度和爆炸抗性
                     .requiresCorrectToolForDrops() //需要json中配置的正确工具才能掉落

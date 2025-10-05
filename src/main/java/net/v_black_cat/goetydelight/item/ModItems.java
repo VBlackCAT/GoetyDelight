@@ -14,6 +14,7 @@ import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.effect.ModEffects;
 import net.v_black_cat.goetydelight.item.food.*;
+import net.v_black_cat.goetydelight.item.food.BowlFoodItem;
 import vectorwing.farmersdelight.common.item.DrinkableItem;
 import vectorwing.farmersdelight.common.item.KnifeItem;
 
@@ -50,12 +51,10 @@ public class ModItems {
     // 武器物品
     public static final RegistryObject<Item> MARBLE_OP_SWORD;
 
-    // 基础食物物品
+    // 食物物品
     public static final RegistryObject<Item> EXAMPLE_ITEM;
     public static final RegistryObject<Item> GOETYDELIGHT_ICON;
-
     public static final RegistryObject<Item> TAINTED_DRINK;
-
     public static final RegistryObject<Item> REJECTED_DARK_MEAT_SOUP;
     public static final RegistryObject<Item> SIBLING_SUNDAE;
     public static final RegistryObject<Item> PROMOTION_HARD_CANDY;
@@ -73,8 +72,6 @@ public class ModItems {
     public static final RegistryObject<Item> SPIDER_EGG_BUBBLE_TEA;
     public static final RegistryObject<Item> SPIDER_EGG_BUBBLE_TEA_2;
     public static final RegistryObject<Item> SAUCE_GRILLED_CANDY_FISH;
-
-    // 特殊效果食物物品
     public static final RegistryObject<Item> CRYING_SHARK_SUGAR_PACK;
     public static final RegistryObject<Item> SEVEN_LEAF_PUDDING;
     public static final RegistryObject<Item> BEAR_PAW;
@@ -256,7 +253,7 @@ public class ModItems {
                                 .build())));
 
         JUNGLE_SALAD = ITEMS.register("jungle_salad",
-                () -> new Item(basicItem().food(
+                () -> new BowlFoodItem(basicItem().food(
                         simpleFoodItemProperties(6, 4)
                                 .effect(() -> new MobEffectInstance(PHOTOSYNTHESIS_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(1), 0), 1.0F)
@@ -287,18 +284,20 @@ public class ModItems {
                                 .build())));
 
         WHITE_SHARK_SUGAR_PACK = ITEMS.register("sugar_pack",
-                () -> new Item(basicItem().food(
+                () -> new BowlFoodItem(basicItem().food(
                         simpleFoodItemProperties(6, 4)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(4), 0), 1.0F)
                                 .build())));
 
         WHITE_SHARK_CANDY = ITEMS.register("sugar_scepter",
-                () ->  new SugarScepterItem(basicItem().food(
-                        simpleFoodItemProperties(5, 5)
+                () ->  new Item(basicItem().food(
+                        simpleFoodItemProperties(8, 5)
+                                .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(1), 1), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
                                 .build())));
 
         SIBLING_SUNDAE = ITEMS.register("possible_holy_representative",
-                () -> new SiblingSundaeItem(basicItem().food(
+                () -> new GlassBottleFoodItem(basicItem().food(
                         simpleFoodItemProperties(6, 5)
                                 .effect(() -> new MobEffectInstance(INSIGHT.get(), minToTick(2.5F), 3), 1.0F)
                                 .build())));
@@ -325,14 +324,14 @@ public class ModItems {
                                 .build())));
 
         SUNSHINE_SUGAR_BUN = ITEMS.register("sunshine_sugar_bun",
-                () -> new Item(basicItem().stacksTo(1).food(
+                () -> new BowlFoodItem(basicItem().stacksTo(1).food(
                         simpleFoodItemProperties(7, 4)
                                 .effect(() -> new MobEffectInstance(PHOTOSYNTHESIS_SUPPLIER.get(), minToTick(1), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .build())));
 
         GRAPE_SLUSH = ITEMS.register("grape_slush",
-                () -> new Item(basicItem().stacksTo(1).food(
+                () -> new GlassBottleFoodItem(basicItem().stacksTo(1).food(
                         simpleFoodItemProperties(9, 6)
                                 .effect(() -> new MobEffectInstance(CHILL_HIDE_EFFECT_SUPPLIER.get(),4200, 1), 1.0F)
                                 .effect(() -> new MobEffectInstance(FROSTY_AURA_SUPPLIER.get(), 600, 1), 1.0F)

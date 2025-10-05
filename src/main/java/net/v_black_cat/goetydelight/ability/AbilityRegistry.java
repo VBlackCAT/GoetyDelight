@@ -2,6 +2,8 @@ package net.v_black_cat.goetydelight.ability;
 
 import java.util.UUID;
 
+import static net.v_black_cat.goetydelight.ability.TimedAbilitySystem.syncAbilityWithClient;
+
 public class AbilityRegistry {
     // Sugar Scepter 免疫能力的ID
     public static final String SUGAR_SCEPTER_IMMUNITY = "sugar_scepter_immunity";
@@ -24,6 +26,7 @@ public class AbilityRegistry {
                     if (entity != null) {
                         // 移除免疫效果
                         entity.getPersistentData().putBoolean("hasSugarScepterImmunity", false);
+                        syncAbilityWithClient(entity, SUGAR_SCEPTER_IMMUNITY, false);
                     }
                 }
         );

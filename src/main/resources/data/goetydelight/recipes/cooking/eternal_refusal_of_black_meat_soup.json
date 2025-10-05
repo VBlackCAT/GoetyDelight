@@ -41,6 +41,9 @@
   ],
 
   "recipe_book_tab": "misc",
+  "container": {
+    "item": "goety:haunted_jug"
+  },
 
   "result": {
 
