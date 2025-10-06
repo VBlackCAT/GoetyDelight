@@ -96,6 +96,7 @@ public class ModItems {
     public static final RegistryObject<Item> EXOTIC_BREAKFAST;
     public static final RegistryObject<Item> JUNGLE_SALAD;
     public static final RegistryObject<Item> BOILING_BLOOD_BREW;
+    public static final RegistryObject<Item> ASCENSION_MOONCAKE;
 
     // ==================== 效果供应商常量 ====================
     private static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
@@ -218,13 +219,19 @@ public class ModItems {
                 () -> simpleFoodItem(8, 6, true));
 
         SPIDER_EGG_BUBBLE_TEA_2 = ITEMS.register("spider_egg_bubble_tea_2",
-                () -> simpleFoodItem(1, 1, true)); 
+                () -> simpleFoodItem(1, 1, true));
 
 
         // 特殊效果食物物品初始化
 
 
 
+        ASCENSION_MOONCAKE = ITEMS.register("ascension_mooncake",
+                () -> new Item(basicItem().food(
+                        simpleFoodItemProperties(66, 666)
+                                .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(66), 5), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, minToTick(66), 5), 1.0F)
+                                .build())));
 
         SPIDER_EGG_BUBBLE_TEA = ITEMS.register("spider_egg_bubble_tea",
                 () -> new CustomDrinkItem(basicItem().food(
