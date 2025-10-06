@@ -93,7 +93,7 @@ public class RubyHardCandyItem extends Item {
         removePotencyEffect(player);
 
         // 计算法术强度加成值（每级10点）
-        double potencyBonus = 10.0 * level;
+        double potencyBonus = 2 * level;
 
         // 创建属性修改器
         AttributeModifier modifier = new AttributeModifier(
