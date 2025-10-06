@@ -22,7 +22,7 @@ public class SpellDurationEffect extends MobEffect {
         this.addAttributeModifier(
                 ModAttributes.SPELL_DURATION.get(),
                 SPELL_DURATION_UUID.toString(),
-                10.0, // 基础值（会被等级放大）
+                2, // 基础值（会被等级放大）
                 AttributeModifier.Operation.ADDITION
         );
     }
