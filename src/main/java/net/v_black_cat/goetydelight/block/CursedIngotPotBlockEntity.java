@@ -5,14 +5,15 @@
 
 package net.v_black_cat.goetydelight.block;
 
+import com.Polarice3.Goety.api.items.magic.ITotem;
+import com.Polarice3.Goety.common.blocks.entities.SoulCandlestickBlockEntity;
+import com.Polarice3.Goety.utils.SEHelper;
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
@@ -32,6 +33,7 @@ import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.RecipeHolder;
@@ -41,6 +43,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -64,11 +67,14 @@ import vectorwing.farmersdelight.common.registry.ModRecipeTypes;
 import vectorwing.farmersdelight.common.utility.ItemUtils;
 import vectorwing.farmersdelight.common.utility.TextUtils;
 
+import static com.Polarice3.Goety.common.items.ModItems.SOUL_TRANSFER;
+
 public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements MenuProvider, HeatableBlockEntity, Nameable, RecipeHolder {
     public static final int MEAL_DISPLAY_SLOT = 6;
     public static final int CONTAINER_SLOT = 7;
     public static final int OUTPUT_SLOT = 8;
-    public static final int INVENTORY_SIZE = 9;
+    public static final int SOUL_SOURCE_SLOT = 9; //图腾/宝石插槽
+    public static final int INVENTORY_SIZE = 10;
     public static final Map<Item, Item> INGREDIENT_REMAINDER_OVERRIDES;
     private final ItemStackHandler inventory = this.createHandler();
     private final LazyOptional<IItemHandler> inputHandler = LazyOptional.of(() -> {
@@ -77,7 +83,7 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
     private final LazyOptional<IItemHandler> outputHandler = LazyOptional.of(() -> {
         return new CookingPotItemHandler(this.inventory, Direction.DOWN);
     });
-    private int cookTime;
+    int cookTime;
     private int cookTimeTotal;
     private ItemStack mealContainerStack;
     private Component customName;
@@ -86,12 +92,15 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
     private ResourceLocation lastRecipeID;
     private boolean checkNewRecipe;
 
+
+
     public CursedIngotPotBlockEntity(BlockPos pos, BlockState state) {
         super((BlockEntityType)ModBlockEntities.CURSED_INGOT_POT_BE.get(), pos, state);
         this.mealContainerStack = ItemStack.EMPTY;
         this.cookingPotData = this.createIntArray();
         this.usedRecipeTracker = new Object2IntOpenHashMap();
         this.checkNewRecipe = true;
+
     }
 
     public static ItemStack getMealFromItem(ItemStack cookingPotStack) {
@@ -141,29 +150,46 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
 
     public void load(CompoundTag compound) {
         super.load(compound);
-        this.inventory.deserializeNBT(compound.getCompound("Inventory"));
+
+        ItemStackHandler tempHandler = new ItemStackHandler(INVENTORY_SIZE);
+        CompoundTag inventoryTag = compound.getCompound("Inventory");
+
+        if (!inventoryTag.isEmpty()) {
+
+            tempHandler.deserializeNBT(inventoryTag);
+
+
+            for (int i = 0; i < Math.min(tempHandler.getSlots(), INVENTORY_SIZE); i++) {
+                this.inventory.setStackInSlot(i, tempHandler.getStackInSlot(i));
+            }
+        }
+
         this.cookTime = compound.getInt("CookTime");
         this.cookTimeTotal = compound.getInt("CookTimeTotal");
         this.mealContainerStack = ItemStack.of(compound.getCompound("Container"));
+
         if (compound.contains("CustomName", 8)) {
             this.customName = Serializer.fromJson(compound.getString("CustomName"));
         }
 
         CompoundTag compoundRecipes = compound.getCompound("RecipesUsed");
-        Iterator var3 = compoundRecipes.getAllKeys().iterator();
+        Iterator<String> iterator = compoundRecipes.getAllKeys().iterator();
 
-        while(var3.hasNext()) {
-            String key = (String)var3.next();
+        while(iterator.hasNext()) {
+            String key = iterator.next();
             this.usedRecipeTracker.put(new ResourceLocation(key), compoundRecipes.getInt(key));
         }
-
     }
+
 
     public void saveAdditional(CompoundTag compound) {
         super.saveAdditional(compound);
         compound.putInt("CookTime", this.cookTime);
         compound.putInt("CookTimeTotal", this.cookTimeTotal);
         compound.put("Container", this.mealContainerStack.serializeNBT());
+
+
+
         if (this.customName != null) {
             compound.putString("CustomName", Serializer.toJson(this.customName));
         }
@@ -187,9 +213,9 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
         if (this.getMeal().isEmpty()) {
             return compound;
         } else {
-            ItemStackHandler drops = new ItemStackHandler(9);
+            ItemStackHandler drops = new ItemStackHandler(INVENTORY_SIZE);
 
-            for(int i = 0; i < 9; ++i) {
+            for(int i = 0; i < INVENTORY_SIZE; ++i) {
                 drops.setStackInSlot(i, i == 6 ? this.inventory.getStackInSlot(i) : ItemStack.EMPTY);
             }
 
@@ -203,20 +229,106 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
         }
     }
 
+    //检查是否有可用的灵魂能量
+    private boolean hasSoulEnergy() {
+        ItemStack soulSource = this.inventory.getStackInSlot(SOUL_SOURCE_SLOT);
+        if (soulSource.isEmpty()) return false;
+
+        // 检查是否为链接宝石（Soul Transfer）
+        if (soulSource.getItem() == SOUL_TRANSFER.get() && soulSource.getTag() != null &&
+                soulSource.getTag().contains("owner")) {
+
+            UUID ownerUuid = soulSource.getTag().getUUID("owner");
+            Player owner = this.level.getPlayerByUUID(ownerUuid);
+
+            return owner != null && SEHelper.getSEActive(owner) && SEHelper.getSESouls(owner) > 0;
+        }
+        // 检查是否为图腾（ITotem实现）
+        else if (soulSource.getItem() instanceof ITotem && soulSource.getTag() != null &&
+                soulSource.getTag().contains("Souls")) {
+
+            return soulSource.getTag().getInt("Souls") > 0;
+        }
+
+        return false;
+    }
+
+    // 从灵魂源消耗灵魂能量
+    private boolean consumeSoulEnergy(int amount) {
+        ItemStack soulSource = this.inventory.getStackInSlot(SOUL_SOURCE_SLOT);
+        if (soulSource.isEmpty()) return false;
+
+        // 检查是否为链接宝石（Soul Transfer）
+        if (soulSource.getItem() == SOUL_TRANSFER.get() && soulSource.getTag() != null &&
+                soulSource.getTag().contains("owner")) {
+
+            UUID ownerUuid = soulSource.getTag().getUUID("owner");
+            Player owner = this.level.getPlayerByUUID(ownerUuid);
+
+            if (owner != null && SEHelper.getSEActive(owner) && SEHelper.getSESouls(owner) >= amount) {
+                // 从玩家灵魂能量中消耗
+                SEHelper.decreaseSESouls(owner, amount);
+                SEHelper.sendSEUpdatePacket(owner);
+
+                // 生成粒子效果
+                if (this.level instanceof ServerLevel serverLevel) {
+                    BlockPos pos = this.getBlockPos();
+                    serverLevel.sendParticles(ParticleTypes.SOUL,
+                            pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5,
+                            5, 0.2, 0.0, 0.2, 0.05);
+                }
+                return true;
+            }
+        }
+        // 检查是否为图腾（ITotem实现）
+        else if (soulSource.getItem() instanceof ITotem && soulSource.getTag() != null &&
+                soulSource.getTag().contains("Souls")) {
+
+            int souls = soulSource.getTag().getInt("Souls");
+            if (souls >= amount) {
+                // 从图腾中消耗
+                soulSource.getTag().putInt("Souls", souls - amount);
+
+                // 生成粒子效果
+                if (this.level instanceof ServerLevel serverLevel) {
+                    BlockPos pos = this.getBlockPos();
+                    serverLevel.sendParticles(ParticleTypes.SOUL,
+                            pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5,
+                            5, 0.2, 0.0, 0.2, 0.05);
+                }
+
+                // 更新物品堆栈
+                this.inventory.setStackInSlot(SOUL_SOURCE_SLOT, soulSource);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static void cookingTick(Level level, BlockPos pos, BlockState state, CursedIngotPotBlockEntity cookingPot) {
         boolean isHeated = cookingPot.isHeated(level, pos);
         boolean didInventoryChange = false;
-        if (isHeated && cookingPot.hasInput()) {
+
+        // 检查是否有灵魂能量可用 - 这是关键修改
+        boolean hasSoulEnergy = cookingPot.hasSoulEnergy();
+
+        // 只有在有灵魂能量时才进行烹饪
+        if (isHeated && hasSoulEnergy && cookingPot.hasInput()) {
             Optional<CookingPotRecipe> recipe = cookingPot.getMatchingRecipe(new RecipeWrapper(cookingPot.inventory));
             if (recipe.isPresent() && cookingPot.canCook((CookingPotRecipe)recipe.get())) {
+                // 加速烹饪
+                cookingPot.cookTime += 2;
                 didInventoryChange = cookingPot.processCooking((CookingPotRecipe)recipe.get(), cookingPot);
             } else {
                 cookingPot.cookTime = Mth.clamp(cookingPot.cookTime - 2, 0, cookingPot.cookTimeTotal);
             }
         } else if (cookingPot.cookTime > 0) {
-            cookingPot.cookTime = Mth.clamp(cookingPot.cookTime - 2, 0, cookingPot.cookTimeTotal);
+            // 没有灵魂能量时重置烹饪进度
+            cookingPot.cookTime = 0;
         }
 
+        // 成品输出逻辑保持不变
         ItemStack mealStack = cookingPot.getMeal();
         if (!mealStack.isEmpty()) {
             if (!cookingPot.doesMealHaveContainer(mealStack)) {
@@ -231,7 +343,6 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
         if (didInventoryChange) {
             cookingPot.inventoryChanged();
         }
-
     }
 
     public static void animationTick(Level level, BlockPos pos, BlockState state, CursedIngotPotBlockEntity cookingPot) {
@@ -330,11 +441,28 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
         }
     }
 
+
+
+
+
+    private int calculateSoulCost(ItemStack resultStack) {
+        int baseCost = 50;
+        int nutritionCost = 0;
+
+        // 检查物品是否有食物属性
+        FoodProperties foodProperties = resultStack.getFoodProperties(null);
+        if (foodProperties != null) {
+            nutritionCost = 10 * foodProperties.getNutrition();
+        }
+
+        return Math.min(baseCost + nutritionCost, 2000);
+    }
+
+
     private boolean processCooking(CookingPotRecipe recipe, CursedIngotPotBlockEntity cookingPot) {
         if (this.level == null) {
             return false;
         } else {
-            ++this.cookTime;
             this.cookTimeTotal = recipe.getCookTime();
             if (this.cookTime < this.cookTimeTotal) {
                 return false;
@@ -342,10 +470,24 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
                 this.cookTime = 0;
                 this.mealContainerStack = recipe.getOutputContainer();
                 ItemStack resultStack = recipe.getResultItem(this.level.registryAccess());
+
+                // 计算灵魂消耗
+                int soulCost = calculateSoulCost(resultStack);
+
+                // 尝试消耗灵魂能量并注入灵魂
+                boolean soulInfused = this.consumeSoulEnergy(soulCost);
+
+                if (soulInfused) {
+                    // 给产物注入灵魂
+                    CompoundTag tag = resultStack.getOrCreateTag();
+                    tag.putBoolean("SoulInfused", true);
+                    resultStack.setTag(tag);
+                }
+
                 ItemStack storedMealStack = this.inventory.getStackInSlot(6);
                 if (storedMealStack.isEmpty()) {
                     this.inventory.setStackInSlot(6, resultStack.copy());
-                } else if (ItemStack.isSameItem(storedMealStack, resultStack)) {
+                } else if (ItemStack.isSameItemSameTags(storedMealStack, resultStack)) {
                     storedMealStack.grow(resultStack.getCount());
                 }
 
@@ -435,13 +577,11 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
 
     public NonNullList<ItemStack> getDroppableInventory() {
         NonNullList<ItemStack> drops = NonNullList.create();
-
-        for(int i = 0; i < 9; ++i) {
-            if (i != 6) {
+        for (int i = 0; i < INVENTORY_SIZE; ++i) {
+            if (i != MEAL_DISPLAY_SLOT) {
                 drops.add(this.inventory.getStackInSlot(i));
             }
         }
-
         return drops;
     }
 
@@ -540,7 +680,7 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
     }
 
     private ItemStackHandler createHandler() {
-        return new ItemStackHandler(9) {
+        return new ItemStackHandler(INVENTORY_SIZE) {
             protected void onContentsChanged(int slot) {
                 if (slot >= 0 && slot < 6) {
                     CursedIngotPotBlockEntity.this.checkNewRecipe = true;

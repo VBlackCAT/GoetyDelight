@@ -17,11 +17,12 @@ public class ModBlockEntities {
                     BlockEntityType.Builder.of(CursedIngotPotBlockEntity::new,
                             ModBlocks.CURSED_INGOT_POT.get()).build(null));
 
-    // 添加 RenderBlockEntity 的注册项
+
     public static final RegistryObject<BlockEntityType<RenderBlockEntity>> RENDER_BLOCK =
             BLOCK_ENTITIES.register("render_block", () ->
                     BlockEntityType.Builder.of(RenderBlockEntity::new,
                             ModBlocks.RENDER_BLOCK.get()).build(null));
+
 
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);

@@ -1,6 +1,8 @@
 
 package net.v_black_cat.goetydelight.screen;
 
+import com.Polarice3.Goety.api.items.magic.ITotem;
+import com.Polarice3.Goety.common.items.ModItems;
 import com.mojang.datafixers.util.Pair;
 import java.util.Objects;
 import net.minecraft.network.FriendlyByteBuf;
@@ -24,6 +26,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.RecipeWrapper;
+import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.CursedIngotPotBlockEntity;
 import net.v_black_cat.goetydelight.block.ModBlocks;
 import vectorwing.farmersdelight.FarmersDelight;
@@ -33,6 +36,8 @@ import vectorwing.farmersdelight.common.tag.ModTags;
 
 public class CursedIngotPotMenu extends RecipeBookMenu<RecipeWrapper> {
     public static final ResourceLocation EMPTY_CONTAINER_SLOT_BOWL = new ResourceLocation("farmersdelight", "item/empty_container_slot_bowl");
+    public static final ResourceLocation EMPTY_SOUL_SOURCE_SLOT = new ResourceLocation(GoetyDelight.MODID, "item/empty_soul_source_slot"); // 空插槽图标
+
     public final CursedIngotPotBlockEntity blockEntity;
     public final ItemStackHandler inventory;
     private final ContainerData cookingPotData;
@@ -56,7 +61,7 @@ public class CursedIngotPotMenu extends RecipeBookMenu<RecipeWrapper> {
         int inputStartY = 17;
         int borderSlotSize = 18;
 
-
+        // 原料插槽 (0-5)
         for(int row = 0; row < 2; ++row) {
             for(int col = 0; col < 3; ++col) {
                 this.addSlot(new SlotItemHandler(this.inventory, row * 3 + col,
@@ -65,28 +70,44 @@ public class CursedIngotPotMenu extends RecipeBookMenu<RecipeWrapper> {
             }
         }
 
-
+        // 成品显示插槽 (6)
         this.addSlot(new CookingPotMealSlot(this.inventory, 6, 124, 26));
+
+        // 容器输入插槽 (7)
         this.addSlot(new SlotItemHandler(this.inventory, 7, 92, 55) {
             public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
                 return Pair.of(InventoryMenu.BLOCK_ATLAS, CursedIngotPotMenu.EMPTY_CONTAINER_SLOT_BOWL);
             }
         });
+
+        // 输出插槽 (8)
         this.addSlot(new CursedPotResultSlot(playerInventory.player, blockEntity, this.inventory, 8, 124, 55));
 
+        // 新增：灵魂源插槽 (9)
+        this.addSlot(new SlotItemHandler(this.inventory, 9, 8, 55) {
+            public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
+                return Pair.of(InventoryMenu.BLOCK_ATLAS, CursedIngotPotMenu.EMPTY_SOUL_SOURCE_SLOT);
+            }
 
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                // 只允许放置图腾或链接宝石
+                return stack.getItem() instanceof ITotem || stack.getItem() == ModItems.SOUL_TRANSFER.get();
+            }
+        });
+
+        // 玩家物品栏
         int startPlayerInvY = startY * 4 + 12;
-
         for(int row = 0; row < 3; ++row) {
             for(int col = 0; col < 9; ++col) {
-                int slotIndex = 9 + col + row * 9;  
+                int slotIndex = 9 + col + row * 9;
                 int xPos = startX + col * borderSlotSize;
                 int yPos = startPlayerInvY + row * borderSlotSize;
                 this.addSlot(new Slot(playerInventory, slotIndex, xPos, yPos));
             }
         }
 
-        
+        // 玩家快捷栏
         for(int col = 0; col < 9; ++col) {
             this.addSlot(new Slot(playerInventory, col, startX + col * borderSlotSize, 142));
         }
@@ -113,6 +134,7 @@ public class CursedIngotPotMenu extends RecipeBookMenu<RecipeWrapper> {
         int indexMealDisplay = 6;
         int indexContainerInput = 7;
         int indexOutput = 8;
+        int indexSoulSource = 9; // 新增灵魂源插槽索引
         int startPlayerInv = indexOutput + 1;
         int endPlayerInv = startPlayerInv + 36;
         ItemStack slotStackCopy = ItemStack.EMPTY;
@@ -128,9 +150,20 @@ public class CursedIngotPotMenu extends RecipeBookMenu<RecipeWrapper> {
                 if (!this.moveItemStackTo(slotStack, startPlayerInv, endPlayerInv, false)) {
                     return ItemStack.EMPTY;
                 }
+            } else if (index == indexSoulSource) {
+                // 灵魂源插槽的物品只能移动到玩家物品栏
+                if (!this.moveItemStackTo(slotStack, startPlayerInv, endPlayerInv, false)) {
+                    return ItemStack.EMPTY;
+                }
             } else {
                 boolean isValidContainer = slotStack.is(ModTags.SERVING_CONTAINERS) || slotStack.is(this.blockEntity.getContainer().getItem());
                 if (isValidContainer && !this.moveItemStackTo(slotStack, indexContainerInput, indexContainerInput + 1, false)) {
+                    return ItemStack.EMPTY;
+                }
+
+                // 检查是否为图腾或链接宝石，如果是则移动到灵魂源插槽
+                boolean isSoulSource = slotStack.getItem() instanceof ITotem || slotStack.getItem() == ModItems.SOUL_TRANSFER.get();
+                if (isSoulSource && !this.moveItemStackTo(slotStack, indexSoulSource, indexSoulSource + 1, false)) {
                     return ItemStack.EMPTY;
                 }
 
