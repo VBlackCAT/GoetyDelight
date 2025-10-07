@@ -38,6 +38,7 @@ public class ModCreativeModTabs {
 
 
 
+
          BLACKLIST.add(ModBlocks.APOCALYPTIUM_POT);
          BLACKLIST.add(ModBlocks.SHADE_STOVE);
 
@@ -58,6 +59,7 @@ public class ModCreativeModTabs {
          BLACKLIST.add(ModBlocks.BLUE_MARBLE);
          BLACKLIST.add(ModBlocks.JUNGLE_MARBLE);
          BLACKLIST.add(ModBlocks.MARBLE_TRAPDOOR);
+         BLACKLIST.add(ModBlocks.RENDER_BLOCK);
 
     }
 
