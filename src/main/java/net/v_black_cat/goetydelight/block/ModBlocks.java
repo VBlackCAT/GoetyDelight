@@ -85,8 +85,12 @@ public class ModBlocks {
             new RottenCorpseMaggotFeastBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
                     ModItems.ROTTEN_CORPSE_MAGGOT_FEAST, true));
 
-
-
+    
+    public static final RegistryObject<Block> RENDER_BLOCK = registerBlock("render_block",() ->
+            new RenderBlock(BlockBehaviour.Properties.of()
+                    .strength(2.0f)
+                    .noOcclusion()
+                    .lightLevel(state -> 15)));
 
     public static final RegistryObject<Block> APOCALYPTIUM_POT = registerBlock("apocalyptium_pot",() -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.AMETHYST)));
     public static final RegistryObject<Block> SHADE_STOVE = registerBlock("shade_stove",() -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.AMETHYST)));
