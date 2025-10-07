@@ -9,10 +9,16 @@
     },
     {
       "item": "minecraft:sugar"
+    },
+    {
+      "item": "goety:brew"
+    },
+    {
+      "item": "minecraft:blaze_powder"
     }
   ],
   "result": {
-    "item": "goetydelight:candy_fish"
+    "item": "goetydelight:sauce_grilled_candy_fish"
   },
   "experience": 1.5,
   "cookingtime": 600
