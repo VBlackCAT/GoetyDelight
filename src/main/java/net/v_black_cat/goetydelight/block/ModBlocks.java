@@ -72,6 +72,11 @@ public class ModBlocks {
                     .requiresCorrectToolForDrops() //需要json中配置的正确工具才能掉落
                     .lightLevel(litBlockEmission(13))));
 
+
+    //阴影炉灶
+    public static final RegistryObject<Block> SHADE_STOVE = registerBlock("shade_stove",() ->
+            new StoveBlock(BlockBehaviour.Properties.copy(Blocks.BRICKS).lightLevel(litBlockEmission(13))));
+
     //诅咒金属锅
     public static final RegistryObject<Block> CURSED_INGOT_POT = registerBlock("cursed_ingot_pot",() ->
             new CursedIngotPotBlock(BlockBehaviour.Properties.of()
@@ -85,7 +90,7 @@ public class ModBlocks {
             new RottenCorpseMaggotFeastBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
                     ModItems.ROTTEN_CORPSE_MAGGOT_FEAST, true));
 
-    
+
     public static final RegistryObject<Block> RENDER_BLOCK = registerBlock("render_block",() ->
             new RenderBlock(BlockBehaviour.Properties.of()
                     .strength(2.0f)
@@ -93,8 +98,6 @@ public class ModBlocks {
                     .lightLevel(state -> 15)));
 
     public static final RegistryObject<Block> APOCALYPTIUM_POT = registerBlock("apocalyptium_pot",() -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.AMETHYST)));
-    public static final RegistryObject<Block> SHADE_STOVE = registerBlock("shade_stove",() -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.AMETHYST)));
-
 
 
     //照抄的农夫乐事设置方块亮度的方法

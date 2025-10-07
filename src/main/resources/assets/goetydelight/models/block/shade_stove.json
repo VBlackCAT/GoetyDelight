@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "bottom": "goetydelight:block/shade_stove_bottom",
+    "front": "goetydelight:block/shade_stove_front",
+    "side": "goetydelight:block/shade_stove_side",
+    "top": "goetydelight:block/shade_stove_top"
+  }
+}

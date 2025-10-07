@@ -32,7 +32,7 @@ public class ModShaderRenderer {
 
             PoseStack poseStack = event.getPoseStack();
             poseStack.pushPose();
-            poseStack.translate(0, 2, 3); // 调整渲染位置
+            poseStack.translate(0, 2, 3);
 
             RenderSystem.setShader(() -> shader);
             RenderSystem.enableBlend();

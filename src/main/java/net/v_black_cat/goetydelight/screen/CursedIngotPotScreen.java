@@ -30,12 +30,15 @@ import vectorwing.farmersdelight.client.gui.CookingPotRecipeBookComponent;
 import vectorwing.farmersdelight.common.Configuration;
 import vectorwing.farmersdelight.common.utility.TextUtils;
 
+import static net.v_black_cat.goetydelight.GoetyDelight.MODID;
+
 @ParametersAreNonnullByDefault
 public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPotMenu> implements RecipeUpdateListener {
-    private static final ResourceLocation RECIPE_BUTTON_LOCATION = new ResourceLocation(GoetyDelight.MODID, "textures/gui/recipe_button.png");
-    private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(GoetyDelight.MODID, "textures/gui/cursed_ingot_pot.png");
+    private static final ResourceLocation RECIPE_BUTTON_LOCATION = new ResourceLocation(MODID, "textures/gui/recipe_button.png");
+    private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(MODID, "textures/gui/cursed_ingot_pot.png");
     private static final Rectangle HEAT_ICON = new Rectangle(47, 55, 17, 15);
     private static final Rectangle PROGRESS_ARROW = new Rectangle(89, 25, 0, 17);
+    private static final Rectangle SOUL_SOURCE_SLOT = new Rectangle(8, 55, 16, 16); // 灵魂源插槽位置
     private final CookingPotRecipeBookComponent recipeBookComponent = new CookingPotRecipeBookComponent();
     private boolean widthTooNarrow;
 
@@ -82,6 +85,7 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
 
         this.renderMealDisplayTooltip(gui, mouseX, mouseY);
         this.renderHeatIndicatorTooltip(gui, mouseX, mouseY);
+        this.renderSoulSourceTooltip(gui, mouseX, mouseY); //灵魂源插槽提示
         this.recipeBookComponent.renderTooltip(gui, this.leftPos, this.topPos, mouseX, mouseY);
     }
 
@@ -90,7 +94,22 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
             String key = "container.cooking_pot." + (((CursedIngotPotMenu)this.menu).isHeated() ? "heated" : "not_heated");
             gui.renderTooltip(this.font, TextUtils.getTranslation(key, new Object[]{this.menu}), mouseX, mouseY);
         }
+    }
 
+    //灵魂源插槽提示
+    private void renderSoulSourceTooltip(GuiGraphics gui, int mouseX, int mouseY) {
+        if (this.isHovering(SOUL_SOURCE_SLOT.x, SOUL_SOURCE_SLOT.y, SOUL_SOURCE_SLOT.width, SOUL_SOURCE_SLOT.height, (double)mouseX, (double)mouseY)) {
+            Slot soulSourceSlot = this.menu.getSlot(9); // 获取灵魂源插槽
+            if (soulSourceSlot.hasItem()) {
+                // 如果插槽有物品，显示物品提示
+                gui.renderTooltip(this.font, soulSourceSlot.getItem(), mouseX, mouseY);
+            } else {
+                // 如果插槽为空，显示提示信息
+                List<Component> tooltip = new ArrayList<>();
+                tooltip.add(net.v_black_cat.goetydelight.util.TextUtils.getTranslation("container.cursed_ingot_pot.soul_source.empty"));
+                gui.renderComponentTooltip(this.font, tooltip, mouseX, mouseY);
+            }
+        }
     }
 
     protected void renderMealDisplayTooltip(GuiGraphics gui, int mouseX, int mouseY) {
@@ -102,12 +121,17 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
                 ItemStack containerStack = ((CursedIngotPotMenu)this.menu).blockEntity.getContainer();
                 String container = !containerStack.isEmpty() ? containerStack.getItem().getDescription().getString() : "";
                 tooltip.add(TextUtils.getTranslation("container.cooking_pot.served_on", new Object[]{container}).withStyle(ChatFormatting.GRAY));
+
+                // 检查是否有灵魂注入
+                if (mealStack.hasTag() && mealStack.getTag().contains("SoulInfused") && mealStack.getTag().getBoolean("SoulInfused")) {
+                    tooltip.add(net.v_black_cat.goetydelight.util.TextUtils.getTranslation("container.cursed_ingot_pot.soul_infused").withStyle(ChatFormatting.DARK_PURPLE));
+                }
+
                 gui.renderComponentTooltip(this.font, tooltip, mouseX, mouseY);
             } else {
                 gui.renderTooltip(this.font, this.hoveredSlot.getItem(), mouseX, mouseY);
             }
         }
-
     }
 
     protected void renderLabels(GuiGraphics gui, int mouseX, int mouseY) {
@@ -119,12 +143,18 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         if (this.minecraft != null) {
             gui.blit(BACKGROUND_TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+
+            // 绘制加热图标
             if (((CursedIngotPotMenu)this.menu).isHeated()) {
                 gui.blit(BACKGROUND_TEXTURE, this.leftPos + HEAT_ICON.x, this.topPos + HEAT_ICON.y, 176, 0, HEAT_ICON.width, HEAT_ICON.height);
             }
 
+            // 绘制进度箭头
             int l = ((CursedIngotPotMenu)this.menu).getCookProgressionScaled();
             gui.blit(BACKGROUND_TEXTURE, this.leftPos + PROGRESS_ARROW.x, this.topPos + PROGRESS_ARROW.y, 176, 15, l + 1, PROGRESS_ARROW.height);
+
+            // 绘制灵魂源插槽背景
+            gui.blit(BACKGROUND_TEXTURE, this.leftPos + SOUL_SOURCE_SLOT.x, this.topPos + SOUL_SOURCE_SLOT.y, 176, 32, SOUL_SOURCE_SLOT.width, SOUL_SOURCE_SLOT.height);
         }
     }
 
@@ -154,6 +184,7 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
     public void recipesUpdated() {
         this.recipeBookComponent.recipesUpdated();
     }
+
 
     @Nonnull
     public RecipeBookComponent getRecipeBookComponent() {
