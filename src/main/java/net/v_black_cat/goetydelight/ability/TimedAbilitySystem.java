@@ -193,7 +193,7 @@ public class TimedAbilitySystem {
 
                     // 只有玩家才能收到消息
                     if (entity instanceof Player player) {
-                        player.sendSystemMessage(Component.literal(ability.abilityId + "效果已结束"));
+                        //player.sendSystemMessage(Component.literal(ability.abilityId + "效果已结束"));
                     }
                 }
             }

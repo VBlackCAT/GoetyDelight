@@ -44,12 +44,12 @@ public class OminousIceCreamItem extends Item {
                 player.getPersistentData().putBoolean(OMINOUS_ACTIVE_TAG, true);
                 player.getPersistentData().putBoolean(HAS_CONSUMED_TAG, true);
 
-                player.displayClientMessage(Component.literal("不详之兆的力量被冰激凌激活！"), true);
+                //player.displayClientMessage(Component.literal("不详之兆的力量被冰激凌激活！"), true);
                 level.playSound(null, player.getX(), player.getY(), player.getZ(),
                         net.minecraft.sounds.SoundEvents.EVOKER_PREPARE_SUMMON,
                         net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
             } else {
-                player.displayClientMessage(Component.literal("需要不详之兆效果才能激活冰激凌的力量！"), true);
+                //player.displayClientMessage(Component.literal("需要不详之兆效果才能激活冰激凌的力量！"), true);
             }
         }
 
@@ -88,7 +88,7 @@ public class OminousIceCreamItem extends Item {
         if (entity instanceof Player player && effect.getEffect() == MobEffects.BAD_OMEN) {
             if (player.getPersistentData().getBoolean(OMINOUS_ACTIVE_TAG)) {
                 player.getPersistentData().remove(OMINOUS_ACTIVE_TAG);
-                player.displayClientMessage(Component.literal("不详之兆的力量消散了！"), true);
+                //player.displayClientMessage(Component.literal("不详之兆的力量消散了！"), true);
                 player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                         net.minecraft.sounds.SoundEvents.EVOKER_CAST_SPELL,
                         net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 0.5F);
@@ -105,7 +105,7 @@ public class OminousIceCreamItem extends Item {
         if (entity instanceof Player player && effect.getEffect() == MobEffects.BAD_OMEN) {
             if (player.getPersistentData().getBoolean(OMINOUS_ACTIVE_TAG)) {
                 player.getPersistentData().remove(OMINOUS_ACTIVE_TAG);
-                player.displayClientMessage(Component.literal("不详之兆的力量自然消散了！"), true);
+                //player.displayClientMessage(Component.literal("不详之兆的力量自然消散了！"), true);
                 player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                         net.minecraft.sounds.SoundEvents.WITHER_SPAWN,
                         net.minecraft.sounds.SoundSource.PLAYERS, 0.8F, 1.2F);

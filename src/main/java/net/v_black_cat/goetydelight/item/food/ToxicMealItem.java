@@ -53,17 +53,17 @@ public class ToxicMealItem extends BowlFoodItem {
             count++;
             persistentData.putInt(TOXIC_MEAL_COUNT, count);
 
-            // 根据食用次数判断是否获得免疫
-            if (count == NAUSEA_IMMUNE_THRESHOLD) {
-                player.displayClientMessage(Component.literal("你获得了对反胃效果的免疫！"), true);
-            } else if (count == POISON_IMMUNE_THRESHOLD) {
-                player.displayClientMessage(Component.literal("你获得了对中毒效果的免疫！"), true);
-            } else if (count == WEAKNESS_IMMUNE_THRESHOLD) {
-                player.displayClientMessage(Component.literal("你获得了对虚弱效果的免疫！"), true);
-            }
-            if (count <=15){
-                player.displayClientMessage(Component.literal("你已食用毒物饭 " + count + " 次。"), true);
-            }
+//            // 根据食用次数判断是否获得免疫
+//            if (count == NAUSEA_IMMUNE_THRESHOLD) {
+//                player.displayClientMessage(Component.literal("你获得了对反胃效果的免疫！"), true);
+//            } else if (count == POISON_IMMUNE_THRESHOLD) {
+//                player.displayClientMessage(Component.literal("你获得了对中毒效果的免疫！"), true);
+//            } else if (count == WEAKNESS_IMMUNE_THRESHOLD) {
+//                player.displayClientMessage(Component.literal("你获得了对虚弱效果的免疫！"), true);
+//            }
+//            if (count <=15){
+//                player.displayClientMessage(Component.literal("你已食用毒物饭 " + count + " 次。"), true);
+//            }
 
         }
     }

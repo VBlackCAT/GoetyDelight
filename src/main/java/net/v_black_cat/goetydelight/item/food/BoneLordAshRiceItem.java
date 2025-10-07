@@ -56,7 +56,7 @@ public class BoneLordAshRiceItem extends Item {
             persistentData.putLong(ACTIVATION_TIME_TAG, level.getGameTime());
 
              
-            player.displayClientMessage(Component.literal("骨头领主骨灰拌饭的力量被激活！获得15点护甲和10点护甲韧性，持续5分钟。"), true);
+           // player.displayClientMessage(Component.literal("骨头领主骨灰拌饭的力量被激活！获得15点护甲和10点护甲韧性，持续5分钟。"), true);
         }
 
         return resultStack;
