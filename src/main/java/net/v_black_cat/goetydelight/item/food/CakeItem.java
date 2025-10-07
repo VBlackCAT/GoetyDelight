@@ -85,7 +85,7 @@ public class CakeItem extends Item {
             level.playSound(null, player.getX(), player.getY(), player.getZ(),
                     SoundEvents.PHANTOM_DEATH, SoundSource.PLAYERS, 1.0F, 1.0F);
             if (kills > 0) {
-                player.displayClientMessage(Component.literal("超度了 " + kills + " 个灵魂！"), true);
+                //player.displayClientMessage(Component.literal("超度了 " + kills + " 个灵魂！"), true);
             }
 
             

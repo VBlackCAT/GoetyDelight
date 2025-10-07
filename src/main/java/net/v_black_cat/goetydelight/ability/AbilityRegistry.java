@@ -5,12 +5,12 @@ import java.util.UUID;
 import static net.v_black_cat.goetydelight.ability.TimedAbilitySystem.syncAbilityWithClient;
 
 public class AbilityRegistry {
-    // Sugar Scepter 免疫能力的ID
+
     public static final String SUGAR_SCEPTER_IMMUNITY = "sugar_scepter_immunity";
     public static final String RUBY_HARD_CANDY_DAMAGE_REDUCTION = "ruby_hard_candy_damage_reduction";
 
     public static void registerAbilities() {
-        // 注册Sugar Scepter免疫能力
+
         TimedAbilitySystem.registerAbility(
                 SUGAR_SCEPTER_IMMUNITY,
                 // 能力应用器

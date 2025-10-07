@@ -55,7 +55,7 @@ public class SevenLeafPuddingItem extends BowlFoodItem {
             persistentData.putLong(ACTIVATION_TIME_TAG, level.getGameTime());
 
             // Notify player
-            player.displayClientMessage(Component.literal("甜浆果布丁的效果被激活！获得3点攻击力和5%移动速度加成，持续5分钟。"), true);
+            //player.displayClientMessage(Component.literal("甜浆果布丁的效果被激活！获得3点攻击力和5%移动速度加成，持续5分钟。"), true);
         }
 
         return resultStack;
