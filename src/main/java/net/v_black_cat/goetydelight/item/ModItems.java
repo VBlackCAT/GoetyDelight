@@ -143,7 +143,7 @@ public class ModItems {
 
         //黑暗金属刀
         DARK_KNIFE = registerWithTab("dark_knife",
-                () -> new KnifeItem(ModTiers.DARK, 1F, -2.0F, basicItem().durability(512)));
+                () -> new DarkKnifeItem(ModTiers.DARK, 1F, -2.0F, basicItem().durability(512)));
 
         //诅咒金属刷子
         CURSED_METAL_BRUSH = ITEMS.register("cursed_metal_brush",

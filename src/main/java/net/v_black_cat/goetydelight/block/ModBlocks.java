@@ -75,7 +75,9 @@ public class ModBlocks {
 
     //阴影炉灶
     public static final RegistryObject<Block> SHADE_STOVE = registerBlock("shade_stove",() ->
-            new ShadeStoveBlock(BlockBehaviour.Properties.copy(Blocks.BRICKS).lightLevel(litBlockEmission(13))));
+            new ShadeStoveBlock(BlockBehaviour.Properties
+                    .copy(Blocks.BRICKS)
+                    .lightLevel(litBlockEmission(13))));
 
     //诅咒金属锅
     public static final RegistryObject<Block> CURSED_INGOT_POT = registerBlock("cursed_ingot_pot",() ->
@@ -95,9 +97,13 @@ public class ModBlocks {
             new RenderBlock(BlockBehaviour.Properties.of()
                     .strength(2.0f)
                     .noOcclusion()
+                    .noLootTable()
                     .lightLevel(state -> 15)));
 
-    public static final RegistryObject<Block> APOCALYPTIUM_POT = registerBlock("apocalyptium_pot",() -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.AMETHYST)));
+    public static final RegistryObject<Block> APOCALYPTIUM_POT = registerBlock("apocalyptium_pot",() ->
+            new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
+                    .noLootTable()
+                    .sound(SoundType.AMETHYST)));
 
 
     //照抄的农夫乐事设置方块亮度的方法

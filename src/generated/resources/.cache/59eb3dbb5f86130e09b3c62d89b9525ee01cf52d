@@ -1,5 +1,6 @@
-// 1.20.1	2025-09-26T11:18:58.7068612	Loot Tables
+// 1.20.1	2025-10-08T21:00:37.2433216	Loot Tables
 dcbe2ae987206dde3d003fff75cb07a50b3ef3a6 data/goetydelight/loot_tables/blocks/blue_marble.json
+c61ca357b95f5be231e55416005983e7dd1c8271 data/goetydelight/loot_tables/blocks/cursed_ingot_pot.json
 ee37ca91f73d2923496eb7a750793b14ed341821 data/goetydelight/loot_tables/blocks/dripmarble_block.json
 473b040dc131744ab32a137fdb732b4d4e8d4ee5 data/goetydelight/loot_tables/blocks/jungle_marble.json
 31be172491f1fe66b30fd4682fe77d951ed6fdfe data/goetydelight/loot_tables/blocks/marble.json
@@ -13,5 +14,8 @@ d0eff6bbfac4765b88bc1255bea5fcf8a4b54931 data/goetydelight/loot_tables/blocks/ma
 2ae15c2f593854ea8fd2e120cf21dcf4f9b4ca6c data/goetydelight/loot_tables/blocks/marble_trapdoor.json
 f08cba9b565839a1aa1f7de558ee68d205210971 data/goetydelight/loot_tables/blocks/marble_wall.json
 9920dce3b2dab0eb8b815a30f4ea20931617b7fc data/goetydelight/loot_tables/blocks/nether_marble.json
+e74e1388102b4f7b565288b376f9f9b70da7d451 data/goetydelight/loot_tables/blocks/night_stove.json
 abe6eac8ba2636b398eb0d3f8a713ccf6309ad03 data/goetydelight/loot_tables/blocks/pointed_dripmarble.json
+2afe955e16459f1de2fd57ea4068f820300c2c55 data/goetydelight/loot_tables/blocks/rotten_corpse_maggot_feast_block.json
+e14baa25933d4a67bcf41ba7f4aff41437ffe743 data/goetydelight/loot_tables/blocks/shade_stove.json
 316dabfdb0fb7c82ed440e61be1872579c6005f7 data/goetydelight/loot_tables/blocks/silt_marble_heavy.json
