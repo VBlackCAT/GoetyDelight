@@ -250,6 +250,7 @@ public class NightStoveBlockEntity extends BaseContainerBlockEntity implements W
         return false;
     }
 
+
     // 获取总烹饪时间（考虑昼夜速度）
     private int getTotalCookTime() {
         int baseCookTime = this.quickCheck.getRecipeFor(this, this.level)

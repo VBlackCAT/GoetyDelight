@@ -1,5 +1,6 @@
 package net.v_black_cat.goetydelight.datagen.loot;
 
+import net.minecraft.world.item.Items;
 import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
@@ -12,6 +13,7 @@ import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraftforge.registries.RegistryObject;
+import net.v_black_cat.goetydelight.item.ModItems;
 
 import java.util.Set;
 
@@ -53,7 +55,7 @@ public class ModBlockLootTables extends BlockLootSubProvider {
         this.dropSelf(ModBlocks.CURSED_INGOT_POT.get());
         this.dropSelf(ModBlocks.NIGHT_STOVE.get());
         this.dropSelf(ModBlocks.SHADE_STOVE.get());
-
+        this.dropOther(ModBlocks.ROTTEN_CORPSE_MAGGOT_FEAST_BLOCK.get(), Items.BOWL);
         this.add(ModBlocks.MARBLE_SLAB.get(),
                 block -> createSlabItemTable(ModBlocks.MARBLE_SLAB.get()));
         this.add(ModBlocks.MARBLE_DOOR.get(),
