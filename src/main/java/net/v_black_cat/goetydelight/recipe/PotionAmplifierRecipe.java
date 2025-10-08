@@ -37,6 +37,8 @@ public class PotionAmplifierRecipe extends CustomRecipe {
     public boolean matches(CraftingContainer pContainer, Level pLevel) {
         boolean hasWitchBrew = false;
         boolean hasAmplifier = false;
+        ItemStack brewStack = ItemStack.EMPTY;
+        ItemStack amplifierStack = ItemStack.EMPTY;
 
         for (int i = 0; i < pContainer.getContainerSize(); i++) {
             ItemStack stack = pContainer.getItem(i);
@@ -45,14 +47,17 @@ public class PotionAmplifierRecipe extends CustomRecipe {
             if (stack.getItem() == BREW.get()) {
                 if (hasNegativeEffects(stack)) {
                     hasWitchBrew = true;
+                    brewStack = stack;
                 }
             } else if (stack.getItem() == ModItems.REJECTED_DARK_MEAT_SOUP.get() ||
                     stack.getItem() == ModItems.CUP.get()) {
                 if(stack.getItem() == ModItems.REJECTED_DARK_MEAT_SOUP.get()){
+                    amplifierStack = stack;
                     hasAmplifier = true;
                 }else if (stack.getItem() instanceof EternalRefusalOfBlackMeatSoupItem cup){
                     // 检查冷却状态
                     if (!cup.isOnCooldown(stack, pLevel)){
+                        amplifierStack = stack;
                         hasAmplifier = true;
                     }
                 }
@@ -61,7 +66,15 @@ public class PotionAmplifierRecipe extends CustomRecipe {
             }
         }
 
-        return hasWitchBrew && hasAmplifier;
+        // 检查增强次数是否已满
+        if (hasWitchBrew && hasAmplifier) {
+            int maxAmplifications = getMaxAmplifications(amplifierStack);
+            int currentAmplifications = getCurrentAmplifications(brewStack);
+
+            return currentAmplifications < maxAmplifications;
+        }
+
+        return false;
     }
 
     @Override
@@ -86,6 +99,12 @@ public class PotionAmplifierRecipe extends CustomRecipe {
         // 创建增强后的药水
         ItemStack result = brewStack.copy();
         result.setCount(1);
+
+        // 获取当前增强次数并增加
+        int currentAmplifications = getCurrentAmplifications(result);
+        setCurrentAmplifications(result, currentAmplifications + 1);
+
+        // 增强负面效果
         ModBrewUtils.increaseNegativeEffects(result, 5);
 
         // 如果使用了永恒黑肉汤，返还一个带有冷却时间的汤
@@ -104,6 +123,31 @@ public class PotionAmplifierRecipe extends CustomRecipe {
         }
 
         return result;
+    }
+
+    // 获取当前增强次数
+    private int getCurrentAmplifications(ItemStack brewStack) {
+        CompoundTag tag = brewStack.getTag();
+        if (tag != null && tag.contains("AmplifiedCount")) {
+            return tag.getInt("AmplifiedCount");
+        }
+        return 0;
+    }
+
+    // 设置当前增强次数
+    private void setCurrentAmplifications(ItemStack brewStack, int count) {
+        CompoundTag tag = brewStack.getOrCreateTag();
+        tag.putInt("AmplifiedCount", count);
+    }
+
+    // 根据放大器类型获取最大增强次数
+    private int getMaxAmplifications(ItemStack amplifierStack) {
+        if (amplifierStack.getItem() == ModItems.REJECTED_DARK_MEAT_SOUP.get()) {
+            return 3;
+        } else if (amplifierStack.getItem() == ModItems.CUP.get()) {
+            return 5;
+        }
+        return 0;
     }
 
     @Override
