@@ -201,7 +201,7 @@ public class EternalRefusalOfBlackMeatSoupItem extends RejectedDarkMeatSoupItem 
         Level level = Minecraft.getInstance().level;
         if (level != null) {
             long remaining = getRemainingCooldown(stack, level);
-            long total = 25 * 20; // 25秒冷却时间
+            long total = 60 * 20; // 25秒冷却时间
             return (int) (13.0 * (remaining / (double) total));
         }
         return 0;
