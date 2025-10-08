@@ -182,6 +182,12 @@ public class EternalRefusalOfBlackMeatSoupItem extends RejectedDarkMeatSoupItem 
 
                 // 设置物品冷却
                 soupItem.setCooldown(stack, player.level(), 10 * 20);
+            }else if (event instanceof PlayerInteractEvent.LeftClickEmpty) {
+
+                if (stack.getItem() instanceof RejectedDarkMeatSoupItem) {
+                    // 发送网络包通知服务器
+                    NetworkHandler.sendToServer(new ThrowSoupPacket(player.getUUID()));
+                }
             }
         }
     }
