@@ -9,6 +9,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -23,9 +25,13 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.v_black_cat.goetydelight.ability.AbilityRegistry;
+import net.v_black_cat.goetydelight.ability.TimedAbilitySystem;
 import net.v_black_cat.goetydelight.screen.NightStoveMenu;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class NightStoveBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
     // 定义常量 - 移除燃料槽位
@@ -37,16 +43,20 @@ public class NightStoveBlockEntity extends BaseContainerBlockEntity implements W
     private int cookingProgress;
     private int cookingTotalTime;
 
+    // 效果计时器
+    private int effectTimer;
+
     // 物品槽位 - 减少到2个（输入和输出）
     protected NonNullList<ItemStack> items = NonNullList.withSize(2, ItemStack.EMPTY);
 
-    // 数据访问器 - 移除燃料相关数据
+    // 数据访问器
     private final ContainerData dataAccess = new ContainerData() {
         @Override
         public int get(int index) {
             return switch (index) {
                 case 0 -> cookingProgress;
                 case 1 -> cookingTotalTime;
+                case 2 -> effectTimer; // 效果计时器
                 default -> 0;
             };
         }
@@ -56,12 +66,13 @@ public class NightStoveBlockEntity extends BaseContainerBlockEntity implements W
             switch (index) {
                 case 0 -> cookingProgress = value;
                 case 1 -> cookingTotalTime = value;
+                case 2 -> effectTimer = value; // 效果计时器
             }
         }
 
         @Override
         public int getCount() {
-            return 2;
+            return 3; // 从2改为3，新增效果计时器
         }
     };
 
@@ -72,6 +83,7 @@ public class NightStoveBlockEntity extends BaseContainerBlockEntity implements W
         super(ModBlockEntities.NIGHT_STOVE_BE.get(), pPos, pBlockState);
         this.recipeType = RecipeType.SMOKING;
         this.quickCheck = RecipeManager.createCheck(this.recipeType);
+        //this.getBlockState().setValue(AbstractFurnaceBlock.LIT,true);
     }
 
     @Override
@@ -156,6 +168,7 @@ public class NightStoveBlockEntity extends BaseContainerBlockEntity implements W
         ContainerHelper.loadAllItems(pTag, this.items);
         this.cookingProgress = pTag.getInt("CookTime");
         this.cookingTotalTime = pTag.getInt("CookTimeTotal");
+        this.effectTimer = pTag.getInt("EffectTimer"); // 加载效果计时器
     }
 
     @Override
@@ -163,6 +176,7 @@ public class NightStoveBlockEntity extends BaseContainerBlockEntity implements W
         super.saveAdditional(pTag);
         pTag.putInt("CookTime", this.cookingProgress);
         pTag.putInt("CookTimeTotal", this.cookingTotalTime);
+        pTag.putInt("EffectTimer", this.effectTimer); // 保存效果计时器
         ContainerHelper.saveAllItems(pTag, this.items);
     }
 
@@ -262,6 +276,46 @@ public class NightStoveBlockEntity extends BaseContainerBlockEntity implements W
         return isNighttime ? 4.0f : 2.0f;
     }
 
+    // 给予玩家效果
+    private void applyEffectsToNearbyPlayers() {
+        if (level == null || level.isClientSide) return;
+
+        // 获取32格范围内的所有玩家
+        AABB area = new AABB(
+                worldPosition.getX() - 32, worldPosition.getY() - 32, worldPosition.getZ() - 32,
+                worldPosition.getX() + 32, worldPosition.getY() + 32, worldPosition.getZ() + 32
+        );
+
+        List<Player> players = level.getEntitiesOfClass(Player.class, area);
+
+        for (Player player : players) {
+            // 给予抗火效果（10秒）
+            player.addEffect(new MobEffectInstance(
+                    MobEffects.FIRE_RESISTANCE,
+                    200, // 10秒 * 20 tick/秒
+                    0,
+                    false,
+                    false
+            ));
+
+            // 给予生命恢复效果（10秒）
+            player.addEffect(new MobEffectInstance(
+                    MobEffects.REGENERATION,
+                    200, // 10秒 * 20 tick/秒
+                    0,
+                    false,
+                    false
+            ));
+
+            // 给予NightStove能力（10秒）
+            TimedAbilitySystem.addAbilityToEntity(
+                    player,
+                    AbilityRegistry.NIGHT_STOVE,
+                    200 // 10秒 * 20 tick/秒
+            );
+        }
+    }
+
     // Tick方法
     public static void serverTick(Level level, BlockPos pos, BlockState state, NightStoveBlockEntity blockEntity) {
         boolean isWorkingBefore = blockEntity.isWorking();
@@ -293,9 +347,16 @@ public class NightStoveBlockEntity extends BaseContainerBlockEntity implements W
             blockEntity.cookingProgress = Mth.clamp(blockEntity.cookingProgress - 2, 0, blockEntity.cookingTotalTime);
         }
 
+        // 每5秒给予玩家效果
+        blockEntity.effectTimer++;
+        if (blockEntity.effectTimer >= 100) { // 5秒 * 20 tick/秒
+            blockEntity.effectTimer = 0;
+            blockEntity.applyEffectsToNearbyPlayers();
+        }
+
         if (isWorkingBefore != blockEntity.isWorking()) {
             changed = true;
-            state = state.setValue(AbstractFurnaceBlock.LIT, blockEntity.isWorking());
+            //state = state.setValue(AbstractFurnaceBlock.LIT, blockEntity.isWorking());
             level.setBlock(pos, state, 3);
         }
 

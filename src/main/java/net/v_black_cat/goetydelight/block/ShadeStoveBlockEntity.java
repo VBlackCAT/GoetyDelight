@@ -444,7 +444,7 @@ public class ShadeStoveBlockEntity extends BaseContainerBlockEntity implements W
         // 更新燃烧状态
         if (isLitBefore != blockEntity.isLit()) {
             changed = true;
-            state = state.setValue(AbstractFurnaceBlock.LIT, blockEntity.isLit());
+//state = state.setValue(AbstractFurnaceBlock.LIT, blockEntity.isLit());
             level.setBlock(pos, state, 3);
         }
 
