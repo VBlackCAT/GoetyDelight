@@ -17,12 +17,19 @@ public class ModBlockEntities {
                     BlockEntityType.Builder.of(CursedIngotPotBlockEntity::new,
                             ModBlocks.CURSED_INGOT_POT.get()).build(null));
 
+    public static final RegistryObject<BlockEntityType<ShadeStoveBlockEntity>> SHADE_STOVE_BE =
+            BLOCK_ENTITIES.register("shade_stove", () ->
+                    BlockEntityType.Builder.of(ShadeStoveBlockEntity::new,
+                            ModBlocks.SHADE_STOVE.get()).build(null));
+
 
     public static final RegistryObject<BlockEntityType<RenderBlockEntity>> RENDER_BLOCK =
             BLOCK_ENTITIES.register("render_block", () ->
                     BlockEntityType.Builder.of(RenderBlockEntity::new,
                             ModBlocks.RENDER_BLOCK.get()).build(null));
 
+    public static final RegistryObject<BlockEntityType<NightStoveBlockEntity>> NIGHT_STOVE_BE = BLOCK_ENTITIES.register("night_stove",
+            () -> BlockEntityType.Builder.of(NightStoveBlockEntity::new, ModBlocks.NIGHT_STOVE.get()).build(null));
 
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);
