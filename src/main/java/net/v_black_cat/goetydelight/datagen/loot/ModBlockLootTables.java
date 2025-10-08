@@ -51,6 +51,8 @@ public class ModBlockLootTables extends BlockLootSubProvider {
         this.dropSelf(ModBlocks.MARBLE_WALL.get());
         this.dropSelf(ModBlocks.NIGHT_STOVE.get());
         this.dropSelf(ModBlocks.CURSED_INGOT_POT.get());
+        this.dropSelf(ModBlocks.NIGHT_STOVE.get());
+        this.dropSelf(ModBlocks.SHADE_STOVE.get());
 
         this.add(ModBlocks.MARBLE_SLAB.get(),
                 block -> createSlabItemTable(ModBlocks.MARBLE_SLAB.get()));
