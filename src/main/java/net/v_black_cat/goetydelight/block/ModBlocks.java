@@ -65,7 +65,7 @@ public class ModBlocks {
 
     //暗夜炉灶
     public static final RegistryObject<Block> NIGHT_STOVE = registerBlock("night_stove",() ->
-            new StoveBlock(BlockBehaviour.Properties
+            new NightStoveBlock(BlockBehaviour.Properties
                     .copy(Blocks.IRON_BLOCK)
                     .sound(SoundType.AMETHYST)
                     .strength(50f, 5000f) // 设置硬度和爆炸抗性
@@ -75,7 +75,7 @@ public class ModBlocks {
 
     //阴影炉灶
     public static final RegistryObject<Block> SHADE_STOVE = registerBlock("shade_stove",() ->
-            new StoveBlock(BlockBehaviour.Properties.copy(Blocks.BRICKS).lightLevel(litBlockEmission(13))));
+            new ShadeStoveBlock(BlockBehaviour.Properties.copy(Blocks.BRICKS).lightLevel(litBlockEmission(13))));
 
     //诅咒金属锅
     public static final RegistryObject<Block> CURSED_INGOT_POT = registerBlock("cursed_ingot_pot",() ->

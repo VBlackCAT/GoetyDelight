@@ -33,12 +33,12 @@ import net.v_black_cat.goetydelight.recipe.ModRecipeSerializers;
 import net.v_black_cat.goetydelight.render.animation.RotationEffectHandler;
 
 import net.v_black_cat.goetydelight.ritual.DelightRitualType;
-import net.v_black_cat.goetydelight.screen.CursedIngotPotScreen;
-import net.v_black_cat.goetydelight.screen.ModMenuTypes;
+import net.v_black_cat.goetydelight.screen.*;
 import org.slf4j.Logger;
 
 import java.io.IOException;
 
+import static net.v_black_cat.goetydelight.block.ModBlocks.NIGHT_STOVE;
 import static net.v_black_cat.goetydelight.loot.ModLootModifier.GLOBAL_LOOT_MODIFIER_CODECS;
 import static net.v_black_cat.goetydelight.item.ModItems.ITEMS;
 import static net.v_black_cat.goetydelight.block.ModBlocks.BLOCKS;
@@ -120,6 +120,8 @@ public class GoetyDelight
             MinecraftForge.EVENT_BUS.addListener(RotationEffectHandler::onRenderTick);
             MinecraftForge.EVENT_BUS.addListener(RotationEffectHandler::onRenderLivingEvent);
             MenuScreens.register(ModMenuTypes.CURSED_INGOT_POT.get(), CursedIngotPotScreen::new);
+            MenuScreens.register(ModMenuTypes.SHADE_STOVE.get(), ShadeStoveScreen::new);
+            MenuScreens.register(ModMenuTypes.NIGHT_STOVE.get(), NightStoveScreen::new);
             BlockEntityRenderers.register(ModBlockEntities.RENDER_BLOCK.get(), RenderBlockRenderer::new);
 
         }
