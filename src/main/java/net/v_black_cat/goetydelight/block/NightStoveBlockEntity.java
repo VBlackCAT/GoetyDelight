@@ -88,7 +88,7 @@ public class NightStoveBlockEntity extends BaseContainerBlockEntity implements W
 
     @Override
     protected Component getDefaultName() {
-        return Component.translatable("container.night_stove");
+        return Component.translatable("goetydelight.container.night_stove");
     }
 
     @Override
