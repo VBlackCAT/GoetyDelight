@@ -19,6 +19,7 @@ public class FoodSoulEnergyConfig {
         FOOD_ENERGY_MAP.put("goetydelight:ectoplasm_jelly", 100);
         FOOD_ENERGY_MAP.put("goetydelight:gathering_soul_embryos", 10000);
         FOOD_ENERGY_MAP.put("goetydelight:soul_convergence_room", 30000);
+        FOOD_ENERGY_MAP.put("goetydelight:villagers_feast", 100);
 
     }
 

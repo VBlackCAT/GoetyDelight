@@ -1,0 +1,34 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "goetydelight:shade_stove"
+  },
+  "craftType": "forge",
+  "soulCost": 100,
+  "duration": 10,
+  "ingredients": [
+    {
+      "item": "minecraft:sculk_shrieker"
+    },
+    {
+      "item": "goety:heart_of_the_night"
+    },
+    {
+      "item": "goety:pithos"
+    },
+    {
+      "item": "goety:night_beacon"
+    },
+    {
+      "item": "goety:dark_metal_block"
+    },
+    {
+      "item": "goety:dark_metal_block"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:night_stove"
+  }
+
+}

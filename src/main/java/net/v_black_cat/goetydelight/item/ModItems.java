@@ -97,6 +97,7 @@ public class ModItems {
     public static final RegistryObject<Item> JUNGLE_SALAD;
     public static final RegistryObject<Item> BOILING_BLOOD_BREW;
     public static final RegistryObject<Item> ASCENSION_MOONCAKE;
+    public static final RegistryObject<Item> VILLAGERS_FEAST;
 
     // ==================== 效果供应商常量 ====================
     private static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
@@ -257,6 +258,13 @@ public class ModItems {
                         simpleFoodItemProperties(8, 5)
                                 .effect(() -> new MobEffectInstance(WILD_RAGE_EFFECT_SUPPLIER.get(), minToTick(1), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(3), 0), 1.0F)
+                                .build())));
+
+        VILLAGERS_FEAST = ITEMS.register("villagers_feast",
+                () -> new Item(basicItem().stacksTo(16).food(
+                        simpleFoodItemProperties(10, 10)
+                                .effect(() -> new MobEffectInstance(MobEffects.HERO_OF_THE_VILLAGE, minToTick(1), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
                                 .build())));
 
         JUNGLE_SALAD = ITEMS.register("jungle_salad",

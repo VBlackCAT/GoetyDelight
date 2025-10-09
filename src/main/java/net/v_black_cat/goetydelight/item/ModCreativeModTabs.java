@@ -35,12 +35,13 @@ public class ModCreativeModTabs {
          BLACKLIST.add(ModItems.SPECTRE_KNIFE);
          BLACKLIST.add(ModItems.APOCALYPTIUM_INGOT_BRUSH);
          BLACKLIST.add(ModItems.VENOMOUS_SPIDER_KNIFE);
+         BLACKLIST.add(ModItems.ASCENSION_MOONCAKE);
+         BLACKLIST.add(ModItems.PROMOTION_HARD_CANDY);
 
 
 
 
          BLACKLIST.add(ModBlocks.APOCALYPTIUM_POT);
-         BLACKLIST.add(ModBlocks.SHADE_STOVE);
 
          BLACKLIST.add(ModBlocks.EXAMPLE_BLOCK);
          BLACKLIST.add(ModBlocks.NETHER_MARBLE);
@@ -60,6 +61,7 @@ public class ModCreativeModTabs {
          BLACKLIST.add(ModBlocks.JUNGLE_MARBLE);
          BLACKLIST.add(ModBlocks.MARBLE_TRAPDOOR);
          BLACKLIST.add(ModBlocks.RENDER_BLOCK);
+         BLACKLIST.add(ModBlocks.ROTTEN_CORPSE_MAGGOT_FEAST_BLOCK);
 
     }
 
