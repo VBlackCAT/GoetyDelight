@@ -1,0 +1,34 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "farmersdelight:stove"
+  },
+  "craftType": "forge",
+  "soulCost": 10,
+  "duration": 10,
+  "ingredients": [
+    {
+      "item": "goety:shade_stone_bricks"
+    },
+    {
+      "item": "goety:shade_stone_bricks"
+    },
+    {
+      "item": "goety:shade_stone_bricks"
+    },
+    {
+      "item": "goety:shade_stone_bricks"
+    },
+    {
+      "item": "goety:indented_gold"
+    },
+    {
+      "item": "goety:cursed_metal_block"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:shade_stove"
+  }
+
+}
