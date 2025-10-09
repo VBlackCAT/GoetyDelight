@@ -81,7 +81,6 @@ public class PotionAmplifierRecipe extends CustomRecipe {
     public ItemStack assemble(CraftingContainer pContainer, RegistryAccess pRegistryAccess) {
         ItemStack brewStack = ItemStack.EMPTY;
         ItemStack amplifierStack = ItemStack.EMPTY;
-        Level level = Minecraft.getInstance().level;
 
         // 获取药水和放大器
         for (int i = 0; i < pContainer.getContainerSize(); i++) {
@@ -107,17 +106,8 @@ public class PotionAmplifierRecipe extends CustomRecipe {
         // 增强负面效果
         ModBrewUtils.increaseNegativeEffects(result, 5);
 
-        // 如果使用了永恒黑肉汤，返还一个带有冷却时间的汤
+        // 如果使用了永恒黑肉汤，标记需要返回冷却的汤，实际冷却处理在物品使用逻辑中
         if (amplifierStack.getItem() instanceof EternalRefusalOfBlackMeatSoupItem) {
-            // 创建冷却的永恒黑肉汤
-            ItemStack cooledSoup = new ItemStack(ModItems.CUP.get());
-            EternalRefusalOfBlackMeatSoupItem soupItem = (EternalRefusalOfBlackMeatSoupItem) cooledSoup.getItem();
-
-            // 设置冷却时间（60秒）
-            soupItem.setCooldown(cooledSoup, level, 60 * 20);
-
-            // 将冷却的汤放入合成结果（需要特殊处理，因为原版合成只能返回一个物品）
-            // 这里我们使用NBT标记，然后在合成事件中处理
             CompoundTag tag = result.getOrCreateTag();
             tag.putBoolean("ReturnCooledSoup", true);
         }

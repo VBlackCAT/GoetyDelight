@@ -36,6 +36,8 @@ import static net.v_black_cat.goetydelight.GoetyDelight.MODID;
 public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPotMenu> implements RecipeUpdateListener {
     private static final ResourceLocation RECIPE_BUTTON_LOCATION = new ResourceLocation(MODID, "textures/gui/recipe_button.png");
     private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation(MODID, "textures/gui/cursed_ingot_pot.png");
+    private static final ResourceLocation EMPTY_SOUL_SOURCE_SLOT =  new ResourceLocation(MODID, "textures/gui/soul_slot.png");
+
     private static final Rectangle HEAT_ICON = new Rectangle(47, 55, 17, 15);
     private static final Rectangle PROGRESS_ARROW = new Rectangle(89, 25, 0, 17);
     private static final Rectangle SOUL_SOURCE_SLOT = new Rectangle(8, 55, 16, 16); // 灵魂源插槽位置
@@ -87,6 +89,8 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
         this.renderHeatIndicatorTooltip(gui, mouseX, mouseY);
         this.renderSoulSourceTooltip(gui, mouseX, mouseY); //灵魂源插槽提示
         this.recipeBookComponent.renderTooltip(gui, this.leftPos, this.topPos, mouseX, mouseY);
+        Slot soulSlot = this.menu.getSlot(9);
+
     }
 
     private void renderHeatIndicatorTooltip(GuiGraphics gui, int mouseX, int mouseY) {
@@ -111,6 +115,7 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
             }
         }
     }
+
 
     protected void renderMealDisplayTooltip(GuiGraphics gui, int mouseX, int mouseY) {
         if (this.minecraft != null && this.minecraft.player != null && ((CursedIngotPotMenu)this.menu).getCarried().isEmpty() && this.hoveredSlot != null && this.hoveredSlot.hasItem()) {
@@ -152,9 +157,11 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
             // 绘制进度箭头
             int l = ((CursedIngotPotMenu)this.menu).getCookProgressionScaled();
             gui.blit(BACKGROUND_TEXTURE, this.leftPos + PROGRESS_ARROW.x, this.topPos + PROGRESS_ARROW.y, 176, 15, l + 1, PROGRESS_ARROW.height);
+            gui.blit(EMPTY_SOUL_SOURCE_SLOT,
+                    this.leftPos + SOUL_SOURCE_SLOT.x-2,
+                    this.topPos + SOUL_SOURCE_SLOT.y-1,
+                    0, 0, 0, 20, 20, 20, 18);
 
-            // 绘制灵魂源插槽背景
-            gui.blit(BACKGROUND_TEXTURE, this.leftPos + SOUL_SOURCE_SLOT.x, this.topPos + SOUL_SOURCE_SLOT.y, 176, 32, SOUL_SOURCE_SLOT.width, SOUL_SOURCE_SLOT.height);
         }
     }
 

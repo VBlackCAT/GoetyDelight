@@ -16,9 +16,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.v_black_cat.goetydelight.network.NetworkHandler;
 import net.v_black_cat.goetydelight.network.ThrowSoupPacket;
 
@@ -164,7 +167,7 @@ public class EternalRefusalOfBlackMeatSoupItem extends RejectedDarkMeatSoupItem 
         player.awardStat(Stats.ITEM_USED.get(this));
     }
 
-    @Mod.EventBusSubscriber(modid = "goetydelight")
+    @Mod.EventBusSubscriber(modid = "goetydelight", value = Dist.CLIENT)
     public static class PlayerLeftClickHandler {
 
         @SubscribeEvent
@@ -194,7 +197,13 @@ public class EternalRefusalOfBlackMeatSoupItem extends RejectedDarkMeatSoupItem 
 
     @Override
     public boolean isBarVisible(ItemStack stack) {
-        // 只在冷却时显示耐久条
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            return isBarVisibleClient(stack);
+        }
+        return false;
+    }
+    @OnlyIn(Dist.CLIENT)
+    private boolean isBarVisibleClient(ItemStack stack) {
         Level level = Minecraft.getInstance().level;
         if (level != null) {
             return isOnCooldown(stack, level);
@@ -204,6 +213,13 @@ public class EternalRefusalOfBlackMeatSoupItem extends RejectedDarkMeatSoupItem 
 
     @Override
     public int getBarWidth(ItemStack stack) {
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            return getBarWidthClient(stack);
+        }
+        return 0;
+    }
+    @OnlyIn(Dist.CLIENT)
+    private int getBarWidthClient(ItemStack stack) {
         Level level = Minecraft.getInstance().level;
         if (level != null) {
             long remaining = getRemainingCooldown(stack, level);
@@ -213,9 +229,9 @@ public class EternalRefusalOfBlackMeatSoupItem extends RejectedDarkMeatSoupItem 
         return 0;
     }
 
+
     @Override
     public int getBarColor(ItemStack stack) {
-        // 设置冷却条颜色（红色）
         return 0xFF0000;
     }
 }

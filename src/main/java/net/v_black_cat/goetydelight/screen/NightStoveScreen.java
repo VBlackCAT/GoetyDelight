@@ -10,9 +10,11 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import static net.v_black_cat.goetydelight.GoetyDelight.MODID;
+
 @OnlyIn(Dist.CLIENT)
 public class NightStoveScreen extends AbstractContainerScreen<NightStoveMenu> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation("textures/gui/container/smoker.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(MODID, "textures/gui/night_stove.png");;
 
     public NightStoveScreen(NightStoveMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);

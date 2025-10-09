@@ -34,9 +34,10 @@ import vectorwing.farmersdelight.FarmersDelight;
 import vectorwing.farmersdelight.common.block.entity.container.CookingPotMealSlot;
 import vectorwing.farmersdelight.common.tag.ModTags;
 
+import static net.v_black_cat.goetydelight.GoetyDelight.MODID;
+
 public class CursedIngotPotMenu extends RecipeBookMenu<RecipeWrapper> {
     public static final ResourceLocation EMPTY_CONTAINER_SLOT_BOWL = new ResourceLocation("farmersdelight", "item/empty_container_slot_bowl");
-    public static final ResourceLocation EMPTY_SOUL_SOURCE_SLOT = new ResourceLocation(GoetyDelight.MODID, "item/empty_soul_source_slot"); // 空插槽图标
 
     public final CursedIngotPotBlockEntity blockEntity;
     public final ItemStackHandler inventory;
@@ -85,15 +86,11 @@ public class CursedIngotPotMenu extends RecipeBookMenu<RecipeWrapper> {
 
         // 新增：灵魂源插槽 (9)
         this.addSlot(new SlotItemHandler(this.inventory, 9, 8, 55) {
-            public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
-                return Pair.of(InventoryMenu.BLOCK_ATLAS, CursedIngotPotMenu.EMPTY_SOUL_SOURCE_SLOT);
-            }
-
             @Override
             public boolean mayPlace(ItemStack stack) {
-                // 只允许放置图腾或链接宝石
                 return stack.getItem() instanceof ITotem || stack.getItem() == ModItems.SOUL_TRANSFER.get();
             }
+
         });
 
         // 玩家物品栏
