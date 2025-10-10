@@ -3,6 +3,7 @@
   "package": "net.v_black_cat.goetydelight.mixin",
   "refmap": "refmap.goetydelight.json",
   "mixins": [
+    "ArtificialFlowerMixin",
     "BlockFinderMixin",
     "BrushableBlockEntityMixin",
     "SummonSpellMixin"
