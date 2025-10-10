@@ -339,7 +339,7 @@ public class ModItems {
                                 .build())));
 
         SUNSHINE_SUGAR_BUN = ITEMS.register("sunshine_sugar_bun",
-                () -> new BowlFoodItem(basicItem().stacksTo(1).food(
+                () -> new SevenLeafPuddingItem(basicItem().stacksTo(1).food(
                         simpleFoodItemProperties(7, 4)
                                 .effect(() -> new MobEffectInstance(PHOTOSYNTHESIS_SUPPLIER.get(), minToTick(15), 1), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
