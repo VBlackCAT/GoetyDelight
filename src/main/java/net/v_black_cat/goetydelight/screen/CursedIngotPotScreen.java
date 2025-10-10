@@ -139,9 +139,11 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
         }
     }
 
-    protected void renderLabels(GuiGraphics gui, int mouseX, int mouseY) {
-        super.renderLabels(gui, mouseX, mouseY);
-        gui.drawString(this.font, this.playerInventoryTitle, 8, this.imageHeight - 96 + 2, 4210752, false);
+
+    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        super.renderLabels(guiGraphics, mouseX, mouseY);
+        guiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 12632256, false);
+        guiGraphics.drawString(this.font, this.playerInventoryTitle, 8, this.imageHeight - 96 + 2, 12632256, false);
     }
 
     protected void renderBg(GuiGraphics gui, float partialTicks, int mouseX, int mouseY) {
