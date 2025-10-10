@@ -1,0 +1,15 @@
+{
+    "name": "暗夜炉灶",
+    "icon": "goetydelight:night_stove",
+    "category": "goety:goetydelight/equipment",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "利用亡灵权柄而制作的升级版炉灶，放置后半径32格内的亡灵生物将对玩家中立（仅对非boss单位生效），玩家方单位将持续性获得抗火以及生命恢复1，且攻击力增加25％，受到的伤害减少25％。夜晚时烹饪速度为正常的4倍,白天为两倍。"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/night_stove"
+        }
+    ]
+}

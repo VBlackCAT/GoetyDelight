@@ -1,0 +1,15 @@
+{
+    "name": "沸血热茶",
+    "icon": "goetydelight:boiling_blood_brew",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "食用后给予食用者炽热气场（5分钟），舒适（5分钟）"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/boiling_blood_brew"
+        }
+    ]
+}

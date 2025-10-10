@@ -1,0 +1,15 @@
+{
+    "name": "熊掌",
+    "icon": "goetydelight:bear_paw",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "$(4)孩子们这可能并不是熊掌"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "通过击杀熊类生物掉落$(br)给予食用者暴怒1（2分钟），滋养1（5分钟），中毒1（20s），反胃1（10s）"
+        }
+    ]
+}

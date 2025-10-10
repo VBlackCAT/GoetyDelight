@@ -1,0 +1,15 @@
+{
+    "name": "下界风味煎蛋三明治",
+    "icon": "goetydelight:nether_style_fried_egg_sandwich",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "食用后给予食用者抗火（8分钟）"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/nether_style_fried_egg_sandwich"
+        }
+    ]
+}

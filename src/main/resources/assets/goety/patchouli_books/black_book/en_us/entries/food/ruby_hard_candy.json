@@ -1,0 +1,19 @@
+{
+    "name": "红宝石硬糖",
+    "icon": "goetydelight:ruby_hard_candy",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "灾厄宰相拥有一块能放大法术威力的宝石，倘若将其裹上蜂蜜，撒上白糖，再投入浓缩绿宝石，食用之后你或许可以吸收其力量来提升法术威力……$(br)给予食用者法术精通3（10分钟），生命回复2（8分钟），滋养（15分钟）$(br)食用后永久增加一级强效等级，最多生效三次"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/ruby_hard_candy"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "“吃下这一枚糖果，而不仅仅是品尝它独特的甜腻。”$(br)“更重要的是，以你的唾液、你的舌尖、你的味蕾，去一并好好亵渎曾经的高贵。”$(br)“将尊崇与尘俗调换，将珍贵与平凡链接。”$(br)“这份法术上的进步与美味，才会如此鲜红而诱惑。”"
+        }
+    ]
+}

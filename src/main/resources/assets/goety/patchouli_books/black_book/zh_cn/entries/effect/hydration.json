@@ -1,0 +1,11 @@
+{
+    "name": "水合作用",
+    "icon": "goetydelight:textures/mob_effect/hydration.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "当身处水方块，流动水或雨中时会回复生命值，每有一级buff提升一点恢复速率"
+        }
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "name": "水煮下界疣蛋",
+    "icon": "goetydelight:poached_nether_wart_egg",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "文本1"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "清除食用者的所有负面效果"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/poached_nether_wart_egg"
+        }
+    ]
+}

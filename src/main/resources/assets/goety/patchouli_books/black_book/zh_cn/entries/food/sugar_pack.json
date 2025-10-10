@@ -1,0 +1,43 @@
+{
+    "name": "糖包",
+    "icon": "goetydelight:cry_sugar_pack",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "spotlight",
+            "title": "糖包",
+            "link_recipe": true,
+            "item": "goetydelight:sugar_pack",
+            "scale": 1.2,
+            "text": "补药次窝QwQ$(br)给予食用者滋养（4分钟）"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/sugar_pack"
+        },
+        {
+            "type": "spotlight",
+            "title": "阳光糖包",
+            "link_recipe": true,
+            "item": "goetydelight:sunshine_sugar_bun",
+            "scale": 1.2,
+            "text": "补药次窝QwQ$(br)给予食用者滋养（5分钟），光合作用2（1分钟）"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/sunshine_sugar_bun"
+        },
+        {
+            "type": "spotlight",
+            "title": "哭哭糖包",
+            "link_recipe": true,
+            "item": "goetydelight:cry_sugar_pack",
+            "scale": 1.2,
+            "text": "呜呜呜球泥萌补药次窝QwQ$(br)给予玩家滋养（5分钟），水合作用（1分钟）"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/cry_sugar_pack"
+        }
+    ]
+}

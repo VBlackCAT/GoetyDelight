@@ -1,0 +1,16 @@
+{
+    "name": "丛林沙拉",
+    "icon": "goetydelight:jungle_salad",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "食用后给予食用者滋养（60s），光合作用（5分钟）"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/jungle_salad"
+        }
+        
+    ]
+}
