@@ -24,7 +24,7 @@ public class RenderBlockRenderer implements BlockEntityRenderer<RenderBlockEntit
     private static final ResourceLocation DUMMY_TEXTURE =
             new ResourceLocation(GoetyDelight.MODID, "textures/effect/test_texture.png");
 
-    // 创建一个使用着色器的自定义RenderType
+
     private static final RenderType SHADER_RENDER_TYPE = RenderType.create(
             "shader_block",
             DefaultVertexFormat.POSITION_TEX,

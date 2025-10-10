@@ -4,8 +4,8 @@
     "srcrgb": "srcalpha",
     "dstrgb": "1-srcalpha"
   },
-  "vertex": "florid_shader",
-  "fragment": "florid_shader",
+  "vertex": "goetydelight:florid_shader",
+  "fragment": "goetydelight:florid_shader",
   "attributes": [
     "Position",
     "UV0"
