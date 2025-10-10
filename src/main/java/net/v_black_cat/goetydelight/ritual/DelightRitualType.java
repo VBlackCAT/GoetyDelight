@@ -50,9 +50,9 @@ public class DelightRitualType implements IRitualType {
 
         // 创建方块要求映射：方块类型 -> 需要数量
         Map<Block, Integer> blockRequirements = new HashMap<>();
-        blockRequirements.put(Blocks.HONEY_BLOCK, 5);      // 需要5个蜂蜜块
-        blockRequirements.put(ModBlocks.NIGHT_STOVE.get(), 1);      // 需要3个种植小麦
-        blockRequirements.put(ModBlocks.CURSED_INGOT_POT.get(), 1);      // 需要腐尸蛆虫盛宴方块
+        blockRequirements.put(Blocks.SMOKER, 2);      // 需要2个烟熏炉
+        blockRequirements.put(ModBlocks.SHADE_STOVE.get(), 1);      // 需要1个阴影炉灶
+        blockRequirements.put(ModBlocks.CURSED_INGOT_POT.get(), 1);      // 需要1个诅咒金属锅
 
         // 创建计数器映射：方块类型 -> 当前计数
         Map<Block, Integer> blockCounts = new HashMap<>();
@@ -97,16 +97,16 @@ public class DelightRitualType implements IRitualType {
                                Player castingPlayer,
                                ItemStack activationItem) {
         // 生成特殊实体
-        Entity delightEntity = EntityType.BEE.create(world);
-        delightEntity.moveTo(darkAltarPos.getX(), darkAltarPos.getY() + 1, darkAltarPos.getZ());
-        world.addFreshEntity(delightEntity);
+        //Entity delightEntity = EntityType.BEE.create(world);
+        //delightEntity.moveTo(darkAltarPos.getX(), darkAltarPos.getY() + 1, darkAltarPos.getZ());
+        //world.addFreshEntity(delightEntity);
 
         // 给予玩家效果
-        castingPlayer.addEffect(new MobEffectInstance(
-                MobEffects.REGENERATION,
-                600,  // 30秒
-                1
-        ));
+        //castingPlayer.addEffect(new MobEffectInstance(
+                //MobEffects.REGENERATION,
+                //600,  // 30秒
+                //1
+        //));
 
         // 播放音效和粒子
         world.playSound(null, darkAltarPos, SoundEvents.BELL_RESONATE,
