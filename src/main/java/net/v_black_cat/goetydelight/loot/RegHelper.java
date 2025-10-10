@@ -14,4 +14,7 @@ public class RegHelper {
     public static final RegistryObject<LootItemConditionType> ENTITY_TAG_CONDITION =
             LOOT_CONDITIONS.register("entity_tag",
                     () -> new LootItemConditionType(new ModLootConditions.EntityTagCondition.Serializer()));
+    public static final RegistryObject<LootItemConditionType> KILLED_WITH_EQUIPMENT_CONDITION =
+            LOOT_CONDITIONS.register("killed_with_equipment",
+                    () -> new LootItemConditionType(new ModLootConditions.KilledWithEquipmentCondition.Serializer()));
 }
