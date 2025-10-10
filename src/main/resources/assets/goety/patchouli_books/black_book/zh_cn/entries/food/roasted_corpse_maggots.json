@@ -1,0 +1,27 @@
+{
+    "name": "烤腐尸蛆虫",
+    "icon": "goetydelight:roasted_corpse_maggots",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "孤魂尸鬼的伴生物，一种非常美味的蛋白质，作为几乎什么都想来上来几口的黑法师，你应该不会嫌弃这种少有的美味。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/roasted_corpse_maggots"
+        },
+        {
+            "type": "spotlight",
+            "title": "腐尸蛆虫盛宴",
+            "link_recipe": true,
+            "item": "goetydelight:rotten_corpse_maggot_feast_block",
+            "scale": 1.2,
+            "text": "可拿取三次，给予食用者滋养（10分钟）$(br)$(4)食用后有25％的概率立即生成一只$(4)孤魂尸鬼"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/rotten_corpse_maggot_feast_block"
+        }
+    ]
+}

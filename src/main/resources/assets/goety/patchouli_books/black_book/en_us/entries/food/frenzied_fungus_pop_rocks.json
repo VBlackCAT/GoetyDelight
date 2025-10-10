@@ -1,0 +1,15 @@
+{
+    "name": "狂暴菌团跳跳糖",
+    "icon": "goetydelight:frenzied_fungus_pop_rocks",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "“口腔里真的有一支狂暴的军团在使用火药轰击粘膜与舌头！”$(br)“这份躁动和糖分带来的能量，让你想好好活动一下筋骨。”$(br)给予食用者充能1（2分半），速度1（2分半），力量1（2分半）$(br)可以无视饱食度食用，buff时长会累加。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/frenzied_fungus_pop_rocks"
+        }
+    ]
+}

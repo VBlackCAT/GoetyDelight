@@ -1,0 +1,23 @@
+{
+    "name": "糖鱼",
+    "icon": "goetydelight:candy_fish",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "给予食用者滋养（7分钟），水下呼吸（5分钟）$(br)右键使徒/使徒仆从可以回复其10％生命上限的血量"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/candy_fish"
+        }
+        {
+            "type": "spotlight",
+            "title": "酱烤糖鱼",
+            "link_recipe": true,
+            "item": "goetydelight:sauce_grilled_candy_fish",
+            "scale": 1.2,
+            "text": "给予食用者滋养（8分钟），炽热气场（2分钟）$(br)右键使徒/使徒仆从可以回复其15％生命上限的血量"
+        }
+    ]
+}

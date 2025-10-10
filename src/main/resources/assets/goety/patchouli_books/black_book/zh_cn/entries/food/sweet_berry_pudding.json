@@ -1,0 +1,15 @@
+{
+    "name": "甜浆果布丁",
+    "icon": "goetydelight:sweet_berry_pudding",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "给予玩家生命恢复2（5分钟）滋养（5分钟）$(br)同时增加3点攻击力和5％的速度。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/sweet_berry_pudding"
+        }
+    ]
+}

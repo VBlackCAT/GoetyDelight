@@ -1,0 +1,15 @@
+{
+    "name": "果味灵质滑溜幽蓝圣代",
+    "icon": "goetydelight:blue_ectoplasmic_sundae",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "“把灵质——淋上粘液球——做成甜浆果的味道！”$(br)给予玩家滋养（10分钟），生命恢复1（2分钟），寒庇1（2分钟）$(br)同时恢复300点灵魂能量"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/blue_ectoplasmic_sundae"
+        }
+    ]
+}
