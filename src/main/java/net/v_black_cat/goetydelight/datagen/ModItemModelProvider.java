@@ -24,13 +24,14 @@ public class ModItemModelProvider extends ItemModelProvider {
     @Override
     protected void registerModels() {
 
-        simpleItem(ModItems.APOCALYPTIUM_KNIFE);
-        simpleItem(ModItems.VENOMOUS_SPIDER_KNIFE);
-        simpleItem(ModItems.SPECTRE_KNIFE);
-        simpleItem(ModItems.APOCALYPTIUM_KNIFE2);
-        simpleItem(ModItems.APOCALYPTIUM_KNIFE1);
-        simpleItem(ModItems.CURSED_INGOT_KNIFE);
-        simpleItem(ModItems.DARK_KNIFE);
+        simpleHandHoldItem(ModItems.APOCALYPTIUM_KNIFE);
+        simpleHandHoldItem(ModItems.VENOMOUS_SPIDER_KNIFE);
+        simpleHandHoldItem(ModItems.SPECTRE_KNIFE);
+        simpleHandHoldItem(ModItems.APOCALYPTIUM_KNIFE2);
+        simpleHandHoldItem(ModItems.APOCALYPTIUM_KNIFE1);
+//        simpleHandHoldItem(ModItems.CURSED_INGOT_KNIFE);
+        simpleHandHoldItem(ModItems.DARK_KNIFE);
+
         simpleItem(ModItems.CORPSE_MAGGOT);
 
 
@@ -95,6 +96,12 @@ public class ModItemModelProvider extends ItemModelProvider {
         evenSimplerBlockItem(ModBlocks.MARBLE_FENCE_GATE);
 
         trapdoorItem(ModBlocks.MARBLE_TRAPDOOR);
+    }
+
+    private ItemModelBuilder simpleHandHoldItem(RegistryObject<Item> item) {
+        return withExistingParent(item.getId().getPath(),
+                new ResourceLocation("item/handheld")).texture("layer0",
+                new ResourceLocation(GoetyDelight.MODID,"item/" + item.getId().getPath()));
     }
 
     private ItemModelBuilder simpleItem(RegistryObject<Item> item) {
