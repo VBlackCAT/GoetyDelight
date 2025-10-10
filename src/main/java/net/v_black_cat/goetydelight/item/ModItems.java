@@ -305,7 +305,7 @@ public class ModItems {
                                 .build())));
 
         WHITE_SHARK_CANDY = ITEMS.register("sugar_scepter",
-                () ->  new Item(basicItem().stacksTo(16).food(
+                () ->  new SugarScepterItem(basicItem().stacksTo(16).food(
                         simpleFoodItemProperties(8, 5)
                                 .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(1), 1), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
