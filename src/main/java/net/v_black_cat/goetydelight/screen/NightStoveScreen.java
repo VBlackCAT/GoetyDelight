@@ -14,7 +14,7 @@ import static net.v_black_cat.goetydelight.GoetyDelight.MODID;
 
 @OnlyIn(Dist.CLIENT)
 public class NightStoveScreen extends AbstractContainerScreen<NightStoveMenu> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(MODID, "textures/gui/night_stove.png");;
+    private static final ResourceLocation TEXTURE = new ResourceLocation(MODID, "textures/gui/night_stove.png");
 
     public NightStoveScreen(NightStoveMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
@@ -24,6 +24,12 @@ public class NightStoveScreen extends AbstractContainerScreen<NightStoveMenu> {
     protected void init() {
         super.init();
         this.titleLabelX = (this.imageWidth - this.font.width(this.title)) / 2;
+    }
+    @Override
+    protected void renderLabels(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY) {
+        super.renderLabels(pGuiGraphics, pMouseX, pMouseY);
+        pGuiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 10421954, true);
+        pGuiGraphics.drawString(this.font, this.playerInventoryTitle, 8, this.imageHeight - 96 + 2, 10421954, true);
     }
 
     @Override
