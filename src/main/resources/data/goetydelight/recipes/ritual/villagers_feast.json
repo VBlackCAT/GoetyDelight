@@ -4,7 +4,7 @@
   "activation_item": {
     "item": "minecraft:bowl"
   },
-  "craftType": "animation",
+  "craftType": "culinary",
   "soulCost": 1,
   "duration": 10,
   "ingredients": [

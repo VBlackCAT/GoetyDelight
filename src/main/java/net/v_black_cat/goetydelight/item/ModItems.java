@@ -261,9 +261,9 @@ public class ModItems {
                                 .build())));
 
         VILLAGERS_FEAST = ITEMS.register("villagers_feast",
-                () -> new Item(basicItem().stacksTo(16).food(
-                        simpleFoodItemProperties(10, 10)
-                                .effect(() -> new MobEffectInstance(MobEffects.HERO_OF_THE_VILLAGE, minToTick(1), 0), 1.0F)
+                () -> new Item(basicItem().stacksTo(1).food(
+                        simpleFoodItemProperties(16, 10)
+                                .effect(() -> new MobEffectInstance(MobEffects.HERO_OF_THE_VILLAGE, minToTick(3), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
                                 .build())));
 
