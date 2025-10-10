@@ -4,8 +4,8 @@
     "srcrgb": "srcalpha",
     "dstrgb": "1-srcalpha"
   },
-  "vertex": "colorful_shader",
-  "fragment": "colorful_shader",
+  "vertex": "goetydelight:colorful_shader",
+  "fragment": "goetydelight:colorful_shader",
   "attributes": [
     "Position",
     "UV0"

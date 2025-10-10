@@ -35,18 +35,18 @@ public class ModShaderReg {
     public static void registerShaders(RegisterShadersEvent event) throws IOException {
         ResourceProvider resourceProvider = event.getResourceProvider();
 
-        // 注册原有着色器
+
         ModShaderInstance colorful = new ModShaderInstance(
                 resourceProvider,
-                new ResourceLocation("colorful_shader").toString(),
+                new ResourceLocation(GoetyDelight.MODID, "colorful_shader").toString(),
                 DefaultVertexFormat.POSITION_COLOR_TEX
         );
         event.registerShader(colorful, shaderInstance -> colorfulShader = shaderInstance);
 
-        // 注册新着色器
+
         ModShaderInstance florid = new ModShaderInstance(
                 resourceProvider,
-                new ResourceLocation("florid_shader").toString(),
+                new ResourceLocation(GoetyDelight.MODID, "florid_shader").toString(),
                 DefaultVertexFormat.POSITION_TEX
         );
         event.registerShader(florid, shaderInstance -> floridShader = shaderInstance);
