@@ -1,0 +1,12 @@
+{
+    "name": "Servant Reinforcement",
+    "icon": "goetydelight:textures/mob_effect/servant_reinforcement.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Doubles the number of servants summoned at once."
+        }
+
+    ]
+}

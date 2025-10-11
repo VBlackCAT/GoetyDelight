@@ -1,0 +1,15 @@
+{
+    "name": "Exotic Breakfast",
+    "icon": "goetydelight:exotic_breakfast",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Grants the consumer Wild Frenzy (30s), Nourishment (3 min) upon consumption."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/exotic_breakfast"
+        }
+    ]
+}

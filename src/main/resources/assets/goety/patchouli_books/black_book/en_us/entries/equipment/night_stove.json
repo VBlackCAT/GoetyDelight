@@ -1,0 +1,15 @@
+{
+    "name": "Night Stove",
+    "icon": "goetydelight:night_stove",
+    "category": "goety:goetydelight/equipment",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "An upgraded stove made with undead authority. When placed, undead mobs within a 32-block radius will be neutral to the player (only for non-boss units). Player units will continuously gain Fire Resistance and Regeneration I, have their attack increased by 25%, and take 25% less damage. Cooking speed is 4x at night and 2x during the day."
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/night_stove"
+        }
+    ]
+}

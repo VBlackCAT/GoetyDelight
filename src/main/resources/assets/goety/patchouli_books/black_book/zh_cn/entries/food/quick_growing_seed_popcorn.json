@@ -1,0 +1,15 @@
+{
+    "name": "速生爆米花",
+    "icon": "goetydelight:quick_growing_seed_popcorn",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "食用后给予食用者饱和（30s），滋养（10分钟），舒适（10分钟），光合作用（5分钟）"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/quick_growing_seed_popcorn"
+        }
+    ]
+}

@@ -1,0 +1,16 @@
+{
+    "name": "水煮蜘蛛卵",
+    "icon": "goetydelight:poached_spider_egg",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        
+        {
+            "type": "patchouli:text",
+            "text": "嘎嘣脆，失败的味$(br)给予玩家攀爬（10s）"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/poached_spider_egg"
+        }
+    ]
+}

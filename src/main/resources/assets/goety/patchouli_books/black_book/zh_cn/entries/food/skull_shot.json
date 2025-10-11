@@ -1,0 +1,16 @@
+{
+    "name": "头盖骨酒",
+    "icon": "goetydelight:skull_shot",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "听好了你们这些灰皮肤的害虫。在我说出‘我要把你的头盖骨当碗使’的时候，我并不是在威胁，而是在陈述既定的事实。猩红的果酒就像脑浆一样甜蜜而醉人。这才是胜利后吃干抹净那些失败者的终极体现——$(br)代价是他们应得的。$(br)给予玩家食尸者（60s）"
+        },
+        
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/skull_shot"
+        }
+    ]
+}

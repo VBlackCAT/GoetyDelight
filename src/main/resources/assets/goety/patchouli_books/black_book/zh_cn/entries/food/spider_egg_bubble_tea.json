@@ -1,0 +1,15 @@
+{
+    "name": "真蛛奶茶",
+    "icon": "goetydelight:spider_egg_bubble_tea",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "给予食用者攀爬（60s）"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/spider_egg_bubble_tea"
+        }
+    ]
+}

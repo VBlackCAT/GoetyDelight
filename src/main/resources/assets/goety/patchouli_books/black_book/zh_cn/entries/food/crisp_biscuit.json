@@ -1,0 +1,19 @@
+{
+    "name": "酥饼",
+    "icon": "goetydelight:crisp_biscuit",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "“早餐吃石头~”$(br)“听着大理石，我是如此地爱你。”$(br)“但它似乎代表的并不仅仅是一块白色的石头……”$(br)“算了，谁知道呢？咔嚓咔嚓的酥脆早已让人放弃思考禁忌的奥秘，就算吃的是奇怪的肉，也不会有什么的。”$(br)💦💦💦💦💦💦💦💦💦💦$(br)“窝布好次，补药次窝”"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "给予食用者食尸者1（30s），永恒1（30分钟），滋养（5分钟），法术精通1（2分钟）$(br)可无视饱食度食用，永恒buff的时间可以叠加，食尸者持续时间内食用该物品会使食尸者buff等级+1，持续时间*2（最高4级，持续10分钟）。同时每次食用会在聊天框弹$(4)食人术~"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/crisp_biscuit"
+        }
+    ]
+}

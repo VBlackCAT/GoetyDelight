@@ -1,0 +1,15 @@
+{
+    "name": "诅咒金属锅",
+    "icon": "goetydelight:cursed_ingot_pot",
+    "category": "goety:goetydelight/equipment",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "利用诅咒金属的灵魂亲和性使你可以使用灵魂能量烹饪菜肴，每50点灵魂能量可以烹饪1道菜品，同时对任意菜肴有1.5倍烹饪速度加成。"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/cursed_ingot_pot"
+        }
+    ]
+}

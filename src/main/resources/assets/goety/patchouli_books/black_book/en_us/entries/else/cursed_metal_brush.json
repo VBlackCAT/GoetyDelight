@@ -1,0 +1,15 @@
+{
+    "name": "Cursed Metal Brush",
+    "icon": "goetydelight:cursed_metal_brush",
+    "category": "goety:goetydelight/else",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "1.2x block brushing speed"
+        },
+        {
+            "type": "patchouli:crafting",
+            "recipe": "goetydelight:cursed_metal_brush"
+        }
+    ]
+}

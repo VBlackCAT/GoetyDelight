@@ -1,0 +1,15 @@
+{
+    "name": "Shade Stove",
+    "icon": "goetydelight:shade_stove",
+    "category": "goety:goetydelight/equipment",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "The soul affinity of Shadow Stone allows you to use soul energy to smoke food.$(br)Can be used as a smoker to cook food with soul energy. Every 50 soul energy can cook 1 dish, and cooking speed is 1.5x normal."
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/shade_stove"
+        }
+    ]
+}

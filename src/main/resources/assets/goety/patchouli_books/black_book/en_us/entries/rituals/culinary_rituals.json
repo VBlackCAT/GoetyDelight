@@ -1,0 +1,21 @@
+{
+  "name": "Culinary Rituals",
+  "icon": "goetydelight:cursed_ingot_pot",
+  "category": "goety:rituals",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Required: $(li)2 Smokers $(li)1 Shadow Stove $(li)1 Cursed Metal Pot"
+    },
+    {
+      "type": "patchouli:image",
+      "images": ["goety:textures/gui/culinary_rituals.png"],
+      "border": true,
+      "text": "An example of a ritual setup."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Create a gourmet kitchen for the dark witch around the dark altar! It allows you to cook special foods."
+    }
+  ]
+}

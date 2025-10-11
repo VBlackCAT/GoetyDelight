@@ -1,0 +1,15 @@
+{
+    "name": "Boiling Blood Brew",
+    "icon": "goetydelight:boiling_blood_brew",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Grants the consumer Blazing Aura (5 min) and Comfort (5 min) upon consumption."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/boiling_blood_brew"
+        }
+    ]
+}

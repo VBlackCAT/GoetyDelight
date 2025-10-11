@@ -1,0 +1,15 @@
+{
+    "name": "不祥冰淇淋",
+    "icon": "goetydelight:ominous_ice_cream",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "给予玩家不详之兆5（5分钟），寒庇1（1分钟）$(br)食用后如果身上持有不详之兆，则灾厄阵营生物对食用者保持中立（对大部分灾厄阵营boss无效），且一旦不详之兆消失，则效果失效，直至下一次食用该物品（无论效果消失到下次食用期间是否再次获得过不详之兆，都无法再次使效果生效）"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/ominous_ice_cream"
+        }
+    ]
+}

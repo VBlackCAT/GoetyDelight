@@ -1,0 +1,15 @@
+{
+    "name": "Dark Metal Brush",
+    "icon": "goetydelight:dark_brush",
+    "category": "goety:goetydelight/else",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Comes with Soul Mending like the Dark set and has double brushing speed."
+        },
+        {
+            "type": "crafting",
+            "recipe": "goetydelight:dark_ingot_brush"
+        }
+    ]
+}
