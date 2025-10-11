@@ -42,8 +42,8 @@ public class SiblingSundaeItem extends Item {
             };
 
             // 各等级卡池权重
-            double[] weights = new double[]{50, 35, 12.5, 2.0, 0.45,0.05};
-            int[] summonCounts = new int[]{5, 4, 2, 1, 1};
+            double[] weights = new double[]{50, 35, 12.5, 2.25, 0.2,0.05};
+            int[] summonCounts = new int[]{8, 4, 2, 1, 1, 1};
             int[] lifeTimes = new int[]{2400, 6000, 12000, 36000, 72000, 144000}; // tick: 2,5,10,30,60,120分钟
             double[] immortalBaseChance = new double[]{0.5, 0.5, 0.5, 0.5, 0.2, 0.1}; // 5级仅20%,6级仅10%
 
@@ -53,8 +53,8 @@ public class SiblingSundaeItem extends Item {
                 luck = (int)player.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.LUCK).getValue();
             }
 
-            // roll等级：每3点幸运多1次roll，最多9次，取10次最高
-            int rollTimes = 1 + Math.min(luck / 3, 9);
+            // roll等级：每3点幸运多1次roll，最多4次，取5次最高
+            int rollTimes = 1 + Math.min(luck / 3, 4);
             int bestLevel = 0;
             Random random = new Random();
             for (int i = 0; i < rollTimes; i++) {
