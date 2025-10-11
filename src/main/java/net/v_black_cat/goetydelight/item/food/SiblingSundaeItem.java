@@ -67,18 +67,24 @@ public class SiblingSundaeItem extends Item {
 
             // roll仆从
             List<EntityType<?>> servantTypes = new ArrayList<>();
-            BuiltInRegistries.ENTITY_TYPE.getTag(servantTags[bestLevel]).ifPresent(tag -> {
-                for (Holder<EntityType<?>> holder : tag) {
-                    servantTypes.add(holder.value());
-                }
-            });
+            int checkedLevel = bestLevel;
+            while (checkedLevel >= 0) {
+                servantTypes.clear();
+                BuiltInRegistries.ENTITY_TYPE.getTag(servantTags[checkedLevel]).ifPresent(tag -> {
+                    for (Holder<EntityType<?>> holder : tag) {
+                        servantTypes.add(holder.value());
+                    }
+                });
+                if (!servantTypes.isEmpty()) break;
+                checkedLevel--;
+            }
 
             if (!servantTypes.isEmpty()) {
                 // 召唤数量
-                int summonCount = summonCounts[bestLevel];
+                int summonCount = summonCounts[checkedLevel];
                 // 永生概率
-                double servantImmortalChance = immortalBaseChance[bestLevel] + Math.min(luck, 50) * 0.01;
-                if (bestLevel == 4) servantImmortalChance = Math.min(servantImmortalChance, 0.2); // 5级上限20%
+                double servantImmortalChance = immortalBaseChance[checkedLevel] + Math.min(luck, 50) * 0.01;
+                if (checkedLevel == 4) servantImmortalChance = Math.min(servantImmortalChance, 0.2); // 5级上限20%
                 else servantImmortalChance = Math.min(servantImmortalChance, 1.0);
 
                 //roll空重roll,并且最多重roll十次防止卡死
@@ -94,20 +100,18 @@ public class SiblingSundaeItem extends Item {
                     }
                     if (entityToSummon != null) {
                         boolean isImmortal = random.nextDouble() < servantImmortalChance;
-                        int servantLife = isImmortal ? -1 : lifeTimes[bestLevel];
+                        int servantLife = isImmortal ? -1 : lifeTimes[checkedLevel];
                         createAndSetupServant((EntityType<? extends Entity>) servantTypeToSummon, level, entity, servantLife);
                     }
                 }
             }
 
             // 彩蛋逻辑
-            if (bestLevel == 5) {
+            if (bestLevel >= 4) {
                 double v = random.nextDouble();
                 if (v < 0.33) {
                     Cat cat = EntityType.CAT.create(level);
                     if (cat != null) {
-
-
                         if (level instanceof ServerLevel serverLevel) {
 
                             CatVariant allBlack = serverLevel.registryAccess()
