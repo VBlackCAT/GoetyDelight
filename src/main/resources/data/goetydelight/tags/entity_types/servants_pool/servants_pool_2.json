@@ -2,6 +2,21 @@
   "values": [
     "goety:haunted_armor_servant",
     "goety:bound_evoker",
+    "goety:malghast",
+    "goety:inferno",
+    "goety:blackguard_servant",
+    "goety:vanguard_servant",
+    "goety:zpiglin_brute_servant",
+    "goety:evoker_servant",
+    "goety:geomance_servant",
+    "goety:cryologer_servant",
+    "goety:bound_iceologer",
+    "goety:brood_mother_servant",
+    "goety:ice_golem",
+    "goety:mountaineer_servant",
+    "goety:zombie_vindicator",
+    "goety:vindicator_servant",
+    "goety:vindicator_chef_servant",
     {
       "id": "goety_cataclysm:royal_draugr_servant",
       "required": false
