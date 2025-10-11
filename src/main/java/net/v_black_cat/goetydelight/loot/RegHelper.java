@@ -17,4 +17,6 @@ public class RegHelper {
     public static final RegistryObject<LootItemConditionType> KILLED_WITH_EQUIPMENT_CONDITION =
             LOOT_CONDITIONS.register("killed_with_equipment",
                     () -> new LootItemConditionType(new ModLootConditions.KilledWithEquipmentCondition.Serializer()));
+
+
 }
