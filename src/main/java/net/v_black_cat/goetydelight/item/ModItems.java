@@ -312,7 +312,7 @@ public class ModItems {
                                 .build())));
 
         SIBLING_SUNDAE = ITEMS.register("possible_holy_representative",
-                () -> new GlassBottleFoodItem(basicItem().stacksTo(1).food(
+                () -> new SiblingSundaeItem(basicItem().stacksTo(1).food(
                         simpleFoodItemProperties(6, 5)
                                 .effect(() -> new MobEffectInstance(INSIGHT.get(), minToTick(2.5F), 3), 1.0F)
                                 .build())));
