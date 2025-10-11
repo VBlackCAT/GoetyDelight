@@ -12,8 +12,6 @@ public class ModEffects {
     public static final DeferredRegister<MobEffect> EFFECTS =
             DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, MODID);
 
-    public static final RegistryObject<MobEffect> IT_STINKS =
-            EFFECTS.register("it_stinks", ItStinksEffect::new);
     public static final RegistryObject<MobEffect> THE_PALE_MESSRNGER =
             EFFECTS.register("the_pale_messenger", TaintedDrinkEffect::new);
 
