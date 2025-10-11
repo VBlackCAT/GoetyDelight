@@ -1,15 +1,15 @@
 {
-    "name": "拒绝黑肉汤",
+    "name": "Rejected Dark Meat Soup",
     "icon": "goetydelight:rejected_dark_meat_soup",
     "category": "goety:goetydelight/food",
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "药水之魂拒绝了你的呼唤$(br)但巫婆的秘典让你仍能做一碗肉汤，或许它独特的味道会让你思考出药酿的真谛$(br)用木棍搅拌一下，才能体会其独特味道。"
+            "text": "The soul of the potion rejects your call$(br)But the witch's grimoire allows you to still make a bowl of soup, perhaps its unique taste will help you understand the essence of potion brewing$(br)Stir with a stick to appreciate its unique flavor."
         },
         {
             "type": "patchouli:text",
-            "text": "可以像药水瓶一样扔出去，给予周围实体debuff。$(b)（反胃（30s），2到5级随机等级中毒（30s），虚弱2（30s））$()同时可以工作台上与药酿合成，合成之后也为药酿，但是药酿的debuff等级会提高一级（最多提升三级）"
+            "text": "Can be thrown like a potion bottle, giving debuffs to nearby entities.$(b)(Nausea (30s), random level 2 to 5 Poison (30s), Weakness II (30s))$()Can also be crafted with potion brews on a crafting table, resulting in a potion brew, but the brew's debuff level will increase by one (up to three levels max)"
         },
         {
             "type": "goety:cooking",

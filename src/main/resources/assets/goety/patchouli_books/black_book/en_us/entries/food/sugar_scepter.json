@@ -1,11 +1,11 @@
 {
-    "name": "糖权杖",
+    "name": "Sugar Scepter",
     "icon": "goetydelight:sugar_scepter",
     "category": "goety:goetydelight/food",
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "给予食用者滋养（10分钟），生命恢复2（1分钟）$(br)食用后可以免疫一次伤害，免疫伤害的冷却为20s，次数无法叠加"
+            "text": "Grants the consumer Nourishment (10 minutes), Regeneration II (1 minute)$(br)After consumption, can immunity one damage, cooldown for damage immunity is 20s, stacks not allowed"
         },
         {
             "type": "goety:cooking",

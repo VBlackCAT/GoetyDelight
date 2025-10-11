@@ -1,11 +1,11 @@
 {
-    "name": "村民晚宴",
+    "name": "Villager's Feast",
     "icon": "goetydelight:villagers_feast",
     "category": "goety:goetydelight/food",
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "食用后给予玩家村庄英雄（1分钟）滋养（10分钟）"
+            "text": "After consumption, grants the player Hero of the Village (1 minute) Nourishment (10 minutes)"
         },
         {
             "type": "goety:ritual",

@@ -1,15 +1,15 @@
 {
-    "name": "毒物饭",
+    "name": "Toxic Meal",
     "icon": "goetydelight:toxic_meal",
     "category": "goety:goetydelight/food",
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "也许是出于黑法师特有的疯狂，你把一些至毒之物与米饭混合在一起，做出了这道令你自己难以下嘴的毒物饭。$(br)在忍着那难以下咽的味道和强烈的毒性多次食用之后你发现你的身体对其中的强烈毒性产生了适应性。$(br)当然强塞别人嘴里也是一种不错的选择。"
+            "text": "Perhaps due to the unique madness of dark wizards, you mixed some extremely toxic substances with rice, creating this toxic meal that's hard for you to swallow.$(br)After enduring the disgusting taste and strong toxicity from multiple consumptions, you found your body has developed adaptability to its strong toxicity.$(br)Of course, forcing it into someone else's mouth is also a good choice."
         },
         {
             "type": "patchouli:text",
-            "text": "可以喂给其它生物。给予玩家（或者是受害者）反胃（100s），中毒10（100s），虚弱5（100s）$(br)食用5次后免疫反胃，10次后免疫中毒，15次后免疫虚弱。右键其他的实体可以使其获得相同buff并且消耗该物品。"
+            "text": "Can be fed to other creatures. Grants the player (or victim) Nausea (100s), Poison X (100s), Weakness V (100s)$(br)Immune to nausea after 5 consumptions, immune to poison after 10, immune to weakness after 15. Right-clicking on other entities can give them the same buff and consume the item."
         },
         {
             "type": "goety:cooking",
@@ -17,7 +17,7 @@
         },
         {
             "type": "patchouli:text",
-            "text": "“五毒俱全的一餐，吃下去要费很大的力气去克服迟疑的恐惧。”$(br)“虽然食用它能获得对疾病的抗体，但绝大部分人应该不会愿意吃那么多次。”$(br)“还好，它还能作为武器糊到别人嘴里。”"
+            "text": "A meal with all five poisons, eating it requires great effort to overcome hesitant fear.$(br)Although consuming it can gain antibodies to diseases, most people probably wouldn't want to eat it that many times.$(br)Luckily, it can still be used as a weapon to smear into others' mouths."
         }
     ]
 }

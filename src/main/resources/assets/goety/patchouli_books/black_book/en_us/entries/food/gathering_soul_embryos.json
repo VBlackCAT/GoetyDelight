@@ -1,19 +1,19 @@
 {
-    "name": "聚魂胚",
+    "name": "Gathering Soul Embryos",
     "icon": "goetydelight:gathering_soul_embryos",
     "category": "goety:goetydelight/food",
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "“一团位于监守者心脏位置的器官，被你用暴力的手段活活剜出，不可避免地缺损了一部分。”$(br)“其本质上是一团纯粹的灵魂聚合体，吸收后你便能取得它们的力量。”$(br)“逸散的灵魂形成了护甲，聚集的灵魂驱动着能量，剩余下来的，只有饥饿的渴望。”$(br)食用后增加玩家10000点灵魂能量。$(br)由监守者掉落"
+            "text": "An organ located where the Warden's heart should be, violently gouged out by your hands, inevitably losing a portion in the process.$(br)Its essence is a pure aggregation of souls, and by absorbing it you gain their power.$(br)Scattered souls form armor, gathered souls drive energy, and what remains is only a hungry desire.$(br)Consuming this increases the player's soul energy by 10000 points.$(br)Dropped by Wardens"
         },
         {
             "type": "spotlight",
-            "title": "聚魂室",
+            "title": "Soul Convergence Room",
             "link_recipe": true,
             "item": "goetydelight:soul_convergence_room",
             "scale": 1.2,
-            "text": "食用后增加玩家30000点灵魂能量，同时在十分钟之内阻止灾厄猎杀的生成。"
+            "text": "Consuming this increases the player's soul energy by 30000 points, and prevents the spawning of Illager Hunters for ten minutes."
         }
     ]
 }
