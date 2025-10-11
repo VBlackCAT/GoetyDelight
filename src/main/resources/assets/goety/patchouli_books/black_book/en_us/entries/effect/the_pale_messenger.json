@@ -1,0 +1,11 @@
+{
+    "name": "The Pale Messenger",
+    "icon": "goetydelight:textures/mob_effect/the_pale_messenger.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Attacks generate a patch of hellfire under the target's feet. Grants immunity to debuffs and halves incoming damage. Obtained by drinking $(l:goety:food/tainted_drink)Tainted Drink$()."
+        }
+    ]
+}

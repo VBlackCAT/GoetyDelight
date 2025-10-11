@@ -1,0 +1,15 @@
+{
+    "name": "冰灵质瓜",
+    "icon": "goetydelight:ectoplasmic_melon",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "“吃的时候感觉恶寒属于独特体验，放心品尝。”$(br)“并不会有酒鬼和你抢西瓜吃。”$(br)给予玩家寒庇1（5s）"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/ectoplasmic_melon"
+        }
+    ]
+}

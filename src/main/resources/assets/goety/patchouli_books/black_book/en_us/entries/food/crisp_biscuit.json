@@ -1,0 +1,19 @@
+{
+    "name": "Crisp Biscuit",
+    "icon": "goetydelight:crisp_biscuit",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "\"Eat rocks for breakfast~\"$(br)\"Listen, marble, I love you so much.\"$(br)\"But it seems to represent more than just a piece of white stone...\"$(br)\"Forget it, who knows? The crispy crunch has long made people give up pondering the mysteries of taboos. Even if it's strange meat, it's fine.\"$(br)💦💦💦💦💦💦💦💦💦💦$(br)\"Not tasty, but it's good for you.\""
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Grants the consumer Cannibal I (30s), Eternity I (30 min), Nourishment (5 min), Spell Mastery I (2 min).$(br)Can be eaten regardless of hunger. Eternity buff duration stacks. Eating this item while Cannibal is active increases Cannibal buff level by 1 and doubles its duration (max level 4, up to 10 min). Each time you eat, a $(4)Cannibalism~ message appears in chat."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/crisp_biscuit"
+        }
+    ]
+}

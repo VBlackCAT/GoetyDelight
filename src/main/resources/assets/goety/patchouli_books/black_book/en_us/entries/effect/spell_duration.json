@@ -1,0 +1,11 @@
+{
+    "name": "Spell Duration",
+    "icon": "goetydelight:textures/mob_effect/spell_duration.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Each buff level increases the duration level by one."
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "name": "苍白使者",
+    "icon": "goetydelight:textures/mob_effect/the_pale_messenger.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "攻击时会在目标脚下生成一团狱火，免疫debuff，受到的伤害减半，食用$(l:goety:food/tainted_drink)不洁之饮$()获得。"
+        }
+    ]
+}

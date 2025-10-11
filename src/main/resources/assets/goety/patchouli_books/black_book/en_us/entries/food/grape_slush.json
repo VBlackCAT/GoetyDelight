@@ -1,0 +1,15 @@
+{
+    "name": "葡萄冰沙",
+    "icon": "goetydelight:grape_slush",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "“你并不知道葡萄是什么，但想来应该是个紫色的东西。”$(br)“不过作为厨艺魔法两开花的天才，你用紫水晶内里的甘美魔力注入了绒球葱。”$(br)“这完全就是葡萄嘛！看起来一样，吃起来也一样！”$(br)“放进小块碎冰变成冰沙后自然变得口感更好了。”$(br)给予食用者寒庇2（3分半），滋养（10分钟），凛寒气场（30s）"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/grape_slush"
+        }
+    ]
+}

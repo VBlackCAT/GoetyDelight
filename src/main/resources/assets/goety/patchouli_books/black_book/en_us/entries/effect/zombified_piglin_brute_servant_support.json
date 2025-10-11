@@ -1,0 +1,11 @@
+{
+    "name": "Piglin Support",
+    "icon": "goetydelight:textures/mob_effect/zombified_piglin_brute_servant_support.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "When taking damage, there is a 50% chance to summon a zombified piglin brute servant belonging to you (with a 3-minute lifespan). Obtained by drinking $(l:goety:food/tainted_drink)Tainted Drink$()."
+        }
+    ]
+}

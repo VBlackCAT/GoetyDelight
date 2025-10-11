@@ -1,0 +1,15 @@
+{
+    "name": "黑暗金属刷子",
+    "icon": "goetydelight:dark_brush",
+    "category": "goety:goetydelight/else",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "自带与黑暗套相同的灵魂修补，拥有两倍的刷扫速度。"
+        },
+        {
+            "type": "crafting",
+            "recipe": "goetydelight:dark_ingot_brush"
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "name": "Icy Ectoplasmic Melon",
+    "icon": "goetydelight:ectoplasmic_melon",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "\"The chilling sensation when eating it is a unique experience, enjoy it without worry.\"$(br)\"No drunkard will fight you for this melon.\"$(br)Grants the player Cold Shelter I (5s)."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/ectoplasmic_melon"
+        }
+    ]
+}

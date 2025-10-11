@@ -1,0 +1,15 @@
+{
+    "name": "熊掌",
+    "icon": "goetydelight:bear_paw",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "通过击杀熊类生物掉落$(br)给予食用者暴怒1（2分钟），滋养1（5分钟），中毒1（20s），反胃1（10s）"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "“肥厚到流油的大型野生动物前肢末端的部分。”$(br)“虽然看起来份量很足，但也不该成为生食的理由，爪间的口水或是什么东西足以把人臭到昏迷。”$(br)“经过处理后才会成为美味的食品。”"
+        }
+    ]
+}

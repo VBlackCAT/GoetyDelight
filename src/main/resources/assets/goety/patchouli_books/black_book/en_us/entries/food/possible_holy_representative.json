@@ -1,0 +1,15 @@
+{
+    "name": "可能性圣代",
+    "icon": "goetydelight:possible_holy_representative",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "“源于想象，继于创作，归于成果”$(br)$(br)给予玩家洞悉4（2分半），同时触发一个神秘效果（"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/possible_holy_representative"
+        }
+    ]
+}

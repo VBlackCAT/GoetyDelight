@@ -1,0 +1,15 @@
+{
+    "name": "Bear Paw",
+    "icon": "goetydelight:bear_paw",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Dropped by killing bear-type creatures.$(br)Grants the consumer Rage I (2 min), Nourishment I (5 min), Poison I (20s), and Nausea I (10s)."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "\"The thick, oily end part of a large wild animal's forelimb.\"$(br)\"Although it looks filling, that's no reason to eat it raw. The saliva or whatever between the claws is enough to knock someone out from the smell.\"$(br)\"Only after proper processing does it become a delicacy.\""
+        }
+    ]
+}

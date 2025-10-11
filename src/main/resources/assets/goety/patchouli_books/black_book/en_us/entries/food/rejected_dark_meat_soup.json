@@ -1,0 +1,19 @@
+{
+    "name": "拒绝黑肉汤",
+    "icon": "goetydelight:rejected_dark_meat_soup",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "药水之魂拒绝了你的呼唤$(br)但巫婆的秘典让你仍能做一碗肉汤，或许它独特的味道会让你思考出药酿的真谛$(br)用木棍搅拌一下，才能体会其独特味道。"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "可以像药水瓶一样扔出去，给予周围实体debuff。$(b)（反胃（30s），2到5级随机等级中毒（30s），虚弱2（30s））$()同时可以工作台上与药酿合成，合成之后也为药酿，但是药酿的debuff等级会提高一级（最多提升三级）"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/rejected_dark_meat_soup"
+        }
+    ]
+}

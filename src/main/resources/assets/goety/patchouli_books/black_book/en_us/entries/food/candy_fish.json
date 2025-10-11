@@ -1,0 +1,23 @@
+{
+    "name": "Candy Fish",
+    "icon": "goetydelight:candy_fish",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Grants the consumer Nourishment (7 min), Water Breathing (5 min).$(br)Right-clicking an Apostle/Apostle Servant restores 10% of their max HP."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/candy_fish"
+        },
+        {
+            "type": "spotlight",
+            "title": "Sauce Grilled Candy Fish",
+            "link_recipe": true,
+            "item": "goetydelight:sauce_grilled_candy_fish",
+            "scale": 1.2,
+            "text": "Grants the consumer Nourishment (8 min), Blazing Aura (2 min).$(br)Right-clicking an Apostle/Apostle Servant restores 15% of their max HP."
+        }
+    ]
+}

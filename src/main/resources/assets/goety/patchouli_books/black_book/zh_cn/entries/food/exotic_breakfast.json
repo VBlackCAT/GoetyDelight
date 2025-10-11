@@ -1,0 +1,15 @@
+{
+    "name": "猎奇的早餐",
+    "icon": "goetydelight:exotic_breakfast",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "食用后给予食用者野性狂暴（30s），滋养（3分钟）"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/exotic_breakfast"
+        }
+    ]
+}
