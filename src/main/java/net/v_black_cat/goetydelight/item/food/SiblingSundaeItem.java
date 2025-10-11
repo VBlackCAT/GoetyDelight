@@ -33,11 +33,11 @@ public class SiblingSundaeItem extends Item {
         if (!level.isClientSide) {
             // 定义5个tag分别对应5个等级卡池
             TagKey<EntityType<?>>[] servantTags = new TagKey[]{
-                    TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("goetydelight", "servants_pool_1")), // 1级
-                    TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("goetydelight", "servants_pool_2")), // 2级
-                    TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("goetydelight", "servants_pool_3")), // 3级
-                    TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("goetydelight", "servants_pool_4")), // 4级
-                    TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("goetydelight", "servants_pool_5"))  // 5级
+                    TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("goetydelight", "servants_pool/servants_pool_1")), // 1级
+                    TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("goetydelight", "servants_pool/servants_pool_2")), // 2级
+                    TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("goetydelight", "servants_pool/servants_pool_3")), // 3级
+                    TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("goetydelight", "servants_pool/servants_pool_4")), // 4级
+                    TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("goetydelight", "servants_pool/servants_pool_5"))  // 5级
             };
 
             // 各等级卡池权重
