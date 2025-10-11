@@ -1,11 +1,11 @@
 {
-    "name": "烤青蛙腿",
+    "name": "Grilled Frog Leg",
     "icon": "goetydelight:grill_frog_leg",
     "category": "goety:goetydelight/food",
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "“多汁而鲜美，细细嚼碎，齿间只余细小焦骨与皮肉的诱人香气。”$(br)给予食用者青蛙腿（60s），生命恢复2（20s）"
+            "text": "Juicy and delicious, chew carefully, leaving only the enticing aroma of tiny charred bones and meat between your teeth.$(br)Grants the consumer Frog Leg (60s), Regeneration II (20s)"
         },
         {
             "type": "goety:cooking",
@@ -13,11 +13,11 @@
         },
         {
             "type": "spotlight",
-            "title": "蛙腿三明治",
+            "title": "Frog Leg Sandwich",
             "link_recipe": true,
             "item": "goetydelight:frog_leg_sandwich",
             "scale": 1.2,
-            "text": "“在某个国家被认定为是美味，可以从中尝到粗放的笔调与沼泽的味道。”$(br)“什么叫肉丸的优先度不如三明治？”"
+            "text": "Recognized as a delicacy in some countries, you can taste rustic tones and marsh flavors from it.$(br)What do you mean meatballs have lower priority than sandwiches?""
         },
         {
             "type": "patchouli:crafting",

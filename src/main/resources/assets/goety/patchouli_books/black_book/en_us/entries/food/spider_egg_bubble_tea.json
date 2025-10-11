@@ -1,11 +1,11 @@
 {
-    "name": "真蛛奶茶",
+    "name": "Spider Egg Bubble Tea",
     "icon": "goetydelight:spider_egg_bubble_tea",
     "category": "goety:goetydelight/food",
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "给予食用者攀爬（60s）"
+            "text": "Grants the consumer Climbing (60s)"
         },
         {
             "type": "goety:cooking",

@@ -1,11 +1,11 @@
 {
-    "name": "葡萄冰沙",
+    "name": "Grape Slush",
     "icon": "goetydelight:grape_slush",
     "category": "goety:goetydelight/food",
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "“你并不知道葡萄是什么，但想来应该是个紫色的东西。”$(br)“不过作为厨艺魔法两开花的天才，你用紫水晶内里的甘美魔力注入了绒球葱。”$(br)“这完全就是葡萄嘛！看起来一样，吃起来也一样！”$(br)“放进小块碎冰变成冰沙后自然变得口感更好了。”$(br)给予食用者寒庇2（3分半），滋养（10分钟），凛寒气场（30s）"
+            "text": "You don't know what grapes are, but they should be something purple.$(br)But as a genius who excels in both culinary arts and magic, you infused the sweet magical power from within amethyst crystals into puffball onions.$(br)This is totally grapes! Looks the same, tastes the same!$(br)Putting in small pieces of crushed ice to make a slush naturally makes the taste better.$(br)Grants the consumer Frost Resistance II (3.5 min), Nourishment (10 min), Chilling Aura (30s)"
         },
         {
             "type": "goety:cooking",
