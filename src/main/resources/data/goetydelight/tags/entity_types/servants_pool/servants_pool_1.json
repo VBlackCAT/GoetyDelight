@@ -1,5 +1,46 @@
 {
   "values": [
-    "goety:wither_necromancer_servant"
+    "goety:piker_servant",
+    "goety:border_wraith_servant",
+    {
+      "id": "goety_cataclysm:koboleton_servant",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:draugr_servant",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:elite_draugr_servant",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:deepling_servant",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:deepling_angler_servant",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:lionfish",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:watcher_servant",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:urchinkin_servant",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:drowned_host_servant",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:symbiocto_servant",
+      "required": false
+    }
   ]
 }

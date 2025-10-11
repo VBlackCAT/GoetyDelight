@@ -31,20 +31,21 @@ public class SiblingSundaeItem extends Item {
         ItemStack resultStack = super.finishUsingItem(stack, level, entity);
 
         if (!level.isClientSide) {
-            // 定义5个tag分别对应5个等级卡池
+            // 定义6个tag分别对应6个等级卡池
             TagKey<EntityType<?>>[] servantTags = new TagKey[]{
                     TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("goetydelight", "servants_pool/servants_pool_1")), // 1级
                     TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("goetydelight", "servants_pool/servants_pool_2")), // 2级
                     TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("goetydelight", "servants_pool/servants_pool_3")), // 3级
                     TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("goetydelight", "servants_pool/servants_pool_4")), // 4级
-                    TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("goetydelight", "servants_pool/servants_pool_5"))  // 5级
+                    TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("goetydelight", "servants_pool/servants_pool_5")), // 5级
+                    TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation("goetydelight", "servants_pool/servants_pool_6"))  // 6级
             };
 
             // 各等级卡池权重
-            double[] weights = new double[]{50, 35, 12.5, 2.4, 0.1};
+            double[] weights = new double[]{50, 35, 12.5, 2.0, 0.45,0.05};
             int[] summonCounts = new int[]{5, 4, 2, 1, 1};
-            int[] lifeTimes = new int[]{2400, 6000, 12000, 36000, 72000}; // tick: 2,5,10,30,60分钟
-            double[] immortalBaseChance = new double[]{0.5, 0.5, 0.5, 0.5, 0.2}; // 5级仅20%
+            int[] lifeTimes = new int[]{2400, 6000, 12000, 36000, 72000, 144000}; // tick: 2,5,10,30,60,120分钟
+            double[] immortalBaseChance = new double[]{0.5, 0.5, 0.5, 0.5, 0.2, 0.1}; // 5级仅20%,6级仅10%
 
             // 幸运影响
             int luck = 0;
