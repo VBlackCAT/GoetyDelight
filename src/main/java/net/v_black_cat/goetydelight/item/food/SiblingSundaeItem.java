@@ -6,11 +6,14 @@ import com.Polarice3.Goety.common.entities.ally.spider.AbstractSpiderServant;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.animal.Cat;
+import net.minecraft.world.entity.animal.CatVariant;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -64,25 +67,66 @@ public class SiblingSundaeItem extends Item {
 
             // roll仆从
             List<EntityType<?>> servantTypes = new ArrayList<>();
-            BuiltInRegistries.ENTITY_TYPE.getTag(servantTags[bestLevel]).ifPresent(tag -> {
-                for (Holder<EntityType<?>> holder : tag) {
-                    servantTypes.add(holder.value());
-                }
-            });
+            int checkedLevel = bestLevel;
+            while (checkedLevel >= 0) {
+                servantTypes.clear();
+                BuiltInRegistries.ENTITY_TYPE.getTag(servantTags[checkedLevel]).ifPresent(tag -> {
+                    for (Holder<EntityType<?>> holder : tag) {
+                        servantTypes.add(holder.value());
+                    }
+                });
+                if (!servantTypes.isEmpty()) break;
+                checkedLevel--;
+            }
 
             if (!servantTypes.isEmpty()) {
                 // 召唤数量
-                int count = summonCounts[bestLevel];
+                int summonCount = summonCounts[checkedLevel];
                 // 永生概率
-                double immortalChance = immortalBaseChance[bestLevel] + Math.min(luck, 50) * 0.01;
-                if (bestLevel == 4) immortalChance = Math.min(immortalChance, 0.2); // 5级上限20%
-                else immortalChance = Math.min(immortalChance, 1.0);
+                double servantImmortalChance = immortalBaseChance[checkedLevel] + Math.min(luck, 50) * 0.01;
+                if (checkedLevel == 4) servantImmortalChance = Math.min(servantImmortalChance, 0.2); // 5级上限20%
+                else servantImmortalChance = Math.min(servantImmortalChance, 1.0);
 
-                for (int i = 0; i < count; i++) {
-                    EntityType<?> randomType = servantTypes.get(random.nextInt(servantTypes.size()));
-                    boolean immortal = random.nextDouble() < immortalChance;
-                    int life = immortal ? -1 : lifeTimes[bestLevel];
-                    createAndSetupServant((EntityType<? extends Entity>) randomType, level, entity, life);
+                //roll空重roll,并且最多重roll十次防止卡死
+                for (int summonIdx = 0; summonIdx < summonCount; summonIdx++) {
+                    EntityType<?> servantTypeToSummon = null;
+                    Entity entityToSummon = null;
+                    int tryCount = 0;
+                    while (tryCount < 10) {
+                        servantTypeToSummon = servantTypes.get(random.nextInt(servantTypes.size()));
+                        entityToSummon = servantTypeToSummon.create(level);
+                        if (entityToSummon != null) break;
+                        tryCount++;
+                    }
+                    if (entityToSummon != null) {
+                        boolean isImmortal = random.nextDouble() < servantImmortalChance;
+                        int servantLife = isImmortal ? -1 : lifeTimes[checkedLevel];
+                        createAndSetupServant((EntityType<? extends Entity>) servantTypeToSummon, level, entity, servantLife);
+                    }
+                }
+            }
+
+            // 彩蛋逻辑
+            if (bestLevel >= 4) {
+                double v = random.nextDouble();
+                if (v < 0.33) {
+                    Cat cat = EntityType.CAT.create(level);
+                    if (cat != null) {
+                        if (level instanceof ServerLevel serverLevel) {
+
+                            CatVariant allBlack = serverLevel.registryAccess()
+                                .registryOrThrow(Registries.CAT_VARIANT)
+                                .get(new ResourceLocation("minecraft", "all_black"));
+                            if (allBlack != null) {
+                                cat.setVariant(allBlack);
+                            }
+                        }
+                        cat.setCustomName(Component.literal("V_BlackCAT"));
+                        cat.setCustomNameVisible(true);
+                        cat.moveTo(entity.getX(), entity.getY(), entity.getZ(), level.random.nextFloat() * 360F, 0F);
+                        cat.setInvulnerable(true);
+                        level.addFreshEntity(cat);
+                    }
                 }
             }
         }
