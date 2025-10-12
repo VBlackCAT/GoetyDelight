@@ -98,6 +98,7 @@ public class ModItems {
     public static final RegistryObject<Item> BOILING_BLOOD_BREW;
     public static final RegistryObject<Item> ASCENSION_MOONCAKE;
     public static final RegistryObject<Item> VILLAGERS_FEAST;
+    public static final RegistryObject<Item> CHERRY_BLOSSOM_CAKE;
 
     // ==================== 效果供应商常量 ====================
     private static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
@@ -468,6 +469,12 @@ public class ModItems {
                 () -> new RottenCorpseMaggotFeastItem(basicItem().stacksTo(1).food( 
                         simpleFoodItemProperties(16, 10)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .build())));
+        CHERRY_BLOSSOM_CAKE = ITEMS.register("cherry_blossom_cake",
+                () -> new CherryBlossomCakeItem(basicItem().stacksTo(1).food(
+                        simpleFoodItemProperties(6, 8)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.LUCK, minToTick(2), 1), 1.0F)
                                 .build())));
     }
 
