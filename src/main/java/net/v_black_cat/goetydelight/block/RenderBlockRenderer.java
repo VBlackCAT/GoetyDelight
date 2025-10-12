@@ -57,7 +57,7 @@ public class RenderBlockRenderer implements BlockEntityRenderer<RenderBlockEntit
         shader.setTime(blockEntity.getShaderTime());
 
         poseStack.pushPose();
-        poseStack.translate(0.5, 0.5, 0.5); // 居中渲染
+        poseStack.translate( 0.5,0.5  , 0.5); // 居中渲染
 
         VertexConsumer buffer = bufferSource.getBuffer(SHADER_RENDER_TYPE);
 
@@ -72,7 +72,17 @@ public class RenderBlockRenderer implements BlockEntityRenderer<RenderBlockEntit
 
         // 渲染每个面
         for (Direction direction : Direction.values()) {
+            poseStack.pushPose();
+            switch (direction) {
+                case UP -> poseStack.translate(0, 0.5, 0);
+                case DOWN -> poseStack.translate(0, -0.5, 0);
+                case NORTH -> poseStack.translate(0, 0, 0.5);
+                case SOUTH -> poseStack.translate(0, 0, -0.5);
+                case EAST -> poseStack.translate(-0.5, 0, 0);
+                case WEST -> poseStack.translate(0.5, 0, 0);
+            }
             renderQuad(poseStack, buffer, vertices, direction, packedLight, packedOverlay);
+            poseStack.popPose();
         }
 
         poseStack.popPose();
@@ -124,6 +134,7 @@ public class RenderBlockRenderer implements BlockEntityRenderer<RenderBlockEntit
             case NORTH -> rotation.rotateY((float) Math.toRadians(180));
             case EAST -> rotation.rotateY((float) Math.toRadians(90));
             case WEST -> rotation.rotateY((float) Math.toRadians(-90));
+            case SOUTH -> rotation.rotateY((float) Math.toRadians(0));
             default -> {} // SOUTH不需要旋转
         }
         return rotation;
