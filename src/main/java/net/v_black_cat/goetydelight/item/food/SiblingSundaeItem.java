@@ -45,10 +45,10 @@ public class SiblingSundaeItem extends Item {
             };
 
             // 各等级卡池权重
-            double[] weights = new double[]{50, 35, 12.5, 2.25, 0.2,0.05};
+            double[] weights = new double[]{50, 35, 12.5, 2.25, 0.24,0.01};
             int[] summonCounts = new int[]{8, 4, 2, 1, 1, 1};
             int[] lifeTimes = new int[]{2400, 6000, 12000, 36000, 72000, 144000}; // tick: 2,5,10,30,60,120分钟
-            double[] immortalBaseChance = new double[]{0.5, 0.5, 0.5, 0.5, 0.2, 0.1}; // 5级仅20%,6级仅10%
+            double[] immortalBaseChance = new double[]{0.5, 0.5, 0.5, 0.3, 0.2, 0.1}; // 5级仅20%,6级仅10%
 
             // 幸运影响
             int luck = 0;
