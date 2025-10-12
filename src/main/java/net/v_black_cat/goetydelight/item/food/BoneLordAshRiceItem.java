@@ -126,7 +126,7 @@ public class BoneLordAshRiceItem extends Item {
                     item.removeBonusAttributes(player);
 
                      
-                    player.displayClientMessage(Component.literal("骨头领主骨灰拌饭的效果已结束。"), true);
+//                    player.displayClientMessage(Component.literal("骨头领主骨灰拌饭的效果已结束。"), true);
                 }
             }
         }

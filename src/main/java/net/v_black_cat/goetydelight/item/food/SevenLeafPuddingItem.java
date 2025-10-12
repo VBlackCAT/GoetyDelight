@@ -129,7 +129,7 @@ public class SevenLeafPuddingItem extends BowlFoodItem {
                     item.removeBonusAttributes(player);
 
                     // Notify player
-                    player.displayClientMessage(Component.literal("甜浆果布丁的效果已结束。"), true);
+//                    player.displayClientMessage(Component.literal("甜浆果布丁的效果已结束。"), true);
                 }
             }
         }
