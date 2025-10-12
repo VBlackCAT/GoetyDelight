@@ -1,4 +1,4 @@
-// 1.20.1	2025-10-10T23:21:50.6265773	Item Models: goetydelight
+// 1.20.1	2025-10-12T22:30:04.4910218	Item Models: goetydelight
 2ff3a4e2c1e26ec353ee3321147e7616652d643f assets/goetydelight/models/item/apocalyptium_ingot_brush.json
 c2be5959232c9ace5cadce8d2b4a118dc0d662ff assets/goetydelight/models/item/apocalyptium_knife.json
 d64cfde4909bcfe22b0d915bf7563da0464be710 assets/goetydelight/models/item/apocalyptium_knife1.json
@@ -12,7 +12,6 @@ c5faa807d3884500cb7cb37369982b2a685c87cd assets/goetydelight/models/item/candy_f
 190ceea46cbdef12c317d3f726c86afee2f64e81 assets/goetydelight/models/item/corpse_maggot.json
 a848a9f5bab4140e78393434c9156ffe86bf8270 assets/goetydelight/models/item/crisp_biscuit.json
 589b24de17bf10cb2df891579c38ee492924418a assets/goetydelight/models/item/cry_sugar_pack.json
-281ef5a6f1353db07c9f3c3e33cf7bbcb31ef756 assets/goetydelight/models/item/cursed_ingot_knife.json
 f474d479444b0009802857a5190b05336efdf114 assets/goetydelight/models/item/cursed_metal_brush.json
 edc5de8d3c8b8c46fe5efb6ca35f163ea672b850 assets/goetydelight/models/item/dark_brush.json
 b2e287fed120a177d0aef5916def08de7fe71717 assets/goetydelight/models/item/dark_knife.json
@@ -22,6 +21,7 @@ f0fdf6d0bca6d4ac6f7632bdff8fa334b62bb4a0 assets/goetydelight/models/item/eternal
 b9ca0c6717b41adc2f7d6961f0d2721c998773cc assets/goetydelight/models/item/exotic_breakfast.json
 dda26a735e3ab6c95c9e28198c0122f8cdcba7ba assets/goetydelight/models/item/frenzied_fungus_pop_rocks.json
 437132d1d189416c89c04f1559f63ba0d8178e7a assets/goetydelight/models/item/frog_leg_sandwich.json
+a7376e71d38a8de5b6dc7c7b655cdb53b0ee1134 assets/goetydelight/models/item/full_spider_feast.json
 fa0031b0270fad1821223458eebb47bf616176e6 assets/goetydelight/models/item/gathering_soul_embryos.json
 d6b59ba7836ec9ac70eeca41f21ade6310563274 assets/goetydelight/models/item/goetydelight_icon.json
 abb181f908054b0aaeea7c62e09cc09d05d2eced assets/goetydelight/models/item/grape_slush.json
@@ -34,6 +34,7 @@ f411ba65777a00da09f7b3afeb9edbba72a49bad assets/goetydelight/models/item/marble_
 78ea8a9e6e200ecf2672e25fe8e7702b08a03334 assets/goetydelight/models/item/marble_stairs.json
 f90111c6de710896066b99d58b3d036b564e55bc assets/goetydelight/models/item/marble_trapdoor.json
 e99acf4aa7f02f14ae132b0ba87124f238059ed3 assets/goetydelight/models/item/nether_style_fried_egg_sandwich.json
+4e4cdbdd5f4106e1cf36f0af9f0cae7cbc57f530 assets/goetydelight/models/item/nether_wart_omelette.json
 637f7b24d0685c951cd0e23c23cd10da9c1b2a83 assets/goetydelight/models/item/night_heart_pea_soup.json
 42f5ac02945a6e8ae856c077130862d6dd655665 assets/goetydelight/models/item/ominous_ice_cream.json
 1ed199318eafaffffd6a56ffebc196b8b3b720c4 assets/goetydelight/models/item/poached_nether_wart_egg.json
@@ -61,3 +62,4 @@ dade947d09f02be777a65ae634b68eea58defbc3 assets/goetydelight/models/item/spider_
 ce686faca964143ef8a8c41aa76bb4953f134268 assets/goetydelight/models/item/toxic_meal.json
 7d25f27b4843b04d4334575a5b15338b56093d4b assets/goetydelight/models/item/venomous_spider_knife.json
 4cdb6678c9ceecd1f1290e0dd833069bd029e4d7 assets/goetydelight/models/item/villagers_feast.json
+1acba008757dc435376715e897eaff5014628d14 assets/goetydelight/models/item/warped_wart_omelette.json

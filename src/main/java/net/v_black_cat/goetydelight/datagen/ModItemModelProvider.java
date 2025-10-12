@@ -84,6 +84,9 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.APOCALYPTIUM_INGOT_BRUSH);
         simpleItem(ModItems.ASCENSION_MOONCAKE);
         simpleItem(ModItems.VILLAGERS_FEAST);
+        simpleItem(ModItems.WARPED_WART_OMELETTE);
+        simpleItem(ModItems.NETHER_WART_OMELETTE);
+        simpleItem(ModItems.FULL_SPIDER_FEAST);
 
 
 
