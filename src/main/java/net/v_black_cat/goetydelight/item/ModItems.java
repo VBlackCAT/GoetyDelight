@@ -1,5 +1,7 @@
 package net.v_black_cat.goetydelight.item;
 
+import com.Polarice3.Goety.common.effects.brew.BrewEffectInstance;
+import com.Polarice3.Goety.common.effects.brew.BrewEffects;
 import com.Polarice3.Goety.common.items.ModTiers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
@@ -99,6 +101,9 @@ public class ModItems {
     public static final RegistryObject<Item> ASCENSION_MOONCAKE;
     public static final RegistryObject<Item> VILLAGERS_FEAST;
     public static final RegistryObject<Item> CHERRY_BLOSSOM_CAKE;
+    public static final RegistryObject<Item> NETHER_WART_OMELETTE;
+    public static final RegistryObject<Item> WARPED_WART_OMELETTE;
+    public static final RegistryObject<Item> FULL_SPIDER_FEAST;
 
     // ==================== 效果供应商常量 ====================
     private static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
@@ -476,6 +481,21 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.LUCK, minToTick(2), 1), 1.0F)
                                 .build())));
+        NETHER_WART_OMELETTE = ITEMS.register("nether_wart_omelette",
+                () -> new NetherWartOmeletteItem(basicItem().stacksTo(1).food(
+                        simpleFoodItemProperties(6, 2)
+                                .build())));
+        WARPED_WART_OMELETTE = ITEMS.register("warped_wart_omelette",
+                () -> new WarpedWartOmeletteItem(basicItem().stacksTo(1).food(
+                        simpleFoodItemProperties(6, 2)
+                                .build())));
+        FULL_SPIDER_FEAST = ITEMS.register("full_spider_feast",
+                () -> new Item(basicItem().stacksTo(1).food(
+                        simpleFoodItemProperties(8, 5)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(CLIMBING.get(), minToTick(5), 0), 1.0F)
+                                .build())));
+
     }
 
     // ==================== 辅助方法 ====================
