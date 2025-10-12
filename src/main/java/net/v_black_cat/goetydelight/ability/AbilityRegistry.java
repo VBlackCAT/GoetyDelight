@@ -26,7 +26,7 @@ public class AbilityRegistry {
                     if (entity != null) {
                         // 移除免疫效果
                         entity.getPersistentData().putBoolean("hasSugarScepterImmunity", false);
-                        syncAbilityWithClient(entity, SUGAR_SCEPTER_IMMUNITY, false);
+                        // 恢复客户端同步
                     }
                 }
         );
@@ -65,7 +65,7 @@ public class AbilityRegistry {
                     if (entity != null) {
                         // 移除 NightStove 能力标记
                         entity.getPersistentData().putBoolean("hasNightStove", false);
-                        syncAbilityWithClient(entity, NIGHT_STOVE, false);
+                        // 恢复客户端同步
                     }
                 }
         );
