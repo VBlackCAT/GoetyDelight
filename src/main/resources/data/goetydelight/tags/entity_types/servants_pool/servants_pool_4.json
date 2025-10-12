@@ -35,6 +35,18 @@
     {
       "id": "goety_cataclysm:kobolediator",
       "required": false
+    },
+    {
+      "id": "goety_spillage:ragno_servant",
+      "required": false
+    },
+    {
+      "id": "goety_spillage:zombie_absorber",
+      "required": false
+    },
+    {
+      "id": "goety_spillage:bound_freakager",
+      "required": false
     }
   ]
 }

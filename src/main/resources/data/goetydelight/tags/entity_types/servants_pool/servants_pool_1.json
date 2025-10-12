@@ -93,6 +93,14 @@
     {
       "id": "goety_cataclysm:symbiocto_servant",
       "required": false
+    },
+    {
+      "id": "goety_spillage:igniter_servant",
+      "required": false
+    },
+    {
+      "id": "goety_spillage:preserver_servant",
+      "required": false
     }
   ]
 }

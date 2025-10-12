@@ -36,6 +36,22 @@
     {
       "id": "goety_cataclysm:deepling_warlock_servant",
       "required": false
+    },
+    {
+      "id": "goety_spillage:crocofang_servant",
+      "required": false
+    },
+    {
+      "id": "goety_spillage:factory",
+      "required": false
+    },
+    {
+      "id": "goety_spillage:hinder",
+      "required": false
+    },
+    {
+      "id": "goety_spillage:chagrin_sentry",
+      "required": false
     }
   ]
 }

@@ -19,6 +19,10 @@
     {
       "id": "goety_cataclysm:coral_golem",
       "required": false
+    },
+    {
+      "id": "goety_spillage:bound_engineer",
+      "required": false
     }
   ]
 }
