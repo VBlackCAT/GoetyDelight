@@ -117,8 +117,14 @@ public class TimedAbilitySystem {
     }
 
 
-    // 检查实体是否有能力
+    // 检查实体是否有能力 (优化版本)
     public static boolean hasAbility(LivingEntity entity, String abilityId) {
+        // 先检查实体的持久化数据，如果存在直接返回结果，避免Capability查询开销
+        if (entity.getPersistentData().contains("has" + abilityId.substring(0, 1).toUpperCase() + abilityId.substring(1))) {
+            return entity.getPersistentData().getBoolean("has" + abilityId.substring(0, 1).toUpperCase() + abilityId.substring(1));
+        }
+        
+        // 回退到Capability查询
         LazyOptional<EntityTimedAbilities> capabilities = entity.getCapability(ENTITY_TIMED_ABILITIES);
         if (capabilities.isPresent()) {
             EntityTimedAbilities abilities = capabilities.orElseThrow(IllegalStateException::new);
@@ -161,6 +167,11 @@ public class TimedAbilitySystem {
             if (ability != null) {
                 ability.remover.remove(entity);
                 activeAbilities.remove(abilityId);
+                
+                // 添加同步到客户端的逻辑
+                if (entity instanceof Player) {
+                    syncAbilityWithClient(entity, abilityId, false);
+                }
             }
         }
 
@@ -194,6 +205,9 @@ public class TimedAbilitySystem {
                     // 只有玩家才能收到消息
                     if (entity instanceof Player player) {
                         //player.sendSystemMessage(Component.literal(ability.abilityId + "效果已结束"));
+                        
+                        // 添加同步到客户端的逻辑
+                        syncAbilityWithClient(entity, ability.abilityId, false);
                     }
                 }
             }
@@ -207,6 +221,11 @@ public class TimedAbilitySystem {
             for (TimedAbility ability : activeAbilities.values()) {
                 ability.remover.remove(entity);
                 pendingRemovals.add(() -> activeAbilities.remove(ability.abilityId));
+                
+                // 添加同步到客户端的逻辑
+                if (entity instanceof Player) {
+                    syncAbilityWithClient(entity, ability.abilityId, false);
+                }
             }
             pendingRemovals.forEach(Runnable::run);
         }
@@ -336,8 +355,11 @@ public class TimedAbilitySystem {
             if (definition.isPresent()) {
                 AbilityDefinition def = definition.get();
                 abilities.addAbility(abilityId, durationTicks, def.applier, def.remover);
-                // +++ 新增：同步到客户端 +++
-                syncAbilityWithClient(entity, abilityId, true);
+                // +++ 新增：同步到客户端 +++ 
+                // 只在玩家实体上同步，避免过多网络包
+                if (entity instanceof Player) {
+                    syncAbilityWithClient(entity, abilityId, true);
+                }
                 // +++++++++++++++++++++++
                 return true;
             }
@@ -351,7 +373,10 @@ public class TimedAbilitySystem {
             EntityTimedAbilities abilities = capabilities.orElseThrow(IllegalStateException::new);
             abilities.removeAbility(abilityId, entity);
 
-            syncAbilityWithClient(entity, abilityId, false);
+            // 只在玩家实体上同步，避免过多网络包
+            if (entity instanceof Player) {
+                syncAbilityWithClient(entity, abilityId, false);
+            }
 
             return true;
         }

@@ -69,25 +69,35 @@ public class NightStoveAbilityHandler {
             modifiedUndeadMobs.put(mob, true);
         }
 
+        // 优化后的AI目标类，减少不必要的能力检查
         public static class NightStoveAITargetGoal extends NearestAttackableTargetGoal<Player> {
+            // 缓存能力检查结果，避免重复查询
+            private Boolean cachedHasNightStove = null;
+            private Player cachedPlayer = null;
+            
             public NightStoveAITargetGoal(Mob mob) {
                 super(mob, Player.class, true);
                 this.targetConditions = TargetingConditions.forCombat()
                         .range(this.getFollowDistance())
                         .selector(player -> {
-
+                            // 使用优化后的能力检查方法
                             return !TimedAbilitySystem.hasAbility(player, AbilityRegistry.NIGHT_STOVE);
                         });
             }
 
             @Override
             public boolean canUse() {
-
                 LivingEntity lastAttacker = this.mob.getLastHurtByMob();
                 if (lastAttacker instanceof Player) {
                     Player player = (Player) lastAttacker;
-                    if (TimedAbilitySystem.hasAbility(player, AbilityRegistry.NIGHT_STOVE)) {
-
+                    
+                    // 缓存玩家NightStove能力状态
+                    if (cachedPlayer != player) {
+                        cachedHasNightStove = TimedAbilitySystem.hasAbility(player, AbilityRegistry.NIGHT_STOVE);
+                        cachedPlayer = player;
+                    }
+                    
+                    if (cachedHasNightStove) {
                         if (this.mob.tickCount - this.mob.getLastHurtByMobTimestamp() < 100) {
                             this.target = player;
                             return true;
@@ -95,20 +105,23 @@ public class NightStoveAbilityHandler {
                     }
                 }
 
-
                 if (this.mob.getTarget() != null) {
-
                     LivingEntity currentTarget = this.mob.getTarget();
                     if (currentTarget instanceof Player) {
                         Player player = (Player) currentTarget;
-
-                        if (TimedAbilitySystem.hasAbility(player, AbilityRegistry.NIGHT_STOVE)) {
+                        
+                        // 缓存玩家NightStove能力状态
+                        if (cachedPlayer != player) {
+                            cachedHasNightStove = TimedAbilitySystem.hasAbility(player, AbilityRegistry.NIGHT_STOVE);
+                            cachedPlayer = player;
+                        }
+                        
+                        if (cachedHasNightStove) {
                             this.mob.setTarget(null);
                         }
                     }
                     return false;
                 }
-
 
                 this.findTarget();
                 return this.target != null;
@@ -118,32 +131,59 @@ public class NightStoveAbilityHandler {
             public boolean canContinueToUse() {
                 if (this.target == null) return false;
 
-
                 if (this.target == this.mob.getLastHurtByMob()) {
-
                     return this.mob.tickCount - this.mob.getLastHurtByMobTimestamp() < 100;
                 }
 
+                // 缓存玩家NightStove能力状态
+                if (this.target instanceof Player) {
+                    Player player = (Player) this.target;
+                    if (cachedPlayer != player) {
+                        cachedHasNightStove = TimedAbilitySystem.hasAbility(player, AbilityRegistry.NIGHT_STOVE);
+                        cachedPlayer = player;
+                    }
+                    
+                    if (cachedHasNightStove) {
+                        return false;
+                    }
+                }
 
-                return !this.target.isRemoved() &&
-                        !TimedAbilitySystem.hasAbility((LivingEntity) this.target, AbilityRegistry.NIGHT_STOVE) &&
-                        super.canContinueToUse();
+                return super.canContinueToUse();
             }
-
 
             @Override
             public void setTarget(LivingEntity target) {
                 if (target instanceof Player) {
                     Player player = (Player) target;
 
-                    if (TimedAbilitySystem.hasAbility(player, AbilityRegistry.NIGHT_STOVE)) {
-
+                    // 缓存玩家NightStove能力状态
+                    if (cachedPlayer != player) {
+                        cachedHasNightStove = TimedAbilitySystem.hasAbility(player, AbilityRegistry.NIGHT_STOVE);
+                        cachedPlayer = player;
+                    }
+                    
+                    if (cachedHasNightStove) {
                         if (this.mob.getLastHurtByMob() != player) {
                             return;
                         }
                     }
                 }
                 super.setTarget(target);
+            }
+            
+            // 清除缓存，确保下次查询正确
+            @Override
+            public void start() {
+                cachedPlayer = null;
+                cachedHasNightStove = null;
+                super.start();
+            }
+            
+            @Override
+            public void stop() {
+                cachedPlayer = null;
+                cachedHasNightStove = null;
+                super.stop();
             }
         }
     }
