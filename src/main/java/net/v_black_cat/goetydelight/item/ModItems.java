@@ -104,6 +104,7 @@ public class ModItems {
     public static final RegistryObject<Item> NETHER_WART_OMELETTE;
     public static final RegistryObject<Item> WARPED_WART_OMELETTE;
     public static final RegistryObject<Item> FULL_SPIDER_FEAST;
+    public static final RegistryObject<Item> LIQUID_VOID_TEA_DRINK;
 
     // ==================== 效果供应商常量 ====================
     private static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
@@ -495,6 +496,10 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(CLIMBING.get(), minToTick(5), 0), 1.0F)
                                 .build())));
+        LIQUID_VOID_TEA_DRINK = ITEMS.register("liquid_void_tea_drink",
+                () -> new LiquidVoidTeaDrinkItem(basicItem().stacksTo(1).food(
+                        simpleFoodItemProperties(0, 0)
+                               .build())));
 
     }
 
