@@ -35,26 +35,26 @@ public class CherryBlossomCakeItem extends Item {
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         ItemStack resultStack = super.finishUsingItem(stack, level, entity);
 
-        if (!level.isClientSide && entity instanceof Player player) {
+        if (!level.isClientSide) {
             // 移除任何现有的樱桃蛋糕攻击力加成
-            removeAttackDamageBoost(player);
+            removeAttackDamageBoost(entity);
 
-            // 获取玩家的幸运值
-            AttributeInstance luckAttribute = player.getAttribute(Attributes.LUCK);
+            // 获取实体的幸运值（如果有）
+            AttributeInstance luckAttribute = entity.getAttribute(Attributes.LUCK);
             double luckValue = luckAttribute != null ? luckAttribute.getValue() : 0;
 
             // 每点幸运值增加0.5点攻击力
             double attackBoost = luckValue * 0.5;
 
             // 添加攻击力加成
-            addAttackDamageBoost(player, attackBoost);
+            addAttackDamageBoost(entity, attackBoost);
         }
 
         return resultStack;
     }
 
-    private void addAttackDamageBoost(Player player, double boostAmount) {
-        AttributeInstance attackDamage = player.getAttribute(Attributes.ATTACK_DAMAGE);
+    private void addAttackDamageBoost(LivingEntity entity, double boostAmount) {
+        AttributeInstance attackDamage = entity.getAttribute(Attributes.ATTACK_DAMAGE);
         if (attackDamage != null && boostAmount > 0) {
             AttributeModifier modifier = new AttributeModifier(
                     ATTACK_DAMAGE_UUID,
@@ -66,8 +66,8 @@ public class CherryBlossomCakeItem extends Item {
         }
     }
 
-    private void removeAttackDamageBoost(Player player) {
-        AttributeInstance attackDamage = player.getAttribute(Attributes.ATTACK_DAMAGE);
+    private void removeAttackDamageBoost(LivingEntity entity) {
+        AttributeInstance attackDamage = entity.getAttribute(Attributes.ATTACK_DAMAGE);
         if (attackDamage != null && attackDamage.getModifier(ATTACK_DAMAGE_UUID) != null) {
             attackDamage.removeModifier(ATTACK_DAMAGE_UUID);
         }
@@ -77,9 +77,11 @@ public class CherryBlossomCakeItem extends Item {
     public static class CherryBlossomCakeEventHandler {
         @SubscribeEvent
         public static void onPlayerAttack(LivingHurtEvent event) {
-            if (event.getSource().getEntity() instanceof Player player) {
-                AttributeInstance attackDamage = player.getAttribute(Attributes.ATTACK_DAMAGE);
+            // 检查攻击者是否有樱桃蛋糕的攻击力加成
+            if (event.getSource().getEntity() instanceof LivingEntity attacker) {
+                AttributeInstance attackDamage = attacker.getAttribute(Attributes.ATTACK_DAMAGE);
                 if (attackDamage != null && attackDamage.getModifier(ATTACK_DAMAGE_UUID) != null) {
+                    // 移除加成（仅对一次攻击生效）
                     attackDamage.removeModifier(ATTACK_DAMAGE_UUID);
                 }
             }
