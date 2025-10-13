@@ -38,6 +38,8 @@ public class ModCreativeModTabs {
          BLACKLIST.add(ModItems.ASCENSION_MOONCAKE);
          BLACKLIST.add(ModItems.PROMOTION_HARD_CANDY);
 
+         BLACKLIST.add(ModItems.CHERRY_BLOSSOM_CAKE);
+
 
 
 
