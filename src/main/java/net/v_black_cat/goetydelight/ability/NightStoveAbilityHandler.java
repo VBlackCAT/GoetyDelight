@@ -2,6 +2,8 @@ package net.v_black_cat.goetydelight.ability;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobType;
+import net.minecraft.world.entity.NeutralMob;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.Monster;
@@ -55,9 +57,18 @@ public class NightStoveAbilityHandler {
             }
 
 
-            if (!(mob instanceof Monster) || mob.getType().is(net.minecraftforge.common.Tags.EntityTypes.BOSSES)) {
+
+            if (!(mob instanceof Monster) ||
+                    mob.getType().is(net.minecraftforge.common.Tags.EntityTypes.BOSSES) ||
+                    mob instanceof NeutralMob) {
                 return;
             }
+
+
+            if (mob.getMobType() != MobType.UNDEAD) {
+                return;
+            }
+
 
             if (modifiedUndeadMobs.containsKey(mob)) {
                 return;
