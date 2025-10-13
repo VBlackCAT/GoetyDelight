@@ -2,6 +2,7 @@
     "name": "Ominous Ice Cream",
     "icon": "goetydelight:ominous_ice_cream",
     "category": "goety:goetydelight/food",
+    "advancement": "goety:goety/kill_a_minister",
     "pages": [
         {
             "type": "patchouli:text",

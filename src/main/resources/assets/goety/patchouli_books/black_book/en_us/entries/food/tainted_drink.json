@@ -2,6 +2,7 @@
     "name": "Tainted Drink",
     "icon": "goetydelight:tainted_drink",
     "category": "goety:goetydelight/food",
+  "advancement": "goety:goety/kill_a_apostle",
     "pages": [
         {
             "type": "patchouli:text",

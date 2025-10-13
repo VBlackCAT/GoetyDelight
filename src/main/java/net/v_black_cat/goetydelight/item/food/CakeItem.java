@@ -39,6 +39,7 @@ public class CakeItem extends Item {
 
     @Override
     public @NotNull ItemStack finishUsingItem(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity entity) {
+        ItemStack resultStack = super.finishUsingItem(stack, level, entity);
         
         if (entity instanceof Player player) {
             player.getFoodData().eat(this, stack);
