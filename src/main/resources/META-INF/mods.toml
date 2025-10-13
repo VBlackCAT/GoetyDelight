@@ -74,7 +74,7 @@ description='''${mod_description}'''
 [[dependencies.${mod_id}]]
 modId = "goety"
 mandatory = true
-versionRange = "[2.5.37.0,)"
+versionRange = "[2.5.36.1,)"
 ordering = "NONE"
 side = "BOTH"
 

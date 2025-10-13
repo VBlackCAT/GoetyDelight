@@ -5,9 +5,11 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.level.Level;
+import net.v_black_cat.goetydelight.api.GetSpellAttributeFactory;
 
 import java.util.UUID;
 
@@ -18,13 +20,18 @@ public class SpellMasteryEffect extends MobEffect {
 
     public SpellMasteryEffect() {
         super(MobEffectCategory.BENEFICIAL, 0x8B4513);
-        // 使用父类的属性修改器注册机制
-        this.addAttributeModifier(
-                ModAttributes.SPELL_POTENCY.get(),
-                SPELL_POTENCY_UUID.toString(),
-                2, // 基础值（会被等级放大）
-                AttributeModifier.Operation.ADDITION
-        );
+        Attribute attribute = GetSpellAttributeFactory.createGetSpellAttributeImplementation().getSpellPotencyAttributeModifier();
+
+        // 只有当attribute不为null时才添加属性修改器
+        if (attribute != null) {
+            // 使用父类的属性修改器注册机制
+            this.addAttributeModifier(
+                    attribute,
+                    SPELL_POTENCY_UUID.toString(),
+                    2, // 基础值（会被等级放大）
+                    AttributeModifier.Operation.ADDITION
+            );
+        }
     }
 
     @Override

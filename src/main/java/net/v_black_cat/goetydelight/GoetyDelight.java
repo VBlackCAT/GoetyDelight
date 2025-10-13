@@ -15,6 +15,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -34,9 +35,11 @@ import net.v_black_cat.goetydelight.render.animation.RotationEffectHandler;
 
 import net.v_black_cat.goetydelight.ritual.DelightRitualType;
 import net.v_black_cat.goetydelight.screen.*;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static net.v_black_cat.goetydelight.block.ModBlocks.NIGHT_STOVE;
 import static net.v_black_cat.goetydelight.loot.ModLootModifier.GLOBAL_LOOT_MODIFIER_CODECS;
@@ -94,7 +97,20 @@ public class GoetyDelight
 
         //LOGGER.info(Config.magicNumberIntroduction + Config.magicNumber);
         NetworkHandler.register();
-        DelightRitualType.registerRitualType();
+
+        if ( !ModList.get().isLoaded("goety_revelation")){
+            
+            Optional<? extends net.minecraftforge.fml.ModContainer> goetyContainer = ModList.get().getModContainerById("goety");
+            if (goetyContainer.isPresent()) {
+                DefaultArtifactVersion loadedVersion = (DefaultArtifactVersion) goetyContainer.get().getModInfo().getVersion();
+                DefaultArtifactVersion requiredVersion = new DefaultArtifactVersion("2.5.37.0");
+                if (loadedVersion.compareTo(requiredVersion) >= 0) {
+                    DelightRitualType.registerRitualType();
+                }
+            }
+        }
+
+        
         //Config.items.forEach((item) -> LOGGER.info("ITEM >> {}", item.toString()));
     }
 

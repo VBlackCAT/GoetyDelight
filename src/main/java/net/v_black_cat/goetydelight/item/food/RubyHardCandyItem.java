@@ -1,7 +1,8 @@
 package net.v_black_cat.goetydelight.item.food;
 
-import com.Polarice3.Goety.init.ModAttributes;
+
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -13,6 +14,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.ability.AbilityRegistry;
 import net.v_black_cat.goetydelight.ability.TimedAbilitySystem;
+import net.v_black_cat.goetydelight.api.GetSpellAttributeFactory;
 
 import java.util.UUID;
 
@@ -25,6 +27,7 @@ public class RubyHardCandyItem extends Item {
     private static final String POTENCY_LEVEL_TAG = "RubyCandyPotencyLevel";
     // 法术强度属性修改器的UUID
     private static final UUID SPELL_POTENCY_UUID = UUID.fromString("8b4513a0-4e2a-11ee-be56-0242ac120004");
+    private static Attribute ATTRIBUTE = GetSpellAttributeFactory.createGetSpellAttributeImplementation().getSpellPotencyAttributeModifier();
 
     public RubyHardCandyItem(Properties pProperties) {
         super(pProperties);
@@ -92,39 +95,44 @@ public class RubyHardCandyItem extends Item {
         // 移除可能存在的旧属性修改器
         removePotencyEffect(player);
 
-        // 计算法术强度加成值（每级10点）
-        double potencyBonus = 2 * level;
+        // 只有当ATTRIBUTE不为null时才应用效果
+        if (ATTRIBUTE != null) {
+            // 计算法术强度加成值（每级10点）
+            double potencyBonus = 2 * level;
 
-        // 创建属性修改器
-        AttributeModifier modifier = new AttributeModifier(
-                SPELL_POTENCY_UUID,
-                "Ruby Hard Candy Potency Bonus",
-                potencyBonus,
-                AttributeModifier.Operation.ADDITION
-        );
+            // 创建属性修改器
+            AttributeModifier modifier = new AttributeModifier(
+                    SPELL_POTENCY_UUID,
+                    "Ruby Hard Candy Potency Bonus",
+                    potencyBonus,
+                    AttributeModifier.Operation.ADDITION
+            );
 
-        // 应用属性修改器
-        if (player.getAttribute(ModAttributes.SPELL_POTENCY.get()) != null) {
-            player.getAttribute(ModAttributes.SPELL_POTENCY.get()).addPermanentModifier(modifier);
+            // 应用属性修改器
+            if (player.getAttribute(ATTRIBUTE) != null) {
+                player.getAttribute(ATTRIBUTE).addPermanentModifier(modifier);
+            }
+
+            // 存储当前修饰器信息以便后续移除
+            player.getPersistentData().putDouble("RubyCandyPotencyValue", potencyBonus);
         }
-
-        // 存储当前修饰器信息以便后续移除
-        player.getPersistentData().putDouble("RubyCandyPotencyValue", potencyBonus);
     }
 
     // 移除强效等级效果
     private void removePotencyEffect(Player player) {
-        if (player.getAttribute(ModAttributes.SPELL_POTENCY.get()) != null) {
+        // 只有当ATTRIBUTE不为null时才尝试移除效果
+        if (ATTRIBUTE != null && player.getAttribute(ATTRIBUTE) != null) {
             // 移除所有同UUID的修改器
-            player.getAttribute(ModAttributes.SPELL_POTENCY.get()).removeModifier(SPELL_POTENCY_UUID);
+            player.getAttribute(ATTRIBUTE).removeModifier(SPELL_POTENCY_UUID);
         }
     }
 
     // 获取当前法术强度加成值
     public static double getCurrentPotencyBonus(Player player) {
-        if (player.getAttribute(ModAttributes.SPELL_POTENCY.get()) != null) {
+        // 只有当ATTRIBUTE不为null时才尝试获取加成值
+        if (ATTRIBUTE != null && player.getAttribute(ATTRIBUTE) != null) {
             // 检查是否有修改器
-            AttributeModifier modifier = player.getAttribute(ModAttributes.SPELL_POTENCY.get()).getModifier(SPELL_POTENCY_UUID);
+            AttributeModifier modifier = player.getAttribute(ATTRIBUTE).getModifier(SPELL_POTENCY_UUID);
             if (modifier != null) {
                 return modifier.getAmount();
             }
@@ -164,18 +172,19 @@ public class RubyHardCandyItem extends Item {
 
         // 重新应用红宝石硬糖的强效等级效果
         int potencyLevel = player.getPersistentData().getInt("RubyCandyPotencyLevel");
-        if (potencyLevel > 0) {
+        if (potencyLevel > 0 && ATTRIBUTE != null) {
             // 重新应用效果
-            double potencyBonus = 10.0 * potencyLevel;
+            double potencyBonus = 2 * potencyLevel;
             AttributeModifier modifier = new AttributeModifier(
                     UUID.fromString("8b4513a0-4e2a-11ee-be56-0242ac120004"),
                     "Ruby Hard Candy Potency Bonus",
                     potencyBonus,
                     AttributeModifier.Operation.ADDITION
             );
+            Attribute attribute = GetSpellAttributeFactory.createGetSpellAttributeImplementation().getSpellPotencyAttributeModifier();
 
-            if (player.getAttribute(ModAttributes.SPELL_POTENCY.get()) != null) {
-                player.getAttribute(ModAttributes.SPELL_POTENCY.get()).addPermanentModifier(modifier);
+            if (attribute != null && player.getAttribute(attribute) != null) {
+                player.getAttribute(attribute).addPermanentModifier(modifier);
             }
         }
     }
