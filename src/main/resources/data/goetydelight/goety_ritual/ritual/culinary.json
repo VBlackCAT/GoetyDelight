@@ -10,10 +10,8 @@
         "block" : "goetydelight:cursed_ingot_pot"
       },
       {
-        "block" : "minecraft:smoker"
-      },
-      {
-        "block" : "minecraft:smoker"
+        "block" : "minecraft:smoker",
+        "count" : 2
       }
     ]
   }
