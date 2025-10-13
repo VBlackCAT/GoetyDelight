@@ -2,6 +2,7 @@
     "name": "不祥冰淇淋",
     "icon": "goetydelight:ominous_ice_cream",
     "category": "goety:goetydelight/food",
+    "advancement": "goety:goety/kill_a_minister",
     "pages": [
         {
             "type": "patchouli:text",

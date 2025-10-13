@@ -23,9 +23,6 @@ public class ModCreativeModTabs {
     static {
          BLACKLIST.add(ModItems.EXAMPLE_ITEM);
          BLACKLIST.add(ModItems.MARBLE_OP_SWORD);
-
-         BLACKLIST.add(ModItems.APOCALYPTIUM_KNIFE2);
-         BLACKLIST.add(ModItems.APOCALYPTIUM_KNIFE1);
          BLACKLIST.add(ModItems.GOETYDELIGHT_ICON);
          BLACKLIST.add(ModItems.ROASTED_CORPSE_MAGGOTS);
          BLACKLIST.add(ModItems.ROTTEN_CORPSE_MAGGOT_FEAST);

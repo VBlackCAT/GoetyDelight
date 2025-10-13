@@ -6,7 +6,7 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "Has a chance to drop from killing an Illager Vizier.$(br)Grants the player Nourishment (30 minutes), Opportunity III (10 minutes), Dexterity III (10 minutes), Resistance II (10 minutes)$(br)After consumption, kills nearby Vexes/Vindicators/Allays and similar creatures, while restoring health equal to the sum of the killed units' maximum health. Can be consumed 8 times total.$(b)(Consumption count is recorded via additional NBT, cannot be repaired)"
+            "text": "Has a chance to drop from killing an Illager Vizier.$(br)Grants the player Nourishment (30 minutes), Opportunity III (10 minutes), Dexterity III (10 minutes), Resistance II (10 minutes)$(br)After consumption, kills nearby Vexes/Vindicators/Allays and similar creatures, while restoring health equal to the sum of the killed units' maximum health. Can be consumed 8 times total."
         },
         {
             "type": "patchouli:text",

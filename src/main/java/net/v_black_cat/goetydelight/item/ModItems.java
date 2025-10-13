@@ -44,8 +44,6 @@ public class ModItems {
     public static final RegistryObject<Item> APOCALYPTIUM_KNIFE;
     public static final RegistryObject<Item> VENOMOUS_SPIDER_KNIFE;
     public static final RegistryObject<Item> SPECTRE_KNIFE;
-    public static final RegistryObject<Item> APOCALYPTIUM_KNIFE2;
-    public static final RegistryObject<Item> APOCALYPTIUM_KNIFE1;
     public static final RegistryObject<Item> CURSED_INGOT_KNIFE;
     public static final RegistryObject<Item> DARK_KNIFE;
     public static final RegistryObject<Item> APOCALYPTIUM_INGOT_BRUSH;
@@ -138,10 +136,6 @@ public class ModItems {
         VENOMOUS_SPIDER_KNIFE = registerWithTab("venomous_spider_knife",
                 () -> new KnifeItem(Tiers.IRON, 0.5F, -2.0F, basicItem()));
         SPECTRE_KNIFE = registerWithTab("spectre_knife",
-                () -> new KnifeItem(Tiers.IRON, 0.5F, -2.0F, basicItem()));
-        APOCALYPTIUM_KNIFE2 = registerWithTab("apocalyptium_knife2",
-                () -> new KnifeItem(Tiers.IRON, 0.5F, -2.0F, basicItem()));
-        APOCALYPTIUM_KNIFE1 = registerWithTab("apocalyptium_knife1",
                 () -> new KnifeItem(Tiers.IRON, 0.5F, -2.0F, basicItem()));
 
 
@@ -378,7 +372,9 @@ public class ModItems {
                 () -> new CakeItem(basicItem().stacksTo(1).food(
                         simpleFoodItemProperties(16, 8)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), 36000, 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(FORTUNATE_EFFECT_SUPPLIER.get(), 12000, 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(FORTUNATE_EFFECT_SUPPLIER.get(), 12000, 2), 1.0F)
+                                .effect(() -> new MobEffectInstance(BOTTLING.get(), 12000, 2), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 12000, 1), 1.0F)
                                 .build())));
         OMINOUS_ICE_CREAM = ITEMS.register("ominous_ice_cream",
                 () -> new OminousIceCreamItem(basicItem()

@@ -27,8 +27,6 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleHandHoldItem(ModItems.APOCALYPTIUM_KNIFE);
         simpleHandHoldItem(ModItems.VENOMOUS_SPIDER_KNIFE);
         simpleHandHoldItem(ModItems.SPECTRE_KNIFE);
-        simpleHandHoldItem(ModItems.APOCALYPTIUM_KNIFE2);
-        simpleHandHoldItem(ModItems.APOCALYPTIUM_KNIFE1);
 //        simpleHandHoldItem(ModItems.CURSED_INGOT_KNIFE);
         simpleHandHoldItem(ModItems.DARK_KNIFE);
 

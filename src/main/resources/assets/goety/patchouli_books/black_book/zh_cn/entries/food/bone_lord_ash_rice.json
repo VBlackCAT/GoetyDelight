@@ -2,6 +2,7 @@
     "name": "骨头领主骨灰拌饭",
     "icon": "goetydelight:bone_lord_ash_rice",
     "category": "goety:goetydelight/food",
+    "advancement": "goety:goety/kill_a_skull_lord",
     "pages": [
         {
             "type": "patchouli:text",
