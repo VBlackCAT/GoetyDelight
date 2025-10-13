@@ -35,6 +35,7 @@ public class LiquidVoidTeaDrinkItem extends GlassBottleFoodItem {
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         ItemStack result = super.finishUsingItem(stack, level, entity);
+        entity.removeEffect(VOID_TOUCHED.get());
         
         // 造成5点虚空伤害
         entity.hurt(level.damageSources().genericKill(), 5.0F);
@@ -47,10 +48,11 @@ public class LiquidVoidTeaDrinkItem extends GlassBottleFoodItem {
 
     @Override
     public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity target, InteractionHand hand) {
-        if (!player.level().isClientSide) {
+        if (!player.level().isClientSide&&!target.isInvisible()) {
+
             // 让目标实体吃下这个物品
             target.eat(player.level(), stack.copy());
-            
+            target.removeEffect(VOID_TOUCHED.get());
             // 造成5点虚空伤害
             target.hurt(player.level().damageSources().genericKill(), 5.0F);
             
