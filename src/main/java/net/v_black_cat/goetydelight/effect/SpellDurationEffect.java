@@ -7,6 +7,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.api.GetSpellAttributeFactory;
 
 import java.util.UUID;
 
@@ -18,13 +19,18 @@ public class SpellDurationEffect extends MobEffect {
 
     public SpellDurationEffect() {
         super(MobEffectCategory.BENEFICIAL, 0x8B4513);
-        // 使用父类的属性修改器注册机制
-        this.addAttributeModifier(
-                ModAttributes.SPELL_DURATION.get(),
-                SPELL_DURATION_UUID.toString(),
-                2, // 基础值（会被等级放大）
-                AttributeModifier.Operation.ADDITION
-        );
+        Attribute attribute = GetSpellAttributeFactory.createGetSpellAttributeImplementation().getSpellDurationAttributeModifier();
+
+        // 只有当attribute不为null时才添加属性修改器
+        if (attribute != null) {
+            // 使用父类的属性修改器注册机制
+            this.addAttributeModifier(
+                    attribute,
+                    SPELL_DURATION_UUID.toString(),
+                    2, // 基础值（会被等级放大）
+                    AttributeModifier.Operation.ADDITION
+            );
+        }
     }
 
     @Override
