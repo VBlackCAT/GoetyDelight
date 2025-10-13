@@ -1,0 +1,20 @@
+{
+  "ritual" : "culinary",
+  "iconItem" : "goetydelight:cursed_ingot_pot",
+  "requirements" : {
+    "blocks" : [
+      {
+        "block" : "goetydelight:shade_stove"
+      },
+      {
+        "block" : "goetydelight:cursed_ingot_pot"
+      },
+      {
+        "block" : "minecraft:smoker"
+      },
+      {
+        "block" : "minecraft:smoker"
+      }
+    ]
+  }
+}
