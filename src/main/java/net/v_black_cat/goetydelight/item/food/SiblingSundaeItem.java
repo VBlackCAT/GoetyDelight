@@ -1,5 +1,6 @@
 package net.v_black_cat.goetydelight.item.food;
 
+import com.Polarice3.Goety.api.entities.IOwned;
 import com.Polarice3.Goety.common.effects.GoetyEffects;
 import com.Polarice3.Goety.common.entities.ally.Summoned;
 import com.Polarice3.Goety.common.entities.ally.spider.AbstractSpiderServant;
@@ -19,6 +20,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraftforge.fml.ModList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,6 +151,7 @@ public class SiblingSundaeItem extends Item {
     private void createAndSetupServant(EntityType<? extends Entity> servantType, Level level, LivingEntity owner, int lifeTicks) {
         if (level instanceof ServerLevel serverLevel) {
             Entity entity = servantType.create(level);
+/*
 
             if (entity instanceof AbstractSpiderServant servant){
                 servant.setPos(owner.getX(), owner.getY(), owner.getZ());
@@ -169,6 +172,26 @@ public class SiblingSundaeItem extends Item {
                 processHealthAndEffects(servant);
                 level.addFreshEntity(servant);
             }
+*/
+
+            if (entity instanceof Mob mob && entity instanceof IOwned owned) {
+                mob.setPos(owner.getX(), owner.getY(), owner.getZ());
+                owned.setTrueOwner(owner);
+
+                // 设置生存时间
+                if (lifeTicks > 0) {
+                    owned.setLimitedLife(lifeTicks); // 调用接口方法设置生存时间
+                    owned.setHasLifespan(true);      // 标记具有生存时间限制
+                }
+
+                // finalizeSpawn
+                mob.finalizeSpawn(serverLevel, level.getCurrentDifficultyAt(mob.blockPosition()),
+                        MobSpawnType.MOB_SUMMONED, (SpawnGroupData)null, (CompoundTag)null);
+                processHealthAndEffects(mob);
+                level.addFreshEntity(mob);
+            }
+
+
         }
     }
 
