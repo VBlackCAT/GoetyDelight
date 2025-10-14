@@ -1,6 +1,5 @@
 {
   "values": [
-    "goety:piker_servant",
     "goety:border_wraith_servant",
     "goety:wither_skeleton_servant",
     "goety:ghast_servant",
@@ -34,7 +33,6 @@
     "goety:ally_vex",
     "goety:mini_ghast",
     "goety:redstone_cube",
-    "goety:witch_servant",
     "goety:snareling_servant",
     "goety:blastling_servant",
     "goety:watchling_servant",
@@ -54,6 +52,14 @@
     "goety:hoglin_servant",
     "goety:bear_servant",
     "goety:polar_bear_servant",
+    {
+      "id": "goety:witch_servant",
+      "required": false
+    },
+    {
+      "id": "goety:piker_servant",
+      "required": false
+    },
     {
       "id": "goety_cataclysm:koboleton_servant",
       "required": false
