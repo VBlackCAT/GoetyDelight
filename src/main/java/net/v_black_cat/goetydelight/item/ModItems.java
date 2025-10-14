@@ -286,7 +286,7 @@ public class ModItems {
 
 
         SAUCE_GRILLED_CANDY_FISH = ITEMS.register("sauce_grilled_candy_fish",
-                () ->  new CandyFishItem(basicItem().stacksTo(1).food(
+                () ->  new SauceGrilledCandyFishItem(basicItem().stacksTo(1).food(
                         simpleFoodItemProperties(9, 6)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(8), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(FIERY_AURA.get(), minToTick(5), 0), 1.0F)
