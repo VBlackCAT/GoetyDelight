@@ -25,9 +25,9 @@ public class ItemBlackList {
     private static final Set<String> BLACK_LIST_SET = new HashSet<>();
 
     static {
-        Collections.addAll(BLACK_LIST_SET,
-                "goetydelight:exotic_breakfast"
-        );
+//        Collections.addAll(BLACK_LIST_SET,
+//                "goetydelight:exotic_breakfast"
+//        );
     }
 
 
