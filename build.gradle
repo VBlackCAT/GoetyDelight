@@ -104,6 +104,11 @@ repositories {
      flatDir {
          dir 'libs'
      }
+    maven {
+        // location of the maven that hosts JEI files since January 2023
+        name = "Jared's maven"
+        url = "https://maven.blamejared.com/"
+    }
 }
 
 configurations {
@@ -264,6 +269,7 @@ dependencies {
     modImplementation "curse.maven:farmers-delight-398521:6917255"
     compileOnly  "curse.maven:goety-586095:7073504"//2.5.37.3
     modRuntimeOnly "curse.maven:goety-586095:6778940"//2.5.36.1
+
     modImplementation "curse.maven:goety-revelation-1236817:6892481"
 //    implementation fg.deobf("curse.maven:goety-revelation-1236817:6892481")
     compileOnly "blank:[Forge]RevelationFix-1.20.1-3.8-all"
@@ -271,6 +277,13 @@ dependencies {
 
     //帕秋莉
     modCompileOnly "vazkii.patchouli:Patchouli:1.20.1-84.1-FORGE:api"
+    compileOnly "blank:Patchouli-1.20.1-84.1-FORGE"//2.5.36.1
+
+    //jei
+    compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-${mc_version}-forge-api:${jei_version}"
+    // at runtime, use the full JEI jar for Forge
+    modRuntimeOnly "mezz.jei:jei-${mc_version}-forge:${jei_version}"
 }
 
 
