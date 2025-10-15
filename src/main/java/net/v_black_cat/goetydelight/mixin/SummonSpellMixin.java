@@ -31,7 +31,11 @@ public abstract class SummonSpellMixin {
     )
     private int modifySummonLimit(SummonSpell instance, ServerLevel worldIn, LivingEntity caster) {
         int originalLimit = instance.summonLimit();
-        int boostCount = getSoupBoostCount((Player) caster);
+
+        int boostCount = 0;
+        if (caster instanceof Player player) {
+            boostCount = getSoupBoostCount(player);
+        }
 
         return boostCount>0
                 ? originalLimit * 2

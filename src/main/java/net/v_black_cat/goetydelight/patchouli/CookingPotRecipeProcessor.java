@@ -16,6 +16,7 @@ public class CookingPotRecipeProcessor implements IComponentProcessor {
 
     private CookingPotRecipe recipe;
 
+
     @Override
     public void setup(Level level, IVariableProvider variables) {
         ResourceLocation id = new ResourceLocation(variables.get("recipe").asString());

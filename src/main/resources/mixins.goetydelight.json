@@ -6,8 +6,11 @@
     "ArtificialFlowerMixin",
     "BlockFinderMixin",
     "BrushableBlockEntityMixin",
+    "RecipeManagerMixin",
     "SummonSpellMixin"
   ],
-  "client": [],
+  "client": [
+    "BookContentResourceListenerLoaderMixin"
+  ],
   "server": []
 }
