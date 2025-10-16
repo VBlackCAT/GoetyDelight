@@ -1,0 +1,30 @@
+{
+  "type": "farmersdelight:cooking",
+  "cookingtime": 800,
+  "experience": 5.0,
+  "ingredients": [
+    {
+      "type": "forge:nbt",
+      "item": "goety:unholy_blood",
+      "nbt": "{\"Pure\": 1b}"
+    },
+    {
+      "type": "forge:nbt",
+      "item": "goety:unholy_blood",
+      "nbt": "{\"Pure\": 1b}"
+    },
+    {
+      "item": "goety:soul_ruby"
+    },
+    {
+      "item": "goety:brew"
+    },
+    {
+      "item": "goety:mystic_core"
+    }
+  ],
+  "recipe_book_tab": "misc",
+  "result": {
+    "item": "goetydelight:pure_drink"
+  }
+}

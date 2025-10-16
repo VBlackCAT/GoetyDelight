@@ -103,6 +103,7 @@ public class ModItems {
     public static final RegistryObject<Item> WARPED_WART_OMELETTE;
     public static final RegistryObject<Item> FULL_SPIDER_FEAST;
     public static final RegistryObject<Item> LIQUID_VOID_TEA_DRINK;
+    public static final RegistryObject<Item> PURE_DRINK;
 
     // ==================== 效果供应商常量 ====================
     private static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
@@ -173,12 +174,20 @@ public class ModItems {
         TAINTED_DRINK = ITEMS.register("tainted_drink",
                 () -> new CustomDrinkItem(basicItem().stacksTo(1).food(
                         simpleFoodItemProperties(4, 4)
+                                .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 150, 1), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 300, 1), 1.0F)
+                                .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), minToTick(3), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(ModEffects.ZOMBIFIED_PIGLIN_BRUTE_SERVANT_SUPPORT.get(), minToTick(6), 0), 1.0F)
+                                .build())));
+
+        PURE_DRINK = ITEMS.register("pure_drink",
+                () -> new CustomDrinkItem(basicItem().stacksTo(1).food(
+                        simpleFoodItemProperties(4, 4)
                                 .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 600, 3), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1200, 3), 1.0F)
                                 .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), minToTick(15), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(ModEffects.ZOMBIFIED_PIGLIN_BRUTE_SERVANT_SUPPORT.get(), minToTick(30), 0), 1.0F)
                                 .build())));
-
 
         CUP = ITEMS.register("eternal_refusal_of_black_meat_soup",
                 () -> new EternalRefusalOfBlackMeatSoupItem(basicItem().stacksTo(1).food(
@@ -409,8 +418,8 @@ public class ModItems {
         NIGHT_HEART_PEA_SOUP = ITEMS.register("night_heart_pea_soup",
                 () -> new NightHeartPeaSoupItem(basicItem().stacksTo(1).food( 
                         simpleFoodItemProperties(16, 24)
-                                .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(5), 4), 1.0F)
-                                .effect(() -> new MobEffectInstance(SHADOW_WALK.get(), sToTick(60), 3), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(5), 2), 1.0F)
+                                .effect(() -> new MobEffectInstance(SHADOW_WALK.get(), sToTick(60), 2), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 6000, 2), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), 12000, 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(COMFORT_EFFECT_SUPPLIER.get(), 12000, 0), 1.0F)
@@ -469,14 +478,14 @@ public class ModItems {
                                 .build())));
         ROTTEN_CORPSE_MAGGOT_FEAST = ITEMS.register("rotten_corpse_maggot_feast",
                 () -> new RottenCorpseMaggotFeastItem(basicItem().stacksTo(1).food( 
-                        simpleFoodItemProperties(16, 10)
-                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                        simpleFoodItemProperties(8, 5)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(2), 0), 1.0F)
                                 .build())));
         CHERRY_BLOSSOM_CAKE = ITEMS.register("cherry_blossom_cake",
                 () -> new CherryBlossomCakeItem(basicItem().stacksTo(1).food(
-                        simpleFoodItemProperties(6, 8)
-                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(MobEffects.LUCK, minToTick(2), 1), 1.0F)
+                        simpleFoodItemProperties(12, 8)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.LUCK, minToTick(2), 2), 1.0F)
                                 .build())));
         NETHER_WART_OMELETTE = ITEMS.register("nether_wart_omelette",
                 () -> new NetherWartOmeletteItem(basicItem().stacksTo(1).food(
