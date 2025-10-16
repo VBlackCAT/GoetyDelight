@@ -26,6 +26,7 @@ import net.v_black_cat.goetydelight.block.ModBlockEntities;
 import net.v_black_cat.goetydelight.block.RenderBlockRenderer;
 import net.v_black_cat.goetydelight.config.Config;
 import net.v_black_cat.goetydelight.effect.ModEffects;
+import net.v_black_cat.goetydelight.enchantments.ModEnchantments;
 import net.v_black_cat.goetydelight.entities.ModEntities;
 import net.v_black_cat.goetydelight.item.ModCreativeModTabs;
 import net.v_black_cat.goetydelight.loot.RegHelper;
@@ -56,9 +57,6 @@ public class GoetyDelight
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
 
-
-
-
     public GoetyDelight(FMLJavaModLoadingContext context)
     {
         IEventBus modEventBus = context.getModEventBus();
@@ -76,16 +74,17 @@ public class GoetyDelight
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
         RegHelper.LOOT_CONDITIONS.register(modEventBus);
+        ModEnchantments.ENCHANTMENTS.register(modEventBus);
         ModEffects.register(modEventBus);
         ModRecipeSerializers.SERIALIZERS.register(modEventBus);
         ModEntities.register(modEventBus);
         AbilityRegistry.registerAbilities();
         ModBlockEntities.register(modEventBus);
         ModMenuTypes.register(modEventBus);
-        // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
-        //context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
-    }
 
+        // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
+        context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+    }
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
@@ -114,7 +113,6 @@ public class GoetyDelight
         //Config.items.forEach((item) -> LOGGER.info("ITEM >> {}", item.toString()));
     }
 
-
     // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event)
@@ -142,6 +140,4 @@ public class GoetyDelight
 
         }
     }
-
-
 }

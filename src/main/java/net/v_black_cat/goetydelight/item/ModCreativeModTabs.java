@@ -24,9 +24,6 @@ public class ModCreativeModTabs {
          BLACKLIST.add(ModItems.EXAMPLE_ITEM);
          BLACKLIST.add(ModItems.MARBLE_OP_SWORD);
          BLACKLIST.add(ModItems.GOETYDELIGHT_ICON);
-         BLACKLIST.add(ModItems.ROASTED_CORPSE_MAGGOTS);
-         BLACKLIST.add(ModItems.ROTTEN_CORPSE_MAGGOT_FEAST);
-         BLACKLIST.add(ModItems.CORPSE_MAGGOT);
          BLACKLIST.add(ModItems.SPIDER_EGG_BUBBLE_TEA_2);
          BLACKLIST.add(ModItems.APOCALYPTIUM_KNIFE);
          BLACKLIST.add(ModItems.SPECTRE_KNIFE);
@@ -61,7 +58,6 @@ public class ModCreativeModTabs {
          BLACKLIST.add(ModBlocks.JUNGLE_MARBLE);
          BLACKLIST.add(ModBlocks.MARBLE_TRAPDOOR);
          BLACKLIST.add(ModBlocks.RENDER_BLOCK);
-         BLACKLIST.add(ModBlocks.ROTTEN_CORPSE_MAGGOT_FEAST_BLOCK);
 
     }
 
