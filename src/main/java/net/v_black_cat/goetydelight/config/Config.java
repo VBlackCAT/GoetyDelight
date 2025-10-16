@@ -24,7 +24,6 @@ public class Config
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> BLACKLISTED_ITEMS = BUILDER
             .comment("A list of blacklisted items that will be hidden from creative tabs and prevent drops")
             .defineListAllowEmpty("blacklistedItems", List.of(
-                    "goetydelight:exotic_breakfast",
                     "goetydelight:roasted_corpse_maggots",
                     "goetydelight:corpse_maggot",
                     "goetydelight:rotten_corpse_maggot_feast",
