@@ -11,6 +11,7 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.config.Config;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -24,27 +25,42 @@ public class ItemBlackList {
 
     private static final Set<String> BLACK_LIST_SET = new HashSet<>();
 
-    static {
-//        Collections.addAll(BLACK_LIST_SET,
-//                "goetydelight:exotic_breakfast"
-//        );
+    public static void updateBlackListFromConfig() {
+        BLACK_LIST_SET.clear();
+        if (Config.blacklistedItems != null) {
+            Config.blacklistedItems.stream()
+                    .map(item -> BuiltInRegistries.ITEM.getKey(item).toString())
+                    .forEach(BLACK_LIST_SET::add);
+        }
+
+        // 强制添加黑名单
+        /*
+        Collections.addAll(BLACK_LIST_SET,
+                "goetydelight:exotic_breakfast"
+        );
+        */
     }
+
+    static {
+        Config.registerBlackListUpdateListener(v -> updateBlackListFromConfig());
+        updateBlackListFromConfig();
+
+    }
+
 
 
     public static Set<String> getBlackList() {
-        return Collections.unmodifiableSet(BLACK_LIST_SET);
+        return BLACK_LIST_SET;
     }
 
     public static boolean isBlackListed(String itemName) {
-
         return BLACK_LIST_SET.contains(itemName);
     }
 
     public static boolean isBlackListed(Item item) {
-        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(item);
-        return itemId != null && isBlackListed(itemId.toString());
+        String itemName = BuiltInRegistries.ITEM.getKey(item).toString();
+        return isBlackListed(itemName);
     }
-
 
     public static void addToBlackList(String itemName) {
         BLACK_LIST_SET.add(itemName);
@@ -125,6 +141,4 @@ public class ItemBlackList {
             }
         }
     }
-
-
 }
