@@ -6,9 +6,12 @@ import static net.v_black_cat.goetydelight.ability.TimedAbilitySystem.syncAbilit
 
 public class AbilityRegistry {
 
+    public static final String FREEZE_IMMUNITY = "freeze_immunity";
     public static final String SUGAR_SCEPTER_IMMUNITY = "sugar_scepter_immunity";
     public static final String RUBY_HARD_CANDY_DAMAGE_REDUCTION = "ruby_hard_candy_damage_reduction";
     public static final String NIGHT_STOVE = "night_stove";
+    public static final String CRIMSON_MEMORIES = "crimson_memories";
+
     public static void registerAbilities() {
 
         TimedAbilitySystem.registerAbility(
@@ -66,6 +69,39 @@ public class AbilityRegistry {
                         // 移除 NightStove 能力标记
                         entity.getPersistentData().putBoolean("hasNightStove", false);
                         // 恢复客户端同步
+                    }
+                }
+        );
+
+        // 注册冰冻免疫能力
+        TimedAbilitySystem.registerAbility(
+                FREEZE_IMMUNITY,
+                // 能力应用器
+                entity -> {
+                    if (entity != null) {
+                        entity.getPersistentData().putBoolean("hasFreezeImmunity", true);
+                    }
+                },
+                // 能力移除器
+                entity -> {
+                    if (entity != null) {
+                        entity.getPersistentData().putBoolean("hasFreezeImmunity", false);
+                    }
+                }
+        );
+
+        TimedAbilitySystem.registerAbility(
+                CRIMSON_MEMORIES,
+                // 能力应用器
+                entity -> {
+                    if (entity != null) {
+                        entity.getPersistentData().putBoolean("hasCrimsonMemories", true);
+                    }
+                },
+                // 能力移除器
+                entity -> {
+                    if (entity != null) {
+                        entity.getPersistentData().putBoolean("hasCrimsonMemories", false);
                     }
                 }
         );
