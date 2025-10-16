@@ -152,7 +152,9 @@ public class CakeItem extends Item {
                 entityId.equals(new ResourceLocation("minecraft:allay")) ||
                 entityId.equals(new ResourceLocation("goety:ally_irk")) ||
                 entityId.equals(new ResourceLocation("goety:tormentor"))||
-                entityId.equals(new ResourceLocation("goety:irk"));
+                entityId.equals(new ResourceLocation("goety:irk")) ||
+                entityId.equals(new ResourceLocation("iceandfire:if_pixie")) ||
+                entityId.equals(new ResourceLocation("alexsmobs:crimson_mosquito"));
     }
 
 

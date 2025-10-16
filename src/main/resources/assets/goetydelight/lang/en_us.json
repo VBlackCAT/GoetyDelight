@@ -40,6 +40,7 @@
   "item.goetydelight.poached_nether_wart_egg": "Poached Nether Wart Egg",
   "item.goetydelight.poached_spider_egg": "Poached Spider Egg",
   "item.goetydelight.ectoplasm_jelly": "Ectoplasm Jelly",
+  "item.goetydelight.corpse_maggots": "Corpse Maggots",
   "item.goetydelight.roasted_corpse_maggots": "Roasted Corpse Maggots",
   "item.goetydelight.grill_frog_leg": "Grilled Frog Leg",
   "item.goetydelight.bear_paw": "Bear Paw",
@@ -73,6 +74,7 @@
   "item.goetydelight.full_spider_feast": "Full Spider Feast",
   "item.goetydelight.cherry_blossom_cake": "Cherry Blossom Cake",
   "item.goetydelight.liquid_void_tea_drink": "Liquid Void Tea Drink",
+  "item.goetydelight.pure_drink": "Pure Drink",
   "effect.goetydelight.spell_duration": "Spell Duration",
   "effect.goetydelight.spell_mastery": "Spell Mastery",
   "effect.goetydelight.the_pale_messenger": "The Pale Messenger",
@@ -84,6 +86,6 @@
   "goetydelight.container.cursed_ingot_pot.soul_infused":"Soul Infused",
   "goetydelight.container.cursed_ingot_pot.soul_source.empty": "Soul Empty",
   "goetydelight.container.shade_stove": "Shade Stove",
-  "jei.goety.craftType.culinary": "Culinary"
-
+  "jei.goety.craftType.culinary": "Culinary",
+  "enchantment.goetydelight.soul_mending": "Soul Mending"
 }

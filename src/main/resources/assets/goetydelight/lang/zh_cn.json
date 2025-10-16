@@ -40,6 +40,7 @@
   "item.goetydelight.poached_nether_wart_egg": "水煮下界疣蛋",
   "item.goetydelight.poached_spider_egg": "水煮蜘蛛卵",
   "item.goetydelight.ectoplasm_jelly": "灵质果冻",
+  "item.goetydelight.corpse_maggots": "腐尸蛆虫",
   "item.goetydelight.roasted_corpse_maggots": "烤腐尸蛆虫",
   "item.goetydelight.grill_frog_leg": "烤青蛙腿",
   "item.goetydelight.bear_paw": "熊掌",
@@ -73,6 +74,7 @@
   "item.goetydelight.full_spider_feast": "全蛛宴",
   "item.goetydelight.cherry_blossom_cake": "樱花饼",
   "item.goetydelight.liquid_void_tea_drink": "液态虚空茶饮",
+  "item.goetydelight.pure_drink": "至纯之饮",
   "effect.goetydelight.spell_duration": "法术长续",
   "effect.goetydelight.spell_mastery": "法术精通",
   "effect.goetydelight.the_pale_messenger": "苍白使者",
@@ -84,5 +86,6 @@
   "goetydelight.container.cursed_ingot_pot.soul_infused":"已注入灵魂",
   "goetydelight.container.cursed_ingot_pot.soul_source.empty": "灵魂空缺",
   "goetydelight.container.shade_stove": "阴影炉灶",
-  "jei.goety.craftType.culinary": "烹饪仪式"
+  "jei.goety.craftType.culinary": "烹饪仪式",
+  "enchantment.goetydelight.soul_mending": "灵魂修补"
 }
