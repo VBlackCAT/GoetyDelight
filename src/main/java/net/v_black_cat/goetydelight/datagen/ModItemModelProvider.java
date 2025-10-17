@@ -88,6 +88,9 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.LIQUID_VOID_TEA_DRINK);
         simpleItem(ModItems.PURE_DRINK);
         simpleItem(ModItems.CHERRY_BLOSSOM_CAKE);
+        simpleItem(ModItems.MAGICQUARTZCOOKIE);
+        simpleItem(ModItems.LICHSCHAOSSTEW);
+        simpleItem(ModItems.SNAPUNHOLYTRIPE);
 
 
 

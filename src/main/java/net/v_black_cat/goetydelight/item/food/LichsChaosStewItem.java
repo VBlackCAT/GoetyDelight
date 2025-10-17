@@ -4,6 +4,8 @@ import com.Polarice3.Goety.api.entities.IOwned;
 import com.Polarice3.Goety.utils.LichdomHelper;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -12,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -27,6 +30,8 @@ public class LichsChaosStewItem extends Item {
     private static final String STEW_BOOST_COUNT_TAG = "LichStewBoostCount";
     
     private static final String MINION_BOOST_APPLIED_TAG = "LichStewBoostApplied";
+
+    private static final int FIRE_RESISTANCE_INTERVAL = 100;
 
     
     private static final UUID ATTACK_DAMAGE_BOOST_UUID = UUID.fromString("a90ad9a8-3776-44d1-b6c8-a464269f4bf5");
@@ -62,6 +67,22 @@ public class LichsChaosStewItem extends Item {
 
             return result;
         }
+        if (LichdomHelper.isLich(livingEntity)) {
+            ItemStack result = super.finishUsingItem(stack, level, livingEntity);
+
+            if (!level.isClientSide && livingEntity instanceof Player player) {
+
+                increaseStewBoostCount(player);
+
+
+                applyMinionBoosts(player, getStewBoostCount(player));
+
+                // 添加周期性抗火效果标签
+                player.getPersistentData().putInt("LichStewFireResistTimer", FIRE_RESISTANCE_INTERVAL);
+            }
+
+            return result;
+        }
 
         return stack;
     }
@@ -86,6 +107,27 @@ public class LichsChaosStewItem extends Item {
         for (LivingEntity entity : player.level().getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(64.0D))) {
             if (isPlayerMinion(entity, player)) {
                 applyMinionBoost(entity, boostCount);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        if (event.phase == TickEvent.Phase.END && !event.player.level().isClientSide) {
+            Player player = event.player;
+
+            if (LichdomHelper.isLich(player)) {
+                // 检查并更新抗火计时器
+                int timer = player.getPersistentData().getInt("LichStewFireResistTimer");
+                if (timer > 0) {
+                    timer--;
+                    if (timer <= 0) {
+                        // 重新应用抗火效果
+                        player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 100, 0)); // 5秒
+                        timer = FIRE_RESISTANCE_INTERVAL;
+                    }
+                    player.getPersistentData().putInt("LichStewFireResistTimer", timer);
+                }
             }
         }
     }

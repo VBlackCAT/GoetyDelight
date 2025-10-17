@@ -1,7 +1,5 @@
 package net.v_black_cat.goetydelight.item;
 
-import com.Polarice3.Goety.common.effects.brew.BrewEffectInstance;
-import com.Polarice3.Goety.common.effects.brew.BrewEffects;
 import com.Polarice3.Goety.common.items.ModTiers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
@@ -15,6 +13,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.effect.ModEffects;
+import net.v_black_cat.goetydelight.effect.WightDenialEffect;
 import net.v_black_cat.goetydelight.item.food.*;
 import net.v_black_cat.goetydelight.item.food.BowlFoodItem;
 import vectorwing.farmersdelight.common.item.DrinkableItem;
@@ -104,6 +103,9 @@ public class ModItems {
     public static final RegistryObject<Item> FULL_SPIDER_FEAST;
     public static final RegistryObject<Item> LIQUID_VOID_TEA_DRINK;
     public static final RegistryObject<Item> PURE_DRINK;
+    public static final RegistryObject<Item> MAGICQUARTZCOOKIE;
+    public static final RegistryObject<Item> LICHSCHAOSSTEW;
+    public static final RegistryObject<Item> SNAPUNHOLYTRIPE;
 
     // ==================== 效果供应商常量 ====================
     private static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
@@ -505,7 +507,26 @@ public class ModItems {
                 () -> new LiquidVoidTeaDrinkItem(basicItem().stacksTo(1).food(
                         simpleFoodItemProperties(0, 0)
                                .build())));
-
+        MAGICQUARTZCOOKIE = ITEMS.register("magic_quartz_cookie",
+                () -> new MagicQuartzCookieItem(basicItem().stacksTo(1).food(
+                        simpleFoodItemProperties(8, 4)
+                                .build())));
+        LICHSCHAOSSTEW = ITEMS.register("lichs_chaos_stew",
+                () -> new LichsChaosStewItem(basicItem().stacksTo(1).food(
+                        simpleFoodItemProperties(8, 4)
+                                .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, minToTick(30), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, minToTick(30), 2), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, minToTick(30), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(ModEffects.WIGHT_DENIAL.get(), minToTick(30), 0), 1.0F)
+                                .build())));
+        SNAPUNHOLYTRIPE = ITEMS.register("snap_unhol_tripe",
+                () -> new SnapUnholyTripeItem(basicItem().stacksTo(1).food(
+                        simpleFoodItemProperties(18, 20)
+                                .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), minToTick(5), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(30), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.SATURATION, 200, 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, minToTick(30), 0), 1.0F)
+                                .build())));
     }
 
     // ==================== 辅助方法 ====================
