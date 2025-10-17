@@ -20,6 +20,7 @@ import net.minecraftforge.network.PacketDistributor;
 import net.v_black_cat.goetydelight.network.NetworkHandler;
 import net.v_black_cat.goetydelight.network.SyncAbilityPacket;
 
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -81,22 +82,44 @@ public class TimedAbilitySystem {
     // 玩家克隆事件处理（维度切换）
     @SubscribeEvent
     public static void onPlayerClone(PlayerEvent.Clone event) {
-        if (event.isWasDeath()) return; // 死亡时已经处理过了
-
         LivingEntity original = event.getOriginal();
         LivingEntity newEntity = event.getEntity();
 
-        original.reviveCaps(); // 确保原实体的 Capability 可用
+        // 修复玩家重生事件，确保数据正确转移
+        if (event.isWasDeath()) {
+            // 死亡重生情况
+            original.reviveCaps();
 
-        original.getCapability(ENTITY_TIMED_ABILITIES).ifPresent(oldAbilities -> {
-            newEntity.getCapability(ENTITY_TIMED_ABILITIES).ifPresent(newAbilities -> {
-                // 复制能力数据到新实体
-                CompoundTag nbt = oldAbilities.serializeNBT();
-                newAbilities.deserializeNBT(nbt);
+            original.getCapability(ENTITY_TIMED_ABILITIES).ifPresent(oldAbilities -> {
+                newEntity.getCapability(ENTITY_TIMED_ABILITIES).ifPresent(newAbilities -> {
+                    // 复制能力数据到新实体
+                    CompoundTag nbt = oldAbilities.serializeNBT();
+                    newAbilities.deserializeNBT(nbt);
+
+                    // 确保持久化数据也同步
+                    CompoundTag originalData = original.getPersistentData();
+                    if (originalData.contains("goetydelight_abilities")) {
+                        CompoundTag abilitiesData = originalData.getCompound("goetydelight_abilities");
+                        newEntity.getPersistentData().put("goetydelight_abilities", abilitiesData);
+                    }
+                });
             });
-        });
 
-        original.invalidateCaps();
+            original.invalidateCaps();
+        } else {
+            // 维度切换情况
+            original.reviveCaps(); // 确保原实体的 Capability 可用
+
+            original.getCapability(ENTITY_TIMED_ABILITIES).ifPresent(oldAbilities -> {
+                newEntity.getCapability(ENTITY_TIMED_ABILITIES).ifPresent(newAbilities -> {
+                    // 复制能力数据到新实体
+                    CompoundTag nbt = oldAbilities.serializeNBT();
+                    newAbilities.deserializeNBT(nbt);
+                });
+            });
+
+            original.invalidateCaps();
+        }
     }
 
     @SubscribeEvent
@@ -381,5 +404,35 @@ public class TimedAbilitySystem {
             return true;
         }
         return false;
+    }
+    // 添加玩家数据持久化事件监听
+    @SubscribeEvent
+    public static void onPlayerSave(PlayerEvent.SaveToFile event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            // 获取玩家文件
+            File playerDir = event.getPlayerDirectory();
+            File playerDataFile = new File(playerDir, event.getPlayerUUID().toString() + ".dat");
+
+            // 保存能力数据到玩家NBT
+            player.getCapability(ENTITY_TIMED_ABILITIES).ifPresent(abilities -> {
+                CompoundTag playerData = player.getPersistentData();
+                CompoundTag abilitiesData = abilities.serializeNBT();
+                playerData.put("goetydelight_abilities", abilitiesData);
+            });
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLoad(PlayerEvent.LoadFromFile event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            // 从玩家NBT加载能力数据
+            CompoundTag playerData = player.getPersistentData();
+            if (playerData.contains("goetydelight_abilities")) {
+                CompoundTag abilitiesData = playerData.getCompound("goetydelight_abilities");
+                player.getCapability(ENTITY_TIMED_ABILITIES).ifPresent(abilities -> {
+                    abilities.deserializeNBT(abilitiesData);
+                });
+            }
+        }
     }
 }

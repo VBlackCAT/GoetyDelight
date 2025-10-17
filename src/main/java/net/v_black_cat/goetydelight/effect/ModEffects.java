@@ -29,6 +29,10 @@ public class ModEffects {
             EFFECTS.register("hunting_denial", SoulConvergenceRoomEffect::new);
     public static final RegistryObject<MobEffect> HYDRATION =
             EFFECTS.register("hydration", HydrationEffect::new);
+    public static final RegistryObject<MobEffect> CRIMSON_MEMORIES =
+            EFFECTS.register("crimson_memories", CrimsonMemoriesEffect::new);
+    public static final RegistryObject<MobEffect> WIGHT_DENIAL =
+            EFFECTS.register("wight_denial", WightDenialEffect::new);
 
     public static void register(IEventBus bus) {
         EFFECTS.register(bus);
