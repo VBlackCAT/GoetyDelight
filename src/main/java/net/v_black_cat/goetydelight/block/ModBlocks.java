@@ -92,6 +92,14 @@ public class ModBlocks {
             new RottenCorpseMaggotFeastBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
                     ModItems.ROTTEN_CORPSE_MAGGOT_FEAST, true));
 
+    public static final RegistryObject<Block> ROYAL_CAKE_BLOCK = registerBlock("royal_cake_block",() ->
+            new RoyalCakeBlock(BlockBehaviour.Properties.of()
+                    .forceSolidOn()
+                    .strength(0.5F)
+                    .sound(SoundType.WOOL)
+                    .noLootTable()
+                    .pushReaction(PushReaction.DESTROY)), 1);
+
 
     public static final RegistryObject<Block> RENDER_BLOCK = registerBlock("render_block",() ->
             new RenderBlock(BlockBehaviour.Properties.of()
@@ -113,8 +121,15 @@ public class ModBlocks {
         };
     }
 
+    private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block, int stackSize) {
+        RegistryObject<T> toReturn = BLOCKS.register(name, block);
+        registerBlockItem(name, toReturn, stackSize);
+        return toReturn;
+    }
+
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
-        RegistryObject<T> toReturn = BLOCKS.register(name, block);registerBlockItem(name, toReturn);
+        RegistryObject<T> toReturn = BLOCKS.register(name, block);
+        registerBlockItem(name, toReturn);
         return toReturn;
     }
 
@@ -122,7 +137,18 @@ public class ModBlocks {
         return false;
     }
 
+    private static <T extends Block> RegistryObject<Item> registerBlockItem(String name, RegistryObject<T> block, int stackSize) {
+        return ModItems.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties().stacksTo(stackSize)));
+    }
+
     private static <T extends Block> RegistryObject<Item> registerBlockItem(String name, RegistryObject<T> block) {
         return ModItems.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
+    }
+
+    public static <T extends Block> RegistryObject<Item> getBlockItem(RegistryObject<T> block) {
+        return RegistryObject.create(
+            net.minecraftforge.registries.ForgeRegistries.BLOCKS.getKey(block.get()), 
+            net.minecraftforge.registries.ForgeRegistries.ITEMS
+        );
     }
 }

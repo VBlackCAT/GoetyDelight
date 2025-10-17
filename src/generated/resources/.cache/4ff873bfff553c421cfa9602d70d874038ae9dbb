@@ -1,4 +1,4 @@
-// 1.20.1	2025-10-17T20:26:25.5913461	Item Models: goetydelight
+// 1.20.1	2025-10-17T23:58:09.9083332	Item Models: goetydelight
 2ff3a4e2c1e26ec353ee3321147e7616652d643f assets/goetydelight/models/item/apocalyptium_ingot_brush.json
 c2be5959232c9ace5cadce8d2b4a118dc0d662ff assets/goetydelight/models/item/apocalyptium_knife.json
 76e40f5d3135e86736caf6256411341a3dc6df80 assets/goetydelight/models/item/ascension_mooncake.json
@@ -49,6 +49,7 @@ c42b8712ec0e3acbc37042dfa3db07df6bf76e11 assets/goetydelight/models/item/pure_dr
 205432e0d21dd6b00c1f265c872e796a7dbd6d76 assets/goetydelight/models/item/roasted_corpse_maggots.json
 d47d79877c51c2a4eec063a04b68f5ead7b357ae assets/goetydelight/models/item/rotten_corpse_maggot_feast.json
 9588630ef5de2dc5156b585fb4622bbf63aa0d6e assets/goetydelight/models/item/royal_cake.json
+152b55f849be4886dd0f1afe555bebc6c1220fab assets/goetydelight/models/item/royal_cake_block.json
 71264d9a9a76f7cbbaaa3839f85f8803dfcf1e1a assets/goetydelight/models/item/ruby_hard_candy.json
 84b73f108a9364c7bb447a5594b4fbae4cf13397 assets/goetydelight/models/item/sauce_grilled_candy_fish.json
 c241540a46b501d26beb21dcbb7fe035f7c98986 assets/goetydelight/models/item/silt_marble_heavy.json

@@ -93,8 +93,8 @@ public class ModItemModelProvider extends ItemModelProvider {
 //        simpleItem(ModItems.SNAP_UNHOLY_TRIPE);
         simpleItem(ModItems.SUNDAE_OF_THE_PHILOSOPHERS_POTION);
 
-
-
+        simpleItem(ModBlocks.getBlockItem(ModBlocks.ROYAL_CAKE_BLOCK));
+        
         simpleBlockItem(ModBlocks.MARBLE_DOOR);
         
         evenSimplerBlockItem(ModBlocks.SILT_MARBLE_HEAVY);

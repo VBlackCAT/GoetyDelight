@@ -384,7 +384,7 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(RAMPAGE_EFFECT_SUPPLIER.get(), 2400, 0), 1.0F)
                                 .build())));
         CAKE = ITEMS.register("royal_cake",
-                () -> new CakeItem(basicItem().stacksTo(1).food(
+                () -> new CakeItem(basicItem().stacksTo(8).food(
                         simpleFoodItemProperties(16, 8)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), 36000, 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(FORTUNATE_EFFECT_SUPPLIER.get(), 12000, 2), 1.0F)
