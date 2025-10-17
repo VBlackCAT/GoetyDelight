@@ -25,11 +25,8 @@ public class CrimsonMemoriesEffect extends MobEffect {
     public static void onEffectApplied(MobEffectEvent.Added event) {
         LivingEntity entity = event.getEntity();
         MobEffectInstance effectInstance = event.getEffectInstance();
-
         if (effectInstance.getEffect() instanceof CrimsonMemoriesEffect && !entity.level().isClientSide()) {
-
             int duration = effectInstance.getDuration();
-
             TimedAbilitySystem.addAbilityToEntity(entity, AbilityRegistry.CRIMSON_MEMORIES, duration);
         }
     }

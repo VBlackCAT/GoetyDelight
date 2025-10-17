@@ -57,7 +57,7 @@ public class CrimsonMemoriesHandler {
                     Registry<DamageType> damageTypeRegistry = player.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
                     DamageSource damageSource;
                     ResourceLocation targetId = ForgeRegistries.ENTITY_TYPES.getKey(target.getType());
-                    if (targetId == null){
+                    if (targetId != null){
                         if (targetId.equals(new ResourceLocation("goety:apostle")) ||
                                 targetId.equals(new ResourceLocation("goety:heretic"))||
                                 targetId.equals(new ResourceLocation("goety:wither_necromancer")) ||
