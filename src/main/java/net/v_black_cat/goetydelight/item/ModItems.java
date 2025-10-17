@@ -1,5 +1,6 @@
 package net.v_black_cat.goetydelight.item;
 
+import com.Polarice3.Goety.common.effects.GoetyEffects;
 import com.Polarice3.Goety.common.effects.brew.BrewEffectInstance;
 import com.Polarice3.Goety.common.effects.brew.BrewEffects;
 import com.Polarice3.Goety.common.items.ModTiers;
@@ -104,6 +105,11 @@ public class ModItems {
     public static final RegistryObject<Item> FULL_SPIDER_FEAST;
     public static final RegistryObject<Item> LIQUID_VOID_TEA_DRINK;
     public static final RegistryObject<Item> PURE_DRINK;
+    public static final RegistryObject<Item> LICHS_CHAOS_STEW;
+    public static final RegistryObject<Item> MAGIC_QUARTZ_COOKIE;
+    public static final RegistryObject<Item> SNAP_UNHOLY_TRIPE;
+    public static final RegistryObject<Item> SUNDAE_OF_THE_PHILOSOPHERS_POTION;
+    public static final RegistryObject<Item> THE_BOX_OF_THE_DEAD;
 
     // ==================== 效果供应商常量 ====================
     private static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
@@ -505,6 +511,41 @@ public class ModItems {
                 () -> new LiquidVoidTeaDrinkItem(basicItem().stacksTo(1).food(
                         simpleFoodItemProperties(0, 0)
                                .build())));
+
+        LICHS_CHAOS_STEW = ITEMS.register("lichs_chaos_stew",
+                () -> new LichsChaosStewItem(basicItem().stacksTo(1).food(
+                        simpleFoodItemProperties(16, 12)
+                                .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, Integer.MAX_VALUE, 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(SAVE_EFFECTS.get(), Integer.MAX_VALUE, 2), 1.0F)
+                                .effect(() -> new MobEffectInstance(ModEffects.WIGHT_DENIAL.get(), minToTick(30), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, Integer.MAX_VALUE, 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(30), 2), 1.0F)
+                                .build())));
+        MAGIC_QUARTZ_COOKIE = ITEMS.register("magic_quartz_cookie",
+                () -> new MagicQuartzCookieItem(basicItem().stacksTo(1).food(
+                        simpleFoodItemProperties(8, 4)
+                               .build())));
+        SNAP_UNHOLY_TRIPE = ITEMS.register("snap_unholy_tripe",
+                () -> new SnapUnholyTripeItem(basicItem().stacksTo(1).food(
+                        simpleFoodItemProperties(18, 20)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(30), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.SATURATION, sToTick(10), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(30), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), minToTick(5), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE,  minToTick(30), 0), 1.0F)
+                                .build())));
+        SUNDAE_OF_THE_PHILOSOPHERS_POTION = ITEMS.register("sundae_of_the_philosophers_potion",
+                () -> new SundaeOfThePhilosophersPotionItem(basicItem().stacksTo(1).food(
+                        simpleFoodItemProperties(10, 6)
+                                .effect(() -> new MobEffectInstance(SAVE_EFFECTS.get(), Integer.MAX_VALUE, 1), 1.0F)
+                                .effect(() -> new MobEffectInstance(GOLD_TOUCHED.get(), minToTick(30), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(SOUL_ARMOR.get(), Integer.MAX_VALUE, 1), 1.0F)
+                                .build())));
+        THE_BOX_OF_THE_DEAD = ITEMS.register("the_box_of_the_dead",
+                () -> new TheBoxOfTheDeadItem(basicItem().stacksTo(1).food(
+                        simpleFoodItemProperties(6, 3)
+                                .effect(() -> new MobEffectInstance(CURSED.get(), sToTick(20), 1), 1.0F)
+                                .build())));
 
     }
 
