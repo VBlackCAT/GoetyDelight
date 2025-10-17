@@ -1,4 +1,4 @@
-// 1.20.1	2025-10-17T19:32:28.2706277	Item Models: goetydelight
+// 1.20.1	2025-10-17T20:26:25.5913461	Item Models: goetydelight
 2ff3a4e2c1e26ec353ee3321147e7616652d643f assets/goetydelight/models/item/apocalyptium_ingot_brush.json
 c2be5959232c9ace5cadce8d2b4a118dc0d662ff assets/goetydelight/models/item/apocalyptium_knife.json
 76e40f5d3135e86736caf6256411341a3dc6df80 assets/goetydelight/models/item/ascension_mooncake.json
@@ -28,6 +28,7 @@ b672e1fa9f34eae2b3e6008638d3c0207cb49d4a assets/goetydelight/models/item/grill_f
 13fa6a79cb84ce159ae646bda94fadda7df7f973 assets/goetydelight/models/item/jungle_salad.json
 18e57f08d2936fcb5e8f1e83013597f28e64cbd5 assets/goetydelight/models/item/lichs_chaos_stew.json
 4098907170c4c02ab73b0a6995960b7c2068a04c assets/goetydelight/models/item/liquid_void_tea_drink.json
+0f0a96e26ff69064bbacf76888588642dde05d19 assets/goetydelight/models/item/magic_quartz_cookie.json
 5cb53a7b7e54773532b1db6780e88b264d58d3de assets/goetydelight/models/item/marble_door.json
 f411ba65777a00da09f7b3afeb9edbba72a49bad assets/goetydelight/models/item/marble_fence_gate.json
 09432303c53792076d03f013a3c4b88a3be3a291 assets/goetydelight/models/item/marble_pressure_plate.json
