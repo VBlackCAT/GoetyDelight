@@ -36,7 +36,7 @@ public class ItemBlackList {
         // 强制添加黑名单
         /*
         Collections.addAll(BLACK_LIST_SET,
-                "goetydelight:exotic_breakfast"
+                "goetydelight:"
         );
         */
     }

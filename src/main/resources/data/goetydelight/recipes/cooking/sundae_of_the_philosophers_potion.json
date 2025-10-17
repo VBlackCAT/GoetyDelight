@@ -1,0 +1,31 @@
+{
+  "type": "farmersdelight:cooking",
+  "ingredients": [
+    {
+      "item": "goety:undeath_potion"
+    },
+    {
+      "item": "goety:philosophers_stone"
+    },
+    {
+      "tag": "forge:eggs"
+    },
+    {
+      "item": "goety:ice_cube"
+    },
+    {
+      "item": "goety:ice_cube"
+    },
+    {
+      "tag": "forge:berries"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:sundae_of_the_philosophers_potion"
+  },
+  "container": {
+    "item": "minecraft:bowl"
+  },
+  "experience": 1.5,
+  "cookingtime": 800
+}
