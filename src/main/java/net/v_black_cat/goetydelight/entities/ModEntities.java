@@ -14,12 +14,12 @@ public class ModEntities {
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES =
             DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, GoetyDelight.MODID);
 
-    public static final RegistryObject<EntityType<OwnedHellfire>> OWNED_HELLFIRE = ENTITY_TYPES.register("owned_hellfire",
-            () -> EntityType.Builder.<OwnedHellfire>of(OwnedHellfire::new, MobCategory.MISC)
-                    .sized(1.0F, 1.0F)
-                    .clientTrackingRange(4)
-                    .updateInterval(10)
-                    .build("owned_hellfire"));
+//    public static final RegistryObject<EntityType<OwnedHellfire>> OWNED_HELLFIRE = ENTITY_TYPES.register("owned_hellfire",
+//            () -> EntityType.Builder.<OwnedHellfire>of(OwnedHellfire::new, MobCategory.MISC)
+//                    .sized(1.0F, 1.0F)
+//                    .clientTrackingRange(4)
+//                    .updateInterval(10)
+//                    .build("owned_hellfire"));
 
     public static void register(IEventBus eventBus) {
         ENTITY_TYPES.register(eventBus);
