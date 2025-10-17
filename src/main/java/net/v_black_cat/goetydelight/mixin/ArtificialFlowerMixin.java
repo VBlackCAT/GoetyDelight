@@ -35,6 +35,7 @@ public class ArtificialFlowerMixin {
                     (java.util.List<ResourceLocation>) effectBlackListField.get(null);
 
             effectBlackList.add(new ResourceLocation("goetydelight", "the_pale_messenger"));
+            effectBlackList.add(new ResourceLocation("goetydelight", "crimson_memories"));
 
             net.v_black_cat.goetydelight.GoetyDelight.LOGGER.debug("added to ArtificialFlower blacklist successfully");
 
