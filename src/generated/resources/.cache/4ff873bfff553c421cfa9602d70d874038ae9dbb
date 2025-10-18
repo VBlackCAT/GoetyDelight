@@ -1,4 +1,4 @@
-// 1.20.1	2025-10-17T23:58:09.9083332	Item Models: goetydelight
+// 1.20.1	2025-10-18T14:33:01.5773075	Item Models: goetydelight
 2ff3a4e2c1e26ec353ee3321147e7616652d643f assets/goetydelight/models/item/apocalyptium_ingot_brush.json
 c2be5959232c9ace5cadce8d2b4a118dc0d662ff assets/goetydelight/models/item/apocalyptium_knife.json
 76e40f5d3135e86736caf6256411341a3dc6df80 assets/goetydelight/models/item/ascension_mooncake.json
@@ -15,6 +15,7 @@ f474d479444b0009802857a5190b05336efdf114 assets/goetydelight/models/item/cursed_
 edc5de8d3c8b8c46fe5efb6ca35f163ea672b850 assets/goetydelight/models/item/dark_brush.json
 b2e287fed120a177d0aef5916def08de7fe71717 assets/goetydelight/models/item/dark_knife.json
 007c80462e8272d2279aa4e0f22eaecbb05cc891 assets/goetydelight/models/item/ectoplasmic_melon.json
+bb1804b78361d3d90fc110dbcd4fd5fd7b436c4c assets/goetydelight/models/item/ectoplasmic_melon_seeds.json
 94535d05212ff6f99b0eb579f322488569a7c71c assets/goetydelight/models/item/ectoplasm_jelly.json
 f0fdf6d0bca6d4ac6f7632bdff8fa334b62bb4a0 assets/goetydelight/models/item/eternal_refusal_of_black_meat_soup.json
 b9ca0c6717b41adc2f7d6961f0d2721c998773cc assets/goetydelight/models/item/exotic_breakfast.json

@@ -1,7 +1,9 @@
-// 1.20.1	2025-10-08T21:00:37.2433216	Loot Tables
+// 1.20.1	2025-10-18T15:05:57.2416644	Loot Tables
+51af4557de485fb4d9fc5395dbce06eaa2dd12c6 data/goetydelight/loot_tables/blocks/attached_ectoplasmic_melon_stem.json
 dcbe2ae987206dde3d003fff75cb07a50b3ef3a6 data/goetydelight/loot_tables/blocks/blue_marble.json
 c61ca357b95f5be231e55416005983e7dd1c8271 data/goetydelight/loot_tables/blocks/cursed_ingot_pot.json
 ee37ca91f73d2923496eb7a750793b14ed341821 data/goetydelight/loot_tables/blocks/dripmarble_block.json
+e2b1f91aec53017bd2f668d4ff17573620cd8719 data/goetydelight/loot_tables/blocks/ectoplasmic_melon_stem.json
 473b040dc131744ab32a137fdb732b4d4e8d4ee5 data/goetydelight/loot_tables/blocks/jungle_marble.json
 31be172491f1fe66b30fd4682fe77d951ed6fdfe data/goetydelight/loot_tables/blocks/marble.json
 91c469fbd95263654cb79ad24a957bdd98d01f9f data/goetydelight/loot_tables/blocks/marble_button.json

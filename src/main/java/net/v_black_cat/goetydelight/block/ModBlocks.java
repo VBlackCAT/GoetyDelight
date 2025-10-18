@@ -114,7 +114,38 @@ public class ModBlocks {
                     .sound(SoundType.AMETHYST)));
 
 
-    //照抄的农夫乐事设置方块亮度的方法
+    public static final RegistryObject<Block> ECTOPLASMIC_MELON_BLOCK = registerBlock("ectoplasmic_melon_block",
+            () -> new EctoplasmicMelonBlock(BlockBehaviour.Properties.copy(Blocks.MELON)
+                    .mapColor(MapColor.COLOR_CYAN) // 设置颜色为青色
+                    .sound(SoundType.WOOD) // 使用木头音效
+                    .strength(1.0F) // 设置硬度
+            ));
+
+
+    public static final RegistryObject<Block> ECTOPLASMIC_MELON_STEM = registerBlockWithoutBlockItem("ectoplasmic_melon_stem",
+            () -> new StemBlock((StemGrownBlock)ECTOPLASMIC_MELON_BLOCK.get(),
+                    () -> ModItems.ECTOPLASMIC_MELON_SEEDS.get(),
+                    BlockBehaviour.Properties.copy(Blocks.MELON_STEM).noOcclusion()
+                    .noCollission() // 无碰撞箱
+                    .instabreak() // 瞬间破坏
+                    .sound(SoundType.CROP) // 作物音效
+                    .randomTicks() // 需要随机刻
+
+
+            ));
+
+
+    public static final RegistryObject<Block> ATTACHED_ECTOPLASMIC_MELON_STEM = registerBlockWithoutBlockItem("attached_ectoplasmic_melon_stem",
+            () -> new AttachedStemBlock((StemGrownBlock)ECTOPLASMIC_MELON_BLOCK.get(),
+                    () -> ModItems.ECTOPLASMIC_MELON_SEEDS.get(),
+                    BlockBehaviour.Properties.copy(Blocks.ATTACHED_MELON_STEM)
+                            .noCollission()
+                            .instabreak()
+                            .sound(SoundType.CROP)
+
+            ));
+
+
     private static ToIntFunction<BlockState> litBlockEmission(int lightValue) {
         return (state) -> {
             return (Boolean)state.getValue(BlockStateProperties.LIT) ? lightValue : 0;
@@ -143,6 +174,10 @@ public class ModBlocks {
 
     private static <T extends Block> RegistryObject<Item> registerBlockItem(String name, RegistryObject<T> block) {
         return ModItems.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
+    }
+    // 专用于注册没有物品形式的方块
+    private static <T extends Block> RegistryObject<T> registerBlockWithoutBlockItem(String name, Supplier<T> block) {
+        return BLOCKS.register(name, block);
     }
 
     public static <T extends Block> RegistryObject<Item> getBlockItem(RegistryObject<T> block) {

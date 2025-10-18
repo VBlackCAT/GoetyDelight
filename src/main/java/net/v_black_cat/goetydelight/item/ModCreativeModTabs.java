@@ -3,7 +3,10 @@ package net.v_black_cat.goetydelight.item;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
@@ -65,14 +68,22 @@ public class ModCreativeModTabs {
                         // 添加所有物品，但排除阻止列表中的物品
                         ModItems.ITEMS.getEntries().forEach(item -> {
                             if (item.isPresent() && !BLACKLIST.contains(item)) {
-                                output.accept(item.get());
+                                Item itemInstance = item.get();
+                                if (itemInstance != null && itemInstance != Items.AIR) {
+                                    output.accept(itemInstance);
+                                }
                             }
                         });
 
-                        // 添加所有方块，但排除阻止列表中的方块
                         ModBlocks.BLOCKS.getEntries().forEach(block -> {
                             if (block.isPresent() && !BLACKLIST.contains(block)) {
-                                output.accept(block.get());
+                                Block blockInstance = block.get();
+                                Item blockItem = blockInstance.asItem();
+
+
+                                if (blockItem != null && blockItem != Items.AIR) {
+                                    output.accept(blockItem);
+                                }
                             }
                         });
                     })

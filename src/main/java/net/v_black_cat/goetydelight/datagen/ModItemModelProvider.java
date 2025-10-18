@@ -92,6 +92,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.MAGIC_QUARTZ_COOKIE);
 //        simpleItem(ModItems.SNAP_UNHOLY_TRIPE);
         simpleItem(ModItems.SUNDAE_OF_THE_PHILOSOPHERS_POTION);
+        simpleItem(ModItems.ECTOPLASMIC_MELON_SEEDS);
 
         simpleItem(ModBlocks.getBlockItem(ModBlocks.ROYAL_CAKE_BLOCK));
         
