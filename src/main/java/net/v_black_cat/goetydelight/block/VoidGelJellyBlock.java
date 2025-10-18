@@ -12,6 +12,6 @@ public class VoidGelJellyBlock extends FeastBlock {
     }
 
     public int getMaxServings() {
-        return 4;
+        return 3;
     }
 }
