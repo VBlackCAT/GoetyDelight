@@ -18,22 +18,23 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.v_black_cat.goetydelight.ability.AbilityRegistry;
+import net.v_black_cat.goetydelight.ability.TimedAbilitySystem;
 
 import java.util.UUID;
 
 public class LichsChaosStewItem extends Item {
-    
+
     private static final int MAX_BOOST_COUNT = 5;
-    
+
     private static final double BOOST_PERCENTAGE = 0.2;
-    
+
     private static final String STEW_BOOST_COUNT_TAG = "LichStewBoostCount";
-    
+
     private static final String MINION_BOOST_APPLIED_TAG = "LichStewBoostApplied";
 
-    private static final int FIRE_RESISTANCE_INTERVAL = 100;
+    private static final int FIRE_RESISTANCE_DURATION = -1;
 
-    
     private static final UUID ATTACK_DAMAGE_BOOST_UUID = UUID.fromString("a90ad9a8-3776-44d1-b6c8-a464269f4bf5");
     private static final UUID MAX_HEALTH_BOOST_UUID = UUID.fromString("2d43842e-d85a-4590-8b6f-daafe15bcbcc");
     private static final UUID ARMOR_BOOST_UUID = UUID.fromString("f1a869ea-d50f-454b-847b-5b4779873078");
@@ -58,27 +59,15 @@ public class LichsChaosStewItem extends Item {
             ItemStack result = super.finishUsingItem(stack, level, livingEntity);
 
             if (!level.isClientSide && livingEntity instanceof Player player) {
-                
-                increaseStewBoostCount(player);
-
-                
-                applyMinionBoosts(player, getStewBoostCount(player));
-            }
-
-            return result;
-        }
-        if (LichdomHelper.isLich(livingEntity)) {
-            ItemStack result = super.finishUsingItem(stack, level, livingEntity);
-
-            if (!level.isClientSide && livingEntity instanceof Player player) {
 
                 increaseStewBoostCount(player);
 
-
                 applyMinionBoosts(player, getStewBoostCount(player));
 
-                // 添加周期性抗火效果标签
-                player.getPersistentData().putInt("LichStewFireResistTimer", FIRE_RESISTANCE_INTERVAL);
+
+                TimedAbilitySystem.addAbilityToEntity(player, AbilityRegistry.PERMANENT_FIRE_RESISTANCE, FIRE_RESISTANCE_DURATION);
+                TimedAbilitySystem.addAbilityToEntity(player, AbilityRegistry.PERMANENT_SAVE_EFFECTS, FIRE_RESISTANCE_DURATION);
+
             }
 
             return result;
@@ -87,12 +76,12 @@ public class LichsChaosStewItem extends Item {
         return stack;
     }
 
-    
+
     public static int getStewBoostCount(Player player) {
         return player.getPersistentData().getInt(STEW_BOOST_COUNT_TAG);
     }
 
-    
+
     private void increaseStewBoostCount(Player player) {
         int currentCount = getStewBoostCount(player);
         if (currentCount < MAX_BOOST_COUNT) {
@@ -100,7 +89,7 @@ public class LichsChaosStewItem extends Item {
         }
     }
 
-    
+
     private void applyMinionBoosts(Player player, int boostCount) {
         if (boostCount <= 0) return;
 
@@ -111,28 +100,8 @@ public class LichsChaosStewItem extends Item {
         }
     }
 
-    @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END && !event.player.level().isClientSide) {
-            Player player = event.player;
+    // 移除原有的 onPlayerTick 方法，因为抗火效果现在由 TimedAbilitySystem 处理
 
-            if (LichdomHelper.isLich(player)) {
-                // 检查并更新抗火计时器
-                int timer = player.getPersistentData().getInt("LichStewFireResistTimer");
-                if (timer > 0) {
-                    timer--;
-                    if (timer <= 0) {
-                        // 重新应用抗火效果
-                        player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 100, 0)); // 5秒
-                        timer = FIRE_RESISTANCE_INTERVAL;
-                    }
-                    player.getPersistentData().putInt("LichStewFireResistTimer", timer);
-                }
-            }
-        }
-    }
-
-    
     private boolean isPlayerMinion(LivingEntity entity, Player player) {
         if (entity instanceof IOwned ownedEntity) {
             LivingEntity owner = ownedEntity.getTrueOwner();
@@ -141,17 +110,17 @@ public class LichsChaosStewItem extends Item {
         return false;
     }
 
-    
+
     public static void applyMinionBoost(LivingEntity minion, int boostCount) {
         if (minion.level().isClientSide) return;
 
-        
+
         removeMinionBoost(minion);
 
-        
+
         double boostMultiplier = BOOST_PERCENTAGE * boostCount;
 
-        
+
         AttributeInstance attackDamage = minion.getAttribute(Attributes.ATTACK_DAMAGE);
         if (attackDamage != null) {
             double baseValue = attackDamage.getBaseValue();
@@ -164,7 +133,7 @@ public class LichsChaosStewItem extends Item {
             ));
         }
 
-        
+
         AttributeInstance maxHealth = minion.getAttribute(Attributes.MAX_HEALTH);
         if (maxHealth != null) {
             double baseValue = maxHealth.getBaseValue();
@@ -176,11 +145,11 @@ public class LichsChaosStewItem extends Item {
                     AttributeModifier.Operation.ADDITION
             ));
 
-            
+
             minion.setHealth(minion.getHealth() + (float)boostValue);
         }
 
-        
+
         AttributeInstance armor = minion.getAttribute(Attributes.ARMOR);
         if (armor != null) {
             double baseValue = armor.getBaseValue();
@@ -193,7 +162,7 @@ public class LichsChaosStewItem extends Item {
             ));
         }
 
-        
+
         AttributeInstance movementSpeed = minion.getAttribute(Attributes.MOVEMENT_SPEED);
         if (movementSpeed != null) {
             double baseValue = movementSpeed.getBaseValue();
@@ -206,11 +175,11 @@ public class LichsChaosStewItem extends Item {
             ));
         }
 
-        
+
         minion.getPersistentData().putInt(MINION_BOOST_APPLIED_TAG, boostCount);
     }
 
-    
+
     public static void removeMinionBoost(LivingEntity minion) {
         AttributeInstance attackDamage = minion.getAttribute(Attributes.ATTACK_DAMAGE);
         if (attackDamage != null) {
@@ -233,17 +202,17 @@ public class LichsChaosStewItem extends Item {
         }
     }
 
-    
+
     @Mod.EventBusSubscriber
     public static class MinionBoostHandler {
         @SubscribeEvent
         public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
             if (!event.getLevel().isClientSide() && event.getEntity() instanceof LivingEntity entity) {
-                
+
                 if (entity instanceof IOwned ownedEntity) {
                     LivingEntity owner = ownedEntity.getTrueOwner();
 
-                    
+
                     if (owner instanceof Player player && LichdomHelper.isLich(player)) {
                         int boostCount = getStewBoostCount(player);
                         if (boostCount > 0) {
