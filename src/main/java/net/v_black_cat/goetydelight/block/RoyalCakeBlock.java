@@ -45,7 +45,6 @@ public class RoyalCakeBlock extends Block {
     };
     
     private static VoxelShape rotateVoxelShape90Clockwise(VoxelShape originalShape) {
-        
         return originalShape.toAabbs().stream()
                 .map(aabb -> rotateAABB90Clockwise(aabb))
                 .reduce(Shapes.empty(), Shapes::or);
@@ -53,17 +52,12 @@ public class RoyalCakeBlock extends Block {
 
     
     private static VoxelShape rotateAABB90Clockwise(AABB aabb) {
-
-
         double newMinX = 1 - aabb.maxZ;
         double newMinZ = aabb.minX;
         double newMaxX = 1 - aabb.minZ;
         double newMaxZ = aabb.maxX;
-
-        
         double newMinY = aabb.minY;
         double newMaxY = aabb.maxY;
-
         return Shapes.create(new AABB(newMinX, newMinY, newMinZ, newMaxX, newMaxY, newMaxZ));
     }
     static VoxelShape makeShape8(){
