@@ -24,6 +24,8 @@ import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static net.v_black_cat.goetydelight.ability.AbilityRegistry.INFINITE_DURATION;
+
 @Mod.EventBusSubscriber
 public class TimedAbilitySystem {
     // Capability 标识
@@ -219,23 +221,21 @@ public class TimedAbilitySystem {
                     ability.applier.apply(entity);
                 }
 
-                ability.remainingTicks--;
+                // 无限时间的能力不减少时间 (-1 表示无限)
+                if (ability.initialDuration != INFINITE_DURATION) {
+                    ability.remainingTicks--;
 
-                if (ability.remainingTicks <= 0) {
-                    ability.remover.remove(entity);
-                    pendingRemovals.add(() -> activeAbilities.remove(ability.abilityId));
+                    if (ability.remainingTicks <= 0) {
+                        ability.remover.remove(entity);
+                        pendingRemovals.add(() -> activeAbilities.remove(ability.abilityId));
 
-                    // 只有玩家才能收到消息
-                    if (entity instanceof Player player) {
-                        //player.sendSystemMessage(Component.literal(ability.abilityId + "效果已结束"));
-                        
-                        // 添加同步到客户端的逻辑
-                        syncAbilityWithClient(entity, ability.abilityId, false);
+                        if (entity instanceof Player player) {
+                            syncAbilityWithClient(entity, ability.abilityId, false);
+                        }
                     }
                 }
             }
 
-            // 执行延迟移除
             pendingRemovals.forEach(Runnable::run);
         }
 

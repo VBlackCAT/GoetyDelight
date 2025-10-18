@@ -5,12 +5,14 @@ import java.util.UUID;
 import static net.v_black_cat.goetydelight.ability.TimedAbilitySystem.syncAbilityWithClient;
 
 public class AbilityRegistry {
-
+    public static final int INFINITE_DURATION = -1;
     public static final String FREEZE_IMMUNITY = "freeze_immunity";
     public static final String SUGAR_SCEPTER_IMMUNITY = "sugar_scepter_immunity";
     public static final String RUBY_HARD_CANDY_DAMAGE_REDUCTION = "ruby_hard_candy_damage_reduction";
     public static final String NIGHT_STOVE = "night_stove";
     public static final String CRIMSON_MEMORIES = "crimson_memories";
+    public static final String PERMANENT_FIRE_RESISTANCE = "permanent_fire_resistance";
+    public static final String PERMANENT_SAVE_EFFECTS = "permanent_save_effects";
 
     public static void registerAbilities() {
 
@@ -102,6 +104,39 @@ public class AbilityRegistry {
                 entity -> {
                     if (entity != null) {
                         entity.getPersistentData().putBoolean("hasCrimsonMemories", false);
+                    }
+                }
+        );
+
+
+        TimedAbilitySystem.registerAbility(
+                PERMANENT_FIRE_RESISTANCE,
+                // 能力应用器
+                entity -> {
+                    if (entity != null) {
+                        entity.getPersistentData().putBoolean("hasPermanentFireResistance", true);
+                    }
+                },
+                // 能力移除器
+                entity -> {
+                    if (entity != null) {
+                        entity.getPersistentData().putBoolean("hasPermanentFireResistance", false);
+                    }
+                }
+        );
+
+        TimedAbilitySystem.registerAbility(
+                PERMANENT_SAVE_EFFECTS,
+                // 能力应用器
+                entity -> {
+                    if (entity != null) {
+                        entity.getPersistentData().putBoolean("hasPermanentSaveEffects", true);
+                    }
+                },
+                // 能力移除器
+                entity -> {
+                    if (entity != null) {
+                        entity.getPersistentData().putBoolean("hasPermanentSaveEffects", false);
                     }
                 }
         );

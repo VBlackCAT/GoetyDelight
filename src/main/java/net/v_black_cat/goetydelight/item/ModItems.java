@@ -517,10 +517,9 @@ public class ModItems {
         LICHS_CHAOS_STEW = ITEMS.register("lichs_chaos_stew",
                 () -> new LichsChaosStewItem(basicItem().stacksTo(1).food(
                         simpleFoodItemProperties(16, 12)
-                                .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, Integer.MAX_VALUE, 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(SAVE_EFFECTS.get(), Integer.MAX_VALUE, 2), 1.0F)
+                                .effect(() -> new MobEffectInstance(SAVE_EFFECTS.get(), -1, 2), 1.0F)
                                 .effect(() -> new MobEffectInstance(ModEffects.WIGHT_DENIAL.get(), minToTick(30), 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, Integer.MAX_VALUE, 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, -1, 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(30), 2), 1.0F)
                                 .build())));
         MAGIC_QUARTZ_COOKIE = ITEMS.register("magic_quartz_cookie",
