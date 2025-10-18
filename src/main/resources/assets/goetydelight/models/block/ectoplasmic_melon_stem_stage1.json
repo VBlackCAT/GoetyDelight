@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/stem_growth1",
+  "textures": {
+    "stem": "goetydelight:block/ectoplasmic_melon_stem"
+  }
+}

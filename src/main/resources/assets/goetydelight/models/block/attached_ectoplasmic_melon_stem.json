@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/stem_fruit",
+  "textures": {
+    "stem": "goetydelight:block/ectoplasmic_melon_stem",
+    "upperstem": "goetydelight:block/attached_ectoplasmic_melon_stem"
+  }
+}

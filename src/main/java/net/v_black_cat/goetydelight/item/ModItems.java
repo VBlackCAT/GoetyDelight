@@ -15,6 +15,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.v_black_cat.goetydelight.effect.ModEffects;
 import net.v_black_cat.goetydelight.item.food.*;
 import net.v_black_cat.goetydelight.item.food.BowlFoodItem;
@@ -110,6 +111,7 @@ public class ModItems {
     public static final RegistryObject<Item> SNAP_UNHOLY_TRIPE;
     public static final RegistryObject<Item> SUNDAE_OF_THE_PHILOSOPHERS_POTION;
     public static final RegistryObject<Item> THE_BOX_OF_THE_DEAD;
+    public static final RegistryObject<Item> ECTOPLASMIC_MELON_SEEDS;
 
     // ==================== 效果供应商常量 ====================
     private static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
@@ -547,7 +549,18 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(CURSED.get(), sToTick(20), 1), 1.0F)
                                 .build())));
 
+        // ==================== 种子物品 ====================
+
+        ECTOPLASMIC_MELON_SEEDS = ITEMS.register("ectoplasmic_melon_seeds",
+                () -> new ItemNameBlockItem(ModBlocks.ECTOPLASMIC_MELON_STEM.get(),
+                        new Item.Properties()
+                ));
+
     }
+
+
+
+
 
     // ==================== 辅助方法 ====================
     public static RegistryObject<Item> registerWithTab(String name, Supplier<Item> supplier) {

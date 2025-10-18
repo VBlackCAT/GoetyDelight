@@ -5,6 +5,8 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.resources.ResourceLocation;
@@ -23,6 +25,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.v_black_cat.goetydelight.ability.AbilityRegistry;
 import net.v_black_cat.goetydelight.block.ModBlockEntities;
+import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.v_black_cat.goetydelight.block.RenderBlockRenderer;
 import net.v_black_cat.goetydelight.config.Config;
 import net.v_black_cat.goetydelight.effect.ModEffects;
@@ -138,6 +141,12 @@ public class GoetyDelight
             MenuScreens.register(ModMenuTypes.NIGHT_STOVE.get(), NightStoveScreen::new);
             BlockEntityRenderers.register(ModBlockEntities.RENDER_BLOCK.get(), RenderBlockRenderer::new);
 
+            ItemBlockRenderTypes.setRenderLayer(ModBlocks.ECTOPLASMIC_MELON_STEM.get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(ModBlocks.ATTACHED_ECTOPLASMIC_MELON_STEM.get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(ModBlocks.ROYAL_CAKE_BLOCK.get(), RenderType.translucent());
+            ItemBlockRenderTypes.setRenderLayer(ModBlocks.ECTOPLASMIC_MELON_BLOCK.get(), RenderType.translucent());
         }
+
+
     }
 }

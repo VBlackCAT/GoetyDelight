@@ -288,6 +288,10 @@ dependencies {
     compileOnly "mezz.jei:jei-${mc_version}-forge-api:${jei_version}"
     // at runtime, use the full JEI jar for Forge
     modRuntimeOnly "mezz.jei:jei-${mc_version}-forge:${jei_version}"
+
+
+    //其他模组
+    modRuntimeOnly "curse.maven:jade-324717:6855440"
 }
 
 

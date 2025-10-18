@@ -55,6 +55,10 @@ public class ModBlockLootTables extends BlockLootSubProvider {
         this.dropSelf(ModBlocks.CURSED_INGOT_POT.get());
         this.dropSelf(ModBlocks.NIGHT_STOVE.get());
         this.dropSelf(ModBlocks.SHADE_STOVE.get());
+
+        this.dropOther(ModBlocks.ROTTEN_CORPSE_MAGGOT_FEAST_BLOCK.get(), Items.BOWL);
+        this.dropOther(ModBlocks.ATTACHED_ECTOPLASMIC_MELON_STEM.get(), ModItems.ECTOPLASMIC_MELON_SEEDS.get());
+        this.dropOther(ModBlocks.ECTOPLASMIC_MELON_STEM.get(), ModItems.ECTOPLASMIC_MELON_SEEDS.get());
         this.dropOther(ModBlocks.ROTTEN_CORPSE_MAGGOT_FEAST_BLOCK.get(), Items.BOWL);
         this.add(ModBlocks.MARBLE_SLAB.get(),
                 block -> createSlabItemTable(ModBlocks.MARBLE_SLAB.get()));
