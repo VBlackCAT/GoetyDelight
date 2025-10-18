@@ -1,0 +1,9 @@
+
+{
+  "variants": {
+    "servings=3": { "model": "goetydelight:block/void_gel_jelly_block_0" },
+    "servings=2": { "model": "goetydelight:block/void_gel_jelly_block_1" },
+    "servings=1": { "model": "goetydelight:block/void_gel_jelly_block_2" },
+    "servings=0": { "model": "goetydelight:block/void_gel_jelly_block_3" }
+  }
+}

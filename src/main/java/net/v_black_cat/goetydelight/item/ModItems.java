@@ -112,6 +112,7 @@ public class ModItems {
     public static final RegistryObject<Item> SUNDAE_OF_THE_PHILOSOPHERS_POTION;
     public static final RegistryObject<Item> THE_BOX_OF_THE_DEAD;
     public static final RegistryObject<Item> ECTOPLASMIC_MELON_SEEDS;
+    public static final RegistryObject<Item> RING_PACKED_VOID_GEL_JELLY;
 
     // ==================== 效果供应商常量 ====================
     private static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
@@ -547,6 +548,13 @@ public class ModItems {
                 () -> new TheBoxOfTheDeadItem(basicItem().stacksTo(1).food(
                         simpleFoodItemProperties(6, 3)
                                 .effect(() -> new MobEffectInstance(CURSED.get(), sToTick(20), 1), 1.0F)
+                                .build())));
+        RING_PACKED_VOID_GEL_JELLY = ITEMS.register("ring_packed_void_gel_jelly",
+                () -> new SimpleFoiledItem(basicItem().stacksTo(1).food(
+                        simpleFoodItemProperties(8, 4)
+                                .effect(() -> new MobEffectInstance(ModEffects.VOID_AFFIX.get(), sToTick(60), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(300), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.HUNGER, sToTick(60), 4), 1.0F)
                                 .build())));
 
         // ==================== 种子物品 ====================
