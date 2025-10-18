@@ -1,0 +1,7 @@
+{
+  "type": "goetydelight:ectoplasmic_melon_field",
+  "biomes": "#goetydelight:has_structure/ectoplasmic_melon_field",
+  "step": "surface_structures",
+  "terrain_adaptation": "beard_thin",
+  "spawn_overrides": {}
+}

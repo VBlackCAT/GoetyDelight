@@ -39,6 +39,8 @@ import net.v_black_cat.goetydelight.render.animation.RotationEffectHandler;
 
 import net.v_black_cat.goetydelight.ritual.DelightRitualType;
 import net.v_black_cat.goetydelight.screen.*;
+import net.v_black_cat.goetydelight.structures.ModStructurePieceTypes;
+import net.v_black_cat.goetydelight.structures.ModStructures;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.slf4j.Logger;
 
@@ -84,6 +86,10 @@ public class GoetyDelight
         AbilityRegistry.registerAbilities();
         ModBlockEntities.register(modEventBus);
         ModMenuTypes.register(modEventBus);
+        
+        // 注册结构和结构片段
+        ModStructures.register(modEventBus);
+        ModStructurePieceTypes.register(modEventBus);
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
