@@ -92,6 +92,10 @@ public class ModBlocks {
             new RottenCorpseMaggotFeastBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
                     ModItems.ROTTEN_CORPSE_MAGGOT_FEAST, true));
 
+    public static final RegistryObject<Block> VOID_GEL_JELLY_BLOCK = registerBlock("void_gel_jelly_block",() ->
+            new VoidGelJellyBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
+                    ModItems.RING_PACKED_VOID_GEL_JELLY, true));
+
     public static final RegistryObject<Block> ROYAL_CAKE_BLOCK = registerBlock("royal_cake_block",() ->
             new RoyalCakeBlock(BlockBehaviour.Properties.of()
                     .forceSolidOn()

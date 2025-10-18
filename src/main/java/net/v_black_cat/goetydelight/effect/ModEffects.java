@@ -1,6 +1,8 @@
 package net.v_black_cat.goetydelight.effect;
 
+import io.netty.util.Attribute;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -33,6 +35,8 @@ public class ModEffects {
             EFFECTS.register("crimson_memories", CrimsonMemoriesEffect::new);
     public static final RegistryObject<MobEffect> WIGHT_DENIAL =
             EFFECTS.register("wight_denial", WightDenialEffect::new);
+    public static final RegistryObject<MobEffect> VOID_AFFIX =
+            EFFECTS.register("void_affix", VoidAffixEffect::new);
 
     public static void register(IEventBus bus) {
         EFFECTS.register(bus);
