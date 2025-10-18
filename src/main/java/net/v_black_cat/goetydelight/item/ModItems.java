@@ -385,11 +385,11 @@ public class ModItems {
                                 .build())));
         CAKE = ITEMS.register("royal_cake",
                 () -> new CakeItem(basicItem().stacksTo(8).food(
-                        simpleFoodItemProperties(16, 8)
-                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), 36000, 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(FORTUNATE_EFFECT_SUPPLIER.get(), 12000, 2), 1.0F)
-                                .effect(() -> new MobEffectInstance(BOTTLING.get(), 12000, 2), 1.0F)
-                                .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 12000, 1), 1.0F)
+                        simpleFoodItemProperties(6, 3)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), 4500, 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(FORTUNATE_EFFECT_SUPPLIER.get(), 1500, 2), 1.0F)
+                                .effect(() -> new MobEffectInstance(BOTTLING.get(), 1500, 2), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1500, 1), 1.0F)
                                 .build())));
         OMINOUS_ICE_CREAM = ITEMS.register("ominous_ice_cream",
                 () -> new OminousIceCreamItem(basicItem()
