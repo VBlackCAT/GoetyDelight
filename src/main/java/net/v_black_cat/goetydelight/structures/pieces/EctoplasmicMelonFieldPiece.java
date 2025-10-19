@@ -31,7 +31,7 @@ public class EctoplasmicMelonFieldPiece extends StructurePiece {
 
     public EctoplasmicMelonFieldPiece(StructureTemplateManager pTemplateManager, BlockPos pPos, int variant) {
         super(ModStructurePieceTypes.ECTOPLASMIC_MELON_FIELD_PIECE.get(), 0,
-                createBoundingBox(pPos, 16, 10));
+                createBoundingBox(pTemplateManager, pPos, variant));
         this.variant = variant;
         this.templateLocation = getTemplateForVariant(variant);
         this.setOrientation(Direction.NORTH);
@@ -43,9 +43,20 @@ public class EctoplasmicMelonFieldPiece extends StructurePiece {
         this.templateLocation = getTemplateForVariant(this.variant);
     }
 
-    private static BoundingBox createBoundingBox(BlockPos pPos, int sizeX, int sizeZ) {
+    private static BoundingBox createBoundingBox(StructureTemplateManager templateManager,
+                                                 BlockPos pPos, int variant) {
+        ResourceLocation templateLocation = getTemplateForVariant(variant);
+        StructureTemplate template = templateManager.get(templateLocation).orElse(null);
+
+        if (template != null) {
+            int sizeX = template.getSize().getX();
+            int sizeZ = template.getSize().getZ();
+            return new BoundingBox(pPos.getX(), pPos.getY(), pPos.getZ(),
+                    pPos.getX() + sizeX - 1, pPos.getY() + template.getSize().getY(), pPos.getZ() + sizeZ - 1);
+        }
+
         return new BoundingBox(pPos.getX(), pPos.getY(), pPos.getZ(),
-                pPos.getX() + sizeX - 1, pPos.getY() + 10, pPos.getZ() + sizeZ - 1);
+                pPos.getX() + 16 - 1, pPos.getY() + 10, pPos.getZ() + 10 - 1);
     }
 
     @Override
