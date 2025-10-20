@@ -1,0 +1,593 @@
+package net.v_black_cat.goetydelight.entities;
+import com.Polarice3.Goety.common.entities.ai.FloatSwimGoal;
+import com.Polarice3.Goety.common.entities.ally.Summoned;
+import com.Polarice3.Goety.common.entities.neutral.AbstractWraith;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.MerchantMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.trading.Merchant;
+import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraft.world.item.trading.MerchantOffers;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.AirBlock;
+import net.minecraft.world.level.block.AttachedStemBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.StemBlock;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
+import net.minecraft.world.phys.AABB;
+import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.block.ModBlocks;
+import org.jetbrains.annotations.Nullable;
+import vectorwing.farmersdelight.common.block.RichSoilFarmlandBlock;
+
+import java.util.OptionalInt;
+import java.util.*;
+
+import static com.Polarice3.Goety.common.items.ModItems.ECTOPLASM;
+
+public class GhostFarmerEntity extends AbstractWraith implements Merchant {
+    
+    
+    private static final int MAX_GROWTH_STAGE = 7;
+    private static final double PLANT_CHANCE = 0.02;//种植几率,100tick一次
+    private static final int SCAN_RADIUS = 15;//扫描半径
+    private static final String PLANTED_STEMS_TAG = "PlantedStems";
+    private static final Component TRADE_TITLE = Component.translatable("entity.goetydelight.ghost_farmer.trade");
+    private static final Component NOT_NIGHT_MESSAGE = Component.translatable("entity.goetydelight.ghost_farmer.not_night");
+
+    
+    public final AnimationState idleAnimationState = new AnimationState();
+    private final Set<BlockPos> plantStemsPos = new HashSet<>();
+    private final Set<BlockPos> attachedStems = new HashSet<>();
+    private final Set<BlockPos> plantedPos = new HashSet<>();
+    private final SimpleContainer inventory = new SimpleContainer(8);
+    @Nullable
+    protected MerchantOffers offers;
+    @Nullable
+    private Player tradingPlayer;
+    private long lastRestockTime = -1;
+    private boolean hasRestockedToday = false;
+
+    
+    public GhostFarmerEntity(EntityType<? extends Summoned> entityType, Level level) {
+        super(entityType, level);
+    }
+    @Override
+    protected boolean isSunSensitive() {
+        return false;
+    }
+    
+    @Override
+    public void tick() {
+        super.tick();
+
+        if (this.level().isClientSide()) {
+            this.idleAnimationState.animateWhen(true, this.tickCount);
+        } else {
+            checkMidnightRestock();
+
+            if (isNightTime() && isInTargetStructure()) {
+                if(tickCount%20==0){
+                    checkAndRemoveInvalidPlantingSites();
+                    melonStemWithered();
+                    acceleratingStemsGrowth();
+                }
+
+                if(tickCount%100==0){
+                    scanForSuitablePlantingLocations();
+                    plantMelonStems();
+                }
+
+            }
+            
+            if(!isNightTime()){
+                if (!plantStemsPos.isEmpty() || !attachedStems.isEmpty()){
+                    plantStemsPos.clear();
+                    attachedStems.clear();
+                    plantedPos.clear();
+                }
+            }
+        }
+    }
+
+    
+    @Nullable
+    @Override
+    public Player getTradingPlayer() {
+        return this.tradingPlayer;
+    }
+
+    @Override
+    public void setTradingPlayer(@Nullable Player player) {
+        this.tradingPlayer = player;
+    }
+
+    public boolean isTrading() {
+        return this.tradingPlayer != null;
+    }
+
+    @Override
+    public MerchantOffers getOffers() {
+        if (this.offers == null) {
+            this.offers = new MerchantOffers();
+            this.updateTrades();
+        }
+        return this.offers;
+    }
+
+    @Override
+    public void overrideOffers(@Nullable MerchantOffers offers) {
+        this.offers = offers;
+    }
+
+    @Override
+    public void notifyTrade(MerchantOffer offer) {
+        offer.increaseUses();
+    }
+
+    @Override
+    public void notifyTradeUpdated(ItemStack stack) {
+        if (!this.level().isClientSide) {
+            this.playSound(this.getTradeUpdatedSound(!stack.isEmpty()), this.getSoundVolume(), this.getVoicePitch());
+        }
+    }
+
+    @Override
+    public int getVillagerXp() {
+        return 0;
+    }
+
+    @Override
+    public void overrideXp(int xp) {
+        
+    }
+
+    @Override
+    public boolean showProgressBar() {
+        return false;
+    }
+
+    @Override
+    public boolean isClientSide() {
+        return this.level().isClientSide;
+    }
+
+    @Override
+    public SoundEvent getNotifyTradeSound() {
+        return SoundEvents.VILLAGER_YES;
+    }
+
+    @Override
+    public void openTradingScreen(Player player, Component displayName, int level) {
+        OptionalInt optionalint = player.openMenu(new SimpleMenuProvider((containerId, playerInventory, playerEntity) -> {
+            return new GhostFarmerMerchantMenu(containerId, playerInventory, this);
+        }, this.getCustomTradeTitle()));
+
+        if (optionalint.isPresent()) {
+            MerchantOffers merchantoffers = this.getOffers();
+            if (!merchantoffers.isEmpty()) {
+                player.sendMerchantOffers(optionalint.getAsInt(), merchantoffers, 0, 0, false, false);
+            }
+        }
+    }
+
+    protected Component getCustomTradeTitle() {
+        return TRADE_TITLE;
+    }
+
+    protected void updateTrades() {
+        this.offers.clear();
+
+        this.offers.add(new MerchantOffer(
+                new ItemStack(Items.MELON_SEEDS, 1),
+                new ItemStack(ECTOPLASM.get(), 2),
+                new ItemStack(net.v_black_cat.goetydelight.item.ModItems.ECTOPLASMIC_MELON_SEEDS.get(), 1),
+                12,
+                0,
+                0.0f
+        ));
+        
+        this.offers.add(new MerchantOffer(
+                new ItemStack(ECTOPLASM.get(), 18),
+                new ItemStack(Items.MELON, 1),
+                new ItemStack(ModBlocks.ECTOPLASMIC_MELON_BLOCK.get().asItem(), 1),
+                12,
+                0,
+                0.0f
+        ));
+
+        this.offers.add(new MerchantOffer(
+                new ItemStack(ECTOPLASM.get(), 3),
+                new ItemStack(Items.MELON_SLICE, 1),
+                new ItemStack(net.v_black_cat.goetydelight.item.ModItems.ECTOPLASMIC_MELON.get(), 1),
+                Integer.MAX_VALUE,
+                0,
+                0.0f
+        ));
+    }
+
+    protected void stopTrading() {
+        this.setTradingPlayer(null);
+    }
+
+    @Override
+    public InteractionResult mobInteract(Player player, InteractionHand hand) {
+        ItemStack itemstack = player.getItemInHand(hand);
+        if (itemstack.getItem() != Items.VILLAGER_SPAWN_EGG && this.isAlive() && !this.isTrading()) {
+            if (!this.level().isClientSide && !isNightTime()) {
+                player.displayClientMessage(NOT_NIGHT_MESSAGE, true);
+                return InteractionResult.sidedSuccess(false);
+            }
+
+            if (this.level().isClientSide) {
+                return InteractionResult.SUCCESS;
+            } else {
+                this.startTrading(player);
+                return InteractionResult.SUCCESS;
+            }
+        }
+
+        return super.mobInteract(player, hand);
+    }
+
+    private void startTrading(Player player) {
+        this.setTradingPlayer(player);
+        this.openTradingScreen(player, this.getDisplayName(), 0);
+    }
+
+    public boolean canTradeNow() {
+        return isNightTime();
+    }
+
+    
+    private void melonStemWithered() {
+        for (BlockPos stemPos : attachedStems){
+            Block block = this.level().getBlockState(stemPos).getBlock();
+            if (block instanceof AttachedStemBlock) {
+                BlockPos pos = stemPos.below();
+                Block blockBelow = this.level().getBlockState(pos).getBlock();
+                if (blockBelow instanceof RichSoilFarmlandBlock) {
+                    this.level().setBlockAndUpdate(stemPos, ModBlocks.ECTOPLASMIC_MELON_STEM.get().defaultBlockState().setValue(StemBlock.AGE, MAX_GROWTH_STAGE));
+                }
+            } else if (block instanceof StemBlock) {
+                BlockPos pos = stemPos.below();
+                Block blockBelow = this.level().getBlockState(pos).getBlock();
+
+                if (blockBelow instanceof RichSoilFarmlandBlock) {
+                    int currentAge = this.level().getBlockState(stemPos).getValue(StemBlock.AGE);
+                    if (currentAge > 0) {
+                        this.level().setBlockAndUpdate(stemPos, this.level().getBlockState(stemPos).setValue(StemBlock.AGE, currentAge - 1));
+                    } else {
+                        this.level().removeBlock(stemPos, false);
+                    }
+                }
+            }
+        }
+    }
+
+    private void checkAndRemoveInvalidPlantingSites() {
+        plantStemsPos.removeIf(pos -> {
+            Block block = this.level().getBlockState(pos).getBlock();
+
+            if (!(block instanceof StemBlock)) {
+                return true;
+            }
+
+
+            if (attachedStems.contains(pos)) {
+                return true;
+            }
+            
+            return false;
+        });
+    }
+
+    private void acceleratingStemsGrowth() {
+        for (BlockPos stemPos : plantStemsPos){
+            if (!attachedStems.contains(stemPos)){
+                Block block = this.level().getBlockState(stemPos).getBlock();
+                if (block instanceof StemBlock) {
+                    int age = this.level().getBlockState(stemPos).getValue(StemBlock.AGE);
+                    if (age < MAX_GROWTH_STAGE) {
+                        this.level().setBlockAndUpdate(stemPos, this.level().getBlockState(stemPos).setValue(StemBlock.AGE, age + 1));
+                    }
+                    
+                    if (age >= MAX_GROWTH_STAGE) {
+                        for (int i=0; i < 10; i++){
+                            Block stemBlock = this.level().getBlockState(stemPos).getBlock();
+                            stemBlock.randomTick(this.level().getBlockState(stemPos), (ServerLevel) this.level(), stemPos, this.level().random);
+                        }
+                    }
+                    
+                    if(this.level().getBlockState(stemPos).getBlock() instanceof AttachedStemBlock){
+                        attachedStems.add(stemPos);
+                    }
+                }
+            }
+        }
+    }
+
+    private void plantMelonStems() {
+        for (BlockPos stemPos : plantStemsPos) {
+            if(!attachedStems.contains(stemPos)){
+                Block block = this.level().getBlockState(stemPos).getBlock();
+                if (!(block instanceof StemBlock)&&!plantedPos.contains(stemPos)) {
+                    if (this.random.nextDouble() < PLANT_CHANCE) {
+                        this.level().setBlockAndUpdate(stemPos, ModBlocks.ECTOPLASMIC_MELON_STEM.get().defaultBlockState());
+                        plantedPos.add(stemPos);
+                    }
+                }
+            }
+        }
+    }
+
+    private void scanForSuitablePlantingLocations() {
+        int scanRadius = SCAN_RADIUS;
+        BlockPos currentPos = this.blockPosition();
+        for (int x = -scanRadius; x <= scanRadius; x++) {
+            for (int z = -scanRadius; z <= scanRadius; z++) {
+                for (int y = -2; y <= 2; y++) {
+                    BlockPos pos = currentPos.offset(x, y, z);
+                    if (attachedStems.contains(pos)) continue;
+                    BlockPos posAbove = pos.above();
+                    if (this.level().getBlockState(pos).getBlock() instanceof RichSoilFarmlandBlock) {
+                        if (this.level().getBlockState(posAbove).getBlock() instanceof AirBlock) {
+                            plantStemsPos.add(posAbove);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    
+    private void checkMidnightRestock() {
+        long currentTime = this.level().getDayTime();
+        long currentDay = currentTime / 24000;
+
+        if (lastRestockTime / 24000 < currentDay) {
+            hasRestockedToday = false;
+        }
+
+        long timeOfDay = currentTime % 24000;
+        if (timeOfDay >= 0 && timeOfDay < 1000 && !hasRestockedToday) {
+            restockTrades();
+            hasRestockedToday = true;
+            lastRestockTime = currentTime;
+        }
+    }
+
+    private void restockTrades() {
+        if (this.offers != null) {
+            for (MerchantOffer offer : this.offers) {
+                offer.resetUses();
+            }
+        }
+    }
+
+    private boolean isNightTime() {
+        long timeOfDay = this.level().getDayTime() % 24000;
+        return timeOfDay >= 13000 && timeOfDay < 24000;
+    }
+
+    private boolean isInTargetStructure() {
+        BlockPos currentPos = this.blockPosition();
+        ServerLevel serverLevel = (ServerLevel) this.level();
+        ResourceKey<Structure> structure = ResourceKey.create(Registries.STRUCTURE, new ResourceLocation("goetydelight", "ectoplasmic_melon_field"));
+
+        StructureStart structureStart = serverLevel.structureManager().getStructureWithPieceAt(currentPos, structure);
+        return structureStart != null && structureStart.isValid();
+    }
+
+    
+    @Override
+    protected void registerGoals() {
+        this.goalSelector.addGoal(1, new FloatSwimGoal(this));
+        this.goalSelector.addGoal(9, new WraithLookGoal(this, Player.class, 3.0F, 1.0F));
+        this.goalSelector.addGoal(10, new WraithLookGoal(this, Mob.class, 8.0F));
+        this.goalSelector.addGoal(10, new WraithLookRandomlyGoal(this));
+        this.goalSelector.addGoal(1, new RestrictSunGoal(this));
+        this.goalSelector.addGoal(2, new FleeSunGoal(this, 1.0));
+        this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0));
+    }
+
+    
+    @Override
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+
+        if (this.offers != null) {
+            compound.put("Offers", this.offers.createTag());
+        }
+
+        compound.putLong("LastRestockTime", this.lastRestockTime);
+        compound.putBoolean("HasRestockedToday", this.hasRestockedToday);
+
+
+        ListTag stemsTag = new ListTag();
+        for (BlockPos pos : this.plantStemsPos) {
+            stemsTag.add(NbtUtils.writeBlockPos(pos));
+        }
+        compound.put(PLANTED_STEMS_TAG, stemsTag);
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+
+        if (compound.contains("Offers", 10)) {
+            this.offers = new MerchantOffers(compound.getCompound("Offers"));
+        }
+
+        if (compound.contains("LastRestockTime")) {
+            this.lastRestockTime = compound.getLong("LastRestockTime");
+        }
+        
+        if (compound.contains("HasRestockedToday")) {
+            this.hasRestockedToday = compound.getBoolean("HasRestockedToday");
+        }
+        
+        if (compound.contains(PLANTED_STEMS_TAG)) {
+            ListTag stemsTag = compound.getList(PLANTED_STEMS_TAG, Tag.TAG_COMPOUND);
+            for (int i = 0; i < stemsTag.size(); i++) {
+                this.plantStemsPos.add(NbtUtils.readBlockPos(stemsTag.getCompound(i)));
+            }
+        }
+    }
+
+    
+    @Override
+    public void die(DamageSource cause) {
+        super.die(cause);
+        this.stopTrading();
+    }
+
+    @Nullable
+    @Override
+    public Entity changeDimension(ServerLevel server) {
+        this.stopTrading();
+        return super.changeDimension(server);
+    }
+
+    protected void addParticlesAroundSelf(ParticleOptions particleOption) {
+        for (int i = 0; i < 5; ++i) {
+            double d0 = this.random.nextGaussian() * 0.02;
+            double d1 = this.random.nextGaussian() * 0.02;
+            double d2 = this.random.nextGaussian() * 0.02;
+            this.level().addParticle(particleOption, this.getRandomX(1.0), this.getRandomY() + 1.0, this.getRandomZ(1.0), d0, d1, d2);
+        }
+    }
+
+    public SimpleContainer getInventory() {
+        return this.inventory;
+    }
+
+    protected SoundEvent getTradeUpdatedSound(boolean success) {
+        return success ? SoundEvents.VILLAGER_YES : SoundEvents.VILLAGER_NO;
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return Component.translatable("entity.goetydelight.ghost_farmer");
+    }
+
+    
+    public void onEctoplasmicMelonBreak(Player player) {
+
+        this.setTarget(player);
+
+        if (this.canTeleport()) {
+            this.setIsTeleporting(true);
+        }
+        dealMagicDamageToPlayer(player);
+    }
+
+
+    private void teleportToPlayerFront(Player player) {
+        
+        double distance = 2.0; 
+        double yaw = Math.toRadians(player.getYHeadRot());
+        
+        
+        double x = player.getX() - Math.sin(yaw) * distance;
+        double y = player.getY();
+        double z = player.getZ() + Math.cos(yaw) * distance;
+        
+        
+        x += (this.random.nextDouble() - 0.5) * 0.5;
+        z += (this.random.nextDouble() - 0.5) * 0.5;
+        
+        
+        double dx = player.getX() - x;
+        double dz = player.getZ() - z;
+        float yawToPlayer = (float) Math.toDegrees(Math.atan2(dz, dx)) - 90.0F;
+        
+        
+        this.moveTo(x, y, z, yawToPlayer, this.getXRot());
+        
+        
+        this.level().addParticle(ParticleTypes.REVERSE_PORTAL,
+                this.getX(), this.getY() + 1.0, this.getZ(), 
+                0.0, 0.1, 0.0);
+    }
+
+
+private void dealMagicDamageToPlayer(Player player) {
+        
+
+        float damage = player.getMaxHealth();
+        DamageSource magicDamage = new DamageSource(this.damageSources().magic().typeHolder(), this);
+        player.sendSystemMessage(Component.translatable("entity.goetydelight.ghost_farmer.attack_message"));
+        player.hurt(magicDamage, damage);
+    }
+
+    
+    public static class GhostFarmerMerchantMenu extends MerchantMenu {
+        public GhostFarmerMerchantMenu(int containerId, net.minecraft.world.entity.player.Inventory playerInventory, Merchant merchant) {
+            super(containerId, playerInventory, merchant);
+        }
+    }
+
+    
+    @Mod.EventBusSubscriber(modid = GoetyDelight.MODID)
+    public static class EventHandler {
+        @SubscribeEvent
+        public static void onBlockBreak(BlockEvent.BreakEvent event) {
+            
+            if (event.getState().getBlock() == ModBlocks.ECTOPLASMIC_MELON_BLOCK.get()) {
+                Player player = event.getPlayer();
+                Level level = player.level();
+
+                
+                BlockPos breakPos = event.getPos();
+                if (level instanceof ServerLevel) {
+                    ServerLevel serverLevel = (ServerLevel) level;
+                    ResourceKey<Structure> structure = ResourceKey.create(Registries.STRUCTURE, new ResourceLocation("goetydelight", "ectoplasmic_melon_field"));
+                    StructureStart structureStart = serverLevel.structureManager().getStructureWithPieceAt(breakPos, structure);
+                    if (structureStart == null || !structureStart.isValid()) {
+                        return; 
+                    }
+                }
+
+                
+                AABB searchArea = new AABB(event.getPos()).inflate(16); 
+                List<GhostFarmerEntity> ghostFarmers = level.getEntitiesOfClass(
+                    GhostFarmerEntity.class, searchArea
+                );
+
+                
+                for (GhostFarmerEntity ghostFarmer : ghostFarmers) {
+                    ghostFarmer.onEctoplasmicMelonBreak(player);
+                }
+            }
+        }
+
+    }
+}
