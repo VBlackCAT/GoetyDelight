@@ -56,7 +56,9 @@ public class NightHeartPeaSoupItem extends DrinkableItem implements IWand {
         if (!level.isClientSide && level instanceof ServerLevel serverLevel) {
             // 设置时间为黑夜
             if (serverLevel.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)) {
-                serverLevel.setDayTime(18000);
+
+
+                serverLevel.setDayTime(18000 + 24000 * (serverLevel.getDayTime() / 24000 + 1));
 
                 // 播放音效和粒子效果
                 serverLevel.playSound(null, entity.getX(), entity.getY(), entity.getZ(),
