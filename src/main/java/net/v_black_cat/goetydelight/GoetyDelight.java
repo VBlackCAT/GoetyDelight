@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceProvider;
 import net.minecraftforge.api.distmarker.Dist;
@@ -30,6 +31,7 @@ import net.v_black_cat.goetydelight.block.RenderBlockRenderer;
 import net.v_black_cat.goetydelight.config.Config;
 import net.v_black_cat.goetydelight.effect.ModEffects;
 import net.v_black_cat.goetydelight.enchantments.ModEnchantments;
+import net.v_black_cat.goetydelight.entities.GhostFarmerRenderer;
 import net.v_black_cat.goetydelight.entities.ModEntities;
 import net.v_black_cat.goetydelight.item.ModCreativeModTabs;
 import net.v_black_cat.goetydelight.loot.RegHelper;
@@ -87,7 +89,8 @@ public class GoetyDelight
         AbilityRegistry.registerAbilities();
         ModBlockEntities.register(modEventBus);
         ModMenuTypes.register(modEventBus);
-        
+
+
         // 注册结构和结构片段、结构处理器
         ModStructures.register(modEventBus);
         ModStructurePieceTypes.register(modEventBus);
@@ -147,7 +150,7 @@ public class GoetyDelight
             MenuScreens.register(ModMenuTypes.SHADE_STOVE.get(), ShadeStoveScreen::new);
             MenuScreens.register(ModMenuTypes.NIGHT_STOVE.get(), NightStoveScreen::new);
             BlockEntityRenderers.register(ModBlockEntities.RENDER_BLOCK.get(), RenderBlockRenderer::new);
-
+            EntityRenderers.register(ModEntities.GHOST_FARMER.get(), GhostFarmerRenderer::new);
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.ECTOPLASMIC_MELON_STEM.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.ATTACHED_ECTOPLASMIC_MELON_STEM.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.ROYAL_CAKE_BLOCK.get(), RenderType.translucent());
