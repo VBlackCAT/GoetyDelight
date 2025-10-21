@@ -11,17 +11,27 @@
         },
         {
           "type": "minecraft:item",
-          "name": "goety:cursed_ingot",
-          "weight": 5
-        },
-        {
-          "type": "minecraft:item",
           "name": "minecraft:emerald",
           "weight": 3
         },
         {
           "type": "minecraft:item",
           "name": "goety:ectoplasm",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:cobblestone",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:iron_nugget",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:stick",
           "weight": 2
         }
       ]
@@ -37,6 +47,11 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:bone_meal",
+          "weight": 5
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:stone_hoe",
           "weight": 5
         },
         {
