@@ -100,7 +100,8 @@
   "goetydelight.container.shade_stove": "阴影炉灶",
   "jei.goety.craftType.culinary": "烹饪仪式",
   "enchantment.goetydelight.soul_mending": "灵魂修补",
+  "enchantment.goetydelight.soul_healing": "溢魂弥躯",
   "entity.goetydelight.ghost_farmer.not_night": "现在...瓜尚为成熟...待夜幕降临...",
   "entity.goetydelight.ghost_farmer.trade": "幽灵瓜农",
-  "entity.goetydelight.ghost_farmer.attack_message": "就你劈我瓜是吧！"
+  "entity.goetydelight.ghost_farmer.attack_message": "幽灵瓜农:就你劈我瓜是吧！"
 }

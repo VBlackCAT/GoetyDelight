@@ -80,22 +80,38 @@ public class SoulMendingEnchantment extends Enchantment {
         if (currentDamage <= 0) return;
 
         int repairAmount = enchantmentLevel;
-
-        
         int actualRepair = Math.min(repairAmount, currentDamage);
 
-        if (actualRepair<enchantmentLevel) return;
-        
-        int soulCostPerPoint = 5;
-        int requiredSouls = actualRepair * soulCostPerPoint;
-
-        
-        if (SEHelper.getSoulsAmount(player, requiredSouls)) {
-            SEHelper.decreaseSouls(player, requiredSouls);
-
-            
-            int newDamage = currentDamage - actualRepair;
-            stack.setDamageValue(newDamage);
+        int requiredSouls;
+        if (enchantmentLevel > 9) {
+            requiredSouls = 0;
+        } else if (actualRepair < enchantmentLevel) {
+            requiredSouls = Math.max(1, 5 - enchantmentLevel / 2);
+        } else {
+            requiredSouls = actualRepair * 5;
         }
+        if (requiredSouls <= 0 || SEHelper.getSoulsAmount(player, requiredSouls)) {
+            if (requiredSouls > 0) {
+                SEHelper.decreaseSouls(player, requiredSouls);
+            }
+            int newDamage = currentDamage - actualRepair;
+            stack.setDamageValue(newDamage);}
+
+        
+//        int actualRepair = Math.min(repairAmount, currentDamage);
+//
+//        if (actualRepair<enchantmentLevel) return;
+//
+//        int soulCostPerPoint = 5;
+//        int requiredSouls = actualRepair * soulCostPerPoint;
+//
+//
+//        if (SEHelper.getSoulsAmount(player, requiredSouls)) {
+//            SEHelper.decreaseSouls(player, requiredSouls);
+//
+//
+//            int newDamage = currentDamage - actualRepair;
+//            stack.setDamageValue(newDamage);
+//        }
     }
 }
