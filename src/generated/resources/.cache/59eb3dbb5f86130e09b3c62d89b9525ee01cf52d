@@ -1,8 +1,9 @@
-// 1.20.1	2025-10-18T15:05:57.2416644	Loot Tables
+// 1.20.1	2025-10-21T21:49:04.20109	Loot Tables
 51af4557de485fb4d9fc5395dbce06eaa2dd12c6 data/goetydelight/loot_tables/blocks/attached_ectoplasmic_melon_stem.json
 dcbe2ae987206dde3d003fff75cb07a50b3ef3a6 data/goetydelight/loot_tables/blocks/blue_marble.json
 c61ca357b95f5be231e55416005983e7dd1c8271 data/goetydelight/loot_tables/blocks/cursed_ingot_pot.json
 ee37ca91f73d2923496eb7a750793b14ed341821 data/goetydelight/loot_tables/blocks/dripmarble_block.json
+cec709120ec2e0cf135762988f0ca402172b0eab data/goetydelight/loot_tables/blocks/ectoplasmic_melon_block.json
 e2b1f91aec53017bd2f668d4ff17573620cd8719 data/goetydelight/loot_tables/blocks/ectoplasmic_melon_stem.json
 473b040dc131744ab32a137fdb732b4d4e8d4ee5 data/goetydelight/loot_tables/blocks/jungle_marble.json
 31be172491f1fe66b30fd4682fe77d951ed6fdfe data/goetydelight/loot_tables/blocks/marble.json
@@ -21,3 +22,4 @@ abe6eac8ba2636b398eb0d3f8a713ccf6309ad03 data/goetydelight/loot_tables/blocks/po
 2afe955e16459f1de2fd57ea4068f820300c2c55 data/goetydelight/loot_tables/blocks/rotten_corpse_maggot_feast_block.json
 e14baa25933d4a67bcf41ba7f4aff41437ffe743 data/goetydelight/loot_tables/blocks/shade_stove.json
 316dabfdb0fb7c82ed440e61be1872579c6005f7 data/goetydelight/loot_tables/blocks/silt_marble_heavy.json
+4ec5a2677cb4d17299ebf1fc1c7e5e5be4529dc5 data/goetydelight/loot_tables/blocks/void_gel_jelly_block.json

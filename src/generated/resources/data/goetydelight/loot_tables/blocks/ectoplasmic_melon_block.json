@@ -24,7 +24,7 @@
                   }
                 }
               ],
-              "name": "goetydelight:ectoplasmic_melon_block" 
+              "name": "goetydelight:ectoplasmic_melon_block"
             },
             {
               "type": "minecraft:item",
@@ -56,7 +56,7 @@
                   "function": "minecraft:explosion_decay"
                 }
               ],
-              "name": "goetydelight:ectoplasmic_melon" 
+              "name": "goetydelight:ectoplasmic_melon"
             }
           ]
         }
@@ -64,5 +64,5 @@
       "rolls": 1.0
     }
   ],
-  "random_sequence": "goetydelight:blocks/ectoplasmic_melon_block" 
+  "random_sequence": "goetydelight:blocks/ectoplasmic_melon_block"
 }
