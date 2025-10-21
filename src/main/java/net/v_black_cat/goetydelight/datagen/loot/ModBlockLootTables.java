@@ -1,6 +1,14 @@
 package net.v_black_cat.goetydelight.datagen.loot;
 
+import net.minecraft.advancements.critereon.EnchantmentPredicate;
+import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.storage.loot.IntRange;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.functions.ApplyExplosionDecay;
+import net.minecraft.world.level.storage.loot.functions.LimitCount;
+import net.minecraft.world.level.storage.loot.predicates.MatchTool;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
@@ -55,6 +63,9 @@ public class ModBlockLootTables extends BlockLootSubProvider {
         this.dropSelf(ModBlocks.CURSED_INGOT_POT.get());
         this.dropSelf(ModBlocks.NIGHT_STOVE.get());
         this.dropSelf(ModBlocks.SHADE_STOVE.get());
+        this.add(ModBlocks.ECTOPLASMIC_MELON_BLOCK.get(),
+                createFruitBlockDrops(ModBlocks.ECTOPLASMIC_MELON_BLOCK.get(),
+                        ModItems.ECTOPLASMIC_MELON.get(), 3.0F, 7.0F, 9));
 
         this.dropOther(ModBlocks.ROTTEN_CORPSE_MAGGOT_FEAST_BLOCK.get(), Items.BOWL);
         this.dropOther(ModBlocks.ATTACHED_ECTOPLASMIC_MELON_STEM.get(), ModItems.ECTOPLASMIC_MELON_SEEDS.get());
@@ -75,6 +86,34 @@ public class ModBlockLootTables extends BlockLootSubProvider {
                                 .apply(ApplyBonusCount.addOreBonusCount(Enchantments.BLOCK_FORTUNE))));
     }
 
+    protected LootTable.Builder createFruitBlockDrops(Block block, Item fruitItem, float minDrops, float maxDrops, int maxWithFortune) {
+        return LootTable.lootTable()
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(block)
+                                .when(MatchTool.toolMatches(
+                                        net.minecraft.advancements.critereon.ItemPredicate.Builder.item()
+                                                .hasEnchantment(new EnchantmentPredicate(
+                                                        Enchantments.SILK_TOUCH,
+                                                        MinMaxBounds.Ints.atLeast(1)
+                                                ))
+                                ))
+                                .otherwise(
+                                        LootItem.lootTableItem(fruitItem)
+                                                .apply(SetItemCountFunction.setCount(
+                                                        UniformGenerator.between(minDrops, maxDrops)
+                                                ))
+                                                .apply(ApplyBonusCount.addUniformBonusCount(
+                                                        Enchantments.BLOCK_FORTUNE
+                                                ))
+                                                .apply(LimitCount.limitCount(
+                                                        IntRange.upperBound(maxWithFortune)
+                                                ))
+                                                .apply(ApplyExplosionDecay.explosionDecay())
+                                )
+                        )
+                );
+    }
     @Override
     protected Iterable<Block> getKnownBlocks() {
         return ModBlocks.BLOCKS.getEntries().stream().map(RegistryObject::get)::iterator;
