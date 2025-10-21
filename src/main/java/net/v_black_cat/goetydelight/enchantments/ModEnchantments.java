@@ -31,5 +31,13 @@ public class ModEnchantments {
                             EquipmentSlot.values()
                     ));
 
+    public static final RegistryObject<Enchantment> SOUL_HEALING =
+            ENCHANTMENTS.register("soul_healing",
+                    () -> new SoulHealingEnchantment(
+                            Enchantment.Rarity.VERY_RARE,
+                            EnchantmentCategory.ARMOR_CHEST,
+                            EquipmentSlot.values()
+                    ));
+
 
 }
