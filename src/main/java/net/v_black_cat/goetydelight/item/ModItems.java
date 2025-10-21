@@ -181,7 +181,7 @@ public class ModItems {
                 () -> simpleFoodItem(666, 666, true)); 
 
         TAINTED_DRINK = ITEMS.register("tainted_drink",
-                () -> new CustomDrinkItem(basicItem().stacksTo(1).food(
+                () -> new CustomDrinkItem(basicItem().stacksTo(1).rarity(Rarity.RARE).food(
                         simpleFoodItemProperties(4, 4)
                                 .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 150, 1), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 300, 1), 1.0F)
@@ -528,7 +528,7 @@ public class ModItems {
                         simpleFoodItemProperties(8, 4)
                                .build())));
         SNAP_UNHOLY_TRIPE = ITEMS.register("snap_unholy_tripe",
-                () -> new SnapUnholyTripeItem(basicItem().stacksTo(1).food(
+                () -> new SnapUnholyTripeItem(basicItem().stacksTo(1).rarity(Rarity.RARE).food(
                         simpleFoodItemProperties(18, 20)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(30), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.SATURATION, sToTick(10), 0), 1.0F)
