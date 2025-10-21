@@ -549,7 +549,8 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(CURSED.get(), sToTick(20), 1), 1.0F)
                                 .build())));
         RING_PACKED_VOID_GEL_JELLY = ITEMS.register("ring_packed_void_gel_jelly",
-                () -> new SimpleFoiledItem(basicItem().stacksTo(1).food(
+                () -> new FoiledBowlFoodItem(basicItem().craftRemainder(Items.BOWL).stacksTo(1)
+                        .food(
                         simpleFoodItemProperties(8, 4)
                                 .effect(() -> new MobEffectInstance(ModEffects.VOID_AFFIX.get(), sToTick(60), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(300), 0), 1.0F)
