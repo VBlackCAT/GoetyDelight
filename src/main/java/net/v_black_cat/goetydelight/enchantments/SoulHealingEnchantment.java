@@ -5,11 +5,11 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentCategory;
+import net.minecraft.world.item.enchantment.*;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
@@ -65,6 +65,16 @@ public class SoulHealingEnchantment extends Enchantment {
         return this.canEnchant(stack);
     }
 
+    @Override
+    public boolean isAllowedOnBooks() {
+        return true;
+    }
+
+    @Override
+    public boolean checkCompatibility(@NotNull Enchantment other) {
+        return super.checkCompatibility(other) && !(other instanceof MendingEnchantment) && other.isCompatibleWith(ModEnchantments.SOUL_MENDING.get());
+    }
+
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.END && event.player.tickCount % 10 == 0) {
@@ -89,9 +99,21 @@ public class SoulHealingEnchantment extends Enchantment {
             float healAmount = (1.0F+0.01F*maxHealth) * enchantmentLevel;
             int soulEnergyCost = 5 * enchantmentLevel;
 
+            if (healAmount > 0.5F*maxHealth){
+                healAmount = 0.5F*maxHealth;
+            }
+
             if (SEHelper.getSoulsAmount(player,soulEnergyCost)) {
                 player.heal(healAmount);
                 SEHelper.soulDiscount(player);
+            }
+
+            if (player.getHealth() < player.getMaxHealth()-0.5F) {
+                if (!player.isDeadOrDying()) {
+                    if (player.getHealth() < (healAmount + player.getHealth())) {
+                        player.setHealth(player.getHealth() + 0.5F);
+                    }
+                }
             }
         }
     }
