@@ -56,7 +56,7 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
     
     
     private static final int MAX_GROWTH_STAGE = 7;
-    private static final double PLANT_CHANCE = 0.02;//种植几率,100tick一次
+    private static final double PLANT_CHANCE = 0.05;//种植几率,100tick一次
     private static final int SCAN_RADIUS = 15;//扫描半径
     private static final String PLANTED_STEMS_TAG = "PlantedStems";
     private static final Component TRADE_TITLE = Component.translatable("entity.goetydelight.ghost_farmer.trade");
