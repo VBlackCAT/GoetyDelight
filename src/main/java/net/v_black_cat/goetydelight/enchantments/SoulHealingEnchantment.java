@@ -68,15 +68,18 @@ public class SoulHealingEnchantment extends Enchantment {
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.END && event.player.tickCount % 10 == 0) {
-            Player player = event.player;
+            if(event.side.isServer()){
+                Player player = event.player;
 
-            ItemStack chestArmor = player.getItemBySlot(EquipmentSlot.CHEST);
-            if (!chestArmor.isEmpty()) {
-                int enchantmentLevel = chestArmor.getEnchantmentLevel(ModEnchantments.SOUL_HEALING.get());
-                if (enchantmentLevel > 0) {
-                    healPlayerWithSoulEnergy(player, enchantmentLevel);
+                ItemStack chestArmor = player.getItemBySlot(EquipmentSlot.CHEST);
+                if (!chestArmor.isEmpty()) {
+                    int enchantmentLevel = chestArmor.getEnchantmentLevel(ModEnchantments.SOUL_HEALING.get());
+                    if (enchantmentLevel > 0) {
+                        healPlayerWithSoulEnergy(player, enchantmentLevel);
+                    }
                 }
             }
+
         }
     }
 
@@ -86,7 +89,7 @@ public class SoulHealingEnchantment extends Enchantment {
             float healAmount = (1.0F+0.01F*maxHealth) * enchantmentLevel;
             int soulEnergyCost = 5 * enchantmentLevel;
 
-            if (SEHelper.getSESouls(player) >= soulEnergyCost) {
+            if (SEHelper.getSoulsAmount(player,soulEnergyCost)) {
                 player.heal(healAmount);
                 SEHelper.soulDiscount(player);
             }
