@@ -563,7 +563,9 @@ public class ModItems {
                 () -> new ItemNameBlockItem(ModBlocks.ECTOPLASMIC_MELON_STEM.get(),
                         new Item.Properties()
                 ));
+        // ==================== 杂项物品 ====================
 
+        
     }
 
 
