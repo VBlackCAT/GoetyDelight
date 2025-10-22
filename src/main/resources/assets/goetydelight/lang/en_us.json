@@ -93,6 +93,7 @@
   "effect.goetydelight.servant_reinforcement": "Servant Reinforcement",
   "effect.goetydelight.hydration": "Hydration",
   "effect.goetydelight.wight_denial": "Wight Denial",
+  "effect.goetydelight.tingling": "Tingling",
   "effect.goetydelight.void_affix": "Void Affix",
   "goetydelight.container.night_stove": "Night Stove",
   "goetydelight.container.cursed_ingot_pot.soul_infused":"Soul Infused",
@@ -102,6 +103,7 @@
   "enchantment.goetydelight.soul_mending": "Soul Mending",
   "enchantment.goetydelight.soul_healing": "Soul Healing",
   "entity.goetydelight.ghost_farmer.not_night": "Now... the melon is yet to ripen... wait till night falls...",
-  "entity.goetydelight.ghost_farmer.trade": "Ghost Melon Farmer",
-  "entity.goetydelight.ghost_farmer.attack_message": "Ghost Melon Farmer:Melon thieves, die!"
+  "entity.goetydelight.ghost_farmer.trade": "Wraith Melon Farmer",
+  "entity.goetydelight.ghost_farmer.attack_message": "Wraith Melon Farmer:Melon thieves, die!",
+  "info.goetydelight.research.vizier_recipe_get": "You have learned exotic recipes."
 }

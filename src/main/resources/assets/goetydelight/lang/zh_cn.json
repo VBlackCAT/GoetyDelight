@@ -93,6 +93,7 @@
   "effect.goetydelight.servant_reinforcement": "仆从强化",
   "effect.goetydelight.hydration": "水合作用",
   "effect.goetydelight.wight_denial": "尸鬼拒止",
+  "effect.goetydelight.tingling": "刺激感",
   "effect.goetydelight.void_affix": "虚空之附",
   "goetydelight.container.night_stove": "暗夜炉灶",
   "goetydelight.container.cursed_ingot_pot.soul_infused":"已注入灵魂",
@@ -103,5 +104,6 @@
   "enchantment.goetydelight.soul_healing": "溢魂弥躯",
   "entity.goetydelight.ghost_farmer.not_night": "现在...瓜尚为成熟...待夜幕降临...",
   "entity.goetydelight.ghost_farmer.trade": "幽灵瓜农",
-  "entity.goetydelight.ghost_farmer.attack_message": "幽灵瓜农:就你劈我瓜是吧！"
+  "entity.goetydelight.ghost_farmer.attack_message": "幽灵瓜农:就你劈我瓜是吧！",
+  "info.goetydelight.research.vizier_recipe_get": "你已知晓异域菜谱"
 }

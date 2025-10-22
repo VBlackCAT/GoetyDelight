@@ -108,10 +108,10 @@ public class SoulHealingEnchantment extends Enchantment {
                 SEHelper.soulDiscount(player);
             }
 
-            if (player.getHealth() < player.getMaxHealth()-0.5F) {
+            if (player.getHealth() < player.getMaxHealth()-0.25F) {
                 if (!player.isDeadOrDying()) {
                     if (player.getHealth() < (healAmount + player.getHealth())) {
-                        player.setHealth(player.getHealth() + 0.5F);
+                        player.setHealth(player.getHealth() + 0.25F);
                     }
                 }
             }
