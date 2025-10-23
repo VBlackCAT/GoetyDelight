@@ -44,7 +44,7 @@ public class RoyalCakeBlock extends Block {
             rotateVoxelShape90Clockwise(makeShape8())
     };
     
-    private static VoxelShape rotateVoxelShape90Clockwise(VoxelShape originalShape) {
+    public static VoxelShape rotateVoxelShape90Clockwise(VoxelShape originalShape) {
         return originalShape.toAabbs().stream()
                 .map(aabb -> rotateAABB90Clockwise(aabb))
                 .reduce(Shapes.empty(), Shapes::or);
