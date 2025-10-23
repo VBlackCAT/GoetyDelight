@@ -92,9 +92,14 @@ public class ModBlocks {
     public static final RegistryObject<Block> ROTTEN_CORPSE_MAGGOT_FEAST_BLOCK = registerBlock("rotten_corpse_maggot_feast_block",() ->
             new RottenCorpseMaggotFeastBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
                     ModItems.ROTTEN_CORPSE_MAGGOT_FEAST, true));
-
+    //虚空果冻
     public static final RegistryObject<Block> VOID_GEL_JELLY_BLOCK = registerBlock("void_gel_jelly_block",() ->
             new VoidGelJellyBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
+                    ModItems.RING_PACKED_VOID_GEL_JELLY, true));
+
+    //填馅高头骨
+    public static final RegistryObject<Block> STUFFED_TALL_SKULL_RICE_BLOCK = registerBlock("stuffed_tall_skull_rice_block",() ->
+            new StuffedTallSkullRiceBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
                     ModItems.RING_PACKED_VOID_GEL_JELLY, true));
 
     public static final RegistryObject<Block> ROYAL_CAKE_BLOCK = registerBlock("royal_cake_block",() ->

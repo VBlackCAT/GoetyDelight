@@ -1,8 +1,6 @@
 package net.v_black_cat.goetydelight.item;
 
 import com.Polarice3.Goety.common.effects.GoetyEffects;
-import com.Polarice3.Goety.common.effects.brew.BrewEffectInstance;
-import com.Polarice3.Goety.common.effects.brew.BrewEffects;
 import com.Polarice3.Goety.common.items.ModTiers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
@@ -113,6 +111,7 @@ public class ModItems {
     public static final RegistryObject<Item> THE_BOX_OF_THE_DEAD;
     public static final RegistryObject<Item> ECTOPLASMIC_MELON_SEEDS;
     public static final RegistryObject<Item> RING_PACKED_VOID_GEL_JELLY;
+    public static final RegistryObject<Item> STUFFED_TALL_SKULL_RICE;
 
     // ==================== 效果供应商常量 ====================
     private static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
@@ -555,6 +554,13 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(ModEffects.VOID_AFFIX.get(), sToTick(60), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(300), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.HUNGER, sToTick(60), 4), 1.0F)
+                                .build())));
+        STUFFED_TALL_SKULL_RICE = ITEMS.register("stuffed_tall_skull_rice",
+                () -> new StuffedTallSkullRiceItem(basicItem().craftRemainder(Items.BOWL).stacksTo(1)
+                        .food(
+                        simpleFoodItemProperties(8, 5)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(60), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(PHOTOSYNTHESIS.get(), minToTick(5), 1), 1.0F)
                                 .build())));
 
         // ==================== 种子物品 ====================
