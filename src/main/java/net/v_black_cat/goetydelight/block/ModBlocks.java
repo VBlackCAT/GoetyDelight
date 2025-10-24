@@ -130,11 +130,7 @@ public class ModBlocks {
 
 
     public static final RegistryObject<Block> ECTOPLASMIC_MELON_BLOCK = registerBlock("ectoplasmic_melon_block",
-            () -> new EctoplasmicMelonBlock(BlockBehaviour.Properties.copy(Blocks.MELON)
-                    .mapColor(MapColor.COLOR_CYAN) // 设置颜色为青色
-                    .sound(SoundType.WOOD) // 使用木头音效
-                    .strength(1.0F) // 设置硬度
-            ));
+            () -> new EctoplasmicMelonBlock(BlockBehaviour.Properties.copy(Blocks.MELON)));
 
 
     public static final RegistryObject<Block> ECTOPLASMIC_MELON_STEM = registerBlockWithoutBlockItem("ectoplasmic_melon_stem",

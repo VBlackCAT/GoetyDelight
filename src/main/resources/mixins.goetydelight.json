@@ -5,7 +5,7 @@
   "mixins": [
     "ArtificialFlowerMixin",
     "BlockFinderMixin",
-    "BrushableBlockEntityMixin",
+    "BrushableBlockEntityAccessor",
     "RecipeManagerMixin",
     "SummonSpellMixin",
     "WightSpawnerMixin"
