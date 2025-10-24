@@ -102,6 +102,11 @@ public class ModBlocks {
             new StuffedTallSkullRiceBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
                     ModItems.RING_PACKED_VOID_GEL_JELLY, true));
 
+    //坚守者
+    public static final RegistryObject<Block>  BOAT_STUFFED_ROASTED_WARDEN_BlOCK= registerBlock("boat_stuffed_roasted_warden_block",() ->
+            new BoatStuffedRoastedWardenBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
+                    ModItems.RING_PACKED_VOID_GEL_JELLY, true));
+
     public static final RegistryObject<Block> ROYAL_CAKE_BLOCK = registerBlock("royal_cake_block",() ->
             new RoyalCakeBlock(BlockBehaviour.Properties.of()
                     .forceSolidOn()
