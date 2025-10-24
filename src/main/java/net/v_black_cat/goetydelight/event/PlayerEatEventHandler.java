@@ -8,6 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.v_black_cat.goetydelight.api.ISoulFood;
 import net.v_black_cat.goetydelight.config.FoodSoulEnergyConfig;
 import net.v_black_cat.goetydelight.GoetyDelight;
 
@@ -37,6 +38,14 @@ public class PlayerEatEventHandler {
                 // 计算额外灵魂能量：5 * 饱食度
                 int bonusSoulEnergy = 5 * foodProperties.getNutrition();
                 SEHelper.increaseSouls(player, bonusSoulEnergy);
+            }
+        }
+
+        // 检查食物是否实现了ISoulFood接口
+        if (finishedItem.getItem() instanceof ISoulFood soulFood) {
+            int soulValue = soulFood.getSoulValue();
+            if (soulValue > 0) {
+                SEHelper.increaseSouls(player, soulValue);
             }
         }
 
