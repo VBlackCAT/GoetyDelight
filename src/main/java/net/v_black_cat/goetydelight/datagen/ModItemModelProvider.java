@@ -90,9 +90,13 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.CHERRY_BLOSSOM_CAKE);
         simpleItem(ModItems.LICHS_CHAOS_STEW);
         simpleItem(ModItems.MAGIC_QUARTZ_COOKIE);
-//        simpleItem(ModItems.SNAP_UNHOLY_TRIPE);
+        simpleItem(ModItems.SNAP_UNHOLY_TRIPE);
         simpleItem(ModItems.SUNDAE_OF_THE_PHILOSOPHERS_POTION);
         simpleItem(ModItems.ECTOPLASMIC_MELON_SEEDS);
+        simpleItem(ModItems.THE_BOX_OF_THE_DEAD);
+        simpleItem(ModItems.RING_PACKED_VOID_GEL_JELLY);
+        simpleItem(ModItems.STUFFED_TALL_SKULL_RICE);
+        simpleItem(ModItems.OMINOUS_RAMUNE);
 
         simpleItem(ModBlocks.getBlockItem(ModBlocks.ROYAL_CAKE_BLOCK));
         
