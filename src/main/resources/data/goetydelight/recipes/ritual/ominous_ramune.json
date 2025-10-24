@@ -1,0 +1,37 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "minecraft:potion"
+  },
+  "craftType": "forge",
+  "soulCost": 10,
+  "duration": 10,
+  "ingredients": [
+    {
+      "item": "goety:ominous_orb"
+    },
+    {
+      "item": "goety:bouncy_bubble_focus"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "goety:ice_cube"
+    },
+    {
+      "item": "goety:ice_cube"
+    },
+    {
+      "item": "goety:ice_cube"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:ominous_ramune"
+  }
+
+}

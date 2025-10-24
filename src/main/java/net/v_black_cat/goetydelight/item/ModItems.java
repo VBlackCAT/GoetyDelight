@@ -15,6 +15,7 @@ import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.v_black_cat.goetydelight.effect.ModEffects;
+import net.v_black_cat.goetydelight.effect.TinglingEffect;
 import net.v_black_cat.goetydelight.item.food.*;
 import net.v_black_cat.goetydelight.item.food.BowlFoodItem;
 import vectorwing.farmersdelight.common.item.DrinkableItem;
@@ -112,6 +113,7 @@ public class ModItems {
     public static final RegistryObject<Item> ECTOPLASMIC_MELON_SEEDS;
     public static final RegistryObject<Item> RING_PACKED_VOID_GEL_JELLY;
     public static final RegistryObject<Item> STUFFED_TALL_SKULL_RICE;
+    public static final RegistryObject<Item> OMINOUS_RAMUNE;
 
     // ==================== 效果供应商常量 ====================
     private static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
@@ -562,6 +564,13 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(60), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(PHOTOSYNTHESIS.get(), minToTick(5), 1), 1.0F)
                                 .build())));
+
+        OMINOUS_RAMUNE = ITEMS.register("ominous_ramune",
+                    () -> new GlassBottleFoodItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON)
+                        .food(
+                                simpleFoodItemProperties(2, 1)
+                                        .effect(() -> new MobEffectInstance(ModEffects.TINGLING.get(), sToTick(60), 0), 1.0F)
+                                        .build())));
 
         // ==================== 种子物品 ====================
 
