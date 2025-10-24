@@ -162,7 +162,7 @@ public class ModItems {
 
         //黑暗金属刷子
         DARK_BRUSH = ITEMS.register("dark_brush",
-                () -> new CursedIngotBrushItem(basicItem().durability(64)));
+                () -> new DarkBrushItem(basicItem().durability(64)));
 
         //神金刷子
         APOCALYPTIUM_INGOT_BRUSH = ITEMS.register("apocalyptium_ingot_brush",

@@ -38,53 +38,53 @@ public class CakeItem extends Item {
 
         ItemStack resultStack = super.finishUsingItem(stack, level, entity);
 
-        // 处理饥饿值恢复
+        
         if (entity instanceof Player player) {
             player.getFoodData().eat(this, stack);
         } else {
             entity.eat(level, stack);
         }
 
-        // 只在服务器端执行效果
+        
         if (!level.isClientSide && entity instanceof Player player) {
-            // 定义效果范围
+            
             AABB effectArea = new AABB(
                     player.position().subtract(EFFECT_RADIUS, EFFECT_RADIUS, EFFECT_RADIUS),
                     player.position().add(EFFECT_RADIUS, EFFECT_RADIUS, EFFECT_RADIUS)
             );
 
-            // 获取范围内的生物
+            
             List<Mob> nearbyEntities = level.getEntitiesOfClass(Mob.class, effectArea);
             int kills = 0;
 
-            // 处理每个目标生物
+            
             for (Mob target : nearbyEntities) {
                 if (isTargetEntity(target)) {
                     float maxHealth = target.getHealth();
 
-                    // 治疗玩家
+                    
                     player.heal(maxHealth);
-                    // 消灭目标生物
+                    
                     target.hurt(level.damageSources().magic(), Integer.MAX_VALUE);
                     kills++;
                     addDeathEffects(level, target);
                 }
             }
 
-            // 播放音效
+            
             level.playSound(null, player.getX(), player.getY(), player.getZ(),
                     SoundEvents.PHANTOM_DEATH, SoundSource.PLAYERS, 1.0F, 1.0F);
 
-            // 可选：显示击杀消息
-            // if (kills > 0) {
-            //     player.displayClientMessage(Component.literal("超度了 " + kills + " 个灵魂！"), true);
-            // }
+            
+            
+            
+            
         }
 
 
         stack.shrink(1);
 
-        // 如果堆叠为空，返回空堆叠，否则返回剩余堆叠
+        
         return stack.isEmpty() ? ItemStack.EMPTY : stack;
     }
 
@@ -95,7 +95,7 @@ public class CakeItem extends Item {
         if (entityId == null) {
             return false;
         }
-        // 直接检查实体类型ID是否在目标列表中
+        
         return entityId.equals(new ResourceLocation("minecraft:vex")) ||
                 entityId.equals(new ResourceLocation("minecraft:allay")) ||
                 entityId.equals(new ResourceLocation("goety:ally_irk")) ||
