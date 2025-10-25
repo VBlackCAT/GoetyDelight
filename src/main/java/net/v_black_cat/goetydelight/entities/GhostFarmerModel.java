@@ -8,7 +8,6 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.v_black_cat.goetydelight.entities.GhostFarmerEntity;
 
 public class GhostFarmerModel<T extends Entity> extends HierarchicalModel<T> {
 
@@ -65,12 +64,16 @@ public class GhostFarmerModel<T extends Entity> extends HierarchicalModel<T> {
 	public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 		this.root().getAllParts().forEach(ModelPart::resetPose);
 		this.applyHeadRotation(netHeadYaw, headPitch);
+
 		if (entity instanceof GhostFarmerEntity) {
 			GhostFarmerEntity ghostFarmer = (GhostFarmerEntity) entity;
-			this.animate(ghostFarmer.idleAnimationState, ModAnimationDefinitions.ANIMATION_GHOST_FARMER, ageInTicks);
+
+			// 使用新的动画系统
+			this.animateWalk(ModAnimationDefinitions.ANIMATION_GHOST_FARMER_IDLE, limbSwing, limbSwingAmount, 2f, 2.5f);
+			this.animate(ghostFarmer.idleAnimationState, ModAnimationDefinitions.ANIMATION_GHOST_FARMER_IDLE, ageInTicks, 1f);
+			this.animate(ghostFarmer.attackAnimationState, ModAnimationDefinitions.ANIMATION_GHOST_FARMER_ATTACK, ageInTicks, 1f);
 		}
 	}
-
 	private void applyHeadRotation(float pNetHeadYaw, float pHeadPitch) {
 		pNetHeadYaw = Mth.clamp(pNetHeadYaw, -30.0F, 30.0F);
 		pHeadPitch = Mth.clamp(pHeadPitch, -25.0F, 45.0F);
