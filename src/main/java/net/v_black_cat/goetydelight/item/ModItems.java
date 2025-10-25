@@ -52,6 +52,8 @@ public class ModItems {
     // 武器物品
     public static final RegistryObject<Item> MARBLE_OP_SWORD;
 
+    public static final RegistryObject<Item> PARASITIZED_WARDEN;
+
     // 食物物品
     public static final RegistryObject<Item> EXAMPLE_ITEM;
     public static final RegistryObject<Item> GOETYDELIGHT_ICON;
@@ -174,6 +176,8 @@ public class ModItems {
         MARBLE_OP_SWORD = ITEMS.register("marble_op_sword",
                 () -> new SwordItem(Tiers.WOOD, Integer.MAX_VALUE, 2, basicItem()));
 
+        PARASITIZED_WARDEN = ITEMS.register("parasitized_warden",
+                () -> new Item(basicItem()));
 
         EXAMPLE_ITEM = ITEMS.register("example_item",
                 () -> new Item(basicItem().stacksTo(1)

@@ -97,6 +97,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.RING_PACKED_VOID_GEL_JELLY);
         simpleItem(ModItems.STUFFED_TALL_SKULL_RICE);
         simpleItem(ModItems.OMINOUS_RAMUNE);
+        simpleItem(ModItems.PARASITIZED_WARDEN);
 
         simpleItem(ModBlocks.getBlockItem(ModBlocks.ROYAL_CAKE_BLOCK));
         
