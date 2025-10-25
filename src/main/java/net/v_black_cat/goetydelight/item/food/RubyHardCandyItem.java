@@ -35,43 +35,36 @@ public class RubyHardCandyItem extends Item {
 
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
+        
+        stack = super.finishUsingItem(stack, level, entity);
+
         if (!level.isClientSide && entity instanceof Player player) {
-            // 获取当前强效等级
+            
             int currentLevel = getPotencyLevel(player);
 
-            // 如果未达到最大等级，增加强效等级
+            
             if (currentLevel < MAX_POTENCY_LEVEL) {
                 increasePotencyLevel(player);
 
-                // 添加50%免伤能力
-                boolean success = TimedAbilitySystem.addAbilityToEntity(
-                        entity,
-                        AbilityRegistry.RUBY_HARD_CANDY_DAMAGE_REDUCTION,
-                        DAMAGE_REDUCTION_DURATION
-                );
-
-                if (success) {
-                    // 消耗物品（如果不是创造模式）
-                    if (!player.getAbilities().instabuild) {
-                        stack.shrink(1);
-                    }
-                }
-            } else {
-                // 已达到最大等级，只添加免伤效果
+                
                 TimedAbilitySystem.addAbilityToEntity(
                         entity,
                         AbilityRegistry.RUBY_HARD_CANDY_DAMAGE_REDUCTION,
                         DAMAGE_REDUCTION_DURATION
                 );
-
-                // 消耗物品（如果不是创造模式）
-                if (!player.getAbilities().instabuild) {
-                    stack.shrink(1);
-                }
+            } else {
+                
+                TimedAbilitySystem.addAbilityToEntity(
+                        entity,
+                        AbilityRegistry.RUBY_HARD_CANDY_DAMAGE_REDUCTION,
+                        DAMAGE_REDUCTION_DURATION
+                );
             }
+
+            
         }
 
-        return super.finishUsingItem(stack, level, entity);
+        return stack;
     }
 
     // 获取玩家的强效等级
