@@ -1,5 +1,8 @@
 package net.v_black_cat.goetydelight.item.food;
 
+import com.Polarice3.Goety.utils.LichdomHelper;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -23,6 +26,15 @@ public class SundaeOfThePhilosophersPotionItem extends Item {
 
     public SundaeOfThePhilosophersPotionItem(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
+        if (LichdomHelper.isLich(player)) {
+            return super.use(level, player, usedHand);
+        } else {
+            return InteractionResultHolder.fail(player.getItemInHand(usedHand));
+        }
     }
 
     @Override
