@@ -323,13 +323,13 @@ public class ModItems {
                                 .build())));
 
         WHITE_SHARK_SUGAR_PACK = ITEMS.register("sugar_pack",
-                () -> new BowlFoodItem(basicItem().stacksTo(1).food(
+                () -> new BowlFoodItem(basicItem().stacksTo(16).food(
                         simpleFoodItemProperties(6, 4)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(4), 0), 1.0F)
                                 .build())));
 
         WHITE_SHARK_CANDY = ITEMS.register("sugar_scepter",
-                () ->  new SugarScepterItem(basicItem().stacksTo(16).rarity(Rarity.UNCOMMON).food(
+                () ->  new SugarScepterItem(basicItem().stacksTo(8).rarity(Rarity.UNCOMMON).food(
                         simpleFoodItemProperties(8, 5)
                                 .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(1), 1), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
@@ -343,7 +343,7 @@ public class ModItems {
 
 
         ROASTED_CORPSE_MAGGOTS = ITEMS.register("roasted_corpse_maggots",
-                () -> new RoastedCorpseMaggotsitem(basicItem().stacksTo(1).food(
+                () -> new RoastedCorpseMaggotsitem(basicItem().stacksTo(16).food(
                         simpleFoodItemProperties(5, 2)
                                 .build())));
 
@@ -356,14 +356,14 @@ public class ModItems {
 
 
         CRYING_SHARK_SUGAR_PACK = ITEMS.register("cry_sugar_pack",
-                () -> new Item(basicItem().stacksTo(1).food(
+                () -> new Item(basicItem().stacksTo(16).food(
                         simpleFoodItemProperties(7, 4)
                                 .effect(() -> new MobEffectInstance(ModEffects.HYDRATION.get(), minToTick(15), 1), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .build())));
 
         SUNSHINE_SUGAR_BUN = ITEMS.register("sunshine_sugar_bun",
-                () -> new SevenLeafPuddingItem(basicItem().stacksTo(1).food(
+                () -> new SevenLeafPuddingItem(basicItem().stacksTo(16).food(
                         simpleFoodItemProperties(7, 4)
                                 .effect(() -> new MobEffectInstance(PHOTOSYNTHESIS_SUPPLIER.get(), minToTick(15), 1), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
@@ -552,12 +552,12 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(SOUL_ARMOR.get(), Integer.MAX_VALUE, 1), 1.0F)
                                 .build())));
         THE_BOX_OF_THE_DEAD = ITEMS.register("the_box_of_the_dead",
-                () -> new TheBoxOfTheDeadItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).food(
+                () -> new TheBoxOfTheDeadItem(basicItem().stacksTo(64).rarity(Rarity.UNCOMMON).food(
                         simpleFoodItemProperties(6, 3)
                                 .effect(() -> new MobEffectInstance(CURSED.get(), sToTick(20), 1), 1.0F)
                                 .build())));
         RING_PACKED_VOID_GEL_JELLY = ITEMS.register("ring_packed_void_gel_jelly",
-                () -> new FoiledBowlFoodItem(basicItem().craftRemainder(Items.BOWL).stacksTo(1)
+                () -> new FoiledBowlFoodItem(basicItem().craftRemainder(Items.BOWL).stacksTo(16)
                         .food(
                         simpleFoodItemProperties(8, 4)
                                 .effect(() -> new MobEffectInstance(ModEffects.VOID_AFFIX.get(), sToTick(60), 0), 1.0F)
@@ -565,7 +565,7 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(MobEffects.HUNGER, sToTick(60), 4), 1.0F)
                                 .build())));
         STUFFED_TALL_SKULL_RICE = ITEMS.register("stuffed_tall_skull_rice",
-                () -> new StuffedTallSkullRiceItem(basicItem().craftRemainder(Items.BOWL).stacksTo(1)
+                () -> new StuffedTallSkullRiceItem(basicItem().craftRemainder(Items.BOWL).stacksTo(16)
                         .food(
                         simpleFoodItemProperties(8, 5)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(60), 0), 1.0F)

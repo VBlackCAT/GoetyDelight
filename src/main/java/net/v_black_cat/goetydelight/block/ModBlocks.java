@@ -100,7 +100,7 @@ public class ModBlocks {
     //填馅高头骨
     public static final RegistryObject<Block> STUFFED_TALL_SKULL_RICE_BLOCK = registerBlock("stuffed_tall_skull_rice_block",() ->
             new StuffedTallSkullRiceBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
-                    ModItems.RING_PACKED_VOID_GEL_JELLY, true));
+                    ModItems.STUFFED_TALL_SKULL_RICE, true));
 
     //坚守者
     public static final RegistryObject<Block>  BOAT_STUFFED_ROASTED_WARDEN_BlOCK= registerBlock("boat_stuffed_roasted_warden_block",() ->
