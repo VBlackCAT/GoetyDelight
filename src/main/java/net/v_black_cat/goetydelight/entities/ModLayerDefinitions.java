@@ -11,6 +11,6 @@ import net.v_black_cat.goetydelight.GoetyDelight;
 public class ModLayerDefinitions {
     @SubscribeEvent
     public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        event.registerLayerDefinition(ModModelLayers.GHOST_FARMER_LAYER, GhostFarmerModel::createBodyLayer);
+        event.registerLayerDefinition(ModModelLayers.GHOST_FARMER, GhostFarmerModel::createBodyLayer);
     }
 }

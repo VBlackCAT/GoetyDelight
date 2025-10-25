@@ -1,5 +1,6 @@
 package net.v_black_cat.goetydelight.entities;
 
+import com.Polarice3.Goety.client.render.layer.WraithGlowLayer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -12,7 +13,8 @@ public class GhostFarmerRenderer extends MobRenderer<GhostFarmerEntity, GhostFar
 
 
     public GhostFarmerRenderer(EntityRendererProvider.Context pContext) {
-        super(pContext, new GhostFarmerModel<>(pContext.bakeLayer(ModModelLayers.GHOST_FARMER_LAYER)), 1f);
+        super(pContext, new GhostFarmerModel<>(pContext.bakeLayer(ModModelLayers.GHOST_FARMER)), 0f);
+        this.addLayer(new GhostFarmerGlowLayer(this));
     }
 
 
