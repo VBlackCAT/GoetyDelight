@@ -4,6 +4,7 @@ import com.Polarice3.Goety.api.ritual.IRitualType;
 import com.Polarice3.Goety.api.ritual.RitualType;
 import com.Polarice3.Goety.common.blocks.entities.DarkAltarBlockEntity;
 import com.Polarice3.Goety.common.blocks.entities.RitualBlockEntity;
+import com.Polarice3.Goety.common.crafting.RitualRecipe;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
@@ -24,6 +25,8 @@ import net.v_black_cat.goetydelight.item.ModItems;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.Polarice3.Goety.common.items.ModItems.*;
 
 public class DelightRitualType implements IRitualType {
     @Override
@@ -96,19 +99,20 @@ public class DelightRitualType implements IRitualType {
                                DarkAltarBlockEntity tileEntity,
                                Player castingPlayer,
                                ItemStack activationItem) {
-        // 生成特殊实体
-        //Entity delightEntity = EntityType.BEE.create(world);
-        //delightEntity.moveTo(darkAltarPos.getX(), darkAltarPos.getY() + 1, darkAltarPos.getZ());
-        //world.addFreshEntity(delightEntity);
 
-        // 给予玩家效果
-        //castingPlayer.addEffect(new MobEffectInstance(
-                //MobEffects.REGENERATION,
-                //600,  // 30秒
-                //1
-        //));
 
-        // 播放音效和粒子
+        RitualRecipe recipe = tileEntity.getCurrentRitualRecipe();
+
+        if (recipe.getId().toString().equals("goetydelight:ominous_ramune")) {
+
+            returnSpecialItems(world, darkAltarPos, castingPlayer,new ItemStack(OMINOUS_ORB.get()));
+            returnSpecialItems(world, darkAltarPos, castingPlayer,new ItemStack(BOUNCY_BUBBLE_FOCUS.get()));
+        }
+        if (recipe.getId().toString().equals("goetydelight:ominous_ramune_2")) {
+            returnSpecialItems(world, darkAltarPos, castingPlayer,new ItemStack(OMINOUS_SHARD.get()));
+            returnSpecialItems(world, darkAltarPos, castingPlayer,new ItemStack(BOUNCY_BUBBLE_FOCUS.get()));
+        }
+
         world.playSound(null, darkAltarPos, SoundEvents.BELL_RESONATE,
                 SoundSource.BLOCKS, 1.0F, 0.5F);
 
@@ -121,7 +125,14 @@ public class DelightRitualType implements IRitualType {
         }
     }
 
-//在模组主类调用这个方法注册仪式
+    private void returnSpecialItems(Level world, BlockPos darkAltarPos, Player player, ItemStack returnItem) {
+        if (!player.getInventory().add(returnItem)) {
+            player.drop(returnItem, false);
+        }
+        world.playSound(null, darkAltarPos, SoundEvents.ITEM_PICKUP,
+                SoundSource.PLAYERS, 1.0F, 1.0F);
+    }
+
     public static void registerRitualType() {
         DelightRitualType delightRitualType = new DelightRitualType();
         RitualType.create(
