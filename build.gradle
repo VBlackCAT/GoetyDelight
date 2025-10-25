@@ -293,6 +293,8 @@ dependencies {
     modRuntimeOnly "blank:lionfishapi-2.4"
     modRuntimeOnly "blank:mobbattle-1.20.1-2.4.13-forge"
     modRuntimeOnly "blank:XaerosWorldMap-Forge1.20-1.39.12"
+    modRuntimeOnly  "blank:dummmmmmy-1.20:2.0.6"
+    modRuntimeOnly  "blank:moonlight-1.20:2.14.1-forge"
 }
 
 
