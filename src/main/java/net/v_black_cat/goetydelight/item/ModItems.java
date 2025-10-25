@@ -512,8 +512,11 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(CLIMBING.get(), minToTick(5), 0), 1.0F)
                                 .build())));
         LIQUID_VOID_TEA_DRINK = ITEMS.register("liquid_void_tea_drink",
-                () -> new LiquidVoidTeaDrinkItem(basicItem().stacksTo(1).food(
-                        simpleFoodItemProperties(0, 0)
+                () -> new LiquidVoidTeaDrinkItem(basicItem().stacksTo(1)
+                        .food(new FoodProperties.Builder()
+                                .nutrition(0) 
+                                .saturationMod(0.0f)
+                                .alwaysEat()
                                .build())));
 
         LICHS_CHAOS_STEW = ITEMS.register("lichs_chaos_stew",
