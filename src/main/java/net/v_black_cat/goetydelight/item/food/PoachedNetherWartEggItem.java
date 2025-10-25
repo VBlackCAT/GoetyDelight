@@ -1,19 +1,13 @@
 package net.v_black_cat.goetydelight.item.food;
 
-import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.stats.Stats;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -29,25 +23,51 @@ public class PoachedNetherWartEggItem extends Item {
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entityLiving) {
-        super.finishUsingItem(stack, level, entityLiving);
-        if (entityLiving instanceof ServerPlayer serverplayer) {
-            CriteriaTriggers.CONSUME_ITEM.trigger(serverplayer, stack);
-            serverplayer.awardStat(Stats.ITEM_USED.get(this));
-        }
+    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
+        // 首先调用父类方法处理正常的食用逻辑
+        ItemStack result = super.finishUsingItem(stack, level, entity);
 
-        if (!level.isClientSide) {
-            entityLiving.removeEffect(MobEffects.POISON);
-        }
+        // 只在服务器端执行效果移除
+        if (!level.isClientSide && level instanceof ServerLevel serverLevel) {
+            // 获取所有负面效果
+            List<MobEffect> effectsToRemove = new ArrayList<>();
 
-        if (stack.isEmpty()) {
-            return ItemStack.EMPTY;
-        } else {
-            if (entityLiving instanceof Player && !((Player)entityLiving).getAbilities().instabuild) {
-                stack.shrink(1);
+            // 遍历所有效果，找出负面效果
+            for (MobEffectInstance effectInstance : entity.getActiveEffects()) {
+                MobEffect effect = effectInstance.getEffect();
+
+                // 检查是否为负面效果
+                if (effect.getCategory() == MobEffectCategory.HARMFUL) {
+                    effectsToRemove.add(effect);
+                }
             }
 
-            return stack;
+            // 移除所有负面效果
+            for (MobEffect effect : effectsToRemove) {
+                entity.removeEffect(effect);
+            }
+
+            // 播放清除效果的声音
+            serverLevel.playSound(null, entity.getX(), entity.getY(), entity.getZ(),
+                    SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 1.0F, 1.5F);
+
+            // 生成净化粒子效果
+            for (int i = 0; i < 15; i++) {
+                double x = entity.getX() + (level.random.nextDouble() - 0.5) * 2.0;
+                double y = entity.getY() + level.random.nextDouble() * 2.0;
+                double z = entity.getZ() + (level.random.nextDouble() - 0.5) * 2.0;
+
+                serverLevel.sendParticles(ParticleTypes.ENCHANT,
+                        x, y, z, 1, 0, 0, 0, 0.1);
+            }
+
+            // 如果移除了效果，播放额外的声音
+            if (!effectsToRemove.isEmpty()) {
+                serverLevel.playSound(null, entity.getX(), entity.getY(), entity.getZ(),
+                        SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.7F, 1.2F);
+            }
         }
+
+        return result;
     }
 }
