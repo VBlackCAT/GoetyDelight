@@ -39,6 +39,9 @@ public class LiquidVoidTeaDrinkItem extends GlassBottleFoodItem {
         
         // 造成5点虚空伤害
         entity.hurt(level.damageSources().genericKill(), 5.0F);
+        if (entity instanceof Player player){
+            player.getFoodData().setSaturation(0f);
+        }
         
         // 添加VOID_TOUCHED效果，持续30秒，等级2
         entity.addEffect(new MobEffectInstance(VOID_TOUCHED.get(), sToTick(30), 2));
@@ -58,6 +61,7 @@ public class LiquidVoidTeaDrinkItem extends GlassBottleFoodItem {
             
             // 添加VOID_TOUCHED效果，持续30秒，等级2
             target.addEffect(new MobEffectInstance(VOID_TOUCHED.get(), sToTick(30), 2));
+
             
             // 消耗物品（如果不是创造模式）
             if (!player.getAbilities().instabuild) {
