@@ -186,7 +186,7 @@ public class ModItems {
                 () -> simpleFoodItem(666, 666, true)); 
 
         TAINTED_DRINK = ITEMS.register("tainted_drink",
-                () -> new CustomDrinkItem(basicItem().stacksTo(1).rarity(Rarity.RARE).food(
+                () -> new CustomDrinkItem(basicItem().stacksTo(1).rarity(Rarity.RARE).rarity(Rarity.RARE).food(
                         simpleFoodItemProperties(4, 4)
                                 .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 150, 1), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 300, 1), 1.0F)
@@ -195,7 +195,7 @@ public class ModItems {
                                 .build())));
 
         PURE_DRINK = ITEMS.register("pure_drink",
-                () -> new CustomDrinkItem(basicItem().stacksTo(1).food(
+                () -> new CustomDrinkItem(basicItem().stacksTo(1).rarity(Rarity.RARE).food(
                         simpleFoodItemProperties(4, 4)
                                 .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 600, 3), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1200, 3), 1.0F)
@@ -204,7 +204,7 @@ public class ModItems {
                                 .build())));
 
         CUP = ITEMS.register("eternal_refusal_of_black_meat_soup",
-                () -> new EternalRefusalOfBlackMeatSoupItem(basicItem().stacksTo(1).food(
+                () -> new EternalRefusalOfBlackMeatSoupItem(basicItem().stacksTo(1).rarity(Rarity.RARE).food(
                         simpleFoodItemProperties(10, 4)
                                 .effect(() -> new MobEffectInstance(MobEffects.CONFUSION, 600, 0), 1.0F)
                                 .effect(() -> {
@@ -236,10 +236,10 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(MobEffects.WEAKNESS, 2000, 4), 1.0F)
                                 .build())));
         POACHED_NETHER_WART_EGG = ITEMS.register("poached_nether_wart_egg",
-                () -> new PoachedNetherWartEggItem(basicItem().food( 
+                () -> new PoachedNetherWartEggItem(basicItem().stacksTo(16).food(
                         simpleFoodItemProperties(7, 2).fast().build())));
         ECTOPLASM_JELLY = ITEMS.register("ectoplasm_jelly",
-                () -> simpleFastFoodItem(4, 4, true));
+                () -> simpleFastFoodItem(4, 4, false));
         FROG_LEG_SANDWICH = ITEMS.register("frog_leg_sandwich",
                 () -> simpleFoodItem(8, 6, true));
 
@@ -252,7 +252,7 @@ public class ModItems {
 
 
         ASCENSION_MOONCAKE = ITEMS.register("ascension_mooncake",
-                () -> new Item(basicItem().stacksTo(1).food(
+                () -> new Item(basicItem().stacksTo(1).rarity(Rarity.EPIC).food(
                         simpleFoodItemProperties(66, 666)
                                 .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(66), 5), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, minToTick(66), 5), 1.0F)
@@ -329,14 +329,14 @@ public class ModItems {
                                 .build())));
 
         WHITE_SHARK_CANDY = ITEMS.register("sugar_scepter",
-                () ->  new SugarScepterItem(basicItem().stacksTo(16).food(
+                () ->  new SugarScepterItem(basicItem().stacksTo(16).rarity(Rarity.UNCOMMON).food(
                         simpleFoodItemProperties(8, 5)
                                 .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(1), 1), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
                                 .build())));
 
         SIBLING_SUNDAE = ITEMS.register("possible_holy_representative",
-                () -> new SiblingSundaeItem(basicItem().stacksTo(1).food(
+                () -> new SiblingSundaeItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).food(
                         simpleFoodItemProperties(6, 5)
                                 .effect(() -> new MobEffectInstance(INSIGHT.get(), minToTick(2.5F), 3), 1.0F)
                                 .build())));
@@ -392,7 +392,7 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(RAMPAGE_EFFECT_SUPPLIER.get(), 2400, 0), 1.0F)
                                 .build())));
         CAKE = ITEMS.register("royal_cake",
-                () -> new CakeItem(basicItem().stacksTo(8).food(
+                () -> new CakeItem(basicItem().stacksTo(8).rarity(Rarity.RARE).food(
                         simpleFoodItemProperties(6, 3)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), 4500, 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(FORTUNATE_EFFECT_SUPPLIER.get(), 1500, 2), 1.0F)
@@ -401,7 +401,8 @@ public class ModItems {
                                 .build())));
         OMINOUS_ICE_CREAM = ITEMS.register("ominous_ice_cream",
                 () -> new OminousIceCreamItem(basicItem()
-                        .stacksTo(1) 
+                        .stacksTo(1)
+                        .rarity(Rarity.UNCOMMON)
                         .food(
                                 simpleFoodItemProperties(8, 5)
                                         .effect(() -> new MobEffectInstance(MobEffects.BAD_OMEN, 6000, 4), 1.0F)
@@ -430,7 +431,7 @@ public class ModItems {
 
 
         NIGHT_HEART_PEA_SOUP = ITEMS.register("night_heart_pea_soup",
-                () -> new NightHeartPeaSoupItem(basicItem().stacksTo(1).food( 
+                () -> new NightHeartPeaSoupItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).food(
                         simpleFoodItemProperties(16, 24)
                                 .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(5), 2), 1.0F)
                                 .effect(() -> new MobEffectInstance(SHADOW_WALK.get(), sToTick(60), 2), 1.0F)
@@ -462,7 +463,7 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(SOUL_ARMOR_EFFECT_SUPPLIER.get(), 1200, 1), 1.0F)
                                 .build())));
         SOUL_CONVERGENCE_ROOM_2 = ITEMS.register("soul_convergence_room",
-                () -> new Item(basicItem().stacksTo(64).food(
+                () -> new Item(basicItem().stacksTo(64).rarity(Rarity.UNCOMMON).food(
                         simpleFoodItemProperties(20, 30)
                                 .effect(() -> new MobEffectInstance(SOUL_ARMOR_EFFECT_SUPPLIER.get(), 6000, 4), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.HEALTH_BOOST, 6000, 2), 1.0F)
@@ -477,7 +478,7 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(CORPSE_EATER.get(), minToTick(1), 2), 1.0F)
                                 .build())));
         RUBY_HARD_CANDY = ITEMS.register("ruby_hard_candy",
-                () -> new RubyHardCandyItem(basicItem().stacksTo(1).food( 
+                () -> new RubyHardCandyItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).food(
                         simpleFoodItemProperties(10, 8)
                                 .effect(() -> new MobEffectInstance(ModEffects.SPELL_MASTERY.get(), minToTick(30), 2), 1.0F)
                                 .effect(() -> new MobEffectInstance(ModEffects.SPELL_DURATION.get(), minToTick(10), 2), 1.0F)
@@ -491,12 +492,12 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(ModEffects.SPELL_MASTERY.get(), minToTick(2), 0), 1.0F)
                                 .build())));
         ROTTEN_CORPSE_MAGGOT_FEAST = ITEMS.register("rotten_corpse_maggot_feast",
-                () -> new RottenCorpseMaggotFeastItem(basicItem().stacksTo(1).food( 
+                () -> new RottenCorpseMaggotFeastItem(basicItem().stacksTo(1).food(
                         simpleFoodItemProperties(8, 5)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(2), 0), 1.0F)
                                 .build())));
         CHERRY_BLOSSOM_CAKE = ITEMS.register("cherry_blossom_cake",
-                () -> new CherryBlossomCakeItem(basicItem().stacksTo(1).food(
+                () -> new CherryBlossomCakeItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).food(
                         simpleFoodItemProperties(12, 8)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.LUCK, minToTick(2), 2), 1.0F)
@@ -523,7 +524,7 @@ public class ModItems {
                                .build())));
 
         LICHS_CHAOS_STEW = ITEMS.register("lichs_chaos_stew",
-                () -> new LichsChaosStewItem(basicItem().stacksTo(1).food(
+                () -> new LichsChaosStewItem(basicItem().stacksTo(1).rarity(Rarity.EPIC).food(
                         simpleFoodItemProperties(16, 12)
                                 .effect(() -> new MobEffectInstance(SAVE_EFFECTS.get(), -1, 2), 1.0F)
                                 .effect(() -> new MobEffectInstance(ModEffects.WIGHT_DENIAL.get(), minToTick(30), 0), 1.0F)
@@ -544,14 +545,14 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE,  minToTick(30), 0), 1.0F)
                                 .build())));
         SUNDAE_OF_THE_PHILOSOPHERS_POTION = ITEMS.register("sundae_of_the_philosophers_potion",
-                () -> new SundaeOfThePhilosophersPotionItem(basicItem().stacksTo(1).food(
+                () -> new SundaeOfThePhilosophersPotionItem(basicItem().stacksTo(1).rarity(Rarity.EPIC).food(
                         simpleFoodItemProperties(10, 6)
                                 .effect(() -> new MobEffectInstance(SAVE_EFFECTS.get(), Integer.MAX_VALUE, 1), 1.0F)
                                 .effect(() -> new MobEffectInstance(GOLD_TOUCHED.get(), minToTick(30), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(SOUL_ARMOR.get(), Integer.MAX_VALUE, 1), 1.0F)
                                 .build())));
         THE_BOX_OF_THE_DEAD = ITEMS.register("the_box_of_the_dead",
-                () -> new TheBoxOfTheDeadItem(basicItem().stacksTo(1).food(
+                () -> new TheBoxOfTheDeadItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).food(
                         simpleFoodItemProperties(6, 3)
                                 .effect(() -> new MobEffectInstance(CURSED.get(), sToTick(20), 1), 1.0F)
                                 .build())));
