@@ -514,8 +514,7 @@ public class ModItems {
         LIQUID_VOID_TEA_DRINK = ITEMS.register("liquid_void_tea_drink",
                 () -> new LiquidVoidTeaDrinkItem(basicItem().stacksTo(1)
                         .food(new FoodProperties.Builder()
-                                .nutrition(0) 
-                                .saturationMod(0.0f)
+                                .nutrition(0)
                                 .alwaysEat()
                                .build())));
 
