@@ -7,13 +7,14 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
@@ -21,7 +22,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.player.Player;
@@ -56,8 +56,8 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
     
     
     private static final int MAX_GROWTH_STAGE = 7;
-    private static final double PLANT_CHANCE = 0.05;//种植几率,100tick一次
-    private static final int SCAN_RADIUS = 15;//扫描半径
+    private static final double PLANT_CHANCE = 0.05;
+    private static final int SCAN_RADIUS = 15;
     private static final String PLANTED_STEMS_TAG = "PlantedStems";
     private static final Component TRADE_TITLE = Component.translatable("entity.goetydelight.ghost_farmer.trade");
     private static final Component NOT_NIGHT_MESSAGE = Component.translatable("entity.goetydelight.ghost_farmer.not_night");
@@ -75,7 +75,16 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
     private long lastRestockTime = -1;
     private boolean hasRestockedToday = false;
 
-    
+    public final AnimationState attackAnimationState = new AnimationState();
+    private int attackTick = 0;
+    private static final int ATTACK_DURATION = 38; 
+    private Player attackTarget;
+    private int idleAnimationTimeout = 0;
+    private int attackAnimationTimeout = 0;
+    private static final EntityDataAccessor<Boolean> ATTACKING =
+            SynchedEntityData.defineId(GhostFarmerEntity.class, EntityDataSerializers.BOOLEAN);
+
+
     public GhostFarmerEntity(EntityType<? extends Summoned> entityType, Level level) {
         super(entityType, level);
     }
@@ -89,10 +98,22 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
         super.tick();
 
         if (this.level().isClientSide()) {
-            this.idleAnimationState.animateWhen(true, this.tickCount);
+            setupAnimationStates(); 
         } else {
             checkMidnightRestock();
 
+            
+            if (isAttacking()) {
+                attackTick++;
+
+                if (attackTick == ATTACK_DURATION / 2 && attackTarget != null) {
+                    executePlayer(attackTarget);
+                }
+
+                if (attackTick >= ATTACK_DURATION) {
+                    resetAttack();
+                }
+            }
             if (isNightTime() && isInTargetStructure()) {
                 if(tickCount%20==0){
                     checkAndRemoveInvalidPlantingSites();
@@ -116,8 +137,49 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
             }
         }
     }
+    
+    public boolean isAttacking() {
+        return this.entityData.get(ATTACKING);
+    }
 
     
+    public void setAttacking(boolean attacking) {
+        this.entityData.set(ATTACKING, attacking);
+    }
+    @Override
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(ATTACKING, false);
+    }
+    
+    private void setupAnimationStates() {
+        
+        if (this.idleAnimationTimeout <= 0 && !isAttacking()) {
+            this.idleAnimationTimeout = 60; 
+            this.idleAnimationState.start(this.tickCount);
+        } else {
+            --this.idleAnimationTimeout;
+        }
+
+        
+        if (isAttacking() && attackAnimationTimeout <= 0) {
+            attackAnimationTimeout = ATTACK_DURATION; 
+            attackAnimationState.start(this.tickCount);
+        } else if (attackAnimationTimeout > 0) {
+            --this.attackAnimationTimeout;
+            if (this.attackAnimationTimeout <= 0) {
+                this.attackAnimationState.stop();
+            }
+        }
+
+        
+        if (!isAttacking()) {
+            attackAnimationState.stop();
+        }
+    }
+
+
+
     @Nullable
     @Override
     public Player getTradingPlayer() {
@@ -406,61 +468,127 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
         return structureStart != null && structureStart.isValid();
     }
 
-    
+
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(1, new FloatSwimGoal(this));
+        this.goalSelector.addGoal(2, new AttackPlayerGoal()); 
+        this.goalSelector.addGoal(3, new RestrictSunGoal(this));
+        this.goalSelector.addGoal(4, new FleeSunGoal(this, 1.0));
         this.goalSelector.addGoal(9, new WraithLookGoal(this, Player.class, 3.0F, 1.0F));
         this.goalSelector.addGoal(10, new WraithLookGoal(this, Mob.class, 8.0F));
         this.goalSelector.addGoal(10, new WraithLookRandomlyGoal(this));
-        this.goalSelector.addGoal(1, new RestrictSunGoal(this));
-        this.goalSelector.addGoal(2, new FleeSunGoal(this, 1.0));
         this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0));
     }
 
-    
+    @Nullable
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-
-        if (this.offers != null) {
-            compound.put("Offers", this.offers.createTag());
-        }
-
-        compound.putLong("LastRestockTime", this.lastRestockTime);
-        compound.putBoolean("HasRestockedToday", this.hasRestockedToday);
-
-
-        ListTag stemsTag = new ListTag();
-        for (BlockPos pos : this.plantStemsPos) {
-            stemsTag.add(NbtUtils.writeBlockPos(pos));
-        }
-        compound.put(PLANTED_STEMS_TAG, stemsTag);
+    public UUID getOwnerUUID() {
+        return null;
     }
 
-    @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
+    
+    class AttackPlayerGoal extends Goal {
+        private Player targetPlayer;
+        private int cooldown = 0;
 
-        if (compound.contains("Offers", 10)) {
-            this.offers = new MerchantOffers(compound.getCompound("Offers"));
+        public AttackPlayerGoal() {
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
         }
 
-        if (compound.contains("LastRestockTime")) {
-            this.lastRestockTime = compound.getLong("LastRestockTime");
+        @Override
+        public boolean canUse() {
+            if (cooldown > 0) {
+                cooldown--;
+                return false;
+            }
+            if (!isNightTime() || !isInTargetStructure()) {
+                return false;
+            }
+            this.targetPlayer = findAttackTarget();
+            return this.targetPlayer != null && !isAttacking();
         }
-        
-        if (compound.contains("HasRestockedToday")) {
-            this.hasRestockedToday = compound.getBoolean("HasRestockedToday");
+
+        @Override
+        public boolean canContinueToUse() {
+            return isAttacking() || (targetPlayer != null && targetPlayer.isAlive() &&
+                    distanceToSqr(targetPlayer) < 256.0D); 
         }
-        
-        if (compound.contains(PLANTED_STEMS_TAG)) {
-            ListTag stemsTag = compound.getList(PLANTED_STEMS_TAG, Tag.TAG_COMPOUND);
-            for (int i = 0; i < stemsTag.size(); i++) {
-                this.plantStemsPos.add(NbtUtils.readBlockPos(stemsTag.getCompound(i)));
+
+        @Override
+        public void start() {
+            if (targetPlayer != null) {
+                startAttack(targetPlayer);
+                cooldown = 100;
+                
+                setAttacking(true);
             }
         }
+
+        @Override
+        public void stop() {
+            resetAttack();
+            this.targetPlayer = null;
+        }
+
+        @Override
+        public void tick() {
+            if (targetPlayer != null && !isAttacking()) {
+                
+                getLookControl().setLookAt(targetPlayer, 30.0F, 30.0F);
+
+                
+                if (distanceToSqr(targetPlayer) < 16.0D) { 
+                    startAttack(targetPlayer);
+                }
+            }
+        }
+
+        private Player findAttackTarget() {
+            AABB searchArea = new AABB(blockPosition()).inflate(16); 
+            List<Player> players = level().getEntitiesOfClass(Player.class, searchArea);
+
+            for (Player player : players) {
+                if (hasStolenMelon(player) || isSuspicious(player)) {
+                    return player;
+                }
+            }
+            return null;
+        }
     }
+
+    private void startAttack(Player player) {
+        teleportToPlayerFront(player);
+        setAttacking(true);
+        this.attackTick = 0;
+        this.attackTarget = player;
+        this.attackAnimationState.start(this.tickCount);
+        this.getNavigation().stop();
+
+    }
+
+
+    private void resetAttack() {
+        setAttacking(false);
+        this.attackTick = 0;
+        this.attackTarget = null;
+        this.attackAnimationState.stop();
+    }
+
+    
+    private void executePlayer(Player player) {
+        if (!player.isAlive()) return;
+        dealMagicDamageToPlayer(player);
+        playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
+        addParticlesAroundSelf(ParticleTypes.REVERSE_PORTAL);
+        if (player instanceof ServerPlayer) {
+            player.sendSystemMessage(Component.translatable("entity.goetydelight.ghost_farmer.execute_message"));
+        }
+    }
+
+
+
+
 
     
     @Override
@@ -498,17 +626,46 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
         return Component.translatable("entity.goetydelight.ghost_farmer");
     }
 
+
     
     public void onEctoplasmicMelonBreak(Player player) {
+        
+        markPlayerAsSuspicious(player);
 
-        this.setTarget(player);
-
-        if (this.canTeleport()) {
-            this.setIsTeleporting(true);
+        
+        if (distanceToSqr(player) < 16.0D) {
+            startAttack(player);
         }
-        dealMagicDamageToPlayer(player);
     }
 
+    
+    private void markPlayerAsSuspicious(Player player) {
+        
+    }
+
+    private boolean hasStolenMelon(Player player) {
+        
+        
+        return false;
+    }
+
+    private boolean isSuspicious(Player player) {
+        
+        return false;
+    }
+
+    
+    @Override
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        
+    }
 
     private void teleportToPlayerFront(Player player) {
         
@@ -540,15 +697,12 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
 
 
 private void dealMagicDamageToPlayer(Player player) {
-        
-
         float damage = player.getMaxHealth();
         DamageSource magicDamage = new DamageSource(this.damageSources().magic().typeHolder(), this);
         player.sendSystemMessage(Component.translatable("entity.goetydelight.ghost_farmer.attack_message"));
         player.hurt(magicDamage, damage);
     }
 
-    
     public static class GhostFarmerMerchantMenu extends MerchantMenu {
         public GhostFarmerMerchantMenu(int containerId, net.minecraft.world.entity.player.Inventory playerInventory, Merchant merchant) {
             super(containerId, playerInventory, merchant);
