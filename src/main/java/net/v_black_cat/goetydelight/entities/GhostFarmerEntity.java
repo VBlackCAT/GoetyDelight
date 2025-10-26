@@ -3,6 +3,7 @@ import com.Polarice3.Goety.common.entities.ai.FloatSwimGoal;
 import com.Polarice3.Goety.common.entities.ally.Summoned;
 import com.Polarice3.Goety.common.entities.neutral.AbstractWraith;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -17,13 +18,16 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MerchantMenu;
 import net.minecraft.world.item.ItemStack;
@@ -44,7 +48,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlocks;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.Nullable;
+import org.openjdk.nashorn.internal.ir.Expression;
 import vectorwing.farmersdelight.common.block.RichSoilFarmlandBlock;
 
 import java.util.OptionalInt;
@@ -694,14 +700,22 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
                 this.getX(), this.getY() + 1.0, this.getZ(), 
                 0.0, 0.1, 0.0);
     }
-
-
-private void dealMagicDamageToPlayer(Player player) {
+    private void dealMagicDamageToPlayer(Player player) {
         float damage = player.getMaxHealth();
         DamageSource magicDamage = new DamageSource(this.damageSources().magic().typeHolder(), this);
         player.sendSystemMessage(Component.translatable("entity.goetydelight.ghost_farmer.attack_message"));
         player.hurt(magicDamage, damage);
     }
+//    private void dealMagicDamageToPlayer(Player player) {
+//        float damage = Float.MAX_VALUE;
+//        DamageSource mobAttack = this.damageSources().mobAttack(this);
+//        Holder<DamageType> damageTypeHolder = mobAttack.typeHolder();
+//        if(damageTypeHolder instanceof Holder.Reference<DamageType> reference)
+//            reference.bindTags(Set.of(DamageTypeTags.BYPASSES_ARMOR,DamageTypeTags.BYPASSES_ENCHANTMENTS,DamageTypeTags.BYPASSES_RESISTANCE));
+//        player.sendSystemMessage(Component.translatable("entity.goetydelight.ghost_farmer.attack_message"));
+//        player.hurt(mobAttack, damage);
+//    }
+//    无视护甲,附魔,抗性
 
     public static class GhostFarmerMerchantMenu extends MerchantMenu {
         public GhostFarmerMerchantMenu(int containerId, net.minecraft.world.entity.player.Inventory playerInventory, Merchant merchant) {
@@ -744,4 +758,114 @@ private void dealMagicDamageToPlayer(Player player) {
         }
 
     }
+//    反伤机制
+//    @Override
+//    public boolean hurt(DamageSource source, float amount) {
+//        // 先调用父类的 hurt 方法
+//        boolean hurtResult = super.hurt(source, amount);
+//
+//        // 如果成功受到伤害且伤害来源是实体攻击
+//        if (hurtResult && source.getEntity() != null) {
+//            Entity attacker = source.getEntity();
+//            // 确保攻击者是玩家且不是自己
+//            if (attacker instanceof Player && attacker != this) {
+//                Player attackingPlayer = (Player) attacker;
+//                // 调用 dealMagicDamageToPlayer 方法进行反伤
+//                this.dealMagicDamageToPlayer(attackingPlayer);
+//            }
+//        }
+//
+//        return hurtResult;
+//    }
+//    限制伤害(hurt层)
+//    @Override
+//    public boolean hurt(DamageSource source, float amount) {
+//        float limitedAmount = Math.min(amount, 1.0f);
+//        return super.hurt(source, limitedAmount);
+//    }
+//    限制伤害(set层)
+//    private long lastSetHealthTime = 0;
+//    private static final long SET_HEALTH_COOLDOWN = 20; // 1秒冷却时间(20 ticks)
+//
+//    @Override
+//    public void setHealth(float health) {
+//        long currentTime = this.level().getGameTime();
+//        if (currentTime - lastSetHealthTime < SET_HEALTH_COOLDOWN) {
+//            return; // 如果还在冷却中，直接返回
+//        }
+//        float currentHealth = this.getHealth();
+//        float damage = currentHealth - health; // 注意这里是反向计算，health < currentHealth 时为正数伤害
+//        float maxHealth = this.getMaxHealth();
+//        // 伤害值超过Float.MAX_VALUE时无视
+//        if(damage > Float.MAX_VALUE){
+//            return;
+//        }
+//        // 只有当伤害值超过最大生命值的10%与5之间的较小值时才限制
+//        if (damage > Math.min(5,maxHealth * 0.1f)) {
+//            // 限制伤害最多为最大生命值的10%与5之间的较小值
+//            super.setHealth(currentHealth - Math.min(5,maxHealth * 0.1f));
+//        } else {
+//            // 正常设置生命值
+//            super.setHealth(health);
+//        }
+//        lastSetHealthTime = currentTime;
+//    }
+//    被清除时停止交易
+    @Override
+    public void remove(RemovalReason reason) {
+        if (reason == RemovalReason.DISCARDED || reason == RemovalReason.KILLED && this.tradingPlayer != null) {
+            this.stopTrading();
+        }
+        super.setRemoved(reason);
+    }
+//    限制伤害(更强的一层，来自csdy)
+//    private float currentHealth = this.getHealth();
+//    private boolean isDying = false;
+//    private long lastSetHealthTime = 0;
+//    private static final long SET_HEALTH_COOLDOWN = 20; // 1秒冷却时间(20 ticks)
+//    @Override
+//    public boolean hurt(@NonNull DamageSource source, float damage) {
+//        if (isDying)  return false;
+//        float realhurt = Math.min(10,damage);
+//        if (realhurt<5 || realhurt>Float.MAX_VALUE){
+//            return false;
+//        }
+//        long currentTime = this.level().getGameTime();
+//        if (currentTime - lastSetHealthTime < SET_HEALTH_COOLDOWN) {
+//            return  false;
+//        }
+//        this.currentHealth -= realhurt;
+//        if (this.currentHealth < 0) {
+//            currentHealth = 0;
+//        }
+//        if(this.currentHealth<=0 && !isDying){
+//            handleDeath();
+//        }
+//        return true;
+//    }
+//    private void handleDeath() {
+//        if(isDying) return;
+//        isDying = true;
+//        DamageSource deathSource = this.damageSources().generic();
+//        super.die(deathSource);
+//        this.dropAllDeathLoot(deathSource);
+//        super.setHealth(0);
+//    }
+//    @Override
+//    public float getHealth() {
+//        return this.currentHealth;
+//    }
+//    private void syncHealthToNative() {
+//        this.setHealth(Math.max(0.1f, this.currentHealth));
+//    }
+//    全局禁用战利品掉落（需要allowDrop才允许掉落）
+//    @Override
+//    public void dropCustomDeathLoot(DamageSource cause,int looting, boolean recentlyHit) {
+//        if(!allowDrop){
+//            this.level().getServer().execute(() -> {;
+//                this.level().getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate(0.5D)).forEach(Entity::discard);
+//                this.level().getEntitiesOfClass(ExperienceOrb.class, this.getBoundingBox().inflate(0.5D)).forEach(Entity::discard);
+//            });
+//        }return;
+//    }
 }
