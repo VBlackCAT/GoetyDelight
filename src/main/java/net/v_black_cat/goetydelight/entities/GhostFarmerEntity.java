@@ -785,14 +785,19 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
 //    @Override
 //    public void setHealth(float health) {
 //        long currentTime = this.level().getGameTime();
-//        if (currentTime - lastSetHealthTime < SET_HEALTH_COOLDOWN) {
-//            return; // 如果还在冷却中，直接返回
-//        }
 //        float currentHealth = this.getHealth();
 //        float damage = currentHealth - health; // 注意这里是反向计算，health < currentHealth 时为正数伤害
 //        float maxHealth = this.getMaxHealth();
 //        // 伤害值超过Float.MAX_VALUE时无视
 //        if(damage > Float.MAX_VALUE){
+//            return;
+//        }
+//        if (currentTime - lastSetHealthTime < SET_HEALTH_COOLDOWN) {
+//            if(currentHealth+damage*0.5f > maxHealth){
+//                super.setHealth(maxHealth);
+//            }
+//            super.setHealth((currentHealth+damage*0.5f)); // 在冷却时间内，回复部分生命值
+//            lastSetHealthTime = currentTime;
 //            return;
 //        }
 //        // 只有当伤害值超过最大生命值的10%与5之间的较小值时才限制
@@ -821,8 +826,8 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
 //    @Override
 //    public boolean hurt(@NonNull DamageSource source, float damage) {
 //        if (isDying)  return false;
-//        float realhurt = Math.min(10,damage);
-//        if (realhurt<5 || realhurt>Float.MAX_VALUE){
+//        float realhurt = Math.min(20,damage);
+//        if (realhurt<10 || realhurt>Float.MAX_VALUE){
 //            return false;
 //        }
 //        long currentTime = this.level().getGameTime();
@@ -830,10 +835,11 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
 //            this.currentHealth -= realhurt*0.1f;
 //            lastSetHealthTime = currentTime;
 //        } else {
-//            if(this.currentHealth < currentHealth){
+//            if(this.currentHealth+realhurt*0.5 < 16){
+//                this.currentHealth = 16;
+//            }
 //            this.currentHealth += realhurt*0.5f;
 //            return true;}
-//        }
 //        if (this.currentHealth < 0) {
 //            currentHealth = 0;
 //        }
@@ -854,7 +860,7 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
 //    public float getHealth() {
 //        return this.currentHealth;
 //    }
-//    private void syncHealthToNative() {
+//    private void syncHealthToNative() {   // 同步当前生命值到实体的属性
 //        this.setHealth(Math.max(0.1f, this.currentHealth));
 //    }
 //    禁用掉用战利品表
@@ -905,5 +911,40 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
 //            }
 //        }
 //        return super.canCollideWith(entity);
+//    }
+//    防移除(Remove层)
+//    @Override
+//    public void remove(RemovalReason reason) {
+//        // 在特定条件下阻止移除
+//        if (shouldPreventRemoval(reason)) {
+//            return; // 阻止移除
+//        }
+//        super.setRemoved(reason);
+//    }
+//    private boolean shouldPreventRemoval(RemovalReason reason) {
+//        if (reason == RemovalReason.DISCARDED
+//                || reason == RemovalReason.KILLED
+//                || reason == RemovalReason.UNLOADED_TO_CHUNK
+//                || reason == RemovalReason.UNLOADED_WITH_PLAYER
+//                || reason == RemovalReason.CHANGED_DIMENSION) {
+//            return  true;
+//        }
+//        return false;
+//    }
+// 允许实体加载区块
+//    @Override
+//    public boolean canChangeDimensions() {
+//        if (this.getOwner() != null && this.getOwner().level() != this.level()) {
+//            return true; // 允许传送到主人的维度
+//        }
+//        return false; // 阻止其他维度传送
+//    }
+//    @Override
+//    public boolean shouldBeSaved() {
+//        return true; // 确保实体会被保存到区块数据中
+//    }
+//    @Override
+//    public boolean requiresCustomPersistence() {
+//        return true; // 阻止区块因实体存在而卸载
 //    }
 }
