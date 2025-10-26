@@ -3,7 +3,6 @@ import com.Polarice3.Goety.common.entities.ai.FloatSwimGoal;
 import com.Polarice3.Goety.common.entities.ally.Summoned;
 import com.Polarice3.Goety.common.entities.neutral.AbstractWraith;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -18,16 +17,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.*;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MerchantMenu;
 import net.minecraft.world.item.ItemStack;
@@ -48,9 +44,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlocks;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.Nullable;
-import org.openjdk.nashorn.internal.ir.Expression;
 import vectorwing.farmersdelight.common.block.RichSoilFarmlandBlock;
 
 import java.util.OptionalInt;
@@ -858,14 +852,53 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
 //    private void syncHealthToNative() {
 //        this.setHealth(Math.max(0.1f, this.currentHealth));
 //    }
-//    全局禁用战利品掉落（需要allowDrop才允许掉落）
+//    禁用掉用战利品表
 //    @Override
 //    public void dropCustomDeathLoot(DamageSource cause,int looting, boolean recentlyHit) {
-//        if(!allowDrop){
+//        if(NotAllowDrop == true && isDeadOrDying() = false){
 //            this.level().getServer().execute(() -> {;
 //                this.level().getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate(0.5D)).forEach(Entity::discard);
 //                this.level().getEntitiesOfClass(ExperienceOrb.class, this.getBoundingBox().inflate(0.5D)).forEach(Entity::discard);
 //            });
 //        }return;
+//    }
+    // 拒绝设置NoAI
+//    @Override
+//    public void setNoAI() {
+//        if(RefuseSetNoAI == true){
+//            return;
+//        }
+//    }
+    // 防止攻击自身及主人
+//    public boolean setAttackTarget(LivingEntity target) {
+//        // 检查目标是否是实体本身
+//        if (target == this) {
+//            return false;
+//        }
+//        // 检查目标是否是拥有者
+//        if (target instanceof Player && this.getOwnerUUID() != null) {
+//            UUID ownerUUID = this.getOwnerUUID();
+//            if (ownerUUID.equals(target.getUUID())) {
+//                return  false;
+//            }
+//        }
+//        return true;
+//    }
+    // 传送到主人位置
+//    private void teleportToQwner() {
+//        if (this.getOwner() != null && distanceToSqr(this.getOwner()) > 20.0F) {
+//            setPos(this.getOwner().getX(), this.getOwner().getY(), this.getOwner().getZ());
+//        }
+//    }
+    // 防止与主人碰撞
+//    @Override
+//    public boolean canCollideWith(Entity entity) {
+//        if (entity instanceof Player && this.getOwnerUUID() != null) {
+//            UUID ownerUUID = this.getOwnerUUID();
+//            if (ownerUUID.equals(entity.getUUID())) {
+//                return false;
+//            }
+//        }
+//        return super.canCollideWith(entity);
 //    }
 }
