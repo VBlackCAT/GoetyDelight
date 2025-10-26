@@ -44,6 +44,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlocks;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.Nullable;
 import vectorwing.farmersdelight.common.block.RichSoilFarmlandBlock;
 
@@ -813,7 +814,7 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
         super.setRemoved(reason);
     }
 //    限制伤害(更强的一层，来自csdy)
-//    private float currentHealth = this.getHealth();
+//    private float currentHealth = 16.0f;
 //    private boolean isDying = false;
 //    private long lastSetHealthTime = 0;
 //    private static final long SET_HEALTH_COOLDOWN = 20; // 1秒冷却时间(20 ticks)
@@ -825,10 +826,14 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
 //            return false;
 //        }
 //        long currentTime = this.level().getGameTime();
-//        if (currentTime - lastSetHealthTime < SET_HEALTH_COOLDOWN) {
-//            return  false;
+//        if (currentTime - lastSetHealthTime > SET_HEALTH_COOLDOWN) {
+//            this.currentHealth -= realhurt*0.1f;
+//            lastSetHealthTime = currentTime;
+//        } else {
+//            if(this.currentHealth < currentHealth){
+//            this.currentHealth += realhurt*0.5f;
+//            return true;}
 //        }
-//        this.currentHealth -= realhurt;
 //        if (this.currentHealth < 0) {
 //            currentHealth = 0;
 //        }
