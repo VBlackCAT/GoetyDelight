@@ -18,4 +18,10 @@ public interface BrushableBlockEntityAccessor {
 
     @Accessor("coolDownEndsAtTick")
     void setCoolDownEndsAtTick(long tick);
+
+    @Accessor("brushCountResetsAtTick")
+    long getBrushCountResetsAtTick();
+
+    @Accessor("brushCountResetsAtTick")
+    void setBrushCountResetsAtTick(long tick);
 }
