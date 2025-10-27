@@ -116,6 +116,7 @@ public class ModItems {
     public static final RegistryObject<Item> RING_PACKED_VOID_GEL_JELLY;
     public static final RegistryObject<Item> STUFFED_TALL_SKULL_RICE;
     public static final RegistryObject<Item> OMINOUS_RAMUNE;
+    public static final RegistryObject<Item> BOAT_STUFFED_ROASTED_WARDEN_HEAD;
 
     // ==================== 效果供应商常量 ====================
     private static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
@@ -577,6 +578,15 @@ public class ModItems {
                         .food(
                                 simpleFoodItemProperties(2, 1)
                                         .effect(() -> new MobEffectInstance(ModEffects.TINGLING.get(), sToTick(60), 0), 1.0F)
+                                        .build())));
+
+        BOAT_STUFFED_ROASTED_WARDEN_HEAD = ITEMS.register("boat_stuffed_roasted_warden_head",
+                    () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON)
+                        .food(simpleFoodItemProperties(2, 1)
+                                        .effect(() ->new MobEffectInstance(SOUL_ARMOR.get(), minToTick(5), 3), 1.0F)
+                                        .effect(() ->new MobEffectInstance(ModEffects.HUNTING_DENIAL.get(), minToTick(10), 0), 1.0F)
+                                        .effect(() ->new MobEffectInstance(MobEffects.REGENERATION, minToTick(5), 1), 1.0F)
+                                        .effect(() ->new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(5), 1), 1.0F)
                                         .build())));
 
         // ==================== 种子物品 ====================

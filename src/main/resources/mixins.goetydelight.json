@@ -6,6 +6,7 @@
     "ArtificialFlowerMixin",
     "BlockFinderMixin",
     "BrushableBlockEntityAccessor",
+    "MobAccessor",
     "RecipeManagerMixin",
     "SummonSpellMixin",
     "WightSpawnerMixin"
