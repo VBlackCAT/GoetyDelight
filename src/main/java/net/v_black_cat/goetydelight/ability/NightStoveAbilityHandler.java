@@ -4,29 +4,23 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.NeutralMob;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.WeakHashMap;
-
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = "goetydelight")
 public class NightStoveAbilityHandler {
 
     @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event) {
         LivingEntity entity = event.getEntity();
 
-        // 检查实体是否有 NightStove 能力
         if (TimedAbilitySystem.hasAbility(entity, AbilityRegistry.NIGHT_STOVE)) {
-            // 减少25%受到的伤害
-            float reducedDamage = event.getAmount() * 0.75f; // 只承受75%的伤害，即减少25%
+            float reducedDamage = event.getAmount() * 0.75f;
             event.setAmount(reducedDamage);
         }
     }
@@ -36,165 +30,78 @@ public class NightStoveAbilityHandler {
         LivingEntity attacker = event.getSource().getEntity() instanceof LivingEntity ?
                 (LivingEntity) event.getSource().getEntity() : null;
 
-        // 检查攻击者是否有 NightStove 能力
         if (attacker != null && TimedAbilitySystem.hasAbility(attacker, AbilityRegistry.NIGHT_STOVE)) {
-            // 增加25%造成的伤害
-            float increasedDamage = event.getAmount() * 1.25f; // 增加25%伤害
+            float increasedDamage = event.getAmount() * 1.25f;
             event.setAmount(increasedDamage);
         }
     }
 
-    @Mod.EventBusSubscriber(modid = "goetydelight")
-    public static class NightStoveAISystem {
+    @SubscribeEvent
+    public static void onLivingChangeTarget(LivingChangeTargetEvent event) {
+        LivingEntity attacker = event.getEntity();
+        LivingEntity target = event.getNewTarget();
 
-
-        private static final WeakHashMap<Mob, Boolean> modifiedUndeadMobs = new WeakHashMap<>();
-
-        @SubscribeEvent
-        public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
-            if (!(event.getEntity() instanceof Mob mob) || event.getLevel().isClientSide()) {
-                return;
-            }
-
-
-
-            if (!(mob instanceof Monster) ||
-                    mob.getType().is(net.minecraftforge.common.Tags.EntityTypes.BOSSES) ||
-                    mob instanceof NeutralMob) {
-                return;
-            }
-
-
-            if (mob.getMobType() != MobType.UNDEAD) {
-                return;
-            }
-
-
-            if (modifiedUndeadMobs.containsKey(mob)) {
-                return;
-            }
-
-
-            mob.targetSelector.addGoal(0, new NightStoveAITargetGoal(mob));
-
-            modifiedUndeadMobs.put(mob, true);
+        
+        if (!(attacker instanceof Mob) || !(target instanceof Player)) {
+            return;
         }
 
-        // 优化后的AI目标类，减少不必要的能力检查
-        public static class NightStoveAITargetGoal extends NearestAttackableTargetGoal<Player> {
-            // 缓存能力检查结果，避免重复查询
-            private Boolean cachedHasNightStove = null;
-            private Player cachedPlayer = null;
+        Mob mob = (Mob) attacker;
+        Player player = (Player) target;
+
+        
+        if (!(mob instanceof Monster) ||
+                mob.getType().is(net.minecraftforge.common.Tags.EntityTypes.BOSSES) ||
+                mob instanceof NeutralMob ||
+                mob.getMobType() != MobType.UNDEAD) {
+            return;
+        }
+
+        
+        if (TimedAbilitySystem.hasAbility(player, AbilityRegistry.NIGHT_STOVE)) {
             
-            public NightStoveAITargetGoal(Mob mob) {
-                super(mob, Player.class, true);
-                this.targetConditions = TargetingConditions.forCombat()
-                        .range(this.getFollowDistance())
-                        .selector(player -> {
-                            // 使用优化后的能力检查方法
-                            return !TimedAbilitySystem.hasAbility(player, AbilityRegistry.NIGHT_STOVE);
-                        });
-            }
-
-            @Override
-            public boolean canUse() {
-                LivingEntity lastAttacker = this.mob.getLastHurtByMob();
-                if (lastAttacker instanceof Player) {
-                    Player player = (Player) lastAttacker;
-                    
-                    // 缓存玩家NightStove能力状态
-                    if (cachedPlayer != player) {
-                        cachedHasNightStove = TimedAbilitySystem.hasAbility(player, AbilityRegistry.NIGHT_STOVE);
-                        cachedPlayer = player;
-                    }
-                    
-                    if (cachedHasNightStove) {
-                        if (this.mob.tickCount - this.mob.getLastHurtByMobTimestamp() < 100) {
-                            this.target = player;
-                            return true;
-                        }
-                    }
+            
+            if (mob.getLastHurtByMob() != player) {
+                if (event.getTargetType() == LivingChangeTargetEvent.LivingTargetType.MOB_TARGET) {
+                    event.setNewTarget(null);
+                } else {
+                    event.setCanceled(true);
                 }
+            }
+            
+        }
+    }
 
-                if (this.mob.getTarget() != null) {
-                    LivingEntity currentTarget = this.mob.getTarget();
-                    if (currentTarget instanceof Player) {
-                        Player player = (Player) currentTarget;
+    @SubscribeEvent
+    public static void onLivingAttack(net.minecraftforge.event.entity.living.LivingAttackEvent event) {
+        if (event.getEntity() instanceof Player player) {
+            LivingEntity attacker = event.getSource().getEntity() instanceof LivingEntity ?
+                    (LivingEntity) event.getSource().getEntity() : null;
+
+            if (attacker instanceof Mob mob) {
+                
+                if (mob.getMobType() == MobType.UNDEAD &&
+                        !(mob instanceof NeutralMob) &&
+                        !mob.getType().is(net.minecraftforge.common.Tags.EntityTypes.BOSSES)) {
+
+                    
+                    if (TimedAbilitySystem.hasAbility(player, AbilityRegistry.NIGHT_STOVE)) {
                         
-                        // 缓存玩家NightStove能力状态
-                        if (cachedPlayer != player) {
-                            cachedHasNightStove = TimedAbilitySystem.hasAbility(player, AbilityRegistry.NIGHT_STOVE);
-                            cachedPlayer = player;
+                        
+                        if (mob.getLastHurtByMob() != player) {
+                            event.setCanceled(true);
+
+                            
+                            double d0 = mob.getX() - player.getX();
+                            double d1 = mob.getZ() - player.getZ();
+                            mob.getNavigation().stop();
+                            mob.setDeltaMovement(mob.getDeltaMovement().add(
+                                    Math.signum(d0) * 0.1, 0, Math.signum(d1) * 0.1
+                            ));
                         }
                         
-                        if (cachedHasNightStove) {
-                            this.mob.setTarget(null);
-                        }
-                    }
-                    return false;
-                }
-
-                this.findTarget();
-                return this.target != null;
-            }
-
-            @Override
-            public boolean canContinueToUse() {
-                if (this.target == null) return false;
-
-                if (this.target == this.mob.getLastHurtByMob()) {
-                    return this.mob.tickCount - this.mob.getLastHurtByMobTimestamp() < 100;
-                }
-
-                // 缓存玩家NightStove能力状态
-                if (this.target instanceof Player) {
-                    Player player = (Player) this.target;
-                    if (cachedPlayer != player) {
-                        cachedHasNightStove = TimedAbilitySystem.hasAbility(player, AbilityRegistry.NIGHT_STOVE);
-                        cachedPlayer = player;
-                    }
-                    
-                    if (cachedHasNightStove) {
-                        return false;
                     }
                 }
-
-                return super.canContinueToUse();
-            }
-
-            @Override
-            public void setTarget(LivingEntity target) {
-                if (target instanceof Player) {
-                    Player player = (Player) target;
-
-                    // 缓存玩家NightStove能力状态
-                    if (cachedPlayer != player) {
-                        cachedHasNightStove = TimedAbilitySystem.hasAbility(player, AbilityRegistry.NIGHT_STOVE);
-                        cachedPlayer = player;
-                    }
-                    
-                    if (cachedHasNightStove) {
-                        if (this.mob.getLastHurtByMob() != player) {
-                            return;
-                        }
-                    }
-                }
-                super.setTarget(target);
-            }
-            
-            // 清除缓存，确保下次查询正确
-            @Override
-            public void start() {
-                cachedPlayer = null;
-                cachedHasNightStove = null;
-                super.start();
-            }
-            
-            @Override
-            public void stop() {
-                cachedPlayer = null;
-                cachedHasNightStove = null;
-                super.stop();
             }
         }
     }
