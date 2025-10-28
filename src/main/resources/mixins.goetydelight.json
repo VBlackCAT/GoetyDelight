@@ -8,6 +8,7 @@
     "BrushableBlockEntityAccessor",
     "MobAccessor",
     "RecipeManagerMixin",
+    "ServerLevelAccessor",
     "SummonSpellMixin",
     "WightSpawnerMixin"
   ],
