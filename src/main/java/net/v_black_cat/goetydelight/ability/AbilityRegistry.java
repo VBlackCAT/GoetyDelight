@@ -1,9 +1,5 @@
 package net.v_black_cat.goetydelight.ability;
 
-import java.util.UUID;
-
-import static net.v_black_cat.goetydelight.ability.TimedAbilitySystem.syncAbilityWithClient;
-
 public class AbilityRegistry {
     public static final int INFINITE_DURATION = -1;
     public static final String FREEZE_IMMUNITY = "freeze_immunity";
@@ -13,6 +9,8 @@ public class AbilityRegistry {
     public static final String CRIMSON_MEMORIES = "crimson_memories";
     public static final String PERMANENT_FIRE_RESISTANCE = "permanent_fire_resistance";
     public static final String PERMANENT_SAVE_EFFECTS = "permanent_save_effects";
+    public static final String FOR_WARDEN_EFFECT = "for_warden_effect";
+    public static final String WARDEN_DETECTED = "warden_detected";
 
     public static void registerAbilities() {
 
@@ -137,6 +135,54 @@ public class AbilityRegistry {
                 entity -> {
                     if (entity != null) {
                         entity.getPersistentData().putBoolean("hasPermanentSaveEffects", false);
+                    }
+                }
+        );
+
+        TimedAbilitySystem.registerAbility(
+                PERMANENT_SAVE_EFFECTS,
+                // 能力应用器
+                entity -> {
+                    if (entity != null) {
+                        entity.getPersistentData().putBoolean("hasPermanentSaveEffects", true);
+                    }
+                },
+                // 能力移除器
+                entity -> {
+                    if (entity != null) {
+                        entity.getPersistentData().putBoolean("hasPermanentSaveEffects", false);
+                    }
+                }
+        );
+
+        TimedAbilitySystem.registerAbility(
+                FOR_WARDEN_EFFECT,
+                // 能力应用器
+                entity -> {
+                    if (entity != null) {
+                        entity.getPersistentData().putBoolean("hasForWardenEffect", true);
+                    }
+                },
+                // 能力移除器
+                entity -> {
+                    if (entity != null) {
+                        entity.getPersistentData().putBoolean("hasForWardenEffect", false);
+                    }
+                }
+        );
+        
+        TimedAbilitySystem.registerAbility(
+                WARDEN_DETECTED,
+                // 能力应用器
+                entity -> {
+                    if (entity != null) {
+                        entity.getPersistentData().putBoolean("hasWardenDetected", true);
+                    }
+                },
+                // 能力移除器
+                entity -> {
+                    if (entity != null) {
+                        entity.getPersistentData().putBoolean("hasWardenDetected", false);
                     }
                 }
         );

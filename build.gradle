@@ -68,6 +68,7 @@ legacyForge {
 
         configureEach {
             systemProperty 'forge.logging.markers', 'REGISTRIES'
+            systemProperty 'forge.logging.console.level', 'debug'
             //mixin
             systemProperty 'mixin.verbose', 'true'
             systemProperty 'mixin.export', 'true'

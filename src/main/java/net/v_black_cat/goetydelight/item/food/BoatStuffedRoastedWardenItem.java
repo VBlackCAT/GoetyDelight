@@ -32,6 +32,11 @@ public class BoatStuffedRoastedWardenItem extends Item {
     }
 
     @Override
+    public boolean canContinueUsing(ItemStack oldStack, ItemStack newStack) {
+        return super.canContinueUsing(oldStack, newStack);
+    }
+
+    @Override
     public UseAnim getUseAnimation(ItemStack stack) {
         return UseAnim.CUSTOM;
     }
@@ -64,6 +69,15 @@ public class BoatStuffedRoastedWardenItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         
+        
+        if (hand != InteractionHand.MAIN_HAND) {
+            return InteractionResultHolder.fail(stack);
+        }
+        
+        
+        if (!player.getItemInHand(InteractionHand.OFF_HAND).isEmpty()) {
+            return InteractionResultHolder.fail(stack);
+        }
         
         if (getServings(stack) <= 0) {
             return InteractionResultHolder.fail(stack);

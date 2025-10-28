@@ -587,6 +587,7 @@ public class ModItems {
                                         .effect(() ->new MobEffectInstance(ModEffects.HUNTING_DENIAL.get(), minToTick(10), 0), 1.0F)
                                         .effect(() ->new MobEffectInstance(MobEffects.REGENERATION, minToTick(5), 1), 1.0F)
                                         .effect(() ->new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(5), 1), 1.0F)
+                                        .effect(() ->new MobEffectInstance(ModEffects.WARDEN.get(), minToTick(10), 0), 1.0F)
                                         .build())));
 
         // ==================== 种子物品 ====================
