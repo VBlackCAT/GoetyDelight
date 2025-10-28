@@ -241,16 +241,18 @@ public class TimedAbilitySystem {
 
         // 死亡时清除所有能力
         public void clearAbilitiesOnDeath(LivingEntity entity) {
+            /*
             for (TimedAbility ability : activeAbilities.values()) {
                 ability.remover.remove(entity);
                 pendingRemovals.add(() -> activeAbilities.remove(ability.abilityId));
-                
+
                 // 添加同步到客户端的逻辑
                 if (entity instanceof Player) {
                     syncAbilityWithClient(entity, ability.abilityId, false);
                 }
             }
             pendingRemovals.forEach(Runnable::run);
+            */
         }
 
         // 重生时清除所有能力
