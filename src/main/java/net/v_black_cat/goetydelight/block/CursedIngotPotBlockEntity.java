@@ -1,8 +1,3 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
 package net.v_black_cat.goetydelight.block;
 
 import com.Polarice3.Goety.api.items.magic.ITotem;
