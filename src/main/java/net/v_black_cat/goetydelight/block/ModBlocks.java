@@ -25,6 +25,7 @@ import vectorwing.farmersdelight.common.block.CookingPotBlock;
 import vectorwing.farmersdelight.common.block.RoastChickenBlock;
 import vectorwing.farmersdelight.common.block.StoveBlock;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 
@@ -103,10 +104,21 @@ public class ModBlocks {
                     ModItems.STUFFED_TALL_SKULL_RICE, true));
 
     //坚守者
-    public static final RegistryObject<Block>  BOAT_STUFFED_ROASTED_WARDEN_BlOCK= registerBlock("boat_stuffed_roasted_warden_block",() ->
-            new BoatStuffedRoastedWardenBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
-                    ModItems.RING_PACKED_VOID_GEL_JELLY, true));
-
+    public static final RegistryObject<Block>  BOAT_STUFFED_ROASTED_WARDEN_BlOCK= registerBlock("boat_stuffed_roasted_warden_block",
+            () -> new BoatStuffedRoastedWardenBlock(
+                    BlockBehaviour.Properties.copy(Blocks.CAKE),
+                    Arrays.asList(
+                            ModItems.BOAT_STUFFED_ROASTED_WARDEN_HEAD,
+                            ModItems.BOAT_STUFFED_ROASTED_WARDEN_MEET,
+                            ModItems.BOAT_STUFFED_ROASTED_WARDEN_MEET,
+                            ModItems.BOAT_STUFFED_ROASTED_WARDEN_MEET,
+                            ModItems.BOAT_STUFFED_ROASTED_WARDEN_MEET,
+                            ModItems.BOAT_STUFFED_ROASTED_WARDEN_FLANK,
+                            ModItems.BOAT_STUFFED_ROASTED_WARDEN_FLANK
+                    ),
+                    true
+            )
+    );
     public static final RegistryObject<Block> ROYAL_CAKE_BLOCK = registerBlock("royal_cake_block",() ->
             new RoyalCakeBlock(BlockBehaviour.Properties.of()
                     .forceSolidOn()

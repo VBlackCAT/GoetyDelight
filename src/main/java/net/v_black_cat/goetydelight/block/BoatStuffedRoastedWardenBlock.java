@@ -29,6 +29,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import vectorwing.farmersdelight.common.block.FeastBlock;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class BoatStuffedRoastedWardenBlock extends FeastBlock {
@@ -37,6 +38,7 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
      public static final EnumProperty<Part> PART = EnumProperty.create("part", Part.class);
      // 预先计算所有朝向的碰撞箱
      private static final VoxelShape[][][] ROTATED_SHAPES = new VoxelShape[8][4][]; // [servings][facing]
+     private final List<Supplier<Item>> servingItems;
 
      private Part getPartFromOffset(int dx, int dz) {
           if (dx == -1 && dz == -1) return Part.NORTH_WEST;
@@ -74,6 +76,13 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
           public String getSerializedName() {
                return name;
           }
+     }
+     @Override
+     public ItemStack getServingItem(BlockState state) {
+          int servings = state.getValue(SERVINGS);
+          // 根据剩余份数选择不同的物品
+          int itemIndex = (getMaxServings() - servings) % servingItems.size();
+          return new ItemStack(servingItems.get(itemIndex).get());
      }
      @Override
      public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
@@ -335,9 +344,10 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
 
           return shape;
      }
-     public BoatStuffedRoastedWardenBlock(Properties properties, Supplier<Item> servingItem, boolean hasLeftovers) {
-          super(properties, servingItem, hasLeftovers);
-          this.registerDefaultState(this.stateDefinition.any()
+     public BoatStuffedRoastedWardenBlock(Properties properties, List<Supplier<Item>> servingItems, boolean hasLeftovers) {
+          super(properties, () -> servingItems.get(0).get(), hasLeftovers);
+          this.servingItems = servingItems;
+         this.registerDefaultState(this.stateDefinition.any()
                   .setValue(FACING, Direction.NORTH)
                   .setValue(SERVINGS, getMaxServings())
                   .setValue(PART, Part.CENTER)); 
