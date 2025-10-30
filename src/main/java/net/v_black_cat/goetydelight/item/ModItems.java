@@ -170,15 +170,15 @@ public class ModItems {
 
         //诅咒金属刷子
         CURSED_METAL_BRUSH = ITEMS.register("cursed_metal_brush",
-                () -> new CursedIngotBrushItem(basicItem().durability(64)));
+                () -> new DarkBrushItem(basicItem().durability(64),2));
 
         //黑暗金属刷子
         DARK_BRUSH = ITEMS.register("dark_brush",
-                () -> new DarkBrushItem(basicItem().durability(64)));
+                () -> new DarkBrushItem(basicItem().durability(64),3));
 
         //神金刷子
         APOCALYPTIUM_INGOT_BRUSH = ITEMS.register("apocalyptium_ingot_brush",
-                () -> new CursedIngotBrushItem(basicItem().durability(166)));
+                () -> new DarkBrushItem(basicItem().durability(166),4));
 
         //大理石op剑
         MARBLE_OP_SWORD = ITEMS.register("marble_op_sword",
