@@ -2,6 +2,8 @@ package net.v_black_cat.goetydelight.item;
 
 import com.Polarice3.Goety.common.effects.GoetyEffects;
 import com.Polarice3.Goety.common.items.ModTiers;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -9,6 +11,9 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -701,6 +706,42 @@ public class ModItems {
         FoodProperties.Builder builder = simpleFoodItemProperties(nutrition, saturationMod)
                 .effect(() -> new MobEffectInstance(mobEffect, duration, amplifier), 1.0F);
         return new Item(properties.food(builder.build()));
+    }
+    @Mod.EventBusSubscriber(modid = GoetyDelight.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+    public class ClientSetup {
+        @SubscribeEvent
+        public static void onClientSetup(FMLClientSetupEvent event) {
+            event.enqueueWork(() -> {
+                ItemProperties.register(
+                        RegistryItem.EQUIPMENT_ITEM.get(),
+                        ResourceLocation.fromNamespaceAndPath(GoetyDelight.MODID,"quality"),
+                        (stack, world, entity, seed) -> {
+                            if(stack.hasTag()){
+                                CompoundTag nbt = stack.getTag();
+                                if (nbt ==  null) return 1.0F;
+                                if (nbt.contains("quality")){
+                                    int quality = nbt.getInt("quality");
+                                    switch ( quality){
+                                        case 0: return 0.3F;
+                                        case 1: return 0.1F;
+                                        case 2: return 0.2F;
+                                        case 3: return 0.3F;
+                                        case 4: return 0.4F;
+                                        case 5: return 0.5F;
+                                        case 6: return 0.6F;
+                                        case 7: return 0.7F;
+                                        case 8: return 0.8F;
+                                        case 9: return 0.9F;
+
+                                        default: return 1.0F;
+                                    }
+                                }
+                            }
+                            return 1.0F;
+                        }
+                );
+            });
+        }
     }
 
     public static void register(IEventBus eventBus) {

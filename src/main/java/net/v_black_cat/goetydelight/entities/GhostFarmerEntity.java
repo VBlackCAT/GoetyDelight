@@ -44,7 +44,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlocks;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.Nullable;
 import vectorwing.farmersdelight.common.block.RichSoilFarmlandBlock;
 
@@ -822,7 +821,7 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
 //    private float currentHealth = 16.0f;
 //    private boolean isDying = false;
 //    private long lastSetHealthTime = 0;
-//    private static final long SET_HEALTH_COOLDOWN = 20; // 1秒冷却时间(20 ticks)
+//    private static final long SET_HEALTH_COOLDOWN = 40; // 2秒冷却时间(40 ticks)
 //    @Override
 //    public boolean hurt(@NonNull DamageSource source, float damage) {
 //        if (isDying)  return false;
@@ -895,6 +894,23 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
 //        }
 //        return true;
 //    }
+//private Player findAttackTarget() {
+//    AABB searchArea = new AABB(blockPosition()).inflate(16);
+//    List<Player> players = level().getEntitiesOfClass(Player.class, searchArea);
+//    List<Entity> entities = level().getEntitiesOfClass(Entity.class, searchArea);
+//    for(Entity entity : entities){
+//        if (entity == this) {
+//            return null;
+//        }
+//        if (entity instanceof Player && this.getOwnerUUID() != null) {
+//            UUID ownerUUID = this.getOwnerUUID();
+//            if (ownerUUID.equals(entity.getUUID())) {
+//                return null;
+//            }
+//        }
+//    }
+//    return null;
+//}
     // 传送到主人位置
 //    private void teleportToQwner() {
 //        if (this.getOwner() != null && distanceToSqr(this.getOwner()) > 20.0F) {
