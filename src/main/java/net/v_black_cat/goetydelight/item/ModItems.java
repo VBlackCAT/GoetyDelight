@@ -209,7 +209,12 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1200, 3), 1.0F)
                                 .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), minToTick(15), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(ModEffects.ZOMBIFIED_PIGLIN_BRUTE_SERVANT_SUPPORT.get(), minToTick(30), 0), 1.0F)
-                                .build())));
+                                .build())) {
+                    @Override
+                    public boolean isFoil(ItemStack pStack) {
+                        return true;
+                    }
+                });
 
         CUP = ITEMS.register("eternal_refusal_of_black_meat_soup",
                 () -> new EternalRefusalOfBlackMeatSoupItem(basicItem().stacksTo(1).rarity(Rarity.RARE).food(
@@ -707,6 +712,8 @@ public class ModItems {
                 .effect(() -> new MobEffectInstance(mobEffect, duration, amplifier), 1.0F);
         return new Item(properties.food(builder.build()));
     }
+
+    /*
     @Mod.EventBusSubscriber(modid = GoetyDelight.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public class ClientSetup {
         @SubscribeEvent
@@ -743,7 +750,7 @@ public class ModItems {
             });
         }
     }
-
+    */
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }
