@@ -1,6 +1,14 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "goetydelight:item/pure_drink"
-  }
+    "layer0": "goetydelight:item/tainted_drink"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "goetydelight:quality": 0.5
+      },
+      "model": "goetydelight:item/pure_drink_quality5"
+    }
+  ]
 }
