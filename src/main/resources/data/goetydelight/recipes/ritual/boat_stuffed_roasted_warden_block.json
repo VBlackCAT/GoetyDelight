@@ -1,0 +1,52 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "goetydelight:parasitized_warden"
+  },
+  "craftType": "culinary",
+  "research": "forbidden",
+  "soulCost": 15,
+  "duration": 30,
+  "ingredients": [
+    {
+      "item": "goetydelight:ectoplasmic_melon_block"
+    },
+    {
+      "item": "goetydelight:ectoplasmic_melon_block"
+    },
+    {
+      "item": "minecraft:pumpkin"
+    },
+    {
+      "item": "minecraft:pumpkin"
+    },
+    {
+      "item": "minecraft:honey_block"
+    },
+    {
+      "item": "farmersdelight:tomato_crate"
+    },
+    {
+      "tag": "goety:meat"
+    },
+    {
+      "tag": "goety:meat"
+    },
+    {
+      "tag": "goety:meat"
+    },
+    {
+      "tag": "goety:meat"
+    },
+    {
+      "tag": "goety:meat"
+    },
+    {
+      "tag": "goety:meat"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:boat_stuffed_roasted_warden_block"
+  }
+}
