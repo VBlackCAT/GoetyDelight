@@ -27,9 +27,7 @@ import net.v_black_cat.goetydelight.effect.ModEffects;
 import net.v_black_cat.goetydelight.enchantments.ModEnchantments;
 import net.v_black_cat.goetydelight.entities.GhostFarmerRenderer;
 import net.v_black_cat.goetydelight.entities.ModEntities;
-import net.v_black_cat.goetydelight.entities.ModEntityType;
 import net.v_black_cat.goetydelight.item.ModCreativeModTabs;
-import net.v_black_cat.goetydelight.item.ModSpawnEggs;
 import net.v_black_cat.goetydelight.loot.RegHelper;
 import net.v_black_cat.goetydelight.network.NetworkHandler;
 import net.v_black_cat.goetydelight.recipe.ModRecipeSerializers;
@@ -57,10 +55,6 @@ public class GoetyDelight
     public static final String MODID = "goetydelight";
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
-    {
-
-    }
-
     public GoetyDelight(FMLJavaModLoadingContext context)
     {
         IEventBus modEventBus = context.getModEventBus();
@@ -85,8 +79,6 @@ public class GoetyDelight
         AbilityRegistry.registerAbilities();
         ModBlockEntities.register(modEventBus);
         ModMenuTypes.register(modEventBus);
-        ModEntityType.register(modEventBus);
-        ModSpawnEggs.register(modEventBus);
 
 
         // 注册结构和结构片段、结构处理器
@@ -96,11 +88,7 @@ public class GoetyDelight
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
-    public static void init() {
-        ModEntityType.ENTITY_TYPE.register(FMLJavaModLoadingContext.get().getModEventBus());
-        ModEntityType.ABSTRACTWRAITH.get();
-        ModSpawnEggs.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
-    }
+
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {

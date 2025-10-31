@@ -8,8 +8,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -21,6 +23,7 @@ import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.v_black_cat.goetydelight.effect.ModEffects;
 import net.v_black_cat.goetydelight.effect.TinglingEffect;
+import net.v_black_cat.goetydelight.entities.ModEntities;
 import net.v_black_cat.goetydelight.item.food.*;
 import net.v_black_cat.goetydelight.item.food.BowlFoodItem;
 import vectorwing.farmersdelight.common.item.DrinkableItem;
@@ -56,9 +59,10 @@ public class ModItems {
 
     // 武器物品
     public static final RegistryObject<Item> MARBLE_OP_SWORD;
-
     public static final RegistryObject<Item> PARASITIZED_WARDEN;
+    //刷怪蛋
 
+    public static final RegistryObject<Item> GHOST_FARMER_SPAWN_EGG;
     // 食物物品
     public static final RegistryObject<Item> EXAMPLE_ITEM;
     public static final RegistryObject<Item> GOETYDELIGHT_ICON;
@@ -632,6 +636,8 @@ public class ModItems {
                         new Item.Properties()
                 ));
         // ==================== 杂项物品 ====================
+        GHOST_FARMER_SPAWN_EGG = ITEMS.register("ghost_farmer_spawn_egg",
+                () -> new ForgeSpawnEggItem(ModEntities.GHOST_FARMER, 0xFFFFFF,0xFFFFFF, new Item.Properties()));
 
         
     }
