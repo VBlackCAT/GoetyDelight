@@ -1,28 +1,20 @@
 package net.v_black_cat.goetydelight.item;
 
-import com.Polarice3.Goety.common.effects.GoetyEffects;
 import com.Polarice3.Goety.common.items.ModTiers;
-import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.v_black_cat.goetydelight.effect.ModEffects;
-import net.v_black_cat.goetydelight.effect.TinglingEffect;
 import net.v_black_cat.goetydelight.entities.ModEntities;
 import net.v_black_cat.goetydelight.item.food.*;
 import net.v_black_cat.goetydelight.item.food.BowlFoodItem;
@@ -128,6 +120,7 @@ public class ModItems {
     public static final RegistryObject<Item> BOAT_STUFFED_ROASTED_WARDEN_HEAD;
     public static final RegistryObject<Item> BOAT_STUFFED_ROASTED_WARDEN_MEET;
     public static final RegistryObject<Item> BOAT_STUFFED_ROASTED_WARDEN_FLANK;
+    public static final RegistryObject<Item> ANCIENT_ENCHANTED_GOLDEN_APPLE;
 
     // ==================== 效果供应商常量 ====================
     private static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
@@ -186,16 +179,16 @@ public class ModItems {
 
         //大理石op剑
         MARBLE_OP_SWORD = ITEMS.register("marble_op_sword",
-                () -> new MarbleOpSwordItem(Tiers.WOOD, 1, 2, basicItem()));
+                () -> new MarbleOpSwordItem(Tiers.WOOD, 1, 2, basicItem().rarity(Rarity.EPIC)));
 
         PARASITIZED_WARDEN = ITEMS.register("parasitized_warden",
-                () -> new Item(basicItem()));
+                () -> new Item(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON)));
 
         EXAMPLE_ITEM = ITEMS.register("example_item",
                 () -> new Item(basicItem().stacksTo(1)
                         .food(simpleFoodItemProperties(1, 2f).build())));
         GOETYDELIGHT_ICON = ITEMS.register("goetydelight_icon",
-                () -> simpleFoodItem(666, 666, true)); 
+                () -> simpleFoodItem(666, 666, true));
 
         TAINTED_DRINK = ITEMS.register("tainted_drink",
                 () -> new CustomDrinkItem(basicItem().stacksTo(1).rarity(Rarity.RARE).rarity(Rarity.RARE).food(
@@ -598,35 +591,42 @@ public class ModItems {
 
         BOAT_STUFFED_ROASTED_WARDEN_HEAD = ITEMS.register("boat_stuffed_roasted_warden_head",
                     () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).craftRemainder(Items.DARK_OAK_BOAT)
-                        .food(simpleFoodItemProperties(2, 1)
+                        .food(simpleFoodItemProperties(30, 25)
                                         .effect(() ->new MobEffectInstance(SOUL_ARMOR.get(), minToTick(5), 3), 1.0F)
                                         .effect(() ->new MobEffectInstance(ModEffects.HUNTING_DENIAL.get(), minToTick(10), 0), 1.0F)
                                         .effect(() ->new MobEffectInstance(MobEffects.REGENERATION, minToTick(5), 1), 1.0F)
                                         .effect(() ->new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(5), 1), 1.0F)
                                         .effect(() ->new MobEffectInstance(ModEffects.WARDEN.get(), minToTick(10), 0), 1.0F)
                                         .build())));
-
 
         BOAT_STUFFED_ROASTED_WARDEN_MEET = ITEMS.register("boat_stuffed_roasted_warden_meet",
                     () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).craftRemainder(Items.DARK_OAK_BOAT)
-                        .food(simpleFoodItemProperties(2, 1)
+                        .food(simpleFoodItemProperties(30, 25)
                                         .effect(() ->new MobEffectInstance(SOUL_ARMOR.get(), minToTick(5), 3), 1.0F)
                                         .effect(() ->new MobEffectInstance(ModEffects.HUNTING_DENIAL.get(), minToTick(10), 0), 1.0F)
                                         .effect(() ->new MobEffectInstance(MobEffects.REGENERATION, minToTick(5), 1), 1.0F)
                                         .effect(() ->new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(5), 1), 1.0F)
                                         .effect(() ->new MobEffectInstance(ModEffects.WARDEN.get(), minToTick(10), 0), 1.0F)
                                         .build())));
-
 
         BOAT_STUFFED_ROASTED_WARDEN_FLANK = ITEMS.register("boat_stuffed_roasted_warden_flank",
                     () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).craftRemainder(Items.DARK_OAK_BOAT)
-                        .food(simpleFoodItemProperties(2, 1)
+                        .food(simpleFoodItemProperties(30, 25)
                                         .effect(() ->new MobEffectInstance(SOUL_ARMOR.get(), minToTick(5), 3), 1.0F)
                                         .effect(() ->new MobEffectInstance(ModEffects.HUNTING_DENIAL.get(), minToTick(10), 0), 1.0F)
                                         .effect(() ->new MobEffectInstance(MobEffects.REGENERATION, minToTick(5), 1), 1.0F)
                                         .effect(() ->new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(5), 1), 1.0F)
                                         .effect(() ->new MobEffectInstance(ModEffects.WARDEN.get(), minToTick(10), 0), 1.0F)
                                         .build())));
+
+        ANCIENT_ENCHANTED_GOLDEN_APPLE = ITEMS.register("ancient_enchanted_golden_apple",
+                () -> new AncientEnchantedGoldenAppleItem(basicItem().stacksTo(16).rarity(Rarity.EPIC)
+                        .food(simpleFoodItemProperties(6, 6)
+                                .effect(() ->new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, minToTick(5), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(MobEffects.ABSORPTION, minToTick(2), 3), 1.0F)
+                                .effect(() ->new MobEffectInstance(MobEffects.REGENERATION, 600, 5), 1.0F)
+                                .effect(() ->new MobEffectInstance(MobEffects.FIRE_RESISTANCE, minToTick(5), 0), 1.0F)
+                                .build())));
 
 
         // ==================== 种子物品 ====================
