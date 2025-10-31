@@ -182,7 +182,7 @@ public class ModItems {
 
         //大理石op剑
         MARBLE_OP_SWORD = ITEMS.register("marble_op_sword",
-                () -> new SwordItem(Tiers.WOOD, Integer.MAX_VALUE, 2, basicItem()));
+                () -> new MarbleOpSwordItem(Tiers.WOOD, 1, 2, basicItem()));
 
         PARASITIZED_WARDEN = ITEMS.register("parasitized_warden",
                 () -> new Item(basicItem()));
