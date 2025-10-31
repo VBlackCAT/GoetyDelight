@@ -46,24 +46,27 @@ public class BoatStuffedRoastedWardenItem extends Item {
         return 32; 
     }
 
-    @Override
-    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
-        if (entity instanceof Player player) {
-            ParticlesUtil.spawnItemParticles(stack, 20, entity);
-            player.playSound(getEatingSound(), 0.5F, 1.0F);
-        }
+@Override
+public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
 
-        
-        ItemStack resultStack = stack.copy();
-        int servings = getServings(resultStack);
-        if (servings > 1) {
-            setServings(resultStack, servings - 1);
-            return resultStack;
-        } else {
-            
-            return super.finishUsingItem(stack, level, entity);
-        }
+    if (entity instanceof Player player) {
+        ParticlesUtil.spawnItemParticles(stack, 20, entity);
+        player.playSound(getEatingSound(), 0.5F, 1.0F);
     }
+
+    // Apply food effects for each serving consumed
+
+
+    ItemStack resultStack = stack.copy();
+    int servings = getServings(resultStack);
+    if (servings > 1) {
+        super.finishUsingItem(stack, level, entity);
+        setServings(resultStack, servings - 1);
+        return resultStack;
+    } else {
+        return super.finishUsingItem(stack, level, entity);
+    }
+}
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
