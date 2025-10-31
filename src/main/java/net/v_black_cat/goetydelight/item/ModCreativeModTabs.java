@@ -79,10 +79,16 @@ public class ModCreativeModTabs {
                             if (block.isPresent() && !BLACKLIST.contains(block)) {
                                 Block blockInstance = block.get();
                                 Item blockItem = blockInstance.asItem();
-
-
                                 if (blockItem != null && blockItem != Items.AIR) {
                                     output.accept(blockItem);
+                                }
+                            }
+                        });
+                        ModSpawnEggs.ITEMS.getEntries().forEach(spawn_item -> {
+                            if (spawn_item.isPresent()&& !BLACKLIST.contains(spawn_item)) {
+                                Item itemInstance = spawn_item.get();
+                                if (itemInstance != null && itemInstance != Items.AIR) {
+                                    output.accept(itemInstance);
                                 }
                             }
                         });
