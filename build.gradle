@@ -269,14 +269,19 @@ tasks.withType(JavaCompile).configureEach {
 dependencies {
     modImplementation "curse.maven:farmers-delight-398521:6917255"
 
+//    modImplementation "curse.maven:goety-586095:7170210"//2.5.36.5
 //    modImplementation  "curse.maven:goety-586095:7073504"//2.5.37.3
 
-    compileOnly  "curse.maven:goety-586095:7073504"//2.5.37.3
+    compileOnly "curse.maven:goety-586095:7170210"//2.5.36.5
+//    compileOnly  "curse.maven:goety-586095:7073504"//2.5.37.3
 //
-    modRuntimeOnly "curse.maven:goety-586095:6778940"//2.5.36.1
 
-    modImplementation "curse.maven:goety-revelation-1236817:6892481"
-//    implementation fg.deobf("curse.maven:goety-revelation-1236817:6892481")
+    modRuntimeOnly  "curse.maven:goety-586095:7073504"//2.5.37.3
+//    modRuntimeOnly "curse.maven:goety-586095:6778940"//2.5.36.1
+//    modRuntimeOnly "curse.maven:goety-586095:7170210"//2.5.36.5
+
+
+//    modImplementation "curse.maven:goety-revelation-1236817:6892481"
     compileOnly "blank:[Forge]RevelationFix-1.20.1-3.8-all"
     modImplementation "curse.maven:curios-309927:6418456"
 
