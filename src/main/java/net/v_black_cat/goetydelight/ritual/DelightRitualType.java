@@ -15,10 +15,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModList;
 import net.v_black_cat.goetydelight.block.ModBlocks;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.Polarice3.Goety.common.items.ModItems.*;
 
@@ -129,10 +133,25 @@ public class DelightRitualType implements IRitualType {
 
     public static void registerRitualType() {
         DelightRitualType delightRitualType = new DelightRitualType();
-        RitualType.create(
-                "DELIGHT",
-                delightRitualType
-        );
+
+        Optional<? extends ModContainer> goetyContainer = ModList.get().getModContainerById("goety");
+        if (goetyContainer.isPresent()) {
+            DefaultArtifactVersion loadedVersion = (DefaultArtifactVersion) goetyContainer.get().getModInfo().getVersion();
+            DefaultArtifactVersion requiredVersion = new DefaultArtifactVersion("2.5.38.0");
+
+            if (loadedVersion.compareTo(requiredVersion) >= 0) {
+                RitualType.addRitualType("culinary", delightRitualType);
+            } else {
+                try {
+                    java.lang.reflect.Method createMethod = RitualType.class.getDeclaredMethod("create",
+                            String.class, IRitualType.class);
+                    createMethod.setAccessible(true);
+                    createMethod.invoke(null, "DELIGHT", delightRitualType);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 
