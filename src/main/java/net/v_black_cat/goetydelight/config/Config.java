@@ -30,6 +30,19 @@ public class Config
                     "goetydelight:rotten_corpse_maggot_feast_block"
             ), Config::validateItemName);
 
+    private static final ForgeConfigSpec.IntValue MAX_ATTACK_COUNT = BUILDER
+            .comment("Maximum attack count for Starless Night item")
+            .defineInRange("starlessNightMaxAttackCount", 10, 0,2147483646);
+
+
+    private static final ForgeConfigSpec.DoubleValue STARLESS_NIGHT_SEARCH_RANGE = BUILDER
+            .comment("Search range for chain damage effect of Starless Night item")
+            .defineInRange("starlessNightSearchRange", 16.0, 1.0, 128.0);
+
+    private static final ForgeConfigSpec.IntValue STARLESS_NIGHT_MAX_CHAIN_TARGETS = BUILDER
+            .comment("Maximum number of targets for chain damage effect of Starless Night item")
+            .defineInRange("starlessNightMaxChainTargets", 10, 1, 2147483646);
+
     public static final ForgeConfigSpec SPEC = BUILDER.build();
 
     public static Set<Item> blacklistedItems;
@@ -57,5 +70,14 @@ public class Config
     
     public static void registerBlackListUpdateListener(Consumer<Void> listener) {
         blackListUpdateListener = listener;
+    }
+    public static int getMaxAttackCount() {
+        return MAX_ATTACK_COUNT.get();
+    }
+    public static double getStarlessNightSearchRange() {
+        return STARLESS_NIGHT_SEARCH_RANGE.get();
+    }
+    public static int getStarlessNightMaxChainTargets() {
+        return STARLESS_NIGHT_MAX_CHAIN_TARGETS.get();
     }
 }
