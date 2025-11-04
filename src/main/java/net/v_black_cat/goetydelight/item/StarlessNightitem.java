@@ -1,9 +1,15 @@
 package net.v_black_cat.goetydelight.item;
 
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -14,6 +20,7 @@ import net.v_black_cat.goetydelight.config.Config;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 public class StarlessNightitem extends SwordItem {
     public StarlessNightitem(Tier tier, int attackDamageModifier, float attackSpeedModifier, Item.Properties properties) {
@@ -107,5 +114,24 @@ public class StarlessNightitem extends SwordItem {
             }
         }
         return super.onLeftClickEntity(stack, player, entity);
+    }
+    @Override
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
+        Multimap<Attribute, AttributeModifier> modifiers = super.getAttributeModifiers(slot, stack);
+        if (slot == EquipmentSlot.MAINHAND) {
+            ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
+            builder.putAll(modifiers);
+            Player player = net.minecraft.client.Minecraft.getInstance().player;
+            if (player != null && !player.getOffhandItem().isEmpty()) {
+                builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(
+                        UUID.fromString("2a88e61f-7f5e-4d2d-9f3a-8b1e7e1a8a2f"),
+                        "Offhand slowdown",
+                        -0.5,
+                        AttributeModifier.Operation.MULTIPLY_BASE
+                ));
+            }
+            return builder.build();
+        }
+        return modifiers;
     }
 }
