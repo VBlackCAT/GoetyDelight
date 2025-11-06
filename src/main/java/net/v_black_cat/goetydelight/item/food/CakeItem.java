@@ -77,7 +77,7 @@ public class CakeItem extends Item {
         }
 
         
-        return stack.isEmpty() ? ItemStack.EMPTY : stack;
+        return resultStack;
     }
 
 
