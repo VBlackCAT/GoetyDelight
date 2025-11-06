@@ -6,7 +6,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -16,7 +15,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.phys.AABB;
+import net.minecraftforge.common.ForgeMod;
 import net.v_black_cat.goetydelight.config.Config;
+import com.Polarice3.Goety.api.entities.IOwned;
+
 
 import java.util.Comparator;
 import java.util.List;
@@ -28,12 +30,28 @@ public class StarlessNightitem extends SwordItem {
     }
     private int attackCount = 0;
     private long lastAttackTime = 0;
+    private float entityReach = 3.0f;
+    private long lastHealthSetTick = 0;
     public int getAttackCount() {
         return attackCount;
     }
     private boolean isFriendly(Player player, LivingEntity entity) {
-        if (entity instanceof TamableAnimal tamable && tamable.isTame() && tamable.getOwner() == player) {
+        if (entity == player) {
             return true;
+        }
+
+        if (entity instanceof Player targetPlayer && targetPlayer.isCreative()) {
+            return true;
+        }
+
+        if (player.getTeam() != null && entity.getTeam() != null) {
+            return player.getTeam().isAlliedTo(entity.getTeam());
+        }
+        if (entity instanceof IOwned owned && owned.getTrueOwner() == player) {
+            return true;
+        }
+        if (Config.getStarlessNightWhitelist().contains(entity.getType())) {
+                return true;
         }
         return false;
     }
@@ -66,16 +84,32 @@ public class StarlessNightitem extends SwordItem {
     }
     @Override
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
-        double extendedRange = 2.0;
+        if (player == null || player.level() == null || !player.isAlive()) {
+            return super.onLeftClickEntity(stack, player, entity);
+        }
+        if (player.level().isClientSide) {
+            return super.onLeftClickEntity(stack, player, entity);
+        }
+        double chainRange = 16.0;
         List<Entity> nearbyEntities = player.level().getEntitiesOfClass(Entity.class,
-                player.getBoundingBox().inflate(extendedRange),
+                player.getBoundingBox().inflate(chainRange),
                 e -> e instanceof LivingEntity &&
                         e != entity &&
                         e != player &&
-                        player.distanceTo(e) <= (3.0 + extendedRange) &&
-                        e.isAlive());
+                        player.distanceTo(e) <= (chainRange) &&
+                        e.isAlive() &&
+                        e.level() != null); // 添加level非空检查
+
         for (Entity nearbyEntity : nearbyEntities) {
             if (nearbyEntity instanceof LivingEntity livingEntity) {
+                if (!isFriendly(player, livingEntity)) {
+                    continue;
+                }
+                // 检查实体是否仍然有效
+                if (livingEntity.level() == null || !livingEntity.isAlive()) {
+                    continue;
+                }
+
                 int currentTick = (int) player.level().getGameTime();
                 if (currentTick - lastAttackTime > 100) {
                     attackCount = 0;
@@ -90,27 +124,50 @@ public class StarlessNightitem extends SwordItem {
                 livingEntity.hurt(source, damage);
             }
         }
+
         if (entity instanceof LivingEntity living) {
-            int currentTick = (int) player.level().getGameTime();
-            if (currentTick - lastAttackTime > 100) {
-                attackCount = 0;
-            }
-            attackCount++;
-            if (attackCount > Config.getMaxAttackCount()) {
-                attackCount = Config.getMaxAttackCount();
-            }
-            lastAttackTime = currentTick;
-            DamageSource source = new DamageSource(player.damageSources().genericKill().typeHolder(), player);
-            float attackDamageModifier = (float) getTier().getAttackDamageBonus();
-            float damage = attackDamageModifier * (attackCount + 1);
-            if (damage >= living.getHealth()) {
-                float excessDamage = damage - living.getHealth();
-                living.hurt(source, damage);
-                if (excessDamage > 0) {
-                    applyChainDamage(player, living, excessDamage, source);
+            if(player.hasLineOfSight(entity) && player.distanceTo(entity) <= 3+entityReach) {
+                if (isFriendly(player, living)) {
+                    return super.onLeftClickEntity(stack, player, entity);
                 }
-            } else {
+                // 检查实体是否仍然有效
+                if (living.level() == null || !living.isAlive()) {
+                    return super.onLeftClickEntity(stack, player, entity);
+                }
+
+                int currentTick = (int) player.level().getGameTime();
+                if (currentTick - lastAttackTime > 100) {
+                    attackCount = 0;
+                }
+                attackCount++;
+                if (attackCount > Config.getMaxAttackCount()) {
+                    attackCount = Config.getMaxAttackCount();
+                }
+                lastAttackTime = currentTick;
+                DamageSource source = new DamageSource(player.damageSources().genericKill().typeHolder(), player);
+                float attackDamageModifier = (float) getTier().getAttackDamageBonus();
+                float damage = attackDamageModifier * (attackCount + 1);
+                float originalHealth = living.getHealth();
                 living.hurt(source, damage);
+                if (living.getHealth() == originalHealth && !living.isInvulnerable()) {
+                    if (damage < living.getHealth()) {
+                        long nextTick = player.level().getGameTime();
+                        if (nextTick - lastHealthSetTick >= 10) { // 10 tick 间隔
+                            living.setHealth(originalHealth - damage);
+                            lastHealthSetTick = nextTick;
+                        }
+                    }
+                    if (damage >= living.getHealth()) {
+                        living.die(new DamageSource(entity.damageSources().genericKill().typeHolder(), player));
+                    }
+                } else {
+                    if (damage >= originalHealth) {
+                        float excessDamage = damage - originalHealth;
+                        if (excessDamage > 0) {
+                            applyChainDamage(player, living, excessDamage, source);
+                        }
+                    }
+                }
             }
         }
         return super.onLeftClickEntity(stack, player, entity);
@@ -121,6 +178,12 @@ public class StarlessNightitem extends SwordItem {
         if (slot == EquipmentSlot.MAINHAND) {
             ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
             builder.putAll(modifiers);
+            builder.put(ForgeMod.ENTITY_REACH.get(), new AttributeModifier(
+                    UUID.fromString("f1e6a1e2-b1c3-d1e4-f1a5-b1c6d1e7f1a8"),
+                    "Weapon attack range",
+                    entityReach,
+                    AttributeModifier.Operation.ADDITION
+            ));
             Player player = net.minecraft.client.Minecraft.getInstance().player;
             if (player != null && !player.getOffhandItem().isEmpty()) {
                 builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(

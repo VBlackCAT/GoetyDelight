@@ -1,6 +1,7 @@
 package net.v_black_cat.goetydelight.config;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -42,6 +43,21 @@ public class Config
     private static final ForgeConfigSpec.IntValue STARLESS_NIGHT_MAX_CHAIN_TARGETS = BUILDER
             .comment("Maximum number of targets for chain damage effect of Starless Night item")
             .defineInRange("starlessNightMaxChainTargets", 10, 1, 2147483646);
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> STARLESS_NIGHT_WHITELIST = BUILDER
+            .comment("List of entity types that are immune to Starless Night damage when tamed by the player")
+            .defineListAllowEmpty("starlessNightWhitelist", List.of(
+                    "minecraft:villager"
+            ), Config::validateEntityName);
+
+    private static boolean validateEntityName(final Object obj) {
+        return obj instanceof final String entityName && ForgeRegistries.ENTITY_TYPES.containsKey(new ResourceLocation(entityName));
+    }
+
+    public static Set<EntityType<?>> getStarlessNightWhitelist() {
+        return STARLESS_NIGHT_WHITELIST.get().stream()
+                .map(entityName -> ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(entityName)))
+                .collect(Collectors.toSet());
+    }
 
     public static final ForgeConfigSpec SPEC = BUILDER.build();
 
