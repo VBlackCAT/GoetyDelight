@@ -184,15 +184,6 @@ public class StarlessNightitem extends SwordItem {
                     entityReach,
                     AttributeModifier.Operation.ADDITION
             ));
-            Player player = net.minecraft.client.Minecraft.getInstance().player;
-            if (player != null && !player.getOffhandItem().isEmpty()) {
-                builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(
-                        UUID.fromString("2a88e61f-7f5e-4d2d-9f3a-8b1e7e1a8a2f"),
-                        "Offhand slowdown",
-                        -0.5,
-                        AttributeModifier.Operation.MULTIPLY_BASE
-                ));
-            }
             return builder.build();
         }
         return modifiers;
