@@ -38,12 +38,7 @@ public class CakeItem extends Item {
 
         ItemStack resultStack = super.finishUsingItem(stack, level, entity);
 
-        
-        if (entity instanceof Player player) {
-            player.getFoodData().eat(this, stack);
-        } else {
-            entity.eat(level, stack);
-        }
+
 
         
         if (!level.isClientSide && entity instanceof Player player) {
@@ -80,9 +75,6 @@ public class CakeItem extends Item {
             
             
         }
-
-
-        stack.shrink(1);
 
         
         return stack.isEmpty() ? ItemStack.EMPTY : stack;
