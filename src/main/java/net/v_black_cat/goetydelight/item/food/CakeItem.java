@@ -23,6 +23,7 @@ public class CakeItem extends Item {
     private static final FoodProperties FOOD_PROPERTIES = new FoodProperties.Builder()
             .nutrition(6)  // 营养值
             .saturationMod(0.5F)  // 饱和度
+            .alwaysEat()
             .build();
 
     public CakeItem(Properties properties) {
@@ -67,18 +68,9 @@ public class CakeItem extends Item {
                     addDeathEffects(level, target);
                 }
             }
-
-            
             level.playSound(null, player.getX(), player.getY(), player.getZ(),
                     SoundEvents.PHANTOM_DEATH, SoundSource.PLAYERS, 1.0F, 1.0F);
-
-            
-            
-            
-            
         }
-
-        
         return resultStack;
     }
 
