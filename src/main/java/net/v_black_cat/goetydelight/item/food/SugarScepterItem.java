@@ -44,11 +44,6 @@ public class SugarScepterItem extends Item {
             if (success) {
                 // 设置物品冷却时间（20秒）
                 player.getCooldowns().addCooldown(this, COOLDOWN_TICKS);
-
-                // 消耗物品（如果不是创造模式）
-                if (!player.getAbilities().instabuild) {
-                    stack.shrink(1);
-                }
             }
         }
 
