@@ -595,7 +595,7 @@ public class ModItems {
 
         BOAT_STUFFED_ROASTED_WARDEN_HEAD = ITEMS.register("boat_stuffed_roasted_warden_head",
                     () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).craftRemainder(Items.DARK_OAK_BOAT)
-                        .food(simpleFoodItemProperties(30, 25)
+                        .food(simpleFoodItemProperties(25, 20)
                                         .effect(() ->new MobEffectInstance(SOUL_ARMOR.get(), minToTick(5), 3), 1.0F)
                                         .effect(() ->new MobEffectInstance(ModEffects.HUNTING_DENIAL.get(), minToTick(10), 0), 1.0F)
                                         .effect(() ->new MobEffectInstance(MobEffects.REGENERATION, minToTick(5), 1), 1.0F)
@@ -615,12 +615,12 @@ public class ModItems {
 
         BOAT_STUFFED_ROASTED_WARDEN_FLANK = ITEMS.register("boat_stuffed_roasted_warden_flank",
                     () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).craftRemainder(Items.DARK_OAK_BOAT)
-                        .food(simpleFoodItemProperties(30, 25)
+                        .food(simpleFoodItemProperties(40, 30)
                                         .effect(() ->new MobEffectInstance(SOUL_ARMOR.get(), minToTick(5), 3), 1.0F)
-                                        .effect(() ->new MobEffectInstance(ModEffects.HUNTING_DENIAL.get(), minToTick(10), 0), 1.0F)
-                                        .effect(() ->new MobEffectInstance(MobEffects.REGENERATION, minToTick(5), 1), 1.0F)
-                                        .effect(() ->new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(5), 1), 1.0F)
-                                        .effect(() ->new MobEffectInstance(ModEffects.WARDEN.get(), minToTick(10), 0), 1.0F)
+                                        .effect(() ->new MobEffectInstance(ModEffects.HUNTING_DENIAL.get(), minToTick(15), 0), 1.0F)
+                                        .effect(() ->new MobEffectInstance(MobEffects.REGENERATION, minToTick(7.5f), 1), 1.0F)
+                                        .effect(() ->new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(7.5f), 1), 1.0F)
+                                        .effect(() ->new MobEffectInstance(ModEffects.WARDEN.get(), minToTick(15), 0), 1.0F)
                                         .build())));
 
         ANCIENT_ENCHANTED_GOLDEN_APPLE = ITEMS.register("ancient_enchanted_golden_apple",
