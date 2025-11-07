@@ -48,6 +48,13 @@ public class Config
             .defineListAllowEmpty("starlessNightWhitelist", List.of(
                     "minecraft:villager"
             ), Config::validateEntityName);
+    private static final ForgeConfigSpec.DoubleValue CAKE_EFFECT_RADIUS = BUILDER
+            .comment("Effect radius for the cake item")
+            .defineInRange("cakeEffectRadius", 32.0, 1.0, 256.0);
+
+    public static double getCakeEffectRadius() {
+        return CAKE_EFFECT_RADIUS.get();
+    }
 
     private static boolean validateEntityName(final Object obj) {
         return obj instanceof final String entityName && ForgeRegistries.ENTITY_TYPES.containsKey(new ResourceLocation(entityName));

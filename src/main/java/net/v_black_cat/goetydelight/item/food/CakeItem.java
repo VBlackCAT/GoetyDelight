@@ -1,11 +1,10 @@
 package net.v_black_cat.goetydelight.item.food;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -21,11 +20,13 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 public class CakeItem extends Item {
-
-    private static final double EFFECT_RADIUS = 32.0;
+    private static final FoodProperties FOOD_PROPERTIES = new FoodProperties.Builder()
+            .nutrition(6)  // 营养值
+            .saturationMod(0.5F)  // 饱和度
+            .build();
 
     public CakeItem(Properties properties) {
-        super(properties);
+        super(properties.food(FOOD_PROPERTIES));
     }
 
     @Override
@@ -40,12 +41,13 @@ public class CakeItem extends Item {
 
 
 
-        
+
         if (!level.isClientSide && entity instanceof Player player) {
-            
+            double effectRadius = net.v_black_cat.goetydelight.config.Config.getCakeEffectRadius();
+
             AABB effectArea = new AABB(
-                    player.position().subtract(EFFECT_RADIUS, EFFECT_RADIUS, EFFECT_RADIUS),
-                    player.position().add(EFFECT_RADIUS, EFFECT_RADIUS, EFFECT_RADIUS)
+                    player.position().subtract(effectRadius, effectRadius, effectRadius),
+                    player.position().add(effectRadius, effectRadius, effectRadius)
             );
 
             
@@ -60,7 +62,7 @@ public class CakeItem extends Item {
                     
                     player.heal(maxHealth);
                     
-                    target.hurt(level.damageSources().magic(), Integer.MAX_VALUE);
+                    target.hurt(level.damageSources().genericKill(), Integer.MAX_VALUE);
                     kills++;
                     addDeathEffects(level, target);
                 }
@@ -94,7 +96,12 @@ public class CakeItem extends Item {
                 entityId.equals(new ResourceLocation("goety:tormentor"))||
                 entityId.equals(new ResourceLocation("goety:irk")) ||
                 entityId.equals(new ResourceLocation("iceandfire:if_pixie")) ||
-                entityId.equals(new ResourceLocation("alexsmobs:crimson_mosquito"));
+                entityId.equals(new ResourceLocation("alexsmobs:crimson_mosquito")) ||
+                entityId.equals(new ResourceLocation("alexsmobs:skreecher")) ||
+                entityId.equals(new ResourceLocation("alexsmobs:murmur_head")) ||
+                entityId.equals(new ResourceLocation("alexsmobs:centipede_head")) ||
+                entityId.equals(new ResourceLocation("alexsmobs:straddler")) ||
+                entityId.equals(new ResourceLocation("alexsmobs:seagull"));
     }
 
     private void addDeathEffects(Level level, Mob target) {
