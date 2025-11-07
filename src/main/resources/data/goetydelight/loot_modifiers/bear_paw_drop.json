@@ -9,7 +9,7 @@
   ],
   "itemToAdd": "goetydelight:bear_paw",
   "chance": 0.1,
-  "min": 1,
+  "min": 0,
   "max": 4,
   "looting_multiplier": 0.025
 }
