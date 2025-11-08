@@ -301,6 +301,7 @@ dependencies {
     modRuntimeOnly "blank:XaerosWorldMap-Forge1.20-1.39.12"
     modRuntimeOnly  "blank:dummmmmmy-1.20:2.0.6"
     modRuntimeOnly  "blank:moonlight-1.20:2.14.1-forge"
+    modRuntimeOnly  "blank:Jade-1.20.1-Forge-11.13.1"
 }
 
 

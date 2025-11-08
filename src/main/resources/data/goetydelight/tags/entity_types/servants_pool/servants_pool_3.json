@@ -23,6 +23,34 @@
     {
       "id": "goety_spillage:bound_engineer",
       "required": false
+    },
+    {
+      "id": "goety_iron:pyromancer_servant",
+      "required": false
+    },
+    {
+      "id": "goety_iron:necromancer_servant",
+      "required": false
+    },
+    {
+      "id": "goety_iron:priest_servant",
+      "required": false
+    },
+    {
+      "id": "goety_iron:cryomancer_servant",
+      "required": false
+    },
+    {
+      "id": "goety_iron:archevoker_servant",
+      "required": false
+    },
+    {
+      "id": "goety_iron:ancient_knight_servant",
+      "required": false
+    },
+    {
+      "id": "goety_iron:alchemist_servant",
+      "required": false
     }
   ]
 }

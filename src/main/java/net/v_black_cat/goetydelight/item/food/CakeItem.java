@@ -20,16 +20,9 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 public class CakeItem extends Item {
-    private static final FoodProperties FOOD_PROPERTIES = new FoodProperties.Builder()
-            .nutrition(6)  // 营养值
-            .saturationMod(0.5F)  // 饱和度
-            .alwaysEat()
-            .build();
-
     public CakeItem(Properties properties) {
-        super(properties.food(FOOD_PROPERTIES));
+        super(properties);
     }
-
     @Override
     public boolean isEnchantable(ItemStack stack) {
         return false;
