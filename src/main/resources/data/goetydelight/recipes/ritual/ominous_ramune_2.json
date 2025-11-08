@@ -4,7 +4,7 @@
   "activation_item": {
     "item": "minecraft:potion"
   },
-  "craftType": "forge",
+  "craftType": "culinary",
   "soulCost": 10,
   "duration": 10,
   "ingredients": [

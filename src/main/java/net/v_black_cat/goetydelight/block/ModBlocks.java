@@ -117,7 +117,7 @@ public class ModBlocks {
                             ModItems.BOAT_STUFFED_ROASTED_WARDEN_FLANK
                     ),
                     true
-            )
+            ),1
     );
     public static final RegistryObject<Block> ROYAL_CAKE_BLOCK = registerBlock("royal_cake_block",() ->
             new RoyalCakeBlock(BlockBehaviour.Properties.of()

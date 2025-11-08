@@ -26,10 +26,12 @@ import com.Polarice3.Goety.init.ModSounds;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.v_black_cat.goetydelight.GoetyDelight;
 import vectorwing.farmersdelight.common.item.DrinkableItem;
 
 import java.util.UUID;
 
+@Mod.EventBusSubscriber(modid = GoetyDelight.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class NightHeartPeaSoupItem extends DrinkableItem implements IWand {
     // 最大加成次数
     private static final int MAX_BOOST_COUNT = 5;
@@ -44,6 +46,8 @@ public class NightHeartPeaSoupItem extends DrinkableItem implements IWand {
     private static final UUID ATTACK_DAMAGE_BOOST_UUID = UUID.fromString("d03da095-ff85-4c52-a404-51566bdff53e");
     private static final UUID MAX_HEALTH_BOOST_UUID = UUID.fromString("12f30d3e-d988-4b93-af83-8f25dc50f14c");
     private static final UUID ARMOR_BOOST_UUID = UUID.fromString("0cb7577e-778e-4872-9c54-5345668e468f");
+    private static final UUID MOVEMENT_SPEED_BOOST_UUID = UUID.fromString("c5c7d0c5-d5c7-4c5d-b5c5-d5c5d5c5d5c6");
+    private static final UUID ARMOR_TOUGHNESS_BOOST_UUID = UUID.fromString("c5c7d0c5-d5c7-4c5d-b5c5-d5c5d5c5d5c7");
 
     public NightHeartPeaSoupItem(Properties pProperties) {
         super(pProperties);
@@ -154,7 +158,6 @@ public class NightHeartPeaSoupItem extends DrinkableItem implements IWand {
         return false;
     }
 
-    // 给单个仆从应用加成
     public static void applyMinionBoost(LivingEntity minion, int boostCount) {
         if (minion.level().isClientSide) return;
 
@@ -168,13 +171,13 @@ public class NightHeartPeaSoupItem extends DrinkableItem implements IWand {
         removeMinionBoost(minion);
 
         // 计算加成值
-        double boostMultiplier = 1.0 + (BOOST_PERCENTAGE * boostCount);
+        double boostMultiplier = BOOST_PERCENTAGE * boostCount;
 
         // 应用攻击力加成
         AttributeInstance attackDamage = minion.getAttribute(Attributes.ATTACK_DAMAGE);
-        if (attackDamage != null) {
+        if (attackDamage != null && attackDamage.getModifier(ATTACK_DAMAGE_BOOST_UUID) == null) {
             double baseValue = attackDamage.getBaseValue();
-            double boostValue = baseValue * BOOST_PERCENTAGE * boostCount;
+            double boostValue = baseValue * boostMultiplier;
             attackDamage.addPermanentModifier(new AttributeModifier(
                     ATTACK_DAMAGE_BOOST_UUID,
                     "Night Pea Soup Attack Boost",
@@ -185,9 +188,9 @@ public class NightHeartPeaSoupItem extends DrinkableItem implements IWand {
 
         // 应用生命上限加成
         AttributeInstance maxHealth = minion.getAttribute(Attributes.MAX_HEALTH);
-        if (maxHealth != null) {
+        if (maxHealth != null && maxHealth.getModifier(MAX_HEALTH_BOOST_UUID) == null) {
             double baseValue = maxHealth.getBaseValue();
-            double boostValue = baseValue * BOOST_PERCENTAGE * boostCount;
+            double boostValue = baseValue * boostMultiplier;
             maxHealth.addPermanentModifier(new AttributeModifier(
                     MAX_HEALTH_BOOST_UUID,
                     "Night Pea Soup Health Boost",
@@ -201,12 +204,38 @@ public class NightHeartPeaSoupItem extends DrinkableItem implements IWand {
 
         // 应用护甲加成
         AttributeInstance armor = minion.getAttribute(Attributes.ARMOR);
-        if (armor != null) {
+        if (armor != null && armor.getModifier(ARMOR_BOOST_UUID) == null) {
             double baseValue = armor.getBaseValue();
-            double boostValue = baseValue * BOOST_PERCENTAGE * boostCount;
+            double boostValue = baseValue * boostMultiplier;
             armor.addPermanentModifier(new AttributeModifier(
                     ARMOR_BOOST_UUID,
                     "Night Pea Soup Armor Boost",
+                    boostValue,
+                    AttributeModifier.Operation.ADDITION
+            ));
+        }
+
+        // 应用护甲韧性加成
+        AttributeInstance armorToughness = minion.getAttribute(Attributes.ARMOR_TOUGHNESS);
+        if (armorToughness != null && armorToughness.getModifier(ARMOR_TOUGHNESS_BOOST_UUID) == null) {
+            double baseValue = armorToughness.getBaseValue();
+            double boostValue = baseValue * boostMultiplier;
+            armorToughness.addPermanentModifier(new AttributeModifier(
+                    ARMOR_TOUGHNESS_BOOST_UUID,
+                    "Night Pea Soup Armor Toughness Boost",
+                    boostValue,
+                    AttributeModifier.Operation.ADDITION
+            ));
+        }
+
+        // 应用移动速度加成
+        AttributeInstance movementSpeed = minion.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (movementSpeed != null && movementSpeed.getModifier(MOVEMENT_SPEED_BOOST_UUID) == null) {
+            double baseValue = movementSpeed.getBaseValue();
+            double boostValue = baseValue * boostMultiplier;
+            movementSpeed.addPermanentModifier(new AttributeModifier(
+                    MOVEMENT_SPEED_BOOST_UUID,
+                    "Night Pea Soup Movement Speed Boost",
                     boostValue,
                     AttributeModifier.Operation.ADDITION
             ));
@@ -231,6 +260,16 @@ public class NightHeartPeaSoupItem extends DrinkableItem implements IWand {
         AttributeInstance armor = minion.getAttribute(Attributes.ARMOR);
         if (armor != null) {
             armor.removeModifier(ARMOR_BOOST_UUID);
+        }
+
+        AttributeInstance armorToughness = minion.getAttribute(Attributes.ARMOR_TOUGHNESS);
+        if (armorToughness != null) {
+            armorToughness.removeModifier(ARMOR_TOUGHNESS_BOOST_UUID);
+        }
+
+        AttributeInstance movementSpeed = minion.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (movementSpeed != null) {
+            movementSpeed.removeModifier(MOVEMENT_SPEED_BOOST_UUID);
         }
     }
 

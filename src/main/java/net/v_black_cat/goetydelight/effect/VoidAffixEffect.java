@@ -1,5 +1,9 @@
 package net.v_black_cat.goetydelight.effect;
 
+import net.minecraft.core.Holder;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
@@ -9,6 +13,8 @@ import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.Set;
+
 @Mod.EventBusSubscriber
 public class VoidAffixEffect extends MobEffect {
     public VoidAffixEffect() { super(MobEffectCategory.BENEFICIAL, 0x000000);}
@@ -16,11 +22,15 @@ public class VoidAffixEffect extends MobEffect {
     public static void onAttackEntity(AttackEntityEvent event) {
         Player attacker = event.getEntity();
         Entity target = event.getTarget();
+        DamageSource voidDamage = attacker.damageSources().fellOutOfWorld();
+        Holder<DamageType> damageTypeHolder = voidDamage.typeHolder();
+        if(damageTypeHolder instanceof Holder.Reference<DamageType> reference)
+            reference.bindTags(Set.of(DamageTypeTags.BYPASSES_INVULNERABILITY,DamageTypeTags.BYPASSES_ENCHANTMENTS,DamageTypeTags.BYPASSES_EFFECTS,DamageTypeTags.BYPASSES_RESISTANCE));
         if (target instanceof LivingEntity livingTarget) {
             if (attacker.hasEffect(ModEffects.VOID_AFFIX.get())) {
                 int amplifier = attacker.getEffect(ModEffects.VOID_AFFIX.get()).getAmplifier();
                 float damage = 1.0F * (amplifier + 1);
-                livingTarget.hurt(livingTarget.damageSources().fellOutOfWorld(), damage);
+                livingTarget.hurt(voidDamage, damage);
             }
         }
     }

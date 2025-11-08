@@ -12,6 +12,10 @@
     {
       "id": "goety_revelation:wither_servant",
       "required": false
+    },
+    {
+      "id": "goety_iron:dead_king_servant",
+      "required": false
     }
   ]
 }
