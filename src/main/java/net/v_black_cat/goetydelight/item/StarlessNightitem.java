@@ -1,5 +1,6 @@
 package net.v_black_cat.goetydelight.item;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.world.damagesource.DamageSource;
@@ -35,6 +36,7 @@ public class StarlessNightitem extends SwordItem {
     public int getAttackCount() {
         return attackCount;
     }
+
     private boolean isFriendly(Player player, LivingEntity entity) {
         if (entity == player) {
             return true;
@@ -158,7 +160,9 @@ public class StarlessNightitem extends SwordItem {
                         }
                     }
                     if (damage >= living.getHealth()) {
-                        living.die(new DamageSource(entity.damageSources().genericKill().typeHolder(), player));
+                            living.setHealth(0);
+                            living.die(player.damageSources().playerAttack(player));
+
                     }
                 } else {
                     if (damage >= originalHealth) {
