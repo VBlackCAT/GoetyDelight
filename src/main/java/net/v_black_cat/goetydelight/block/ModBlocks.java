@@ -92,16 +92,16 @@ public class ModBlocks {
     //腐尸蛆虫盛宴方块
     public static final RegistryObject<Block> ROTTEN_CORPSE_MAGGOT_FEAST_BLOCK = registerBlock("rotten_corpse_maggot_feast_block",() ->
             new RottenCorpseMaggotFeastBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
-                    ModItems.ROTTEN_CORPSE_MAGGOT_FEAST, true));
+                    ModItems.ROTTEN_CORPSE_MAGGOT_FEAST, true),1);
     //虚空果冻
     public static final RegistryObject<Block> VOID_GEL_JELLY_BLOCK = registerBlock("void_gel_jelly_block",() ->
             new VoidGelJellyBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
-                    ModItems.RING_PACKED_VOID_GEL_JELLY, true));
+                    ModItems.RING_PACKED_VOID_GEL_JELLY, true),1);
 
     //填馅高头骨
     public static final RegistryObject<Block> STUFFED_TALL_SKULL_RICE_BLOCK = registerBlock("stuffed_tall_skull_rice_block",() ->
             new StuffedTallSkullRiceBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
-                    ModItems.STUFFED_TALL_SKULL_RICE, true));
+                    ModItems.STUFFED_TALL_SKULL_RICE, true),1);
 
     //坚守者
     public static final RegistryObject<Block>  BOAT_STUFFED_ROASTED_WARDEN_BlOCK= registerBlock("boat_stuffed_roasted_warden_block",

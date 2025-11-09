@@ -72,6 +72,7 @@ public class ModBlockLootTables extends BlockLootSubProvider {
         this.dropOther(ModBlocks.ECTOPLASMIC_MELON_STEM.get(), ModItems.ECTOPLASMIC_MELON_SEEDS.get());
         this.dropOther(ModBlocks.ROTTEN_CORPSE_MAGGOT_FEAST_BLOCK.get(), Items.BOWL);
         this.dropOther(ModBlocks.VOID_GEL_JELLY_BLOCK.get(), Items.BOWL);
+        this.dropOther(ModBlocks.STUFFED_TALL_SKULL_RICE_BLOCK.get(), com.Polarice3.Goety.common.blocks.ModBlocks.TALL_SKULL_ITEM.get());
         this.add(ModBlocks.MARBLE_SLAB.get(),
                 block -> createSlabItemTable(ModBlocks.MARBLE_SLAB.get()));
         this.add(ModBlocks.MARBLE_DOOR.get(),
