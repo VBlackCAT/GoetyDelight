@@ -1,5 +1,6 @@
 package net.v_black_cat.goetydelight.item;
 
+import com.Polarice3.Goety.api.items.ISoulRepair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -7,6 +8,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,7 +31,7 @@ import net.v_black_cat.goetydelight.GoetyDelight;
 import com.Polarice3.Goety.utils.ItemHelper;
 
 @Mod.EventBusSubscriber(modid = GoetyDelight.MODID)
-public class DarkBrushItem extends BrushItem {
+public class DarkBrushItem extends BrushItem implements ISoulRepair {
 
     private int ACCELERATION_FACTOR = 10;
     private static final String ACCUMULATED_OFFSET_TAG = "AccumulatedOffset";
@@ -43,6 +45,13 @@ public class DarkBrushItem extends BrushItem {
     static {
         MAX_BRUSH_DISTANCE = Math.sqrt(ServerGamePacketListenerImpl.MAX_INTERACTION_DISTANCE) - 1.0;
     }
+
+@Override
+public void repairTick(ItemStack stack, Entity entityIn, boolean isSelected) {
+    if (stack.getItem() == ModItems.DARK_BRUSH.get()) {
+        ISoulRepair.super.repairTick(stack, entityIn, isSelected);
+    }
+}
 
     private HitResult calculateHitResult(LivingEntity entity) {
         return ProjectileUtil.getHitResultOnViewVector(entity, (p_281111_) -> {
