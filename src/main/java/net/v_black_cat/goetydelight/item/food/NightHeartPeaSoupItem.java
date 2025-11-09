@@ -31,7 +31,6 @@ import vectorwing.farmersdelight.common.item.DrinkableItem;
 
 import java.util.UUID;
 
-@Mod.EventBusSubscriber(modid = GoetyDelight.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class NightHeartPeaSoupItem extends DrinkableItem implements IWand {
     // 最大加成次数
     private static final int MAX_BOOST_COUNT = 5;
@@ -274,8 +273,8 @@ public class NightHeartPeaSoupItem extends DrinkableItem implements IWand {
     }
 
     // 事件处理器
-    @Mod.EventBusSubscriber
-    public static class MinionBoostHandler {
+    @Mod.EventBusSubscriber()
+    public static class BoostHandler {
         @SubscribeEvent
         public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
             if (!event.getLevel().isClientSide() && event.getEntity() instanceof LivingEntity entity) {
