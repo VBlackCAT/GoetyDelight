@@ -128,7 +128,7 @@ public class StarlessNightitem extends SwordItem {
         }
 
         if (entity instanceof LivingEntity living) {
-            if(player.hasLineOfSight(entity) && player.distanceTo(entity) <= 3+entityReach) {
+            if(player.hasLineOfSight(entity)) {
                 if (isFriendly(player, living)) {
                     return super.onLeftClickEntity(stack, player, entity);
                 }
