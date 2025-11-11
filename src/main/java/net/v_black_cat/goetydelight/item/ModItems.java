@@ -437,7 +437,7 @@ public class ModItems {
 
 
         SKULL_SHOT = ITEMS.register("skull_shot",
-                () -> new CustomDrinkItem(basicItem().stacksTo(16).food(
+                () -> new NoGlassBottleDrinkItem(basicItem().stacksTo(16).food(
                         simpleFoodItemProperties(6, 4)
                                 .effect(() -> new MobEffectInstance(CORPSE_EATER_EFFECT_SUPPLIER.get(), 1200, 0), 1.0F)
                                 .build())));
