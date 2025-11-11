@@ -33,8 +33,6 @@ import static com.Polarice3.Goety.utils.ModDamageSource.DOOM;
 @Mod.EventBusSubscriber
 public class CrimsonMemoriesHandler {
 
-    private static final WeakHashMap<Mob, Boolean> modifiedMobs = new WeakHashMap<>();
-
     @SubscribeEvent
     public static void onLivingAttack(LivingAttackEvent event) {
         LivingEntity entity = event.getEntity();
@@ -86,46 +84,11 @@ public class CrimsonMemoriesHandler {
         }
     }
 
-    @SubscribeEvent
-    public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
-        if (!(event.getEntity() instanceof Mob mob) || event.getLevel().isClientSide()) {
-            return;
-        }
 
-        if (!isInNether(mob)) {
-            return;
-        }
-        if (modifiedMobs.containsKey(mob)) {
-            return;
-        }
-        mob.targetSelector.addGoal(0, new AvoidCrimsonMemoriesGoal<>(mob, Player.class, true));
-
-        modifiedMobs.put(mob, true);
-    }
 
     private static boolean isInNether(LivingEntity entity) {
         return entity.level().dimension() == Level.NETHER;
     }
 
 
-
-    public static class AvoidCrimsonMemoriesGoal<T extends LivingEntity> extends NearestAttackableTargetGoal<T> {
-
-        public AvoidCrimsonMemoriesGoal(Mob mob, Class<T> targetType, boolean mustSee) {
-             
-            super(mob, targetType, 10, mustSee, false, createTargetPredicate());
-        }
-
-        private static Predicate<LivingEntity> createTargetPredicate() {
-            return (LivingEntity potentialTarget) -> {
-                 
-                if (potentialTarget instanceof Player) {
-                    Player player = (Player) potentialTarget;
-                    return !TimedAbilitySystem.hasAbility(player, AbilityRegistry.CRIMSON_MEMORIES);
-                }
-                 
-                return true;
-            };
-        }
-    }
 }
