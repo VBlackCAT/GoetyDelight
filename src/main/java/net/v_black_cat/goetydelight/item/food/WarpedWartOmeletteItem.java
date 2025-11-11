@@ -83,15 +83,8 @@ public class WarpedWartOmeletteItem extends Item {
     @Override
     public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity target, InteractionHand hand) {
         if (!player.level().isClientSide) {
-            // 让目标实体吃下这个物品
-            target.eat(player.level(), stack.copy());
-            
-            // 消耗物品（如果不是创造模式）
-            if (!player.getAbilities().instabuild) {
-                stack.shrink(1);
-            }
-            
-            player.displayClientMessage(Component.literal("已对目标使用了诡异疣煎蛋！"), true);
+
+            finishUsingItem(stack,player.level(),target);
             return InteractionResult.SUCCESS;
         }
         
