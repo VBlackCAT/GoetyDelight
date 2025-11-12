@@ -4,8 +4,10 @@ import com.Polarice3.Goety.common.effects.GoetyEffects;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
 public class FrenziedFungusPopRocksItem extends Item {
@@ -65,6 +67,19 @@ public class FrenziedFungusPopRocksItem extends Item {
                     false, // 不是环境效果
                     true // 显示粒子效果
             ));
+        }
+
+        if (entity instanceof Player player) {
+            if (player.getAbilities().instabuild) {
+                return resultStack; // 创造模式不消耗物品
+            }
+
+            // 尝试将玻璃瓶添加到玩家物品栏
+            if (resultStack.isEmpty()) {
+                return new ItemStack(Items.GLASS_BOTTLE); // 如果原物品已消耗完，直接返还玻璃瓶
+            } else if (!player.getInventory().add(new ItemStack(Items.GLASS_BOTTLE))) {
+                player.drop(new ItemStack(Items.GLASS_BOTTLE), false); // 背包满时掉落玻璃瓶
+            }
         }
 
         return resultStack;

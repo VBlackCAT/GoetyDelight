@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class SiblingSundaeItem extends Item {
+public class SiblingSundaeItem extends GlassBottleFoodItem {
     public SiblingSundaeItem(Properties pProperties) {
         super(pProperties);
     }

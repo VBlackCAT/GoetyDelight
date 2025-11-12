@@ -128,7 +128,7 @@ public class ToxicMealItem extends BowlFoodItem {
     // 玩家死亡事件处理 - 重置食用次数
     @SubscribeEvent
     public static void onPlayerDeath(net.minecraftforge.event.entity.living.LivingDeathEvent event) {
-        if (event.getEntity() instanceof Player player) {
+        if (!event.isCanceled() && event.getEntity() instanceof Player player) {
             CompoundTag persistentData = player.getPersistentData();
             // 清除食用次数
             persistentData.remove(TOXIC_MEAL_COUNT);

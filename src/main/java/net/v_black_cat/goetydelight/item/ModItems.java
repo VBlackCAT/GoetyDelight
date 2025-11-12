@@ -18,7 +18,6 @@ import net.v_black_cat.goetydelight.effect.ModEffects;
 import net.v_black_cat.goetydelight.entities.ModEntities;
 import net.v_black_cat.goetydelight.item.food.*;
 import net.v_black_cat.goetydelight.item.food.BowlFoodItem;
-import vectorwing.farmersdelight.common.item.DrinkableItem;
 import vectorwing.farmersdelight.common.item.KnifeItem;
 
 import java.util.Random;
@@ -122,6 +121,7 @@ public class ModItems {
     public static final RegistryObject<Item> BOAT_STUFFED_ROASTED_WARDEN_MEET;
     public static final RegistryObject<Item> BOAT_STUFFED_ROASTED_WARDEN_FLANK;
     public static final RegistryObject<Item> ANCIENT_ENCHANTED_GOLDEN_APPLE;
+    public static final RegistryObject<Item> NOT_ANYTHING;
 
     // ==================== 效果供应商常量 ====================
     private static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
@@ -147,6 +147,9 @@ public class ModItems {
         // 块物品初始化
         EXAMPLE_BLOCK_ITEM = ITEMS.register("example_block",
                 () -> new BlockItem(EXAMPLE_BLOCK.get(), basicItem().stacksTo(1)));
+
+        NOT_ANYTHING = ITEMS.register("not_anything",
+                () -> new Item(basicItem().stacksTo(1)));
 
         //神金刀
         APOCALYPTIUM_KNIFE = registerWithTab("apocalyptium_knife",
@@ -279,7 +282,7 @@ public class ModItems {
                                 .build())));
 
         BOILING_BLOOD_BREW = ITEMS.register("boiling_blood_brew",
-                () -> new DrinkableItem(basicItem().stacksTo(16).food(
+                () -> new CustomDrinkItem(basicItem().stacksTo(16).food(
                         simpleFoodItemProperties(6, 4)
                                 .effect(() -> new MobEffectInstance(FIERY_AURA_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(COMFORT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
@@ -384,7 +387,7 @@ public class ModItems {
                                 .build())));
 
         GRAPE_SLUSH = ITEMS.register("grape_slush",
-                () -> new GlassBottleFoodItem(basicItem().stacksTo(16).food(
+                () -> new NoGlassBottleDrinkItem(basicItem().stacksTo(16).food(
                         simpleFoodItemProperties(9, 6)
                                 .effect(() -> new MobEffectInstance(CHILL_HIDE_EFFECT_SUPPLIER.get(),4200, 1), 1.0F)
                                 .effect(() -> new MobEffectInstance(FROSTY_AURA_SUPPLIER.get(), 600, 1), 1.0F)

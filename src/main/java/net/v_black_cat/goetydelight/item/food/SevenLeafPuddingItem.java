@@ -138,7 +138,7 @@ public class SevenLeafPuddingItem extends BowlFoodItem {
     // Remove bonuses on player death
     @SubscribeEvent
     public static void onPlayerDeath(net.minecraftforge.event.entity.living.LivingDeathEvent event) {
-        if (event.getEntity() instanceof Player player) {
+        if (!event.isCanceled() && event.getEntity() instanceof Player player) {
             SevenLeafPuddingItem item = (SevenLeafPuddingItem) net.v_black_cat.goetydelight.item.ModItems.SEVEN_LEAF_PUDDING.get();
             if (player.getPersistentData().getBoolean(BONUS_ACTIVE_TAG)) {
                 item.removeBonusAttributes(player);

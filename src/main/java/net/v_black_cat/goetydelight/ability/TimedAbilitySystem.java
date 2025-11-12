@@ -64,7 +64,7 @@ public class TimedAbilitySystem {
     // 实体死亡事件处理
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
-        if (event.getEntity().level().isClientSide) return;
+        if (!event.isCanceled() && event.getEntity().level().isClientSide) return;
 
         event.getEntity().getCapability(ENTITY_TIMED_ABILITIES).ifPresent(abilities -> {
             abilities.clearAbilitiesOnDeath(event.getEntity());

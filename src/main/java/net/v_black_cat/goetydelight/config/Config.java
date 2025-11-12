@@ -33,7 +33,7 @@ public class Config
 
     private static final ForgeConfigSpec.IntValue MAX_ATTACK_COUNT = BUILDER
             .comment("Maximum attack count for Starless Night item")
-            .defineInRange("starlessNightMaxAttackCount", 10, 0,2147483646);
+            .defineInRange("starlessNightMaxAttackCount", 5, 1,2147483647);
 
 
     private static final ForgeConfigSpec.DoubleValue STARLESS_NIGHT_SEARCH_RANGE = BUILDER

@@ -23,9 +23,6 @@
   "result": {
     "item": "goetydelight:sunshine_sugar_bun"
   },
-  "container": {
-    "item": "minecraft:bowl"
-  },
   "experience": 1.5,
   "cookingtime": 200
 }

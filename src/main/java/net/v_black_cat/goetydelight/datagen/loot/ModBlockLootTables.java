@@ -22,6 +22,7 @@ import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.item.ModItems;
+import vectorwing.farmersdelight.common.item.CookingPotItem;
 
 import java.util.Set;
 
@@ -73,6 +74,7 @@ public class ModBlockLootTables extends BlockLootSubProvider {
         this.dropOther(ModBlocks.ROTTEN_CORPSE_MAGGOT_FEAST_BLOCK.get(), Items.BOWL);
         this.dropOther(ModBlocks.VOID_GEL_JELLY_BLOCK.get(), Items.BOWL);
         this.dropOther(ModBlocks.STUFFED_TALL_SKULL_RICE_BLOCK.get(), com.Polarice3.Goety.common.blocks.ModBlocks.TALL_SKULL_ITEM.get());
+        this.dropOther(ModBlocks.LICHS_CHAOS_STEW_BLOCK.get(), vectorwing.farmersdelight.common.registry.ModBlocks.COOKING_POT.get());
         this.add(ModBlocks.MARBLE_SLAB.get(),
                 block -> createSlabItemTable(ModBlocks.MARBLE_SLAB.get()));
         this.add(ModBlocks.MARBLE_DOOR.get(),

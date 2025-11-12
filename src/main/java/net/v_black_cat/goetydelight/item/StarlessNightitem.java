@@ -3,7 +3,10 @@ package net.v_black_cat.goetydelight.item;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import net.minecraft.core.Holder;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,6 +26,7 @@ import com.Polarice3.Goety.api.entities.IOwned;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class StarlessNightitem extends SwordItem {
@@ -121,8 +125,11 @@ public class StarlessNightitem extends SwordItem {
                     attackCount = Config.getMaxAttackCount();
                 }
                 DamageSource source = new DamageSource(player.damageSources().genericKill().typeHolder(), player);
-                float attackDamageModifier = (float) getTier().getAttackDamageBonus();
-                float damage = attackDamageModifier * (attackCount + 1);
+                Holder<DamageType> damageTypeHolder = source.typeHolder();
+                if(damageTypeHolder instanceof Holder.Reference<DamageType> reference)
+                    reference.bindTags(Set.of(DamageTypeTags.BYPASSES_INVULNERABILITY,DamageTypeTags.BYPASSES_ENCHANTMENTS,DamageTypeTags.BYPASSES_EFFECTS,DamageTypeTags.BYPASSES_RESISTANCE));
+                float attackDamageModifier = 1 + getDamage();
+                float damage = attackDamageModifier * attackCount;
                 livingEntity.hurt(source, damage);
             }
         }
@@ -147,8 +154,11 @@ public class StarlessNightitem extends SwordItem {
                 }
                 lastAttackTime = currentTick;
                 DamageSource source = new DamageSource(player.damageSources().genericKill().typeHolder(), player);
-                float attackDamageModifier = (float) getTier().getAttackDamageBonus();
-                float damage = attackDamageModifier * (attackCount + 1);
+                Holder<DamageType> damageTypeHolder = source.typeHolder();
+                if(damageTypeHolder instanceof Holder.Reference<DamageType> reference)
+                    reference.bindTags(Set.of(DamageTypeTags.BYPASSES_INVULNERABILITY,DamageTypeTags.BYPASSES_ENCHANTMENTS,DamageTypeTags.BYPASSES_EFFECTS,DamageTypeTags.BYPASSES_RESISTANCE));
+                float attackDamageModifier = 1 + getDamage();
+                float damage = attackDamageModifier * attackCount;
                 float originalHealth = living.getHealth();
                 living.hurt(source, damage);
                 if (living.getHealth() == originalHealth && !living.isInvulnerable()) {
@@ -162,7 +172,6 @@ public class StarlessNightitem extends SwordItem {
                     if (damage >= living.getHealth()) {
                             living.setHealth(0);
                             living.die(player.damageSources().playerAttack(player));
-
                     }
                 } else {
                     if (damage >= originalHealth) {
