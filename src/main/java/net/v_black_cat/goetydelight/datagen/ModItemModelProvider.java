@@ -98,6 +98,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.STUFFED_TALL_SKULL_RICE);
         simpleItem(ModItems.OMINOUS_RAMUNE);
         simpleItem(ModItems.PARASITIZED_WARDEN);
+        simpleItem(ModItems.NOT_ANYTHING);
+        simpleItem(ModItems.ANCIENT_ENCHANTED_GOLDEN_APPLE);
 
         simpleItem(ModBlocks.getBlockItem(ModBlocks.ROYAL_CAKE_BLOCK));
         

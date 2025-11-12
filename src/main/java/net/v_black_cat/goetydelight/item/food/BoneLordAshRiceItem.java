@@ -9,6 +9,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -57,6 +58,18 @@ public class BoneLordAshRiceItem extends Item {
 
              
            // player.displayClientMessage(Component.literal("骨头领主骨灰拌饭的力量被激活！获得15点护甲和10点护甲韧性，持续5分钟。"), true);
+        }
+
+        if (entity instanceof Player player) {
+            if (player.getAbilities().instabuild) {
+                return resultStack;
+            }
+
+            if (resultStack.isEmpty()) {
+                return new ItemStack(Items.BOWL);
+            } else if (!player.getInventory().add(new ItemStack(Items.BOWL))) {
+                player.drop(new ItemStack(Items.BOWL), false);
+            }
         }
 
         return resultStack;
@@ -135,7 +148,7 @@ public class BoneLordAshRiceItem extends Item {
      
     @SubscribeEvent
     public static void onPlayerDeath(net.minecraftforge.event.entity.living.LivingDeathEvent event) {
-        if (event.getEntity() instanceof Player player) {
+        if (!event.isCanceled() && event.getEntity() instanceof Player player) {
              
             BoneLordAshRiceItem item = (BoneLordAshRiceItem) net.v_black_cat.goetydelight.item.ModItems.BONE_LORD_ASH_RICE.get();
             if (player.getPersistentData().getBoolean(BONUS_ACTIVE_TAG)) {

@@ -8,6 +8,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
@@ -39,6 +40,17 @@ public class OminousIceCreamItem extends Item {
                 level.playSound(null, player.getX(), player.getY(), player.getZ(),
                         net.minecraft.sounds.SoundEvents.EVOKER_PREPARE_SUMMON,
                         net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
+            }
+        }
+        if (entity instanceof Player player) {
+            if (player.getAbilities().instabuild) {
+                return resultStack;
+            }
+
+            if (resultStack.isEmpty()) {
+                return new ItemStack(Items.BOWL);
+            } else if (!player.getInventory().add(new ItemStack(Items.BOWL))) {
+                player.drop(new ItemStack(Items.BOWL), false);
             }
         }
 
@@ -152,7 +164,7 @@ public class OminousIceCreamItem extends Item {
 
     @SubscribeEvent
     public static void onPlayerDeath(net.minecraftforge.event.entity.living.LivingDeathEvent event) {
-        if (event.getEntity() instanceof Player player) {
+        if (!event.isCanceled() && event.getEntity() instanceof Player player) {
             player.getPersistentData().remove(OMINOUS_ACTIVE_TAG);
             player.getPersistentData().remove(HAS_CONSUMED_TAG);
         }

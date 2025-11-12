@@ -7,6 +7,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -47,6 +48,18 @@ public class SundaeOfThePhilosophersPotionItem extends Item {
 
             
             applyMagicResistanceBoost(player);
+        }
+
+        if (livingEntity instanceof Player player) {
+            if (player.getAbilities().instabuild) {
+                return result;
+            }
+
+            if (result.isEmpty()) {
+                return new ItemStack(Items.BOWL);
+            } else if (!player.getInventory().add(new ItemStack(Items.BOWL))) {
+                player.drop(new ItemStack(Items.BOWL), false);
+            }
         }
 
         return result;

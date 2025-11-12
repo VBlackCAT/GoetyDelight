@@ -103,6 +103,10 @@ public class ModBlocks {
             new StuffedTallSkullRiceBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
                     ModItems.STUFFED_TALL_SKULL_RICE, true),1);
 
+    public static final RegistryObject<Block> LICHS_CHAOS_STEW_BLOCK = registerBlock("lichs_chaos_stew_block",() ->
+            new LichsChaosStewBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
+                    ModItems.LICHS_CHAOS_STEW, true),1);
+
     //坚守者
     public static final RegistryObject<Block>  BOAT_STUFFED_ROASTED_WARDEN_BlOCK= registerBlock("boat_stuffed_roasted_warden_block",
             () -> new BoatStuffedRoastedWardenBlock(
