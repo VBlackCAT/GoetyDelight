@@ -161,87 +161,95 @@ public class NightHeartPeaSoupItem extends DrinkableItem implements IWand {
         if (minion.level().isClientSide) return;
 
         CompoundTag persistentData = minion.getPersistentData();
-        int currentBoost = persistentData.getInt(MINION_BOOST_APPLIED_TAG);
-
-        // 如果已经应用了相同或更多的加成，不再重复应用
-        if (currentBoost >= boostCount) return;
-
-        // 移除旧的加成（如果有）
-        removeMinionBoost(minion);
+        
+        // 记录已应用的加成等级
+        persistentData.putInt(MINION_BOOST_APPLIED_TAG, boostCount);
 
         // 计算加成值
         double boostMultiplier = BOOST_PERCENTAGE * boostCount;
 
         // 应用攻击力加成
         AttributeInstance attackDamage = minion.getAttribute(Attributes.ATTACK_DAMAGE);
-        if (attackDamage != null && attackDamage.getModifier(ATTACK_DAMAGE_BOOST_UUID) == null) {
-            double baseValue = attackDamage.getBaseValue();
-            double boostValue = baseValue * boostMultiplier;
+        if (attackDamage != null) {
+            AttributeModifier modifier = attackDamage.getModifier(ATTACK_DAMAGE_BOOST_UUID);
+            if (modifier != null) {
+                attackDamage.removeModifier(ATTACK_DAMAGE_BOOST_UUID);
+            }
+            
             attackDamage.addPermanentModifier(new AttributeModifier(
                     ATTACK_DAMAGE_BOOST_UUID,
                     "Night Pea Soup Attack Boost",
-                    boostValue,
-                    AttributeModifier.Operation.ADDITION
+                    boostMultiplier,
+                    AttributeModifier.Operation.MULTIPLY_BASE
             ));
         }
 
         // 应用生命上限加成
         AttributeInstance maxHealth = minion.getAttribute(Attributes.MAX_HEALTH);
-        if (maxHealth != null && maxHealth.getModifier(MAX_HEALTH_BOOST_UUID) == null) {
-            double baseValue = maxHealth.getBaseValue();
-            double boostValue = baseValue * boostMultiplier;
+        if (maxHealth != null) {
+            AttributeModifier modifier = maxHealth.getModifier(MAX_HEALTH_BOOST_UUID);
+            if (modifier != null) {
+                maxHealth.removeModifier(MAX_HEALTH_BOOST_UUID);
+            }
+            
             maxHealth.addPermanentModifier(new AttributeModifier(
                     MAX_HEALTH_BOOST_UUID,
                     "Night Pea Soup Health Boost",
-                    boostValue,
-                    AttributeModifier.Operation.ADDITION
+                    boostMultiplier,
+                    AttributeModifier.Operation.MULTIPLY_BASE
             ));
 
             // 同时增加当前生命值以匹配上限增加
-            minion.setHealth(minion.getHealth() + (float)boostValue);
+            minion.setHealth(minion.getHealth() * (1.0f + (float)boostMultiplier));
         }
 
         // 应用护甲加成
         AttributeInstance armor = minion.getAttribute(Attributes.ARMOR);
-        if (armor != null && armor.getModifier(ARMOR_BOOST_UUID) == null) {
-            double baseValue = armor.getBaseValue();
-            double boostValue = baseValue * boostMultiplier;
+        if (armor != null) {
+            AttributeModifier modifier = armor.getModifier(ARMOR_BOOST_UUID);
+            if (modifier != null) {
+                armor.removeModifier(ARMOR_BOOST_UUID);
+            }
+            
             armor.addPermanentModifier(new AttributeModifier(
                     ARMOR_BOOST_UUID,
                     "Night Pea Soup Armor Boost",
-                    boostValue,
-                    AttributeModifier.Operation.ADDITION
+                    boostMultiplier,
+                    AttributeModifier.Operation.MULTIPLY_BASE
             ));
         }
 
         // 应用护甲韧性加成
         AttributeInstance armorToughness = minion.getAttribute(Attributes.ARMOR_TOUGHNESS);
-        if (armorToughness != null && armorToughness.getModifier(ARMOR_TOUGHNESS_BOOST_UUID) == null) {
-            double baseValue = armorToughness.getBaseValue();
-            double boostValue = baseValue * boostMultiplier;
+        if (armorToughness != null) {
+            AttributeModifier modifier = armorToughness.getModifier(ARMOR_TOUGHNESS_BOOST_UUID);
+            if (modifier != null) {
+                armorToughness.removeModifier(ARMOR_TOUGHNESS_BOOST_UUID);
+            }
+            
             armorToughness.addPermanentModifier(new AttributeModifier(
                     ARMOR_TOUGHNESS_BOOST_UUID,
                     "Night Pea Soup Armor Toughness Boost",
-                    boostValue,
-                    AttributeModifier.Operation.ADDITION
+                    boostMultiplier,
+                    AttributeModifier.Operation.MULTIPLY_BASE
             ));
         }
 
         // 应用移动速度加成
         AttributeInstance movementSpeed = minion.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (movementSpeed != null && movementSpeed.getModifier(MOVEMENT_SPEED_BOOST_UUID) == null) {
-            double baseValue = movementSpeed.getBaseValue();
-            double boostValue = baseValue * boostMultiplier;
+        if (movementSpeed != null) {
+            AttributeModifier modifier = movementSpeed.getModifier(MOVEMENT_SPEED_BOOST_UUID);
+            if (modifier != null) {
+                movementSpeed.removeModifier(MOVEMENT_SPEED_BOOST_UUID);
+            }
+            
             movementSpeed.addPermanentModifier(new AttributeModifier(
                     MOVEMENT_SPEED_BOOST_UUID,
                     "Night Pea Soup Movement Speed Boost",
-                    boostValue,
-                    AttributeModifier.Operation.ADDITION
+                    boostMultiplier,
+                    AttributeModifier.Operation.MULTIPLY_BASE
             ));
         }
-
-        // 记录已应用的加成等级
-        persistentData.putInt(MINION_BOOST_APPLIED_TAG, boostCount);
     }
 
     // 移除仆从的加成
