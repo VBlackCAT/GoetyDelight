@@ -10,6 +10,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -85,4 +86,17 @@ public class ShadeStoveBlock extends AbstractFurnaceBlock {
         }
 
     }
+
+
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!state.is(newState.getBlock())) {
+            BlockEntity blockEntity = level.getBlockEntity(pos);
+            if (blockEntity instanceof ShadeStoveBlockEntity stoveEntity) {
+                Containers.dropContents(level, pos, stoveEntity.getItems());
+            }
+            super.onRemove(state, level, pos, newState, isMoving);
+        }
+    }
+
 }

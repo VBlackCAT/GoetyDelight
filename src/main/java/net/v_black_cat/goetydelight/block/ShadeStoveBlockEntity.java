@@ -452,4 +452,9 @@ public class ShadeStoveBlockEntity extends BaseContainerBlockEntity implements W
             blockEntity.setChanged();
         }
     }
+
+
+    public NonNullList<ItemStack> getItems() {
+        return this.items;
+    }
 }
