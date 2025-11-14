@@ -302,6 +302,10 @@ dependencies {
     modRuntimeOnly  "blank:dummmmmmy-1.20:2.0.6"
     modRuntimeOnly  "blank:moonlight-1.20:2.14.1-forge"
     modRuntimeOnly  "blank:Jade-1.20.1-Forge-11.13.1"
+    modRuntimeOnly  "blank:l2library-2.5.3"
+//    modRuntimeOnly  "blank:modulargolems-2.6.12"
+    modRuntimeOnly  "blank:jerotes-1.20.1-1.2.0"
+    modRuntimeOnly  "blank:jerotesvillage-1.20.1-1.1.5.10"
 }
 
 

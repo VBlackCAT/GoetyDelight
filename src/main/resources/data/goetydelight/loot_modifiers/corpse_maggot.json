@@ -5,7 +5,7 @@
       "condition": "minecraft:entity_properties",
       "entity": "this",
       "predicate": {
-        "type": "goety:corpse_maggot"
+        "type": "goety:carrion_maggot"
       }
     }
   ],
