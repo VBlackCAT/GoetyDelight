@@ -11,6 +11,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.slf4j.Logger;
@@ -116,7 +117,7 @@ public class HealthDataInterceptor {
     @Mod.EventBusSubscriber(modid = "goetydelight", bus = Mod.EventBusSubscriber.Bus.FORGE)
     public static class EventHandler {
         @SubscribeEvent
-        public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
+        public static void LivingTickEvent(LivingEvent.LivingTickEvent event) {
             if (event.getEntity() instanceof Player player) {
                 boolean hasNotAnything = false;
                 for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
