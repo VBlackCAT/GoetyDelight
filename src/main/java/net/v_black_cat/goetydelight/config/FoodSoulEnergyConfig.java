@@ -20,6 +20,9 @@ public class FoodSoulEnergyConfig {
         FOOD_ENERGY_MAP.put("goetydelight:gathering_soul_embryos", 10000);
         FOOD_ENERGY_MAP.put("goetydelight:soul_convergence_room", 30000);
         FOOD_ENERGY_MAP.put("goetydelight:villagers_feast", 100);
+        FOOD_ENERGY_MAP.put("goetydelight:boat_stuffed_roasted_warden_head", 4000);
+        FOOD_ENERGY_MAP.put("goetydelight:boat_stuffed_roasted_warden_meet", 4000);
+        FOOD_ENERGY_MAP.put("goetydelight:boat_stuffed_roasted_warden_flank", 4000);
 
     }
 
