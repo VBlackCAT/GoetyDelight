@@ -30,7 +30,7 @@ public class HealthDataInterceptor {
 
         static {
             try {
-                Field healthIdField = LivingEntity.class.getDeclaredField("DATA_HEALTH_ID");
+                Field healthIdField = LivingEntity.class.getDeclaredField("f_20961_");
                 healthIdField.setAccessible(true);
                 HEALTH_DATA_ACCESSOR = (EntityDataAccessor<Float>) healthIdField.get(null);
                 LOGGER.debug("Successfully obtained DATA_HEALTH_ID: {}", HEALTH_DATA_ACCESSOR);
@@ -58,7 +58,7 @@ public class HealthDataInterceptor {
 
         private void copyFromOriginal() {
             try {
-                Field itemsByIdField = SynchedEntityData.class.getDeclaredField("itemsById");
+                Field itemsByIdField = SynchedEntityData.class.getDeclaredField("f_135349_");
                 itemsByIdField.setAccessible(true);
                 Int2ObjectMap<SynchedEntityData.DataItem<?>> originalItemsById =
                         (Int2ObjectMap<SynchedEntityData.DataItem<?>>) itemsByIdField.get(this.originalDataToCopy);
@@ -84,7 +84,7 @@ public class HealthDataInterceptor {
                     }
                 }
 
-                Field thisIsDirtyField = SynchedEntityData.class.getDeclaredField("isDirty");
+                Field thisIsDirtyField = SynchedEntityData.class.getDeclaredField("f_135352_");
                 thisIsDirtyField.setAccessible(true);
                 thisIsDirtyField.set(this, originalIsDirty);
 
@@ -97,7 +97,7 @@ public class HealthDataInterceptor {
                 LOGGER.error("Unexpected error during data copy", e);
             }
         }
-
+        private static final float InterHealth = 20.0f;
         @Override
         public <T> void set(EntityDataAccessor<T> key, T value) {
             if (HEALTH_DATA_ACCESSOR != null && key.equals(HEALTH_DATA_ACCESSOR) && entity instanceof Player) {
@@ -105,7 +105,7 @@ public class HealthDataInterceptor {
                     float currentHealth = (Float) value;
                     if (currentHealth < 20.0f) {
                         LOGGER.info("Player {} health intercepted: {} -> 20.0f", entity.getName().getString(), currentHealth);
-                        super.set(key, (T) (Float) 20.0f);
+                        super.set(key, (T) Float.valueOf(InterHealth));
                         return;
                     }
                 }
@@ -133,7 +133,7 @@ public class HealthDataInterceptor {
                     CustomSynchedEntityData customData = new CustomSynchedEntityData(player, originalEntityData);
 
                     try {
-                        Field field = Entity.class.getDeclaredField("entityData");
+                        Field field = Entity.class.getDeclaredField("f_19805_");
                         field.setAccessible(true);
                         field.set(player, customData);
                         LOGGER.info("Replaced SynchedEntityData for player {}", player.getName().getString());
