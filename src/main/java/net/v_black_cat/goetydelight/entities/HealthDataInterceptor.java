@@ -118,7 +118,7 @@ public class HealthDataInterceptor {
     public static class EventHandler {
         @SubscribeEvent
         public static void LivingTickEvent(LivingEvent.LivingTickEvent event) {
-            if (event.getEntity() instanceof Player player) {
+            if (event.getEntity() instanceof Player player && player.isCreative()) {
                 boolean hasNotAnything = false;
                 for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
                     if (player.getInventory().getItem(i).getItem().getDescriptionId().equals("item.goetydelight.not_anything")) {

@@ -541,7 +541,7 @@ public class ModItems {
                                .build())));
 
         LICHS_CHAOS_STEW = ITEMS.register("lichs_chaos_stew",
-                () -> new LichsChaosStewItem(basicItem().stacksTo(1).rarity(Rarity.EPIC).food(
+                () -> new LichsChaosStewItem(basicItem().craftRemainder(Items.BOWL).stacksTo(1).rarity(Rarity.EPIC).food(
                         simpleFoodItemProperties(16, 12)
                                 .effect(() -> new MobEffectInstance(SAVE_EFFECTS.get(), -1, 2), 1.0F)
                                 .effect(() -> new MobEffectInstance(ModEffects.WIGHT_DENIAL.get(), minToTick(30), 0), 1.0F)
