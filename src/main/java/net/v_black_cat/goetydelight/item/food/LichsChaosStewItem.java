@@ -21,6 +21,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.ability.AbilityRegistry;
 import net.v_black_cat.goetydelight.ability.TimedAbilitySystem;
+import net.v_black_cat.goetydelight.config.Config;
 
 import java.util.UUID;
 
@@ -166,16 +167,18 @@ public class LichsChaosStewItem extends Item {
         }
 
 
-        AttributeInstance movementSpeed = minion.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (movementSpeed != null) {
-            double baseValue = movementSpeed.getBaseValue();
-            double boostValue = baseValue * boostMultiplier;
-            movementSpeed.addPermanentModifier(new AttributeModifier(
-                    MOVEMENT_SPEED_BOOST_UUID,
-                    "Lich Stew Speed Boost",
-                    boostValue,
-                    AttributeModifier.Operation.ADDITION
-            ));
+        if (!Config.getSpeedBoostBlacklist().contains(minion.getType())) {
+            AttributeInstance movementSpeed = minion.getAttribute(Attributes.MOVEMENT_SPEED);
+            if (movementSpeed != null) {
+                double baseValue = movementSpeed.getBaseValue();
+                double boostValue = baseValue * boostMultiplier;
+                movementSpeed.addPermanentModifier(new AttributeModifier(
+                        MOVEMENT_SPEED_BOOST_UUID,
+                        "Lich Stew Speed Boost",
+                        boostValue,
+                        AttributeModifier.Operation.ADDITION
+                ));
+            }
         }
 
         AttributeInstance armorToughness = minion.getAttribute(Attributes.ARMOR_TOUGHNESS);

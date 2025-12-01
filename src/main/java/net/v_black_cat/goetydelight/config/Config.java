@@ -51,6 +51,17 @@ public class Config
     private static final ForgeConfigSpec.DoubleValue CAKE_EFFECT_RADIUS = BUILDER
             .comment("Effect radius for the cake item")
             .defineInRange("cakeEffectRadius", 32.0, 1.0, 256.0);
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SPEED_BOOST_BLACKLIST = BUILDER
+            .comment("List of entity types that are immune to movement speed boost from Lich's Chaos Stew")
+            .defineListAllowEmpty("lichStewSpeedBoostBlacklist", List.of(
+               "goety:redstone_monstrosity","goety:redstone_golem"
+            ), Config::validateEntityName);
+
+    public static Set<EntityType<?>> getSpeedBoostBlacklist() {
+        return SPEED_BOOST_BLACKLIST.get().stream()
+                .map(entityName -> ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(entityName)))
+                .collect(Collectors.toSet());
+    }
 
     public static double getCakeEffectRadius() {
         return CAKE_EFFECT_RADIUS.get();
