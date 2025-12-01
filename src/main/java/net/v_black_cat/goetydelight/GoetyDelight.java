@@ -132,9 +132,6 @@ public class GoetyDelight
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event)
         {
-            // Some client setup code
-           // LOGGER.info("HELLO FROM CLIENT SETUP");
-           // LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
             MinecraftForge.EVENT_BUS.addListener(RotationEffectHandler::onRenderTick);
             MinecraftForge.EVENT_BUS.addListener(RotationEffectHandler::onRenderLivingEvent);
             MenuScreens.register(ModMenuTypes.CURSED_INGOT_POT.get(), CursedIngotPotScreen::new);
@@ -149,7 +146,5 @@ public class GoetyDelight
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.ECTOPLASMIC_MELON_BLOCK.get(), RenderType.translucent());
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.BOAT_STUFFED_ROASTED_WARDEN_BlOCK.get(), RenderType.cutout());
         }
-
-
     }
 }
