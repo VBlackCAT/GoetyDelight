@@ -65,27 +65,26 @@ public class PolariceItem extends Item {
         if (attacker != null && attacker.getPersistentData().contains(POARICE_TAG) && ploarice_time > 0) {
             LivingEntity targetEntity = event.getEntity();
             Level level = targetEntity.level();
-            ServerLevel serverLevel = targetEntity.getServer().getLevel(targetEntity.level().dimension());
             log.info("Level:{}", level);
-            log.info("Server Level:{}", serverLevel);
+//                log.info("Server Level:{}", serverLevel);
+                String entityTypeName = EntityType.getKey(targetEntity.getType()).toString();
+                String entityName = entityTypeName.substring(entityTypeName.indexOf(":") + 1);
+                String servantTypeName = "entity.goety." + entityName + "_servant";
+                log.info("Entity Servant Name: {}", servantTypeName);
 
-            String entityTypeName = EntityType.getKey(targetEntity.getType()).toString();
-            String servantTypeName = entityTypeName + "_servant";
-            log.info("Entity Servant Name: {}", servantTypeName);
-
-            for (EntityType<?> entityType : ForgeRegistries.ENTITY_TYPES.getValues()) {
-                String registryName = entityType.toString();
-                if (registryName.equals(servantTypeName)) {
-                    // 找到匹配的实体类型
-                    LivingEntity servant = (LivingEntity) entityType.create(serverLevel);
-                    if (servant != null) {
-                        servant.moveTo(targetEntity.getX(), targetEntity.getY(), targetEntity.getZ());
-                        targetEntity.remove(Entity.RemovalReason.DISCARDED);
-                        serverLevel.addFreshEntity(servant);
+                for (EntityType<?> entityType : ForgeRegistries.ENTITY_TYPES.getValues()) {
+                    String registryName = entityType.toString();
+                    if (registryName.equals(servantTypeName)) {
+                        // 找到匹配的实体类型
+                        LivingEntity servant = (LivingEntity) entityType.create(level);
+                        if (servant != null) {
+                            servant.moveTo(targetEntity.getX(), targetEntity.getY(), targetEntity.getZ());
+                            targetEntity.remove(Entity.RemovalReason.DISCARDED);
+                            level.addFreshEntity(servant);
+                        }
+                        break;
                     }
-                    break;
                 }
-            }
         }
     }
 }
