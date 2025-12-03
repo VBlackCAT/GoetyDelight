@@ -1,0 +1,38 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "minecraft:bowl"
+  },
+  "craftType": "culinary",
+  "entity_to_sacrifice": {
+    "tag": "goetydelight:ice_golem",
+    "display_name": "entity.goety.ice_golem"
+  },
+  "soulCost": 10,
+  "duration": 10,
+  "ingredients": [
+    {
+      "item": "goety:ectoplasm"
+    },
+    {
+      "item": "goetydelight:ectoplasmic_melon"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:honey_bottle"
+    },
+    {
+      "item": "farmersdelight:rice"
+    },
+    {
+      "item": "goety:ice_cube"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:polarice"
+  }
+
+}

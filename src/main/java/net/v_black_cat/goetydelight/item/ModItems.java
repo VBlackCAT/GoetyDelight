@@ -648,6 +648,7 @@ public class ModItems {
                 () -> new PolariceItem(basicItem().stacksTo(1).rarity(Rarity.EPIC)
                         .food(simpleFoodItemProperties(10, 4)
                                 .effect(() ->new MobEffectInstance(ILLAGUE.get(), minToTick(5), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(MobEffects.DIG_SPEED, minToTick(5), 2), 1.0F)
                                 .build())));
 
 
