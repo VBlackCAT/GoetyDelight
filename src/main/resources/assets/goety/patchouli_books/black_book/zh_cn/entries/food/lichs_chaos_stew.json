@@ -1,0 +1,15 @@
+{
+    "name": "巫妖乱炖",
+    "icon": "goetydelight:lichs_chaos_stew",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "仅巫妖可食用$(br)给予食用者：$(br)$(li)1分钟刺激感"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/lichs_chaos_stew_block"
+        }
+    ]
+}
