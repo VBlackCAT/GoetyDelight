@@ -51,6 +51,45 @@ public class Config
     private static final ForgeConfigSpec.DoubleValue CAKE_EFFECT_RADIUS = BUILDER
             .comment("Effect radius for the cake item")
             .defineInRange("cakeEffectRadius", 32.0, 1.0, 256.0);
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SPEED_BOOST_BLACKLIST = BUILDER
+            .comment("List of entity types that are immune to movement speed boost from Lich's Chaos Stew")
+            .defineListAllowEmpty("lichStewSpeedBoostBlacklist", List.of(
+               "goety:redstone_monstrosity","goety:redstone_golem"
+            ), Config::validateEntityName);
+    private static final ForgeConfigSpec.BooleanValue POLARICE_AFFECTS_BOSSES = BUILDER
+            .comment("Whether bosses are affected by Polarice item")
+            .define("polariceAffectsBosses", false);
+
+    private static final ForgeConfigSpec.DoubleValue POLARICE_HEALTH_THRESHOLD = BUILDER
+            .comment("Maximum health threshold for entities to be affected by Polarice item (in half-hearts)")
+            .defineInRange("polariceHealthThreshold", 50.0, 1.0, Float.MAX_VALUE);
+
+    private static final ForgeConfigSpec.IntValue POLARICE_COOLDOWN = BUILDER
+            .comment("The cooldown for Polarice item to use")
+            .defineInRange("polarice_cooldown", 1800, 300, Integer.MAX_VALUE);
+
+    private static final ForgeConfigSpec.IntValue POLARICE_COUNT = BUILDER
+            .comment("The number of Polarice item can affect")
+            .defineInRange("polarice_count", 10, 1, Integer.MAX_VALUE);
+
+    public static int getPolariceCount() {
+        return POLARICE_COUNT.get();
+    }
+    public static int getPolariceCooldown() {
+        return POLARICE_COOLDOWN.get();
+    }
+    public static boolean getPolariceAffectsBosses() {
+        return POLARICE_AFFECTS_BOSSES.get();
+    }
+
+    public static double getPolariceHealthThreshold() {
+        return POLARICE_HEALTH_THRESHOLD.get();
+    }
+    public static Set<EntityType<?>> getSpeedBoostBlacklist() {
+        return SPEED_BOOST_BLACKLIST.get().stream()
+                .map(entityName -> ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(entityName)))
+                .collect(Collectors.toSet());
+    }
 
     public static double getCakeEffectRadius() {
         return CAKE_EFFECT_RADIUS.get();

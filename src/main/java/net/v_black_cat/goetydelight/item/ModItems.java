@@ -122,6 +122,8 @@ public class ModItems {
     public static final RegistryObject<Item> BOAT_STUFFED_ROASTED_WARDEN_FLANK;
     public static final RegistryObject<Item> ANCIENT_ENCHANTED_GOLDEN_APPLE;
     public static final RegistryObject<Item> NOT_ANYTHING;
+    public static final RegistryObject<Item> ROAST_LAOWANG;
+    public static final RegistryObject<Item> POLARICE;
 
     // ==================== 效果供应商常量 ====================
     private static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
@@ -141,6 +143,7 @@ public class ModItems {
     private static final Supplier<MobEffect> PHOTOSYNTHESIS_SUPPLIER = goetyBuff("photosynthesis");
     private static final Supplier<MobEffect> FROSTY_AURA_SUPPLIER = goetyBuff("frosty_aura");
     private static final Supplier<MobEffect> FIERY_AURA_SUPPLIER = goetyBuff("fiery_aura");
+    private static final Supplier<MobEffect> ILLAGUE = goetyBuff("illague");
 
     // ==================== 静态初始化块：物品定义区域 ====================
     static {
@@ -541,7 +544,7 @@ public class ModItems {
                                .build())));
 
         LICHS_CHAOS_STEW = ITEMS.register("lichs_chaos_stew",
-                () -> new LichsChaosStewItem(basicItem().stacksTo(1).rarity(Rarity.EPIC).food(
+                () -> new LichsChaosStewItem(basicItem().craftRemainder(Items.BOWL).stacksTo(1).rarity(Rarity.EPIC).food(
                         simpleFoodItemProperties(16, 12)
                                 .effect(() -> new MobEffectInstance(SAVE_EFFECTS.get(), -1, 2), 1.0F)
                                 .effect(() -> new MobEffectInstance(ModEffects.WIGHT_DENIAL.get(), minToTick(30), 0), 1.0F)
@@ -633,6 +636,19 @@ public class ModItems {
                                 .effect(() ->new MobEffectInstance(MobEffects.ABSORPTION, minToTick(2), 3), 1.0F)
                                 .effect(() ->new MobEffectInstance(MobEffects.REGENERATION, 600, 5), 1.0F)
                                 .effect(() ->new MobEffectInstance(MobEffects.FIRE_RESISTANCE, minToTick(5), 0), 1.0F)
+                                .build())));
+
+        ROAST_LAOWANG = ITEMS.register("roast_laowang",
+                () -> new RoastLaowangItem(basicItem().stacksTo(64).rarity(Rarity.EPIC)
+                        .food(simpleFoodItemProperties(20, 15)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(20), 0), 1.0F)
+                                .build())));
+
+        POLARICE = ITEMS.register("polarice",
+                () -> new PolariceItem(basicItem().stacksTo(1).rarity(Rarity.EPIC)
+                        .food(simpleFoodItemProperties(10, 4)
+                                .effect(() ->new MobEffectInstance(ILLAGUE.get(), minToTick(5), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(MobEffects.DIG_SPEED, minToTick(5), 2), 1.0F)
                                 .build())));
 
 

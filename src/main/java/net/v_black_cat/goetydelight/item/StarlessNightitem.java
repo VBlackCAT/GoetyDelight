@@ -128,7 +128,7 @@ public class StarlessNightitem extends SwordItem {
                 Holder<DamageType> damageTypeHolder = source.typeHolder();
                 if(damageTypeHolder instanceof Holder.Reference<DamageType> reference)
                     reference.bindTags(Set.of(DamageTypeTags.BYPASSES_INVULNERABILITY,DamageTypeTags.BYPASSES_ENCHANTMENTS,DamageTypeTags.BYPASSES_EFFECTS,DamageTypeTags.BYPASSES_RESISTANCE));
-                float attackDamageModifier = 1 + getDamage();
+                float attackDamageModifier = player.getAttackStrengthScale(0.5f) *(float) (player.getAttributeValue(Attributes.ATTACK_DAMAGE));
                 float damage = attackDamageModifier * attackCount;
                 livingEntity.hurt(source, damage);
             }
@@ -157,7 +157,7 @@ public class StarlessNightitem extends SwordItem {
                 Holder<DamageType> damageTypeHolder = source.typeHolder();
                 if(damageTypeHolder instanceof Holder.Reference<DamageType> reference)
                     reference.bindTags(Set.of(DamageTypeTags.BYPASSES_INVULNERABILITY,DamageTypeTags.BYPASSES_ENCHANTMENTS,DamageTypeTags.BYPASSES_EFFECTS,DamageTypeTags.BYPASSES_RESISTANCE));
-                float attackDamageModifier = 1 + getDamage();
+                float attackDamageModifier = player.getAttackStrengthScale(0.5f) *(float) (player.getAttributeValue(Attributes.ATTACK_DAMAGE));
                 float damage = attackDamageModifier * attackCount;
                 float originalHealth = living.getHealth();
                 living.hurt(source, damage);

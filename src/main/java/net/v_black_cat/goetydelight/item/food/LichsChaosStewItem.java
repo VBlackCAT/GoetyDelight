@@ -21,15 +21,16 @@ import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.ability.AbilityRegistry;
 import net.v_black_cat.goetydelight.ability.TimedAbilitySystem;
+import net.v_black_cat.goetydelight.config.Config;
 
 import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = GoetyDelight.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class LichsChaosStewItem extends Item {
 
-    private static final int MAX_BOOST_COUNT = 5;
+    private static final int MAX_BOOST_COUNT = 10;
 
-    private static final double BOOST_PERCENTAGE = 0.2;
+    private static final double BOOST_PERCENTAGE = 0.1;
 
     private static final String STEW_BOOST_COUNT_TAG = "LichStewBoostCount";
 
@@ -166,16 +167,18 @@ public class LichsChaosStewItem extends Item {
         }
 
 
-        AttributeInstance movementSpeed = minion.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (movementSpeed != null) {
-            double baseValue = movementSpeed.getBaseValue();
-            double boostValue = baseValue * boostMultiplier;
-            movementSpeed.addPermanentModifier(new AttributeModifier(
-                    MOVEMENT_SPEED_BOOST_UUID,
-                    "Lich Stew Speed Boost",
-                    boostValue,
-                    AttributeModifier.Operation.ADDITION
-            ));
+        if (!Config.getSpeedBoostBlacklist().contains(minion.getType())) {
+            AttributeInstance movementSpeed = minion.getAttribute(Attributes.MOVEMENT_SPEED);
+            if (movementSpeed != null) {
+                double baseValue = movementSpeed.getBaseValue();
+                double boostValue = baseValue * boostMultiplier;
+                movementSpeed.addPermanentModifier(new AttributeModifier(
+                        MOVEMENT_SPEED_BOOST_UUID,
+                        "Lich Stew Speed Boost",
+                        boostValue,
+                        AttributeModifier.Operation.ADDITION
+                ));
+            }
         }
 
         AttributeInstance armorToughness = minion.getAttribute(Attributes.ARMOR_TOUGHNESS);
