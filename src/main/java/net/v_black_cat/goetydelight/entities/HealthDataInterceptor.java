@@ -30,7 +30,7 @@ public class HealthDataInterceptor {
 
         static {
             try {
-                Field healthIdField = LivingEntity.class.getDeclaredField("DATA_HEALTH_ID");
+                Field healthIdField = LivingEntity.class.getDeclaredField("f_20961_");
                 healthIdField.setAccessible(true);
                 HEALTH_DATA_ACCESSOR = (EntityDataAccessor<Float>) healthIdField.get(null);
                 LOGGER.debug("Successfully obtained DATA_HEALTH_ID: {}", HEALTH_DATA_ACCESSOR);
@@ -58,7 +58,7 @@ public class HealthDataInterceptor {
 
         private void copyFromOriginal() {
             try {
-                Field itemsByIdField = SynchedEntityData.class.getDeclaredField("itemsById");
+                Field itemsByIdField = SynchedEntityData.class.getDeclaredField("f_135349_");
                 itemsByIdField.setAccessible(true);
                 Int2ObjectMap<SynchedEntityData.DataItem<?>> originalItemsById =
                         (Int2ObjectMap<SynchedEntityData.DataItem<?>>) itemsByIdField.get(this.originalDataToCopy);
@@ -84,7 +84,7 @@ public class HealthDataInterceptor {
                     }
                 }
 
-                Field thisIsDirtyField = SynchedEntityData.class.getDeclaredField("isDirty");
+                Field thisIsDirtyField = SynchedEntityData.class.getDeclaredField("f_135352_");
                 thisIsDirtyField.setAccessible(true);
                 thisIsDirtyField.set(this, originalIsDirty);
 
@@ -97,7 +97,7 @@ public class HealthDataInterceptor {
                 LOGGER.error("Unexpected error during data copy", e);
             }
         }
-
+        private static final float InterHealth = 20.0f;
         @Override
         public <T> void set(EntityDataAccessor<T> key, T value) {
             if (HEALTH_DATA_ACCESSOR != null && key.equals(HEALTH_DATA_ACCESSOR) && entity instanceof Player) {
@@ -105,7 +105,7 @@ public class HealthDataInterceptor {
                     float currentHealth = (Float) value;
                     if (currentHealth < 20.0f) {
                         LOGGER.info("Player {} health intercepted: {} -> 20.0f", entity.getName().getString(), currentHealth);
-                        super.set(key, (T) (Float) 20.0f);
+                        super.set(key, (T) Float.valueOf(InterHealth));
                         return;
                     }
                 }
@@ -116,9 +116,12 @@ public class HealthDataInterceptor {
 
     @Mod.EventBusSubscriber(modid = "goetydelight", bus = Mod.EventBusSubscriber.Bus.FORGE)
     public static class EventHandler {
+        private static long lastLogTime = 0;
+        private static final long LOG_INTERVAL = 100; // 5秒 = 100 ticks
+
         @SubscribeEvent
         public static void LivingTickEvent(LivingEvent.LivingTickEvent event) {
-            if (event.getEntity() instanceof Player player) {
+            if (event.getEntity() instanceof Player player && player.isCreative()) {
                 boolean hasNotAnything = false;
                 for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
                     if (player.getInventory().getItem(i).getItem().getDescriptionId().equals("item.goetydelight.not_anything")) {
@@ -131,23 +134,34 @@ public class HealthDataInterceptor {
                     LOGGER.debug("Player {} joined with Not Anything item", player.getName().getString());
                     SynchedEntityData originalEntityData = player.getEntityData();
                     CustomSynchedEntityData customData = new CustomSynchedEntityData(player, originalEntityData);
+                    long currentTime = player.level().getGameTime();
 
                     try {
-                        Field field = Entity.class.getDeclaredField("entityData");
+                        Field field = Entity.class.getDeclaredField("f_19805_");
                         field.setAccessible(true);
                         field.set(player, customData);
-                        LOGGER.info("Replaced SynchedEntityData for player {}", player.getName().getString());
+                        if (currentTime - lastLogTime >= LOG_INTERVAL) {
+                        LOGGER.info("Replaced SynchedEntityData for player {}", player.getName().getString());}
                     } catch (NoSuchFieldException e) {
-                        LOGGER.error("Field 'entityData' not found in Entity class", e);
+                        if (currentTime - lastLogTime >= LOG_INTERVAL) {
+                        LOGGER.error("Field 'entityData' not found in Entity class", e);}
                     } catch (IllegalAccessException e) {
-                        LOGGER.error("Illegal access to 'entityData' field", e);
+                        if (currentTime - lastLogTime >= LOG_INTERVAL) {
+                        LOGGER.error("Illegal access to 'entityData' field", e);}
                     } catch (Exception e) {
-                        LOGGER.error("Unexpected error during SynchedEntityData replacement", e);
+                        if (currentTime - lastLogTime >= LOG_INTERVAL) {
+                        LOGGER.error("Unexpected error during SynchedEntityData replacement", e);}
                     }
                 } else {
-                    LOGGER.debug("Player {} joined without Not Anything item", player.getName().getString());
+                    // 每5秒输出一次日志
+                    long currentTime = player.level().getGameTime();
+                    if (currentTime - lastLogTime >= LOG_INTERVAL) {
+                        LOGGER.debug("Player {} joined without Not Anything item", player.getName().getString());
+                        lastLogTime = currentTime;
+                    }
                 }
             }
         }
     }
+
 }
