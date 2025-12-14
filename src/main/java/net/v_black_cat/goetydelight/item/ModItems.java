@@ -36,8 +36,9 @@ public class ModItems {
     // ==================== 物品声明区域 ====================
     // 块物品
     public static final RegistryObject<Item> EXAMPLE_BLOCK_ITEM;
+    public static final RegistryObject<Item> METAMORPHIC_SCENT_GRASS_ITEM;
 
-
+    //刷子
     public static final RegistryObject<Item> CURSED_METAL_BRUSH;
     public static final RegistryObject<Item> DARK_BRUSH;
     // 刀具物品
@@ -153,6 +154,9 @@ public class ModItems {
 
         NOT_ANYTHING = ITEMS.register("not_anything",
                 () -> new Item(basicItem().stacksTo(1)));
+
+        METAMORPHIC_SCENT_GRASS_ITEM   = ITEMS.register("metamorphic_scent_grass_item",
+            () -> new Item(basicItem().stacksTo(1)));
 
         //神金刀
         APOCALYPTIUM_KNIFE = registerWithTab("apocalyptium_knife",
