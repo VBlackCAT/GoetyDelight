@@ -110,6 +110,7 @@ repositories {
         name = "Jared's maven"
         url = "https://maven.blamejared.com/"
     }
+
 }
 
 configurations {
@@ -272,11 +273,12 @@ dependencies {
 //    modImplementation "curse.maven:goety-586095:7170210"//2.5.36.5
 //    modImplementation  "curse.maven:goety-586095:7073504"//2.5.37.3
 
-    compileOnly "curse.maven:goety-586095:7170210"//2.5.36.5
+//    modCompileOnly "curse.maven:goety-586095:7170210"//2.5.36.5
 //    compileOnly  "curse.maven:goety-586095:7073504"//2.5.37.3
 //
 
-    modRuntimeOnly  "curse.maven:goety-586095:7073504"//2.5.37.3
+    modImplementation "curse.maven:goety-586095:7327887"//2.5.40.1
+//    modImplementation  "curse.maven:goety-586095:7073504"//2.5.37.3
 //    modRuntimeOnly "curse.maven:goety-586095:6778940"//2.5.36.1
 //    modRuntimeOnly "curse.maven:goety-586095:7170210"//2.5.36.5
 
@@ -293,7 +295,7 @@ dependencies {
     compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
     compileOnly "mezz.jei:jei-${mc_version}-forge-api:${jei_version}"
     // at runtime, use the full JEI jar for Forge
-//    modRuntimeOnly "mezz.jei:jei-${mc_version}-forge:${jei_version}"
+    modRuntimeOnly "mezz.jei:jei-${mc_version}-forge:${jei_version}"
 //    modRuntimeOnly "blank:appleskin-forge-mc1.20.1-2.5.1"
 //    modRuntimeOnly "blank:L_Enders_Cataclysm-2.58-1.20.1"
 //    modRuntimeOnly "blank:lionfishapi-2.4"

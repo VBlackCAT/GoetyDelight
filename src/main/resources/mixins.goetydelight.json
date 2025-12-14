@@ -5,6 +5,7 @@
   "mixins": [
     "ArtificialFlowerMixin",
     "BlockFinderMixin",
+    "DarkAltarBlockEntityMixin",
     "LivingEntityAccessor",
     "MobAccessor",
     "RecipeManagerMixin",

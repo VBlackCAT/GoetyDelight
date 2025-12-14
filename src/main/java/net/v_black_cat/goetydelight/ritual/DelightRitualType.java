@@ -19,6 +19,7 @@ import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.v_black_cat.goetydelight.block.ModBlocks;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +44,11 @@ public class DelightRitualType implements IRitualType {
     public boolean getRequirement(RitualBlockEntity tileEntity, BlockPos pos, Level level) {
         // 自定义仪式条件检查逻辑
         return checkDelightRequirements(pos, level);
+    }
+
+    @Override
+    public boolean getRequirement(RitualBlockEntity pTileEntity, @Nullable Player pPlayer, BlockPos pPos, Level pLevel) {
+        return checkDelightRequirements(pPos, pLevel);
     }
 
     private boolean checkDelightRequirements(BlockPos pos, Level level) {
