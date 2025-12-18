@@ -6,19 +6,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Slice;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import static net.v_black_cat.goetydelight.item.MetamorphicScentGrassItem.metamorphicScentGrassReciper;
+import static net.v_black_cat.goetydelight.item.MetamorphicScentGrassItem.metamorphicScentGrassAndFruitReciper;
 
 @Mixin(DarkAltarBlockEntity.class)
 public class DarkAltarBlockEntityMixin {
@@ -38,7 +32,7 @@ public class DarkAltarBlockEntityMixin {
                                       Player player,
                                       InteractionHand hand,
                                       Direction face) {
-        return metamorphicScentGrassReciper(world, pos, player,
+        return metamorphicScentGrassAndFruitReciper(world, pos, player,
                 player.getItemInHand(hand), value);
     }
 

@@ -13,7 +13,9 @@
     "WightSpawnerMixin"
   ],
   "client": [
-    "BookContentResourceListenerLoaderMixin"
+    "BookContentResourceListenerLoaderMixin",
+    "ItemRendererMixin",
+    "ScreenMixin"
   ],
   "server": []
 }

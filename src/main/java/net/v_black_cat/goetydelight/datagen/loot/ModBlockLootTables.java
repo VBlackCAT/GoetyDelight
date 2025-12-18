@@ -2,13 +2,19 @@ package net.v_black_cat.goetydelight.datagen.loot;
 
 import net.minecraft.advancements.critereon.EnchantmentPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.storage.loot.IntRange;
 import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.entries.AlternativesEntry;
 import net.minecraft.world.level.storage.loot.functions.ApplyExplosionDecay;
 import net.minecraft.world.level.storage.loot.functions.LimitCount;
+import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.v_black_cat.goetydelight.block.MetamorphicScentGrassBlock;
 import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
@@ -80,6 +86,7 @@ public class ModBlockLootTables extends BlockLootSubProvider {
                 block -> createSlabItemTable(ModBlocks.MARBLE_SLAB.get()));
         this.add(ModBlocks.MARBLE_DOOR.get(),
                 block -> createDoorTable(ModBlocks.MARBLE_DOOR.get()));
+        this.add(ModBlocks.METAMORPHIC_SCENT_GRASS.get(), this::createMetamorphicScentGrassDrops);
     }
 
     protected LootTable.Builder createCopperLikeOreDrops(Block pBlock, Item item) {
@@ -89,6 +96,31 @@ public class ModBlockLootTables extends BlockLootSubProvider {
                                 .apply(SetItemCountFunction.setCount(UniformGenerator.between(2.0F, 5.0F)))
                                 .apply(ApplyBonusCount.addOreBonusCount(Enchantments.BLOCK_FORTUNE))));
     }
+
+
+
+    protected LootTable.Builder createMetamorphicScentGrassDrops(Block block) {
+
+        LootItemCondition.Builder matureCondition = LootItemBlockStatePropertyCondition
+                .hasBlockStateProperties(block)
+                .setProperties(StatePropertiesPredicate.Builder.properties()
+                        .hasProperty(MetamorphicScentGrassBlock.AGE, 3));
+
+
+        return this.createCropDrops(
+                block,
+                ModItems.METAMORPHIC_SCENT_GRASS.get(),
+                ModItems.METAMORPHIC_SCENT_GRASS_SEEDS.get(),
+                matureCondition
+                ).withPool(LootPool.lootPool()
+                        .when(matureCondition)
+                        .add(LootItem.lootTableItem(ModItems.METAMORPHIC_SCENT_FRUIT.get())
+                                .when(LootItemRandomChanceCondition.randomChance(0.05f))
+                                .apply(ApplyBonusCount.addUniformBonusCount(Enchantments.BLOCK_FORTUNE))));
+    }
+
+
+
 
     protected LootTable.Builder createFruitBlockDrops(Block block, Item fruitItem, float minDrops, float maxDrops, int maxWithFortune) {
         return LootTable.lootTable()

@@ -1,4 +1,4 @@
-// 1.20.1	2025-12-14T22:38:19.1102551	Loot Tables
+// 1.20.1	2025-12-17T12:23:11.6405292	Loot Tables
 51af4557de485fb4d9fc5395dbce06eaa2dd12c6 data/goetydelight/loot_tables/blocks/attached_ectoplasmic_melon_stem.json
 dcbe2ae987206dde3d003fff75cb07a50b3ef3a6 data/goetydelight/loot_tables/blocks/blue_marble.json
 676fb5b067deb35f243fbbf9c8c06217881facc5 data/goetydelight/loot_tables/blocks/boat_stuffed_roasted_warden_block.json
@@ -18,6 +18,7 @@ d3339eb1ec1fca01a5c9866b2c1f30ac2136e4a8 data/goetydelight/loot_tables/blocks/ma
 d0eff6bbfac4765b88bc1255bea5fcf8a4b54931 data/goetydelight/loot_tables/blocks/marble_stairs.json
 2ae15c2f593854ea8fd2e120cf21dcf4f9b4ca6c data/goetydelight/loot_tables/blocks/marble_trapdoor.json
 f08cba9b565839a1aa1f7de558ee68d205210971 data/goetydelight/loot_tables/blocks/marble_wall.json
+3f497f627e9cf12e2147a929a166445e861c520d data/goetydelight/loot_tables/blocks/metamorphic_scent_grass.json
 9920dce3b2dab0eb8b815a30f4ea20931617b7fc data/goetydelight/loot_tables/blocks/nether_marble.json
 e74e1388102b4f7b565288b376f9f9b70da7d451 data/goetydelight/loot_tables/blocks/night_stove.json
 abe6eac8ba2636b398eb0d3f8a713ccf6309ad03 data/goetydelight/loot_tables/blocks/pointed_dripmarble.json

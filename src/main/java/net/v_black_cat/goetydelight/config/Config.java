@@ -31,6 +31,8 @@ public class Config
                     "goetydelight:rotten_corpse_maggot_feast_block"
             ), Config::validateItemName);
 
+
+
     private static final ForgeConfigSpec.IntValue MAX_ATTACK_COUNT = BUILDER
             .comment("Maximum attack count for Starless Night item")
             .defineInRange("starlessNightMaxAttackCount", 5, 1,2147483647);
@@ -72,6 +74,67 @@ public class Config
             .comment("The number of Polarice item can affect")
             .defineInRange("polarice_count", 10, 1, Integer.MAX_VALUE);
 
+    //幻味草黑名单
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> METAMORPHIC_SCENT_GRASS_COPY_BLACKLIST = BUILDER
+            .comment("A list of items that cannot be copied by Metamorphic Scent Grass")
+            .defineListAllowEmpty("MetamorphicScentGrassCopyBlacklist", List.of(), Config::validateItemName);
+
+
+    //幻味草持续时长倍率
+
+    private static final ForgeConfigSpec.DoubleValue METAMORPHIC_SCENT_GRASS_DURATION_MULTIPLIER = BUILDER
+            .comment("Duration multiplier for Metamorphic Scent Grass effect (0.0 to 1.0)")
+            .defineInRange("metamorphicScentGrassDurationMultiplier", 0.3, 0.0, 1.0);
+    //幻味草buff强度倍率
+    private static final ForgeConfigSpec.DoubleValue METAMORPHIC_SCENT_GRASS_AMPLIFIER_MULTIPLIER = BUILDER
+            .comment("Amplifier multiplier for Metamorphic Scent Grass effect (0.0 to 1.0)")
+            .defineInRange("metamorphicScentGrassAmplifierMultiplier", 0.5, 0.0, 1.0);
+
+
+
+    //幻味草复制数量
+    private static final ForgeConfigSpec.IntValue METAMORPHIC_SCENT_GRASS_COPY_COUNT = BUILDER
+                .comment("The maximum number of effects that can be copied by Metamorphic Scent Grass (0-64)")
+                .defineInRange("metamorphicScentGrassCopyCount", 1, 0, 64);
+
+    //幻味果黑名单
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> METAMORPHIC_SCENT_FRUIT_COPY_BLACKLIST = BUILDER
+            .comment("A list of items that cannot be copied by Metamorphic Scent Fruit")
+            .defineListAllowEmpty("MetamorphicScentFruitCopyBlacklist", List.of(), Config::validateItemName);
+    //幻味果复制数量
+    private static final ForgeConfigSpec.IntValue METAMORPHIC_SCENT_FRUIT_COPY_COUNT = BUILDER
+            .comment("The maximum number of effects that can be copied by Metamorphic Scent Fruit (0-64)")
+            .defineInRange("metamorphicScentFruitCopyCount", 1, 0, 64);
+
+    public static double getMetamorphicScentGrassDurationMultiplier() {
+        return METAMORPHIC_SCENT_GRASS_DURATION_MULTIPLIER.get();
+    }
+
+    public static double getMetamorphicScentGrassAmplifierMultiplier() {
+        return METAMORPHIC_SCENT_GRASS_AMPLIFIER_MULTIPLIER.get();
+    }
+
+    public static int getMetamorphicScentFruitCopyCount() {
+        return METAMORPHIC_SCENT_FRUIT_COPY_COUNT.get();
+    }
+
+
+    public static Set<Item> getMetamorphicScentGrassCopyBlacklist() {
+        return METAMORPHIC_SCENT_GRASS_COPY_BLACKLIST.get().stream()
+                .map(itemName -> ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName)))
+                .collect(Collectors.toSet());
+    }
+
+
+    public static Set<Item> getMetamorphicScentFruitCopyBlacklist() {
+        return METAMORPHIC_SCENT_FRUIT_COPY_BLACKLIST.get().stream()
+                .map(itemName -> ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName)))
+                .collect(Collectors.toSet());
+    }
+
+    public static int getMetamorphicScentGrassCopyCount() {
+        return METAMORPHIC_SCENT_GRASS_COPY_COUNT.get();
+    }
     public static int getPolariceCount() {
         return POLARICE_COUNT.get();
     }

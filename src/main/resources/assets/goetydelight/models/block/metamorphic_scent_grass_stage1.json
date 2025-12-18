@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/crop",
+  "textures": {
+    "crop": "goetydelight:block/metamorphic_scent_grass_stage1"
+  }
+}
