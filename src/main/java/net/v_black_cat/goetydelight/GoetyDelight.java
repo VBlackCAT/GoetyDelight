@@ -145,6 +145,7 @@ public class GoetyDelight
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.ROYAL_CAKE_BLOCK.get(), RenderType.translucent());
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.ECTOPLASMIC_MELON_BLOCK.get(), RenderType.translucent());
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.BOAT_STUFFED_ROASTED_WARDEN_BlOCK.get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(ModBlocks.METAMORPHIC_SCENT_GRASS.get(), RenderType.cutout());
         }
     }
 }

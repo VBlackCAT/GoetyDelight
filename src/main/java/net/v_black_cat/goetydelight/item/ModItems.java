@@ -114,7 +114,6 @@ public class ModItems {
     public static final RegistryObject<Item> SNAP_UNHOLY_TRIPE;
     public static final RegistryObject<Item> SUNDAE_OF_THE_PHILOSOPHERS_POTION;
     public static final RegistryObject<Item> THE_BOX_OF_THE_DEAD;
-    public static final RegistryObject<Item> ECTOPLASMIC_MELON_SEEDS;
     public static final RegistryObject<Item> RING_PACKED_VOID_GEL_JELLY;
     public static final RegistryObject<Item> STUFFED_TALL_SKULL_RICE;
     public static final RegistryObject<Item> OMINOUS_RAMUNE;
@@ -125,7 +124,11 @@ public class ModItems {
     public static final RegistryObject<Item> NOT_ANYTHING;
     public static final RegistryObject<Item> ROAST_LAOWANG;
     public static final RegistryObject<Item> POLARICE;
+    public static final RegistryObject<Item> METAMORPHIC_SCENT_FRUIT;
 
+    //种子
+    public static final RegistryObject<Item> ECTOPLASMIC_MELON_SEEDS;
+    public static final RegistryObject<Item> METAMORPHIC_SCENT_GRASS_SEEDS;
     // ==================== 效果供应商常量 ====================
     private static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
     private static final Supplier<MobEffect> NOURISHMENT_EFFECT_SUPPLIER = farmersDelightBuff("nourishment");
@@ -156,7 +159,7 @@ public class ModItems {
                 () -> new Item(basicItem().stacksTo(1)));
 
         METAMORPHIC_SCENT_GRASS = ITEMS.register("metamorphic_scent_grass",
-            () -> new MetamorphicScentGrassItem(basicItem().stacksTo(64)));
+            () -> new MetamorphicScentGrassItem(basicItem().stacksTo(64).food(simpleFoodItemProperties(2,3).build())));
 
         //神金刀
         APOCALYPTIUM_KNIFE = registerWithTab("apocalyptium_knife",
@@ -654,12 +657,17 @@ public class ModItems {
                                 .effect(() ->new MobEffectInstance(ILLAGUE.get(), minToTick(5), 0), 1.0F)
                                 .effect(() ->new MobEffectInstance(MobEffects.DIG_SPEED, minToTick(5), 2), 1.0F)
                                 .build())));
-
+        METAMORPHIC_SCENT_FRUIT=ITEMS.register("metamorphic_scent_fruit",
+                () -> simpleFoodItem(10, 8,false));;
 
         // ==================== 种子物品 ====================
 
         ECTOPLASMIC_MELON_SEEDS = ITEMS.register("ectoplasmic_melon_seeds",
                 () -> new ItemNameBlockItem(ModBlocks.ECTOPLASMIC_MELON_STEM.get(),
+                        new Item.Properties()
+                ));
+        METAMORPHIC_SCENT_GRASS_SEEDS = ITEMS.register("metamorphic_scent_grass_seeds",
+                () -> new ItemNameBlockItem(ModBlocks.METAMORPHIC_SCENT_GRASS.get(),
                         new Item.Properties()
                 ));
         // ==================== 杂项物品 ====================

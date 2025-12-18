@@ -144,11 +144,11 @@ public class ModBlocks {
                     .noLootTable()
                     .sound(SoundType.AMETHYST)));
 
-
+    //灵质瓜
     public static final RegistryObject<Block> ECTOPLASMIC_MELON_BLOCK = registerBlock("ectoplasmic_melon_block",
             () -> new EctoplasmicMelonBlock(BlockBehaviour.Properties.copy(Blocks.MELON)));
 
-
+    //灵质瓜藤
     public static final RegistryObject<Block> ECTOPLASMIC_MELON_STEM = registerBlockWithoutBlockItem("ectoplasmic_melon_stem",
             () -> new StemBlock((StemGrownBlock)ECTOPLASMIC_MELON_BLOCK.get(),
                     () -> ModItems.ECTOPLASMIC_MELON_SEEDS.get(),
@@ -157,11 +157,16 @@ public class ModBlocks {
                     .instabreak() // 瞬间破坏
                     .sound(SoundType.CROP) // 作物音效
                     .randomTicks() // 需要随机刻
-
-
             ));
+    //幻味草
+    public static final RegistryObject<Block> METAMORPHIC_SCENT_GRASS = registerBlockWithoutBlockItem("metamorphic_scent_grass",
+            () -> new MetamorphicScentGrassBlock(
+                  BlockBehaviour.Properties.of()
+                          .mapColor(MapColor.PLANT)
+                          .noCollission().randomTicks().instabreak()
+                          .sound(SoundType.CROP).pushReaction(PushReaction.DESTROY)));
 
-
+    //灵质瓜茎
     public static final RegistryObject<Block> ATTACHED_ECTOPLASMIC_MELON_STEM = registerBlockWithoutBlockItem("attached_ectoplasmic_melon_stem",
             () -> new AttachedStemBlock((StemGrownBlock)ECTOPLASMIC_MELON_BLOCK.get(),
                     () -> ModItems.ECTOPLASMIC_MELON_SEEDS.get(),

@@ -101,6 +101,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.NOT_ANYTHING);
         simpleItem(ModItems.ANCIENT_ENCHANTED_GOLDEN_APPLE);
         simpleItem(ModItems.METAMORPHIC_SCENT_GRASS);
+        simpleItem(ModItems.METAMORPHIC_SCENT_GRASS_SEEDS);
+        simpleItem(ModItems.METAMORPHIC_SCENT_FRUIT);
 
         simpleItem(ModBlocks.getBlockItem(ModBlocks.ROYAL_CAKE_BLOCK));
         

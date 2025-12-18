@@ -116,6 +116,9 @@ public class DelightRitualType implements IRitualType {
             returnSpecialItems(world, darkAltarPos, castingPlayer,new ItemStack(OMINOUS_SHARD.get()));
             returnSpecialItems(world, darkAltarPos, castingPlayer,new ItemStack(BOUNCY_BUBBLE_FOCUS.get()));
         }
+        if (recipe.getId().toString().equals("goetydelight:metamorphic_scent_grass_ritual")) {
+            returnSpecialItems(world, darkAltarPos, castingPlayer,activationItem.copyWithCount(1));
+        }
 
         world.playSound(null, darkAltarPos, SoundEvents.BELL_RESONATE,
                 SoundSource.BLOCKS, 1.0F, 0.5F);
