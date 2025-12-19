@@ -1,0 +1,15 @@
+{
+    "name": "沸血の醸造酒",
+    "icon": "goetydelight:boiling_blood_brew",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "摂取した者に、燃えるオーラ（5分）と健康（5分）を付与する。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/boiling_blood_brew"
+        }
+    ]
+}

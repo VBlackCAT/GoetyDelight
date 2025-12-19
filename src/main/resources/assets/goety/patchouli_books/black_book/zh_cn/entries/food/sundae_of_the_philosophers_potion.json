@@ -1,0 +1,16 @@
+{
+    "name": "贤者灵药圣代",
+    "icon": "goetydelight:sweet_berry_pudding",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "贤者之者拌万灵药，打上鸡蛋丢俩冰块，最后丢个路边随手摘的浆果，你就能得到……只有某种逊爆了的亡灵生物才可食用的…圣代？仅巫妖可食用。$(br)给予食用者：$(br)$(li)无限时长的永恒II、灵魂护甲II$(li)30分钟的迈达斯之触$(li)永久增加50％魔抗，该效果仅生效一次$(li)对全部可破坏方块增加10％的挖掘速度，该效果仅生效三次"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/sundae_of_the_philosophers_potion",
+            "text":"$(o)牙口不错嘛，小巫妖~"
+        }
+    ]
+}

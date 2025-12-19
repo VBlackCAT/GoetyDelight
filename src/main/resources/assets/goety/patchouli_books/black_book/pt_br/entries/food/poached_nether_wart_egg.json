@@ -1,0 +1,12 @@
+{
+    "name": "Ovo Poché com Verruga do Nether",
+    "icon": "goetydelight:poached_nether_wart_egg",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/poached_nether_wart_egg",
+            "text": "Remove todos os efeitos negativos de quem o consome."
+        }
+    ]
+}

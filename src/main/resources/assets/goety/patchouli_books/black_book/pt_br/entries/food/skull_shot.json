@@ -1,0 +1,15 @@
+{
+    "name": "Shot de Crânio",
+    "icon": "goetydelight:skull_shot",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Ouçam bem, suas pragas de pele cinzenta. Quando eu digo 'vou usar seu crânio como tigela', não é uma ameaça, é a constatação de um fato. O vinho de frutas escarlate é doce e intoxicante como melaço cerebral. Esta é a ultimate representação da vitória e do consumo dos derrotados —$(br)o preço é o que eles merecem.$(br)Concede a quem consome: 1 minuto de Devorador de Cadáveres."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/skull_shot"
+        }
+    ]
+}

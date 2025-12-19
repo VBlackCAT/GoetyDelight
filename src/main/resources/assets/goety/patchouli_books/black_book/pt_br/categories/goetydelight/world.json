@@ -1,0 +1,7 @@
+{
+  "name": "Geração Natural",
+  "description": "Algumas novas estruturas...",
+  "icon": "goety:arca_compass",
+  "parent": "goety:goetydelight",
+  "sortnum": 6
+}

@@ -1,0 +1,12 @@
+{
+    "name": "召喚獣強化",
+    "icon": "goetydelight:textures/mob_effect/servant_reinforcement.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "一度に召喚される召喚獣の数が2倍になる。"
+        }
+
+    ]
+}

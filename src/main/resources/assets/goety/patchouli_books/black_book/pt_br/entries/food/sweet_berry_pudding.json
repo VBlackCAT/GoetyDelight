@@ -1,0 +1,15 @@
+{
+    "name": "Pudim de Bagas Doces",
+    "icon": "goetydelight:sweet_berry_pudding",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Jogue bagas, ectoplasma e uma bola de slime numa panela para cozinhar, e você obterá este pudim suave e delicioso.$(br)Concede a quem consome:$(br)$(li)5 minutos de Regeneração II e Nutrição$(br)Também aumenta o ataque em 3 pontos e a velocidade em 5%."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/sweet_berry_pudding"
+        }
+    ]
+}

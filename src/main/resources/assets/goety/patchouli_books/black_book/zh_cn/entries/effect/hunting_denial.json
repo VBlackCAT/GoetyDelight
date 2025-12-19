@@ -1,0 +1,11 @@
+{
+    "name": "猎杀拒止",
+    "icon": "goetydelight:textures/mob_effect/hunting_denial.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "阻止灾厄猎杀 -（效果持有者等效于移动的灵魂方尖碑）"
+        }
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "name": "Embrião de Almas Convergentes",
+    "icon": "goetydelight:gathering_soul_embryos",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Um órgão localizado no coração do Guardião, arrancado por você violentamente enquanto ainda estava vivo, inevitavelmente danificado em partes. É, em essência, um agregado puro de almas. Ao absorvê-lo, você obtém o poder delas. As almas que se dissipam formam uma armadura, as almas que se agregam impulsionam a energia, e o que sobra é apenas um desejo faminto.$(li)Após o consumo, aumenta em 10000 pontos a Energia das Almas do jogador.$(br)Dropado pelo Guardião."
+        },
+        {
+            "type": "spotlight",
+            "title": "Câmara de Convergência de Almas",
+            "link_recipe": true,
+            "item": "goetydelight:soul_convergence_room",
+            "scale": 1.2,
+            "text": "Após o consumo, aumenta em 30000 pontos a Energia das Almas do jogador e, por dez minutos, impede a geração da Caçada da Calamidade."
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+{
+  "name": "Outros",
+  "description": "Alguns dispositivos diversos",
+  "icon": "goetydelight:cursed_metal_brush",
+  "parent": "goety:goetydelight",
+  "sortnum": 3
+}

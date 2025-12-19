@@ -1,0 +1,15 @@
+{
+    "name": "Faca de Metal Sombrio",
+    "icon": "goetydelight:dark_knife",
+    "category": "goety:goetydelight/equipment",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Versão aprimorada da Faca de Metal Amaldiçoado. Possui Remendo das Almas inerente. Ataques infligem Corrosão por 5s. O dano causado por esta arma é multiplicado por 1.5."
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/dark_knife"
+        }
+    ]
+}

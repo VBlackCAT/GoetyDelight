@@ -1,0 +1,27 @@
+{
+    "name": "焼きカエルの足",
+    "icon": "goetydelight:grill_frog_leg",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "ジューシーで美味。よく噛んで味わえば、微かに焦げた骨と歯の間の肉から食欲をそそる香りが漂う。$(br)摂取した者に、カエルの足（60秒）、再生能力 II（20秒）を付与する。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/grill_frog_leg"
+        },
+        {
+            "type": "spotlight",
+            "title": "カエルの足サンドイッチ",
+            "link_recipe": true,
+            "item": "goetydelight:frog_leg_sandwich",
+            "scale": 1.2,
+            "text": "一部の国では珍味として認知されており、素朴な趣と沼地の風味を味わうことができる。$(br)ミートボールがサンドイッチより優先度が低いとはどういうことだ？"
+        },
+        {
+            "type": "patchouli:crafting",
+            "recipe": "goetydelight:frog_leg_sandwich"
+        }
+    ]
+}

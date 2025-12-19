@@ -1,0 +1,15 @@
+{
+    "name": "Ominous Ramune",
+    "icon": "goetydelight:ominous_ramune",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Grants consumer:$(br)$(li)1-minute Stimulation"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/ominous_ramune"
+        }
+    ]
+}

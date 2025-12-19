@@ -1,0 +1,15 @@
+{
+    "name": "Quick Growing Seed Popcorn",
+    "icon": "goetydelight:quick_growing_seed_popcorn",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Quick Growing Seeds sprout rapidly—turning them into popcorn would surely be filling. As a pica-afflicted individual, you could probably endure the expansion of popcorn in your stomach.$(br)Grants consumer:$(br)$(li)30-second Saturation, 10-minute Nourishment & Comfort$(li)5-minute Photosynthesis"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/quick_growing_seed_popcorn"
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "name": "Café da Manhã Excêntrico",
+    "icon": "goetydelight:exotic_breakfast",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Concede a quem consome:$(br)$(li)30 segundos de Fúria Selvagem$(li)3 minutos de Nutrição"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/exotic_breakfast"
+        }
+    ]
+}

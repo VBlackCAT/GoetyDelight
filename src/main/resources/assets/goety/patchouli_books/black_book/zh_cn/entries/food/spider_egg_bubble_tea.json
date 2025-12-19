@@ -1,0 +1,15 @@
+{
+    "name": "真蛛奶茶",
+    "icon": "goetydelight:spider_egg_bubble_tea",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "真的有人敢吃蜘蛛卵吗（畏怖$(br)给予食用者$(br)$(li)1分钟的攀爬"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/spider_egg_bubble_tea"
+        }
+    ]
+}

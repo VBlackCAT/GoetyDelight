@@ -1,0 +1,15 @@
+{
+    "name": "Frenzied Fungus Pop Rocks",
+    "icon": "goetydelight:frenzied_fungus_pop_rocks",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "It truly feels like a frenzied legion firing gunpowder assaults against your oral mucosa and tongue!$(br)This agitation combined with sugar-fueled energy makes you crave physical exertion.$(br)Grants consumer:$(br)$(li)2-minute 30-second Surge$(li)2-minute Swiftness$(li)2-minute 30-second Strength$(br)Can be consumed regardless of satiation. Buff durations are cumulative."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/frenzied_fungus_pop_rocks"
+        }
+    ]
+}

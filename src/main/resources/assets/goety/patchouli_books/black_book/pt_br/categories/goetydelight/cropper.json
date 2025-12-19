@@ -1,0 +1,7 @@
+{
+  "name": "Cultivos",
+  "description": "Algumas plantações sombrias únicas...",
+  "icon": "goetydelight:ectoplasmic_melon_block",
+  "parent": "goety:goetydelight",
+  "sortnum": 5
+}

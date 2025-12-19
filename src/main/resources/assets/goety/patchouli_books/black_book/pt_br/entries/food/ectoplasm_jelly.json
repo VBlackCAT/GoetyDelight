@@ -1,0 +1,15 @@
+{
+    "name": "Gelatina de Ectoplasma",
+    "icon": "goetydelight:ectoplasm_jelly",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "\"Um por vez, macio e delicioso, frio e cativante!\"$(br)Restaura 100 pontos de Energia das Almas ao ser consumido."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/ectoplasm_jelly"
+        }
+    ]
+}

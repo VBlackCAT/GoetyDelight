@@ -1,0 +1,11 @@
+{
+    "name": "Hydration",
+    "icon": "goetydelight:textures/mob_effect/hydration.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Restores health when submerged in water blocks, flowing water, or rain. Each level of the buff increases recovery rate by 1 point."
+        }
+    ]
+}

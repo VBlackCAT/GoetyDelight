@@ -1,0 +1,11 @@
+{
+    "name": "Wight Denial",
+    "icon": "goetydelight:textures/mob_effect/wight_denial.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Prevents Wraith Ghoul spawns for the effect's duration."
+        }
+    ]
+}

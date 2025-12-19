@@ -1,0 +1,16 @@
+{
+    "name": "Bone Lord Ash Rice",
+    "icon": "goetydelight:bone_lord_ash_rice",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Grants consumer:$(br)$(li)5-minute Robustness III$(li)5-minute Frost Aegis II$(li)5-minute Nourishment$(li)1-minute Ghoulism III$(li)Additionally provides 15 armor points and 10 armor toughness as non-buff attributes"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/bone_lord_ash_rice"
+        }
+        
+    ]
+}

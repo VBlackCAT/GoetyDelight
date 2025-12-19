@@ -1,0 +1,16 @@
+{
+    "name": "Grape Slush",
+    "icon": "goetydelight:grape_slush",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "You have no concept of grapes, but imagine they must be purple. As a genius excelling in both culinary and magical arts, you've infused chive blossoms with the luscious magic hidden within amethysts...$(br)Grants consumer:$(br)$(li)3-minute 30-second Frost Aegis II$(li)10-minute Nourishment$(li)30-second Glacial Aura"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/grape_slush",
+            "text": "This is absolutely grapes! They look identical and taste the same!$(br)Adding crushed ice to transform it into a smoothie naturally improves the texture."
+        }
+    ]
+}

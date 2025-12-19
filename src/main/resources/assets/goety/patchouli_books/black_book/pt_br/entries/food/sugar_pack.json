@@ -1,0 +1,43 @@
+{
+    "name": "Pacote de Açúcar Chorão",
+    "icon": "goetydelight:cry_sugar_pack",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "spotlight",
+            "title": "Pacote de Açúcar",
+            "link_recipe": true,
+            "item": "goetydelight:sugar_pack",
+            "scale": 1.2,
+            "text": "Nãam, nãam cõomidass >w<$(br)Concede a quem consome 4 minutos de Nutrição."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/sugar_pack"
+        },
+        {
+            "type": "spotlight",
+            "title": "Pacote de Açúcar Solar",
+            "link_recipe": true,
+            "item": "goetydelight:sunshine_sugar_bun",
+            "scale": 1.2,
+            "text": "Nãam, nãam cõomidass >w<$(br)Concede a quem consome:$(br)$(li)5 minutos de Nutrição$(li)1 minuto de Fotossíntese II"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/sunshine_sugar_bun"
+        },
+        {
+            "type": "spotlight",
+            "title": "Pacote de Açúcar Chorão",
+            "link_recipe": true,
+            "item": "goetydelight:cry_sugar_pack",
+            "scale": 1.2,
+            "text": "Buáááá, pôol favôol, nãam cõomidass >w<$(br)Concede a quem consome:$(br)$(li)5 minutos de Nutrição$(li)15 minuto de Hidratação II"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/cry_sugar_pack"
+        }
+    ]
+}

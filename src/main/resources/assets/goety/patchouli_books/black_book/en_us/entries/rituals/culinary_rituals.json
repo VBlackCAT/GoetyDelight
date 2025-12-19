@@ -1,0 +1,21 @@
+{
+  "name": "Culinary Rituals",
+  "icon": "goetydelight:cursed_ingot_pot",
+  "category": "goety:rituals",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Requirements: $(li)2 Smokers $(li)1 Shadow Hearth $(li)1 Cursed Metal Pot"
+    },
+    {
+      "type": "patchouli:image",
+      "images": ["goety:textures/gui/culinary_rituals.png"],
+      "border": true,
+      "text": "An example of ritual arrangement."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Create a gourmet kitchen for dark wizards around the Dark Altar! Allows you to prepare special dishes."
+    }
+  ]
+}

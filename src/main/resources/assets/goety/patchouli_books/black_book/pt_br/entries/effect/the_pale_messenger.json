@@ -1,0 +1,11 @@
+{
+    "name": "O Mensageiro Pálido",
+    "icon": "goetydelight:textures/mob_effect/the_pale_messenger.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Ao atacar, gera uma chama abissal aos pés do alvo. Concede imunidade a efeitos negativos e reduz o dano recebido pela metade. Obtido ao consumir $(l:goety:food/tainted_drink)Bebida Profana$()."
+        }
+    ]
+}

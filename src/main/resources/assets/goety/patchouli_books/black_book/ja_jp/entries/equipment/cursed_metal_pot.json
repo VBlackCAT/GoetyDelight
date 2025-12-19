@@ -1,0 +1,15 @@
+{
+    "name": "呪われた鉄の鍋",
+    "icon": "goetydelight:cursed_ingot_pot",
+    "category": "goety:goetydelight/equipment",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "呪われた鉄が持つ魂への親和性を利用し、ソウルエネルギーを使って料理を調理することができる。1つの料理につきソウルエネルギーを50消費し、また、あらゆる料理に対して1.5倍の速度ボーナスが付与される。"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/cursed_ingot_pot"
+        }
+    ]
+}

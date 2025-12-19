@@ -1,0 +1,15 @@
+{
+    "name": "Sorvete Ominoso",
+    "icon": "goetydelight:ominous_ice_cream",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Concede a quem consome:$(br)$(li)5 minutos de Presságio Sinistro V,$(li)1 minuto de Pele Gelida$(br)Se o consumidor estiver sob o efeito de Presságio Sinistro, as criaturas da facção da Calamidade permanecerão neutras em relação a ele (a maioria dos chefes da facção da Calamidade não é afetada). Este efeito cessa assim que o Presságio Sinistro desaparecer, e só pode ser reativado consumindo este item novamente (não importa se o consumidor obtiver Presságio Sinistro novamente por outros meios no intervalo)."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/ominous_ice_cream"
+        }
+    ]
+}

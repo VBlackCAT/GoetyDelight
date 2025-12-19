@@ -1,0 +1,19 @@
+{
+    "name": "Ectoplasmic Melon",
+    "icon": "goetydelight:ectoplasmic_melon_block",
+    "category": "goety:goetydelight/cropper",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "A soul-glowing melon found in ectoplasmic fields.$(br)Warning: Never harvest melons in front of the melon farmer!"
+        },
+        {
+            "type": "spotlight",
+            "title": "Ectoplasmic Melon Seeds",
+            "link_recipe": true,
+            "item": "goetydelight:ectoplasmic_melon_seeds",
+            "scale": 1.2,
+            "text": "Obtainable through trade with the Ghost Melon Farmer. Can be used to cultivate Ectoplasmic Melons."
+        }
+    ]
+}

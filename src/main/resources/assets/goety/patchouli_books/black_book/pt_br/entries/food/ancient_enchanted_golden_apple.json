@@ -1,0 +1,15 @@
+{
+    "name": "Maçã Dourada Encantada Ancestral",
+    "icon": "goetydelight:ancient_enchanted_golden_apple",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "$(br)Concede a quem consome:$(br)$(li)5 minutos de Resistência, Resistência ao Fogo$(li)2 minutos de Absorção IV$(li)30 segundos de Regeneração VI$(li)Reduz o dano recebido em 20% para as próximas 60 vezes que receber dano."
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/ancient_enchanted_golden_apple"
+        }
+    ]
+}

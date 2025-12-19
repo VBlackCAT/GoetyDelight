@@ -1,0 +1,15 @@
+{
+    "name": "不详波子汽水",
+    "icon": "goetydelight:ominous_ramune",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "给予食用者：$(br)$(li)1分钟刺激感"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/ominous_ramune"
+        }
+    ]
+}

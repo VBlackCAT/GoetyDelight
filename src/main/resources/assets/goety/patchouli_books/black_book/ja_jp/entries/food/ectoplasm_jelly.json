@@ -1,0 +1,15 @@
+{
+    "name": "エクトプラズムゼリー",
+    "icon": "goetydelight:ectoplasm_jelly",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "「一口ごとに滑らかで美味、そして背筋が凍るほど魅惑的！」$(br)摂取するとソウルエネルギーを100回復する。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/ectoplasm_jelly"
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "name": "熱狂キノコのパチパチキャンディ",
+    "icon": "goetydelight:frenzied_fungus_pop_rocks",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "まるで口の中で、狂乱した軍隊が火薬を使って粘膜や舌を爆撃しているかのようだ！$(br)糖分からくる衝動とエネルギーが、筋肉を動かしたくてたまらなくさせる。$(br)摂取した者に、チャージ I（2.5分）、移動速度上昇 I（2.5分）、攻撃力上昇 I（2.5分）を付与する。$(br)満腹度に関わらず摂取可能であり、バフの効果時間は累積する。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/frenzied_fungus_pop_rocks"
+        }
+    ]
+}

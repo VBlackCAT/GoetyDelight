@@ -1,0 +1,15 @@
+{
+    "name": "黑暗金属刀",
+    "icon": "goetydelight:dark_knife",
+    "category": "goety:goetydelight/equipment",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "诅咒金属刀的升级版，自带灵魂修补，攻击附带5s的侵蚀效果。该武器所造成的伤害*1.5"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/dark_knife"
+        }
+    ]
+}

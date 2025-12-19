@@ -1,0 +1,15 @@
+{
+    "name": "Faca de Metal Amaldiçoado",
+    "icon": "goetydelight:cursed_ingot_knife",
+    "category": "goety:goetydelight/equipment",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Uma faca feita de Metal Amaldiçoado, aparentemente sem nada de especial."
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/cursed_ingot_knife"
+        }
+    ]
+}

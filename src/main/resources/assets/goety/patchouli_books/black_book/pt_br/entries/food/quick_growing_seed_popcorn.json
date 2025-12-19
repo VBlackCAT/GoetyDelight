@@ -1,0 +1,15 @@
+{
+    "name": "Pipoca de Semente de Crescimento Rápido",
+    "icon": "goetydelight:quick_growing_seed_popcorn",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "A Semente de Crescimento Rápido pode germinar rapidamente. Se transformada em pipoca, deve ser bem saciante. Alguém com paladar excêntrico como o seu certamente deve ser capaz de aguentar a pipoca se expandindo no seu estômago.$(br)Concede a quem consome:$(br)$(li)5 segundos de Saturação, 10 minutos de Nutrição e Conforto,$(li)5 minutos de Fotossíntese"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/quick_growing_seed_popcorn"
+        }
+    ]
+}

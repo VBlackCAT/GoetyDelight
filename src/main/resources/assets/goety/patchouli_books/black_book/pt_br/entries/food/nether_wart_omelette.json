@@ -1,0 +1,15 @@
+{
+    "name": "Omelete de Verruga Distorcida",
+    "icon": "goetydelight:warped_wart_omelette",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Ao consumir, concede a quem consome:$(br)$(li)Purificação - Modo Reverso"
+        },
+        {
+            "type": "patchouli:smelting",
+            "recipe": "goetydelight:smoker/nether_wart_omelette"
+        }
+    ]
+}

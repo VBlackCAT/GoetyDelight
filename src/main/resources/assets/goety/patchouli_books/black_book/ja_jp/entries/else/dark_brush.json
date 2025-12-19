@@ -1,0 +1,15 @@
+{
+    "name": "闇のブラシ",
+    "icon": "goetydelight:dark_brush",
+    "category": "goety:goetydelight/else",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "闇の装備一式と同様に「魂の修繕」が付与されており、ブロックを掃く速度が2倍になる。"
+        },
+        {
+            "type": "crafting",
+            "recipe": "goetydelight:dark_ingot_brush"
+        }
+    ]
+}

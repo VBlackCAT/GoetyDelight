@@ -1,0 +1,19 @@
+{
+    "name": "Gathering Soul Embryos",
+    "icon": "goetydelight:gathering_soul_embryos",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "An organ extracted from the Warden's cardiac region through violent vivisection, inevitably damaged during removal. It is essentially a pure soul aggregate—absorption grants you their power. Scattered souls form armor, coalesced souls drive energy, leaving only ravenous hunger.$(li)Upon consumption, increases player's soul energy by 10,000 points.$(br)Dropped by Wardens"
+        },
+        {
+            "type": "spotlight",
+            "title": "Soul Convergence Room",
+            "link_recipe": true,
+            "item": "goetydelight:soul_convergence_room",
+            "scale": 1.2,
+            "text": "Upon consumption, increases player's soul energy by 30,000 points and prevents Calamity Hunt spawns for 10 minutes."
+        }
+    ]
+}

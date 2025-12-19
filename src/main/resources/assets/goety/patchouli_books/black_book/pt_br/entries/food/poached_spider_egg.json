@@ -1,0 +1,15 @@
+{
+    "name": "Ovo de Aranha Poché",
+    "icon": "goetydelight:poached_spider_egg",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Tem um gosto semelhante ao de um ovo frito comum, mas só de pensar que é um ovo de aranha já dá uma sensação estranha.$(br)Concede ao jogador Escalada (10s)."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/poached_spider_egg"
+        }
+    ]
+}

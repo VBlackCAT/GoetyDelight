@@ -1,0 +1,23 @@
+{
+    "name": "Bebida Profana",
+    "icon": "goetydelight:tainted_drink",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Concede a quem consome:$(br)$(li)30 segundos de Regeneração IV$(li)1 minuto de Resistência IV$(li)Após o consumo, ao atacar, gera uma chama abissal aos pés do alvo, concede imunidade a efeitos negativos e reduz o dano recebido pela metade.$(li)Ao receber dano, 50% de chance de invocar um Lacaio Piglin Zumbi Sob sua posse (com duração de 3 minutos).$(br)Os efeitos acima duram 15 minutos, exceto o de invocar lacaios, que dura 30 minutos (a duração diminui 1 minuto a cada lacaio invocado)."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/tainted_drink"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "\"O Sangue Profano contém um poder destrutivo, bebê-lo diretamente da garrafa é equivalente a suicídio.\"$(br)\"Isso te lembra outra substância que também era chamada de profana, e de acordo com a revelação que você recebeu, após sintonizada, tudo ficaria melhor.\"$(br)\"Será? Você tentou preparar algumas vezes esta bebida destinada à perfeição, mas nenhuma foi bem-sucedida.\"$(br)\"Pensando bem, talvez o nível dos materiais não seja digno de se comparar ao Sangue Profano.\"$(br)\"Então você encontrou um método esperto: o Rubi das Almas, sendo um excelente auxiliar, contém um poder das almas incomparável.\"$(br)\"Quando combinado com a Mistura Medicinal, o Sangue Profano deixa de ser a 'base', tornando-se um componente da mistura como um adjuvante.\""
+        },
+        {
+            "type": "patchouli:text",
+            "text": "\"Após misturar o Núcleo Místico, que realça o sabor e a eficácia, este coquetel se torna algo que te enche de orgulho.\"$(br)\"Antes de saborear, basta agitar suavemente, deixando o vermelho intoxicante atingir a borda do copo sem derramar.\"$(br)\"Então, aproveite este Fogo do Inferno picante e refrescante, certifique-se de saborear aos poucos para não perder o amargor e o sabor encorpado.\""
+        }
+    ]
+}

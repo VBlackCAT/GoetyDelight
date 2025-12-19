@@ -1,0 +1,15 @@
+{
+    "name": "全蛛宴",
+    "icon": "goetydelight:full_spider_feast",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "食用后给予食用者：$(br)$(li)5分钟的攀爬和滋养"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/exotic_breakfast"
+        }
+    ]
+}

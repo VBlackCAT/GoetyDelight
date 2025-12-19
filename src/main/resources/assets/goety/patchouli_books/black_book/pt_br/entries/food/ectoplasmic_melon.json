@@ -1,0 +1,15 @@
+{
+    "name": "Melancia de Ectoplasma Gélido",
+    "icon": "goetydelight:ectoplasmic_melon",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "\"A sensação de calafrio ao comer faz parte da experiência única, pode provar sem medo.\"$(br)\"E nenhum bêbado vai vir roubar sua melancia.\"$(br)Concede a quem consome:$(br)$(li)5 segundos de Proteção ao Frio"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/ectoplasmic_melon"
+        }
+    ]
+}

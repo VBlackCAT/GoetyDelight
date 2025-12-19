@@ -1,0 +1,15 @@
+{
+    "name": "Escova de Metal Amaldiçoado",
+    "icon": "goetydelight:cursed_metal_brush",
+    "category": "goety:goetydelight/else",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Velocidade de escovação de blocos 1.2x mais rápida."
+        },
+        {
+            "type": "patchouli:crafting",
+            "recipe": "goetydelight:cursed_metal_brush"
+        }
+    ]
+}

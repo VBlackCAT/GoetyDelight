@@ -1,0 +1,15 @@
+{
+    "name": "影のコンロ",
+    "icon": "goetydelight:shade_stove",
+    "category": "goety:goetydelight/equipment",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "影の石が持つ魂への親和性を利用し、ソウルエネルギーを使って食材を燻製にすることができる。$(br)ソウルエネルギーを消費して食材を調理する燻製器として使用できる。1つの料理につきソウルエネルギーを50消費し、調理速度は通常の1.5倍となる。"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/shade_stove"
+        }
+    ]
+}

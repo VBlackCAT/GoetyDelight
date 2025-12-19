@@ -1,0 +1,11 @@
+{
+    "name": "刺激感",
+    "icon": "goetydelight:textures/mob_effect/tingling.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "效果持续时间内：$(br)$(li)效果持有者将会被漫无目的的被推动$(li)每25刻给予效果持有者1点伤害，每等级伤害间隔减半（数值取整）$(li)给予效果持有者10%攻击伤害加成。"
+        }
+    ]
+}

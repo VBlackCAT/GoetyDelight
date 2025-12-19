@@ -1,0 +1,15 @@
+{
+    "name": "Pata de Urso",
+    "icon": "goetydelight:bear_paw",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Ingrediente excelente obtido ao derrotar criaturas do tipo urso.$(br)Concede a quem consome:$(br)$(li)2 minutos de Fúria$(li)5 minutos de Nutrição$(li)20 segundos de Veneno$(li)10 segundos de Náusea"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "\"A parte final dos membros anteriores de um animal selvagem grande e corpulento, tão gordurosa que parece derramar óleo.\"$(br)\"Embora pareça ter uma porção generosa, não é razão para comê-la crua; a saliva entre as garras ou algo pior é suficiente para deixar alguém inconsciente com o cheiro.\"$(br)\"Só após o processamento adequado ela se torna uma comida deliciosa.\""
+        }
+    ]
+}

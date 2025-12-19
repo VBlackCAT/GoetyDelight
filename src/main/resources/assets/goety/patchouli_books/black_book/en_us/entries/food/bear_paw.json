@@ -1,0 +1,15 @@
+{
+    "name": "Bear Paw",
+    "icon": "goetydelight:bear_paw",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "An exceptional ingredient obtained by hunting bear-like creatures.$(br)Confers to the consumer:$(br)$(li)2 minutes of Fury$(li)5 minutes of Saturation$(li)20 seconds of Poison$(li)10 seconds of Nausea"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "A thick and greasy segment from the forelimb of a large wild animal.$(br)Though it appears substantial, that is no reason to consume it raw—the saliva or other substances between the claws are foul enough to knock someone out.$(br)It only becomes a delicious food after proper processing."
+        }
+    ]
+}

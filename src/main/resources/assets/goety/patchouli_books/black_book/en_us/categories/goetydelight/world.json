@@ -1,0 +1,7 @@
+{
+  "name": "Naturally generated",
+  "description": "Some new structures...",
+  "icon": "goety:arca_compass",
+  "parent": "goety:goetydelight",
+  "sortnum": 6
+}

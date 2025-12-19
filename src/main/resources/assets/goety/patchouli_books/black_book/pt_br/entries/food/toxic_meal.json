@@ -1,0 +1,23 @@
+{
+    "name": "Refeição Tóxica",
+    "icon": "goetydelight:toxic_meal",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Talvez devido à loucura característica dos Magos Das Trevas, você misturou algumas das substâncias mais tóxicas com arroz para criar esta refeição que até você tem dificuldade de engolir.$(br)Após consumir várias vezes, suportando o gosto horrível e a toxicidade forte, você descobre que seu corpo desenvolveu uma tolerância à sua toxidade intensa.$(br)Claro, enfiá-la goela abaixo em outros também é uma boa opção."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Pode ser dada a outras criaturas.$(br)Concede a quem consome (ou à vítima):$(br)$(li)1 minuto e 40 segundos de Náusea, Veneno X, Fraqueza V$(li)Após múltiplos consumos, concede imunidade aos efeitos negativos:$(li2)Após 5 consumos, imunidade a Náusea$(li2)Após 10 consumos, imunidade a Veneno$(li2)Após 15 consumos, imunidade a Fraqueza.$(br)Botão direito em outras entidades concede os mesmos efeitos e consome o item."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/toxic_meal"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "\"Uma refeição carregada de toxinas, é preciso muita força de vontade para superar o medo e a hesitação antes de comê-la.\"$(br)\"Embora consumi-la possa conferir anticorpos contra doenças, a maioria das pessoas não estaria disposta a comê-la tantas vezes.\"$(br)\"Felizmente, também pode ser usada como uma arma para ser enfiada na boca dos outros.\""
+        }
+    ]
+}

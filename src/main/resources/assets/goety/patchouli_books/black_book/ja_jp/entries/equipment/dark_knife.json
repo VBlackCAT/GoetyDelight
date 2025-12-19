@@ -1,0 +1,15 @@
+{
+    "name": "Dark Metal Knife",
+    "icon": "goetydelight:dark_knife",
+    "category": "goety:goetydelight/equipment",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "An upgraded version of the Cursed Metal Knife, comes with Soul Mending, and attacks inflict Corrosion for 5 seconds. Damage dealt by this weapon is multiplied by 1.5."
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/dark_knife"
+        }
+    ]
+}

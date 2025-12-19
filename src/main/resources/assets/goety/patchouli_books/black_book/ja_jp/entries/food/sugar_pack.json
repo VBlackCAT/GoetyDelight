@@ -1,0 +1,43 @@
+{
+    "name": "泣く砂糖の袋",
+    "icon": "goetydelight:cry_sugar_pack",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "spotlight",
+            "title": "砂糖の袋",
+            "link_recipe": true,
+            "item": "goetydelight:sugar_pack",
+            "scale": 1.2,
+            "text": "ポーション、お願いします QwQ$(br)摂取した者に、栄養（4分）を付与する。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/sugar_pack"
+        },
+        {
+            "type": "spotlight",
+            "title": "サンシャインシュガーバンズ",
+            "link_recipe": true,
+            "item": "goetydelight:sunshine_sugar_bun",
+            "scale": 1.2,
+            "text": "ポーション、お願いします QwQ$(br)摂取した者に、栄養（5分）、光合成 II（1分）を付与する。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/sunshine_sugar_bun"
+        },
+        {
+            "type": "spotlight",
+            "title": "泣く砂糖の袋",
+            "link_recipe": true,
+            "item": "goetydelight:cry_sugar_pack",
+            "scale": 1.2,
+            "text": "うぅぅ、ポーションください、お願いします QwQ$(br)プレイヤーに栄養（5分）、水分補給（1分）を付与する。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/cry_sugar_pack"
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "name": "Cursed Ingot Pot",
+    "icon": "goetydelight:cursed_ingot_pot",
+    "category": "goety:goetydelight/equipment",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Utilizing the soul affinity of cursed metal, this allows you to cook dishes using soul energy. Every 50 soul energy points can prepare 1 dish, while providing a 1.5x cooking speed bonus for all recipes."
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/cursed_ingot_pot"
+        }
+    ]
+}

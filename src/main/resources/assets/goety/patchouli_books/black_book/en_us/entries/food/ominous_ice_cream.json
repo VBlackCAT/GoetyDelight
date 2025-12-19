@@ -1,0 +1,15 @@
+{
+    "name": "Ominous Ice Cream",
+    "icon": "goetydelight:ominous_ice_cream",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Grants consumer:$(br)$(li)5-minute Ominous Omen V$(li)1-minute Frost Aegis$(br)If Ominous Omen is active upon consumption, Calamity-aligned creatures remain neutral to consumer (ineffective against most Calamity bosses). Effect expires immediately if Ominous Omen fades, and cannot be reactivated until next consumption (regardless of reacquiring Ominous Omen in the interim)."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/ominous_ice_cream"
+        }
+    ]
+}

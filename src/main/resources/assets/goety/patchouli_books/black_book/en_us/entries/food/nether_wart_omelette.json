@@ -1,0 +1,15 @@
+{
+    "name": "Warped Wart Omelette",
+    "icon": "goetydelight:warped_wart_omelette",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Upon consumption, removes all positive effects."
+        },
+        {
+            "type": "patchouli:smelting",
+            "recipe": "goetydelight:smoker/nether_wart_omelette"
+        }
+    ]
+}

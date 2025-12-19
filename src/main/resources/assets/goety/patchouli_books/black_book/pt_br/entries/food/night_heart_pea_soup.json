@@ -1,0 +1,23 @@
+{
+    "name": "Sopa de Ervilha com Coração da Noite",
+    "icon": "goetydelight:night_heart_pea_soup",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Concede a quem consome:$(br)$(li)1 minuto de Fusão com as Sombras IV$(li)5 minutos de Força IV,$(li)5 minutos de Resistência III$(li)10 minutos de Nutrição,$(li)10 minutos de Conforto$(br)Após o consumo, o tempo se torna noite, a quantidade de lacaios invocados por conjuração é dobrada (dura 5 minutos), todos os lacaios ganham permanentemente +10% de Ataque, Vida máxima e Bônus de Armadura (máximo de 5 acúmulos), e o limite de lacaios é dobrado (efeito único)."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/night_heart_pea_soup"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "\"Parece um feijão enorme. Espero que o sabor, depois de cozido, seja semelhante.\"$(br)\"Vamos prepará-lo da maneira mais simples, como um caldo de carne, já que os ingredientes de alta qualidade precisam dos métodos de cozimento mais simples.\"$(br)\"Mexa, aqueça, deixe seu poder e sabor internos se libertarem completamente.\"$(br)\"Mas por que virou uma panela de coisa verde e borbulhante?\"$(br)\"A carne fresca e perfumada? O tomate doce? A cebola crocante?\"$(br)\"Todos desapareceram, todos foram profundamente envoltos por algo chamado Noite, transformando-se em entidades sem características, meros subordinados.\""
+        },
+        {
+            "type": "patchouli:text",
+            "text": "\"Mas isso é apenas um disfarce — assim que você os coloca na boca, sua verdadeira essência é revelada.\"$(br)E aquela camada superficial de Noite, seguindo seu olhar, se espalha por todo o mundo. Embora temporário, permite um vislumbre da autoridade sem nome.\""
+        }
+    ]
+}

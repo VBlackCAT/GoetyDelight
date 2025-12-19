@@ -1,0 +1,16 @@
+{
+    "name": "スカルショット",
+    "icon": "goetydelight:skull_shot",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "よく聞け、灰色の肌の害虫ども。『お前の頭蓋骨を杯にしてやる』というのは脅しではない、確定した事実を述べているに過ぎないのだ。真紅の果実酒は、脳漿のように甘く陶酔を誘う。これこそが、勝利の後に敗者を骨の髄まで貪り尽くすという究極の具現化――$(br)その代償は、奴らに相応しいものだ。$(br)プレイヤーにコープスイーター（60秒）を付与する。"
+        },
+        
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/skull_shot"
+        }
+    ]
+}

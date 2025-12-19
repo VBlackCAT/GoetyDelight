@@ -1,0 +1,15 @@
+{
+    "name": "Chá Borbulhante de Ovos de Aranha Real",
+    "icon": "goetydelight:spider_egg_bubble_tea",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Será que alguém realmente se atreve a comer ovos de aranha? (Tremor$(br)Concede a quem consome:$(br)$(li)1 minuto de Escalada"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/spider_egg_bubble_tea"
+        }
+    ]
+}

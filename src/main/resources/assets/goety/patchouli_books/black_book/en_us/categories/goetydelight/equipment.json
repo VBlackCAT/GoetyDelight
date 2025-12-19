@@ -1,0 +1,7 @@
+{
+  "name": "Cooking equipment",
+  "description": "The most exquisite dark cuisine often requires the darkest methods of preparation...",
+  "icon": "goetydelight:cursed_ingot_pot",
+  "parent": "goety:goetydelight",
+  "sortnum": 2
+}

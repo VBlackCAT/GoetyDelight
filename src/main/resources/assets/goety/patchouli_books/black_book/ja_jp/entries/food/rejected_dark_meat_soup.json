@@ -1,0 +1,19 @@
+{
+    "name": "拒絶された闇肉スープ",
+    "icon": "goetydelight:rejected_dark_meat_soup",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "ポーションの魂があなたの呼びかけを拒絶している……。$(br)だが、魔女のグリモワールがあれば、それでもスープを作ることは可能だ。おそらくその独特な味わいが、ポーション醸造の本質を理解する助けとなるだろう。$(br)棒でかき混ぜて、その独特な風味を堪能せよ。"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "ポーション瓶のように投げることができ、近くのエンティティにデバフを与える。$(b)（吐き気（30秒）、ランダムなレベル2～5の毒（30秒）、弱体化 II（30秒））$()$(br)また、作業台で醸造酒とクラフトすることもできる。結果として醸造酒が得られるが、そのデバフのレベルが1上昇する（最大レベル3まで）。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/rejected_dark_meat_soup"
+        }
+    ]
+}

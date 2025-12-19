@@ -1,0 +1,15 @@
+{
+    "name": "Magic Quartz Cookie",
+    "icon": "goetydelight:magic_quartz_cookie",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Grants consumer:$(br)$(li)Resistance II$(li)30 seconds of two random positive effects (one tier II, one tier III)."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/magic_quartz_cookie"
+        }
+    ]
+}

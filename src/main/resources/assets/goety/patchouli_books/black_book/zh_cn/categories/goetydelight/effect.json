@@ -1,0 +1,7 @@
+{
+    "name": "状态效果",
+    "description": "一些或亵渎、或黑暗的神秘效果……",
+    "icon": "goetydelight:textures/mob_effect/spell_duration.png",
+    "parent": "goety:goetydelight",
+    "sortnum": 4
+}

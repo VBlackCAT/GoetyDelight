@@ -1,0 +1,15 @@
+{
+    "name": "夜のコンロ",
+    "icon": "goetydelight:night_stove",
+    "category": "goety:goetydelight/equipment",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "アンデッドの権能を用いて作られた、強化版のコンロ。設置すると、半径32ブロック以内のアンデッドモブがプレイヤーに対して中立化する（ボスを除く）。また、プレイヤー配下のユニットは継続的に「耐火」と「再生能力 I」を得るほか、攻撃力が25%上昇し、受けるダメージが25%軽減される。調理速度は夜間は4倍、日中は2倍となる。"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/night_stove"
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "name": "Defensor",
+    "icon": "goetydelight:textures/mob_effect/warden.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "O portador causa 50% a mais de dano a criaturas que emitiram sons nos últimos 5 segundos."
+        }
+    ]
+}

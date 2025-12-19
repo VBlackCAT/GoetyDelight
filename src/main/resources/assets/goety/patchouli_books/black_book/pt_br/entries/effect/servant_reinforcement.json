@@ -1,0 +1,11 @@
+{
+    "name": "Reforço de Servos",
+    "icon": "goetydelight:textures/mob_effect/servant_reinforcement.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Dobra a quantidade de lacaios invocados por conjuração."
+        }
+    ]
+}

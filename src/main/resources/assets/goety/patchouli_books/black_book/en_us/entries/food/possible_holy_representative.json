@@ -1,0 +1,23 @@
+{
+    "name": "Possible Holy Representative",
+    "icon": "goetydelight:possible_holy_representative",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Born from imagination, forged through creation, culminating in achievement.$(br)$(li)Grants player Insight IV, while triggering a mysterious effect (essentially a minion gacha machine)"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/possible_holy_representative"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Triggered by consuming the Possibility Sundae. Upon activation:$(li)Draws minions from preset pools. Each 3 points of Luck score grants an additional draw.$(li)Each pool has a chance to trigger minion immortality, probabilities as follows:$(li2)Tier 1 Pool (common mob minions): 50%$(li2)Tier 2 Pool (elite mob minions): 50%$(li2)Tier 3 Pool (elite monster minions): 50%$(li2)Tier 4 Pool (miniboss minions): 30%$(li2)Tier 5 Pool (boss minions): 20%$(li2)Tier 6 Pool (apostle minions): 10%"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Per tier pool effects:$(li)Tier 1 Pool: Contains common mob minions. Summons 8 at once, weight 50.0%, default lifespan 2 minutes.$(li)Tier 2 Pool: Contains elite mob minions. Summons 4 at once, weight 35.0%, default lifespan 5 minutes.$(li)Tier 3 Pool: Contains elite monster minions. Summons 2 at once, weight 12.5%, default lifespan 10 minutes.$(li)Tier 4 Pool: Contains miniboss minions. Summons 1 at once, weight 2.25%, default lifespan 30 minutes.$(li)Tier 5 Pool: Contains boss minions. Summons 1 at once, weight 0.24%, default lifespan 1 hour.$(li)Tier 6 Pool: Contains apostle minions. Summons 1 at once, weight 0.01%, default lifespan 1 hour.$(li)Note: No pity system."
+        }
+    ]
+}

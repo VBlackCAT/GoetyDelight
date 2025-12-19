@@ -1,0 +1,15 @@
+{
+    "name": "Shade Stove",
+    "icon": "goetydelight:shade_stove",
+    "category": "goety:goetydelight/equipment",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Utilizing the soul affinity of Shadowstone, this allows you to smoke food using soul energy.$(br)Functions as a smoker to process dishes with soul energy - every 50 soul energy points prepares 1 dish at 1.5x normal cooking speed."
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/shade_stove"
+        }
+    ]
+}

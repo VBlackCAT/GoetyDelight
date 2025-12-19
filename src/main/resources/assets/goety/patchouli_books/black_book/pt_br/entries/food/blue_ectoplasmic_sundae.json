@@ -1,0 +1,15 @@
+{
+    "name": "Sundae Azul Ectoplasmático Escorregadio",
+    "icon": "goetydelight:blue_ectoplasmic_sundae",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Misture Ectoplasma com a gosma de um slime, adicione gelo, bagas doces e um pouco de açúcar, e você obterá este sundae delicioso que emite uma luz azulada.$(br)Concede a quem consome:$(li)10 minutos de Afortunado$(li)2 minutos de Regeneração$(li)2 minutos de Pele Gélida$(li)Também restaura 300 pontos de Energia das Almas.$(br)\"Pegue o Ectoplasma — regue com uma Bola de Slime — faça ter gosto de bagas doces!\""
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/blue_ectoplasmic_sundae"
+        }
+    ]
+}

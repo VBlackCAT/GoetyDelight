@@ -1,0 +1,15 @@
+{
+    "name": "聖なる代表者らしきもの",
+    "icon": "goetydelight:possible_holy_representative",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "想像を起源とし、創造を経て、結果へと至る。$(br)$(br)プレイヤーに洞察 IV（2.5分）を付与し、神秘的な効果を引き起こす"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/possible_holy_representative"
+        }
+    ]
+}

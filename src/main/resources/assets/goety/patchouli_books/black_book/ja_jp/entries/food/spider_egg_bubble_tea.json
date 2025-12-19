@@ -1,0 +1,15 @@
+{
+    "name": "クモの卵のタピオカティー",
+    "icon": "goetydelight:spider_egg_bubble_tea",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "摂取した者に、クライミング（60秒）を付与する。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/spider_egg_bubble_tea"
+        }
+    ]
+}

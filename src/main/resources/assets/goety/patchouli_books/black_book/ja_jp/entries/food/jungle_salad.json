@@ -1,0 +1,15 @@
+{
+    "name": "ジャングルサラダ",
+    "icon": "goetydelight:jungle_salad",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "摂取した者に、栄養（60秒）、光合成（5分）を付与する。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/jungle_salad"
+        }
+    ]
+}

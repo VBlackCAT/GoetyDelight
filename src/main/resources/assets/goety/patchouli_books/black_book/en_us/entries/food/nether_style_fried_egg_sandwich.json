@@ -1,0 +1,15 @@
+{
+    "name": "Nether Style Fried Egg Sandwich",
+    "icon": "goetydelight:nether_style_fried_egg_sandwich",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Upon consumption, grants the consumer:$(br)$(li)8-minute Fire Resistance"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/nether_style_fried_egg_sandwich"
+        }
+    ]
+}

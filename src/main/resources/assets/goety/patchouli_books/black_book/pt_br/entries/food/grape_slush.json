@@ -1,0 +1,16 @@
+{
+    "name": "Granizado de Uva",
+    "icon": "goetydelight:grape_slush",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Você não sabe o que é uva, mas imagina que deva ser algo roxo. No entanto, sendo um gênio tanto na culinária quanto na magia, você infundiu a doce magia interior de uma geoda de ametista numa Allium...$(br)Concede a quem consome:$(br)$(li)3 minutos e 30 segundos de Proteção ao Frio II$(li)10 minutos de Nutrição,$(li)30 segundos de Aura Gélida"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/grape_slush",
+            "text": "\"Isso é exatamente uva! Parece igual e tem o mesmo gosto!\"$(br)\"Ficou ainda melhor com pedacinhos de gelo, virando um granizado.\""
+        }
+    ]
+}

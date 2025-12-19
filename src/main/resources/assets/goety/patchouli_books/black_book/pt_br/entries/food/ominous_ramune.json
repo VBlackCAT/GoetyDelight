@@ -1,0 +1,15 @@
+{
+    "name": "Ramune Ominosa",
+    "icon": "goetydelight:ominous_ramune",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Concede a quem consome:$(br)$(li)1 minuto de Sensação Formigante"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/ominous_ramune"
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "name": "ピグリンの支援",
+    "icon": "goetydelight:textures/mob_effect/zombified_piglin_brute_servant_support.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "ダメージを受けた際、50%の確率であなたに従属するゾンビピグリンブルートの従者を呼び出す（寿命は3分間）。$(l:goety:food/tainted_drink)汚染された飲み物$()を飲むことで得られる。"
+        }
+    ]
+}

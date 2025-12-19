@@ -1,0 +1,15 @@
+{
+    "name": "诅咒金属刷子",
+    "icon": "goetydelight:cursed_metal_brush",
+    "category": "goety:goetydelight/else",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "1.2倍刷扫方块速度"
+        },
+        {
+            "type": "patchouli:crafting",
+            "recipe": "goetydelight:cursed_metal_brush"
+        }
+    ]
+}

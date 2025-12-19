@@ -1,0 +1,23 @@
+{
+    "name": "Gelatina de Slime do Vácuo",
+    "icon": "goetydelight:void_gel_jelly_block",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Misture uma Bola de Slime do Vácuo com açúcar e gelo, mexa bem, e então cozinhe em fogo alto para obter esta... gelatina? que emite uma luz roxa. Consumir isso sem um estômago forte resultará em consequências severas."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/void_gel_jelly_block"
+        },
+        {
+            "type": "spotlight",
+            "title": "Gelatina de Slime do Vácuo na Tigela",
+            "link_recipe": true,
+            "item": "goetydelight:ring_packed_void_gel_jelly",
+            "scale": 1.2,
+            "text": "Por sorte, ela apenas se agita no seu estômago, absorvendo tudo o que você comeu.$(br)Concede a quem consome:$(br)$(li)1 minuto de Apego ao Vácuo e Fome V$(li)5 minutos de Nutrição"
+        }
+    ]
+}

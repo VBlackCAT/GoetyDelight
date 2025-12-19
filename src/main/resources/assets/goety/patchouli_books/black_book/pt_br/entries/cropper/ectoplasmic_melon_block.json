@@ -1,0 +1,19 @@
+{
+    "name": "Melancia Ectoplasmática",
+    "icon": "goetydelight:ectoplasmic_melon_block",
+    "category": "goety:goetydelight/cropper",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Um tipo de melancia que emite uma luz espiritual, pode ser encontrada em plantações de Melancia Ectoplasmática.$(br)Aviso: Não cave as melancias na frente do Agricultor de Melancia!"
+        },
+        {
+            "type": "spotlight",
+            "title": "Sementes de Melancia Ectoplasmática",
+            "link_recipe": true,
+            "item": "goetydelight:ectoplasmic_melon_seeds",
+            "scale": 1.2,
+            "text": "Pode ser obtida através de troca com o Agricultor de Melancia Espectral. Pode ser usada para cultivar Melancia Ectoplasmática."
+        }
+    ]
+}

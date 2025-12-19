@@ -1,0 +1,19 @@
+{
+    "name": "灵质瓜",
+    "icon": "goetydelight:ectoplasmic_melon_block",
+    "category": "goety:goetydelight/cropper",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "一种散发着灵魂光亮的瓜类，可在灵质瓜田内找到$(br)警告：不要在瓜农面前把瓜挖掉！"
+        },
+        {
+            "type": "spotlight",
+            "title": "灵质瓜种子",
+            "link_recipe": true,
+            "item": "goetydelight:ectoplasmic_melon_seeds",
+            "scale": 1.2,
+            "text": "可通过和幽灵瓜农交易获得。可用于种植灵质瓜。"
+        }
+    ]
+}

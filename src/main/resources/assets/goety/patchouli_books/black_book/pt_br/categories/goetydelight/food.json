@@ -1,0 +1,7 @@
+{
+  "name": "Alimentos",
+  "description": "Alguns alimentos profanos ou sombrios",
+  "icon": "goetydelight:royal_cake",
+  "parent": "goety:goetydelight",
+  "sortnum": 1
+}

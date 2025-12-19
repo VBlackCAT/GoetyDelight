@@ -1,0 +1,15 @@
+{
+    "name": "Skull Shot",
+    "icon": "goetydelight:skull_shot",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Listen well, you gray-skinned vermin. When I say 'I'll use your skull as a bowl,' it's not a threat but a statement of fact. Crimson fruit wine is as sweet and intoxicating as cerebral fluid. This is the ultimate expression of devouring the defeated after victory—$(br)a price they rightfully deserve.$(br)Grants consumer: 1-minute Ghoulism"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/skull_shot"
+        }
+    ]
+}

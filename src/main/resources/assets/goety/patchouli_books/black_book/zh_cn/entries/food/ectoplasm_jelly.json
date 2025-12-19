@@ -1,0 +1,15 @@
+{
+    "name": "灵质果冻",
+    "icon": "goetydelight:ectoplasm_jelly",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "“一口一个，爽滑美味，冷冽迷人！”$(br)食用后回复100点灵魂能量。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/ectoplasm_jelly"
+        }
+    ]
+}
