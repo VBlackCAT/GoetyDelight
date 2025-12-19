@@ -90,6 +90,7 @@ public class PolariceItem extends BowlFoodItem {
 
     @SubscribeEvent
     public static void onAttackEvent(LivingAttackEvent event) {
+        Random random = new Random();
         LivingEntity targetEntity = event.getEntity();
         Entity attacker = event.getSource().getEntity();
         boolean ischange = false;
@@ -98,8 +99,11 @@ public class PolariceItem extends BowlFoodItem {
         boolean whetherchange = false;
         double targetMaxHealth = targetEntity.getMaxHealth();
         double targetHealth = targetEntity.getHealth();
-        float randomchange = (float) (0.1f + targetHealth/targetMaxHealth);
+        float randomchange = (float) (1.1f - targetHealth/targetMaxHealth);
         ResourceLocation entityId = ForgeRegistries.ENTITY_TYPES.getKey(targetEntity.getType());
+        if (random.nextFloat(0,1.0f) < randomchange) {
+            whetherchange = true;
+        }
         if (
             entityId.equals(new ResourceLocation("goety:vizier_clone")) ||
             entityId.equals(new ResourceLocation("minecraft:ender_dragon")) ||
@@ -112,10 +116,6 @@ public class PolariceItem extends BowlFoodItem {
         if(targetEntity instanceof com.Polarice3.Goety.common.entities.boss.Apostle){
             if ((targetEntity.level() instanceof ServerLevel level)){
                 if (attacker != null && polarice_time > 0 && attacker.getPersistentData().contains(POARICE_TAG)) {
-                    Random random = new Random();
-                    if (random.nextFloat() < randomchange) {
-                        whetherchange = true;
-                    }
                     if (targetEntity instanceof com.Polarice3.Goety.common.entities.boss.Apostle) {
                         targetEntity.remove(Entity.RemovalReason.DISCARDED);
                         Villager villager = EntityType.VILLAGER.create(level);

@@ -25,6 +25,8 @@ public class HealthDataInterceptor {
     public static class CustomSynchedEntityData extends SynchedEntityData {
         private final Entity entity;
         private final SynchedEntityData originalDataToCopy;
+        private static long lastLogTime = 0;
+        private static final long LOG_INTERVAL = 100; // 5秒 = 100 ticks
 
         private static EntityDataAccessor<Float> HEALTH_DATA_ACCESSOR = null;
 
@@ -63,11 +65,11 @@ public class HealthDataInterceptor {
                 Int2ObjectMap<SynchedEntityData.DataItem<?>> originalItemsById =
                         (Int2ObjectMap<SynchedEntityData.DataItem<?>>) itemsByIdField.get(this.originalDataToCopy);
 
-                Field isDirtyField = SynchedEntityData.class.getDeclaredField("isDirty");
+                Field isDirtyField = SynchedEntityData.class.getDeclaredField(" f_135352_");
                 isDirtyField.setAccessible(true);
                 boolean originalIsDirty = (boolean) isDirtyField.get(this.originalDataToCopy);
 
-                Field lockField = SynchedEntityData.class.getDeclaredField("lock");
+                Field lockField = SynchedEntityData.class.getDeclaredField("f_135350_");
                 lockField.setAccessible(true);
                 ReadWriteLock originalLock = (ReadWriteLock) lockField.get(this.originalDataToCopy);
 
@@ -88,13 +90,29 @@ public class HealthDataInterceptor {
                 thisIsDirtyField.setAccessible(true);
                 thisIsDirtyField.set(this, originalIsDirty);
 
-                LOGGER.debug("Data copied successfully for entity: {}", entity.getName().getString());
+                long currentTime = System.currentTimeMillis();
+                if (currentTime - lastLogTime >= 5000) {
+                    LOGGER.debug("Data copied successfully for entity: {}", entity.getName().getString());
+                    lastLogTime = currentTime;
+                }
             } catch (NoSuchFieldException e) {
-                LOGGER.error("Field not found in SynchedEntityData", e);
+                long currentTime = System.currentTimeMillis();
+                if (currentTime - lastLogTime >= 5000) {
+                    LOGGER.error("Field not found in SynchedEntityData", e);
+                    lastLogTime = currentTime;
+                }
             } catch (IllegalAccessException e) {
-                LOGGER.error("Illegal access to field in SynchedEntityData", e);
+                long currentTime = System.currentTimeMillis();
+                if (currentTime - lastLogTime >= 5000) {
+                    LOGGER.error("Illegal access to field in SynchedEntityData", e);
+                    lastLogTime = currentTime;
+                }
             } catch (Exception e) {
-                LOGGER.error("Unexpected error during data copy", e);
+                long currentTime = System.currentTimeMillis();
+                if (currentTime - lastLogTime >= 5000) {
+                    LOGGER.error("Unexpected error during data copy", e);
+                    lastLogTime = currentTime;
+                }
             }
         }
         private static final float InterHealth = 20.0f;
@@ -151,13 +169,6 @@ public class HealthDataInterceptor {
                     } catch (Exception e) {
                         if (currentTime - lastLogTime >= LOG_INTERVAL) {
                         LOGGER.error("Unexpected error during SynchedEntityData replacement", e);}
-                    }
-                } else {
-                    // 每5秒输出一次日志
-                    long currentTime = player.level().getGameTime();
-                    if (currentTime - lastLogTime >= LOG_INTERVAL) {
-                        LOGGER.debug("Player {} joined without Not Anything item", player.getName().getString());
-                        lastLogTime = currentTime;
                     }
                 }
             }
