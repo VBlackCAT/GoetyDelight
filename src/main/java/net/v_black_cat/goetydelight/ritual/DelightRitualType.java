@@ -45,10 +45,6 @@ public class DelightRitualType implements IRitualType {
         // 自定义仪式条件检查逻辑
         return checkDelightRequirements(pos, level);
     }
-    @Override
-    public boolean getRequirement(RitualBlockEntity pTileEntity, @Nullable Player pPlayer, BlockPos pPos, Level pLevel) {
-        return checkDelightRequirements(pPos, pLevel);
-    }
 
     @Override
     public boolean getRequirement(RitualBlockEntity pTileEntity, @Nullable Player pPlayer, BlockPos pPos, Level pLevel) {
