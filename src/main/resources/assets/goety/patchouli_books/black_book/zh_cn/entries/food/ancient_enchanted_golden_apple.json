@@ -1,0 +1,15 @@
+{
+    "name": "远古附魔金苹果",
+    "icon": "goetydelight:ancient_enchanted_golden_apple",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "$(br)给予食用者：$(br)$(li)5分钟的抗性提升、抗火$(li)2分钟的伤害吸收4$(li)30秒的生命恢复6$(li)后续60次受到的伤害减少20％"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/ancient_enchanted_golden_apple"
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "name": "Fogão da Noite",
+    "icon": "goetydelight:night_stove",
+    "category": "goety:goetydelight/equipment",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Um fogão aprimorado criado usando a autoridade dos mortos-vivos. Quando colocado, num raio de 32 blocos:$(br)$(li)Criaturas mortas-vivas serão neutras em relação ao jogador (afeta apenas unidades não-chefes).$(li)Unidades aliadas ao jogador receberão continuamente Resistência ao Fogo e Regeneração I, além de causarem 25% a mais de dano e sofrerem 25% menos dano.$(br)A velocidade de cozimento é 4x a normal durante a noite e 2x durante o dia."
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/night_stove"
+        }
+    ]
+}

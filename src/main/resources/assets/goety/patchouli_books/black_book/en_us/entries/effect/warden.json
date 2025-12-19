@@ -1,0 +1,11 @@
+{
+    "name": "Warden",
+    "icon": "goetydelight:textures/mob_effect/warden.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Effect holder deals 50% increased damage to creatures that have emitted sounds within the last 5 seconds."
+        }
+    ]
+}

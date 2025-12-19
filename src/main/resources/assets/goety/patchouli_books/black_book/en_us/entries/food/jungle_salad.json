@@ -1,0 +1,15 @@
+{
+    "name": "Jungle Salad",
+    "icon": "goetydelight:jungle_salad",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Grants consumer:$(br)$(li)1-minute Nourishment$(li)5-minute Photosynthesis"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/jungle_salad"
+        }
+    ]
+}

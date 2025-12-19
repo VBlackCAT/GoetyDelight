@@ -1,0 +1,21 @@
+{
+  "name": "Rituais Culinários",
+  "icon": "goetydelight:cursed_ingot_pot",
+  "category": "goety:rituals",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Requer: $(li)2 Defumadores $(li)1 Fogão das Sombras $(li)1 Panela de Metal Amaldiçoado"
+    },
+    {
+      "type": "patchouli:image",
+      "images": ["goety:textures/gui/culinary_rituals.png"],
+      "border": true,
+      "text": "Um exemplo de configuração do ritual."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Crie uma cozinha gourme para Magos das Trevas ao redor do Altar das Trevas! Permite que você cozinhe alimentos especiais."
+    }
+  ]
+}

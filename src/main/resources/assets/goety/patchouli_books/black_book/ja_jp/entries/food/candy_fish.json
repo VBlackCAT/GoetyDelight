@@ -1,0 +1,23 @@
+{
+    "name": "キャンディフィッシュ",
+    "icon": "goetydelight:candy_fish",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "摂取した者に、栄養（7分）、水中呼吸（5分）を付与する。$(br)アパスルまたはアパスルの従者を右クリックすると、最大HPの10％を回復させる。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/candy_fish"
+        },
+        {
+            "type": "spotlight",
+            "title": "キャンディフィッシュのソース焼き",
+            "link_recipe": true,
+            "item": "goetydelight:sauce_grilled_candy_fish",
+            "scale": 1.2,
+            "text": "摂取した者に、栄養（8分）、燃えるオーラ（2分）を付与する。$(br)アパスルまたはアパスルの従者を右クリックすると、最大HPの15％を回復させる。"
+        }
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "name": "Bala Dura de Rubi",
+    "icon": "goetydelight:ruby_hard_candy",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "O Flagelo dos Chanceleres possuía um rubi das almas que amplificava o poder de feitiços. Se você a cobrir com mel, polvilhar com açúcar branco e adicionar uma esmeralda concentrada, talvez possa absorver seu poder para aumentar a força dos feitiços...$(br)Concede a quem consome:$(br)$(li)10 minutos de Duração de Feitiços III$(li)8 minutos de Regeneração II$(li)15 minutos de Nutrição$(br)Aumenta permanentemente um nível de Potência após o consumo, podendo ocorrer no máximo três vezes."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/ruby_hard_candy"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "\"Coma este doce, não apenas saboreie seu sabor único e adocicado.\"$(br)\"Mais importante ainda, use sua saliva, sua língua, suas papilas gustativas para profanar adequadamente o que antes era nobre.\"$(br)\"Troque o reverenciado pelo mundano, ligue o precioso ao comum.\"$(br)\"Este progresso na arte da feitiçaria, e o sabor, serão assim tão vermelhos e tentadores.\""
+        }
+    ]
+}

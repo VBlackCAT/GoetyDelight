@@ -1,0 +1,15 @@
+{
+    "name": "村民晚宴",
+    "icon": "goetydelight:villagers_feast",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "给予食用者：$(br)$(li)1分钟的村庄英雄$(li)10分钟的滋养"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/villagers_feast"
+        }
+    ]
+}

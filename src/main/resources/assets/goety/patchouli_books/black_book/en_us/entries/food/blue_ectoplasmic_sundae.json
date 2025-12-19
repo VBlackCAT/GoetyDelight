@@ -1,0 +1,15 @@
+{
+    "name": "Blue Ectoplasmic Sundae",
+    "icon": "goetydelight:blue_ectoplasmic_sundae",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Combine Spectral Essence with Slime goo, add ice, sweet berries, and a bit of sugar to create this delicious, softly glowing blue sundae.$(br)Effects for the consumer:$(li)10 minutes of Saturation$(li)2 minutes of Regeneration$(li)2 minutes of Frost Protection$(li)Also restores 300 Soul Energy.$(br)It's the taste of Spectral Essence and Slimeballs, transformed into a Sweet Berry delight!"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/blue_ectoplasmic_sundae"
+        }
+    ]
+}

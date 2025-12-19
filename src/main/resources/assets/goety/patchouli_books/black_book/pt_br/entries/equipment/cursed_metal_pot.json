@@ -1,0 +1,15 @@
+{
+    "name": "Panela de Metal Amaldiçoado",
+    "icon": "goetydelight:cursed_ingot_pot",
+    "category": "goety:goetydelight/equipment",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Utiliza a afinidade espiritual do Metal Amaldiçoado para permitir que você use Energia das Almas para cozinhar pratos. A cada 50 pontos de Energia das Almas, é possível cozinhar 1 prato. Também concede um bônus de 1.5x na velocidade de cozimento para qualquer prato."
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/cursed_ingot_pot"
+        }
+    ]
+}

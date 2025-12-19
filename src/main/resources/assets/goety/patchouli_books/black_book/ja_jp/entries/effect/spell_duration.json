@@ -1,0 +1,11 @@
+{
+    "name": "呪文持続",
+    "icon": "goetydelight:textures/mob_effect/spell_duration.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "効果レベルごとに、呪文の持続時間レベルが1増加する。"
+        }
+    ]
+}

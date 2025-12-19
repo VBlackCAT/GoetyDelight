@@ -1,0 +1,24 @@
+{
+    "name": "Biscoito Crocante",
+    "icon": "goetydelight:crisp_biscuit",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "\"Pedra no café da manhã~\"$(br)\"Escuta, mármore, eu te amo tanto.\"$(br)\"Mas isso parece representar mais do que apenas uma pedra branca...\"$(br)\"Bem, quem sabe? O crocante estalado já faz as pessoas desistirem de pensar nos mistérios proibidos. Mesmo que esteja comendo uma carne estranha, não deve haver problema.\"$(br)💦💦💦💦💦💦💦💦💦💦$(br)\"Eu nã~ao sôou gôostôoso, nã~ao mê côoma >w<\""
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Concede a quem consome:$(br)$(li)1 minuto de Devorador de Cadávares,$(li)30 minutos de Salvar Efeitos$(li)5 minutos de Nutrição$(li)2 minutos de Proficiência em Feitiçaria$(br)Pode ser consumido ignorando a barra de fome. A duração do buff de Eternidade pode ser acumulada. Enquanto o buff de Devorador de Cadávares estiver ativo, consumir este item aumentará o nível do buff de Devorador de Cadávares em +1 e dobrará sua duração (máximo de Nível IV, 10 minutos). Além disso, cada consumo exibirá no chat: $(4)Devorador de Cadávares~"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/crisp_biscuit"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/crisp_biscuit_2",
+            "text": "wu1wu2 é um baka (idiota)"
+        }
+    ]
+}

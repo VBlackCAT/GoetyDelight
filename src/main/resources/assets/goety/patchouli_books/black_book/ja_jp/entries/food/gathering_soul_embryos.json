@@ -1,0 +1,19 @@
+{
+    "name": "集う魂の胎児",
+    "icon": "goetydelight:gathering_soul_embryos",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "ウォーデンの心臓があるべき場所に位置する臓器であり、あなたの手によって乱暴にえぐり出されたため、その過程で必然的に一部が失われている。$(br)その本質は純粋な魂の集合体であり、吸収することで彼らの力を得ることができる。$(br)散らばった魂は鎧となり、集まった魂はエネルギーを動かし、後に残るのは飢えた欲望のみだ。$(br)摂取すると、プレイヤーのソウルエネルギーが10000ポイント増加する。$(br)ウォーデンがドロップする。"
+        },
+        {
+            "type": "spotlight",
+            "title": "魂の収束部屋",
+            "link_recipe": true,
+            "item": "goetydelight:soul_convergence_room",
+            "scale": 1.2,
+            "text": "摂取すると、プレイヤーのソウルエネルギーが30000ポイント増加し、10分間、邪悪な村人の狩人のスポーンを阻止する。"
+        }
+    ]
+}

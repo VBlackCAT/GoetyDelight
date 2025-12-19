@@ -1,0 +1,7 @@
+{
+  "name": "农作物",
+  "description": "一些独特的黑暗农作物……",
+  "icon": "goetydelight:ectoplasmic_melon_block",
+  "parent": "goety:goetydelight",
+  "sortnum": 5
+}

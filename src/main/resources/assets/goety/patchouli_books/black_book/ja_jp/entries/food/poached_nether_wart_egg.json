@@ -1,0 +1,12 @@
+{
+    "name": "落としイボだらけの卵",
+    "icon": "goetydelight:poached_nether_wart_egg",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/poached_nether_wart_egg",
+            "text": "摂取した者から、すべてのデバフを取り除く。"
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "name": "法术长续",
+    "icon": "goetydelight:textures/mob_effect/spell_duration.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "每一级buff增加一级持久等级"
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "name": "Tainted Drink",
+    "icon": "goetydelight:tainted_drink",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Grants consumer:$(br)$(li)30-second Regeneration IV$(li)1-minute Resistance IV$(li)Attacks summon hellfire at target's feet, granting debuff immunity and halving incoming damage$(li)When damaged, 50% chance to summon a zombie piglin brute minion (3-minute duration)$(br)All effects last 15 minutes except summoning, which lasts 30 minutes (duration reduced by 1 minute per minion summoned)"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/tainted_drink"
+        }
+    ]
+}

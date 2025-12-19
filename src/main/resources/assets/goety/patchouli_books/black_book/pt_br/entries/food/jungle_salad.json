@@ -1,0 +1,15 @@
+{
+    "name": "Salada da Selva",
+    "icon": "goetydelight:jungle_salad",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Concede a quem consome:$(br)$(li)1 minuto de Nutrição$(li)5 minutos de Fotossíntese"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/jungle_salad"
+        }
+    ]
+}

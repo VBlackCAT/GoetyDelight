@@ -1,0 +1,15 @@
+{
+    "name": "Chá Quente de Sangue Fervente",
+    "icon": "goetydelight:boiling_blood_brew",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Concede a quem consome:$(br)$(li)5 minutos de Aura Flamejante$(li)5 minutos de Conforto"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/boiling_blood_brew"
+        }
+    ]
+}

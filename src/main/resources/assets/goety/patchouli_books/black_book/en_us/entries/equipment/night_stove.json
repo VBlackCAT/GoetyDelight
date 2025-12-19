@@ -1,0 +1,15 @@
+{
+    "name": "Night Stove",
+    "icon": "goetydelight:night_stove",
+    "category": "goety:goetydelight/equipment",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "An upgraded hearth crafted through necromantic authority. When placed, within a 32-block radius:$(br)$(li)Undead creatures become neutral to players (effective only on non-boss units)$(li)Player-aligned units continuously gain Fire Resistance and Regeneration I, with 25% increased damage dealt and 25% reduced damage taken$(br)Cooking speed becomes 4x normal at night, and 2x during daytime."
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/night_stove"
+        }
+    ]
+}

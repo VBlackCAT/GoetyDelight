@@ -1,0 +1,16 @@
+{
+    "name": "Sundae da Poção dos Filósofos",
+    "icon": "goetydelight:sweet_berry_pudding",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Com uma Pedra Filosofal misturado com Elixir (uma Poção da Transformação), adicione um ovo e dois cubos de gelo, e finalmente jogue uma baga colhida aleatoriamente à beira da estrada, e você obterá... Um sundae que apenas um certo tipo de morto-vivo patético pode consumir? Apenas Lichs podem consumir.$(br)Concede a quem consome:$(br)$(li)Salvar Efeitos II e Armadura de Alma II de duração infinita$(li)30 minutos de Toque de Midas$(li)Aumenta permanentemente 50% de Resistência Mágica (este efeito ocorre apenas uma vez)$(li)Aumenta a velocidade de mineração em 10% para todos os blocos mineráveis (este efeito ocorre no máximo três vezes)"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/sundae_of_the_philosophers_potion",
+            "text":"$(o)Que dentada, hein, seu Lichzinho~"
+        }
+    ]
+}

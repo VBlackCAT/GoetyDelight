@@ -1,0 +1,15 @@
+{
+    "name": "Fogão das Sombras",
+    "icon": "goetydelight:shade_stove",
+    "category": "goety:goetydelight/equipment",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Utiliza a afinidade da Pedra das Sombras pela Energia das Almas para permitir que você use Energia das Almas para defumar alimentos.$(br)Pode ser usada como um Defumador, usando Energia das Almas para defumar alimentos. A cada 50 pontos de Energia das Almas, é possível cozinhar 1 prato. A velocidade de cozimento é 1.5x a normal."
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/shade_stove"
+        }
+    ]
+}

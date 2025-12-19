@@ -1,0 +1,15 @@
+{
+    "name": "下界疣煎蛋",
+    "icon": "goetydelight:warped_wart_omelette",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "食用后给予食用者：$(br)$(li)净化·逆式"
+        },
+        {
+            "type": "patchouli:smelting",
+            "recipe": "goetydelight:smoker/nether_wart_omelette"
+        }
+    ]
+}

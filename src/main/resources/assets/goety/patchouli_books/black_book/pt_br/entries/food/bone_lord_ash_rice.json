@@ -1,0 +1,23 @@
+{
+    "name": "Arroz com Cinzas do Senhor dos Ossos",
+    "icon": "goetydelight:bone_lord_ash_rice",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Concede a quem consome:$(br)$(li)5 minutos de Aprimoramento III$(li)5 minutos de Pele Gélida II$(li)5 minutos de Nutrição$(li)1 minuto de Devorador de Cadáveres III$(li)Também aumenta a Defesa de Armadura em 15 pontos e a Tenacidade de Armadura em 10 pontos (não como um efeito de buff)."
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/bone_lord_ash_rice"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "\"Uma memória escondida em meio a algumas cinzas foi interceptada por você, e o conteúdo sobre o sabor de cinzas despertou sua curiosidade.\"$(br)\"Sendo o último vestígio material de uma pessoa, as cinzas contêm aqueles momentos que não ousam ser esquecidos.\"$(br)\"Mas como um Mago Das Trevas, seguir regras não seria uma de suas opções.\"$(br)\"A jornada em busca do sabor supremo nunca para. Se vai fazer, que seja o melhor prato de arroz; seria um grande banquete para um ritual de almas.\"$(br)\"Usando um martelo e uma barra de metal, você destruiu completamente o Senhor dos Esqueletos, transformando-o em um pó fino, e então o polvilhou na tigela, integrando-o aos grãos de arroz.\"$(br)\"Inacreditável...\""
+        },
+        {
+            "type": "patchouli:text",
+            "text": "\"Não era irritante ou sem gosto. Era... era um sabor encorpado e fascinante, próprio da autoridade de um alto senhor.\"$(br)\"Era o ligeiro picante das faíscas de espadas se chocando, era também o doce gelado do medo ao revisar os proibidos, mesclado com o desejo de avançar, enquanto a esperança se dissipava.\"$(br)\"Devorando a tigela de arroz rapidamente, você sente uma satisfação, como se estivesse sendo protegido por uma armadura gelada. Profanar um morto-vivo divino, no final, merece uma recompensa.\"$(br)\"Você realmente não tem nenhum respeito por essas existências do passado, não é?\""
+        }
+    ]
+}

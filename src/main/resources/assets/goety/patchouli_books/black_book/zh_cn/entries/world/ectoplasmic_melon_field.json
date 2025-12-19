@@ -1,0 +1,25 @@
+{
+    "name": "瓜农小屋",
+    "icon": "goety:rotten_planks",
+    "category": "goety:goetydelight/world",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "行于主世界，你有时会遇到这种破败的小屋子，里面住着早已逝去但依然保留有一丝理智的瓜农。"
+        },
+        
+        {
+            "type": "spotlight",
+            "title": "瓜农",
+            "link_recipe": true,
+            "item": "goetydelight:ghost_farmer_spawn_egg",
+            "scale": 1.2,
+            "text": "警告：瓜农对自己的瓜拥有极强的保护欲，不要在他眼皮子底下劈瓜"
+        },
+        {
+            "type": "patchouli:entity",
+            "entity": "goetydelight:ghost_farmer",
+            "scale": 0.5
+        }
+    ]
+}

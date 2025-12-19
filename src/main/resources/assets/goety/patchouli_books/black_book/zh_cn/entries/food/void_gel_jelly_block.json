@@ -1,0 +1,23 @@
+{
+    "name": "虚空凝胶果冻",
+    "icon": "goetydelight:void_gel_jelly_block",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "将虚空块粘液球混入糖和冰块再进行搅拌，再大火熬制，你便能得到这散发着紫色光芒的……果冻？没有强大的胃来食用此物只会惨遭反噬。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/void_gel_jelly_block"
+        },
+        {
+            "type": "spotlight",
+            "title": "碗装虚空凝胶果冻",
+            "link_recipe": true,
+            "item": "goetydelight:ring_packed_void_gel_jelly",
+            "scale": 1.2,
+            "text": "好在，它只是在你的胃当中扑腾了一阵，把你吃的东西全给吸走而已。$(br)给予食用者：$(br)$(li)1分钟的虚空之附和饥饿V$(li)5分钟的滋养"
+        }
+    ]
+}

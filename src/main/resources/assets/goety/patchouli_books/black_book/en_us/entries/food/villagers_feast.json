@@ -1,0 +1,15 @@
+{
+    "name": "Villagers Feast",
+    "icon": "goetydelight:villagers_feast",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Grants consumer:$(br)$(li)1-minute Hero of the Village$(li)10-minute Nourishment"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/villagers_feast"
+        }
+    ]
+}

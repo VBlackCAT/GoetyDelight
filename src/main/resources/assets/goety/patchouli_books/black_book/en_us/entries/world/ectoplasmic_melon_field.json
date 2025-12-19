@@ -1,0 +1,24 @@
+{
+    "name": "Ectoplasmic Melon Field",
+    "icon": "goety:rotten_planks",
+    "category": "goety:goetydelight/world",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "When traversing the overworld, you may occasionally encounter these dilapidated cottages inhabited by melon farmers who, though long deceased, retain a sliver of consciousness."
+        },
+        {
+            "type": "spotlight",
+            "title": "Wraith Melon Farmer",
+            "link_recipe": true,
+            "item": "goetydelight:ghost_farmer_spawn_egg",
+            "scale": 1.2,
+            "text": "Warning: Melon farmers possess an intense protective instinct toward their crops. Never slice melons within their line of sight."
+        },
+        {
+            "type": "patchouli:entity",
+            "entity": "goetydelight:ghost_farmer",
+            "scale": 0.5
+        }
+    ]
+}

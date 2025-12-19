@@ -1,0 +1,11 @@
+{
+    "name": "Afixo do Vácuo",
+    "icon": "goetydelight:textures/mob_effect/void_affix.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Cada ataque do portador inflige (Nível do Efeito * 1) ponto(s) de Dano do Vácuo adicional."
+        }
+    ]
+}

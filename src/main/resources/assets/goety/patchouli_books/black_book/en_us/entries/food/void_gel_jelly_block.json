@@ -1,0 +1,23 @@
+{
+    "name": "Void Gel Jelly Block",
+    "icon": "goetydelight:void_gel_jelly_block",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "By infusing void blocks and slimeballs with sugar and ice, then stirring vigorously over high heat, you obtain this seething purple radiance... Jelly? Those without a resilient constitution will suffer its rebound upon consumption."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/void_gel_jelly_block"
+        },
+        {
+            "type": "spotlight",
+            "title": "Ring Packed Void Gel Jelly",
+            "link_recipe": true,
+            "item": "goetydelight:ring_packed_void_gel_jelly",
+            "scale": 1.2,
+            "text": "Fortunately, it merely writhes within your stomach before sucking away all consumed substances.$(br)Grants consumer:$(br)$(li)1-minute Void Resonance and Ravenous V$(li)5-minute Nourishment"
+        }
+    ]
+}

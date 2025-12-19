@@ -1,0 +1,15 @@
+{
+    "name": "Warped Wart Omelette",
+    "icon": "goetydelight:warped_wart_omelette",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Upon consumption, grants the consumer:$(br)$(li)Inverted Purification (removes all positive effects from the consumer)"
+        },
+        {
+            "type": "patchouli:smelting",
+            "recipe": "goetydelight:smoker/warped_wart_omelette"
+        }
+    ]
+}

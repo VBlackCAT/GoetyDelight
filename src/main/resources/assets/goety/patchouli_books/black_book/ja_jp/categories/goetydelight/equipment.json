@@ -1,0 +1,7 @@
+{
+  "name": "調理器具",
+  "description": "極上の闇料理を作るには、しばしば最も闇深い調理法が必要となる……。",
+  "icon": "goetydelight:cursed_ingot_pot",
+  "parent": "goety:goetydelight",
+  "sortnum": 2
+}

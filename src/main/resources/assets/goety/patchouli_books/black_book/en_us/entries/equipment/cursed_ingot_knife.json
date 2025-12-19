@@ -1,0 +1,15 @@
+{
+    "name": "Cursed Ingot Knife",
+    "icon": "goetydelight:cursed_ingot_knife",
+    "category": "goety:goetydelight/equipment",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "A blade forged from cursed metal, seemingly devoid of extraordinary features."
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/cursed_ingot_knife"
+        }
+    ]
+}

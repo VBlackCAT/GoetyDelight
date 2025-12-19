@@ -1,0 +1,15 @@
+{
+    "name": "Lichs Chaos Stew",
+    "icon": "goetydelight:lichs_chaos_stew",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Edible only by Liches.$(br)Grants consumer:$(br)$(li)1-minute Stimulation"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/lichs_chaos_stew"
+        }
+    ]
+}

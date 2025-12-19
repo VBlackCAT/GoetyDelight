@@ -1,0 +1,11 @@
+{
+    "name": "Formigamento",
+    "icon": "goetydelight:textures/mob_effect/tingling.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Enquanto o efeito durar:$(br)$(li)O portador será empurrado sem direção específica.$(li)Causa 1 ponto de dano ao portador a cada 25 ticks (intervalo reduzido pela metade a cada nível, arredondado).$(li)Concede ao portador 10% de bônus de dano de ataque."
+        }
+    ]
+}

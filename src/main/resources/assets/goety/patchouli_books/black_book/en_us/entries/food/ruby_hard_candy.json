@@ -1,0 +1,15 @@
+{
+    "name": "Ruby Hard Candy",
+    "icon": "goetydelight:ruby_hard_candy",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "The Calamity Chancellor possesses a gem that amplifies spell potency. Coating it with honey, sprinkling white sugar, then immersing it in concentrated emerald essence might allow you to absorb its power to enhance magical prowess...$(br)Grants consumer:$(br)$(li)10-minute Spell Mastery III$(li)8-minute Regeneration II$(li)15-minute Nourishment$(br)Permanently increases Potency level by one upon consumption, up to three activations."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/ruby_hard_candy"
+        }
+    ]
+}

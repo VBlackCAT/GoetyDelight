@@ -1,0 +1,16 @@
+{
+    "name": "不吉なアイスクリーム",
+    "icon": "goetydelight:ominous_ice_cream",
+    "category": "goety:goetydelight/food",
+    "advancement": "goety:goety/kill_a_minister",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "プレイヤーに不吉な予感 V（5分）、凍結耐性 I（1分）を付与する。$(br)摂取後、摂取者が不吉な予感を持っている間、邪悪な村人勢力のモブは中立状態を保つ（ほとんどのボスモブには無効）。不吉な予感が消えると、次にこのアイテムを摂取するまでこの効果は失われる（効果消失から次の摂取までの間に、再び不吉な予感を得たとしても、効果は再発動しない）。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/ominous_ice_cream"
+        }
+    ]
+}

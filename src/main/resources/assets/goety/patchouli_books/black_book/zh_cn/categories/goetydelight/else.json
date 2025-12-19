@@ -1,0 +1,7 @@
+{
+  "name": "其他",
+  "description": "一些小玩意",
+  "icon": "goetydelight:cursed_metal_brush",
+  "parent": "goety:goetydelight",
+  "sortnum": 3
+}

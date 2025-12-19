@@ -1,0 +1,15 @@
+{
+    "name": "Ectoplasm Jelly",
+    "icon": "goetydelight:ectoplasm_jelly",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "One-bite wonders—silky, delectable, chillingly enchanting!$(br)Restores 100 soul energy upon consumption."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/ectoplasm_jelly"
+        }
+    ]
+}

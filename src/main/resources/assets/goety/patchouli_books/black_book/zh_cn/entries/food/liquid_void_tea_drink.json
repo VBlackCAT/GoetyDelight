@@ -1,0 +1,15 @@
+{
+    "name": "液态虚空茶饮",
+    "icon": "goetydelight:liquid_void_tea_drink",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "给予食用者（或是受害者）：$(br)$(li)获得虚空之蚀III（0:30）$(li)受到固定为5点的虚空伤害"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/liquid_void_tea_drink"
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "name": "Rejected Dark Meat Soup",
+    "icon": "goetydelight:rejected_dark_meat_soup",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Can be thrown like a potion bottle, applying debuffs to surrounding entities.$(b)(Nausea (30s), random-tier Poison II-V (30s), Weakness II (30s))$()Can also be synthesized with medicinal brew on a workbench. The resulting brew retains its nature but has all debuff levels increased by one tier (max three-tier increase)."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/rejected_dark_meat_soup"
+        }
+    ]
+}

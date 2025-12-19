@@ -1,0 +1,27 @@
+{
+    "name": "Vermes de Cadáver Assados",
+    "icon": "goetydelight:roasted_corpse_maggots",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Simbiontes do Cadáver Alma Solitária. A proteína é seis vezes maior que a da carne bovina. Sendo um Mago Negro disposto a comer quase tudo, você não deve desprezar essa iguaria rara."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/roasted_corpse_maggots"
+        },
+        {
+            "type": "spotlight",
+            "title": "Banquete de Vermes de Cadáver Podre",
+            "link_recipe": true,
+            "item": "goetydelight:rotten_corpse_maggot_feast_block",
+            "scale": 1.2,
+            "text": "Pode ser coletado três vezes. Concede a quem consome Nutrição (10 minutos).$(br)$(4)Após o consumo, 25% de chance de invocar imediatamente um $(4)Cadáver Alma Solitária"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/rotten_corpse_maggot_feast_block"
+        }
+    ]
+}

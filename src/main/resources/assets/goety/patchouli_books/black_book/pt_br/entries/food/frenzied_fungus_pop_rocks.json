@@ -1,0 +1,15 @@
+{
+    "name": "Pedras Saltitantes de Fungo Frenético",
+    "icon": "goetydelight:frenzied_fungus_pop_rocks",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "\"Realmente parece ter um exército frenético usando pólvora para atacar a mucosa e a língua dentro da boca!\"$(br)\"Essa agitação e a energia do açúcar fazem você querer movimentar bem o corpo.\"$(br)Concede a quem consome:$(br)$(li)2 minutos e 30 segundos de Carga$(li)2 minutos de Velocidade,$(li)2 minutos e 30 segundos de Força$(br)Pode ser consumido ignorando a barra de fome. A duração dos buffs será acumulada."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/frenzied_fungus_pop_rocks"
+        }
+    ]
+}

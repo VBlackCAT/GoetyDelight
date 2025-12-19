@@ -1,0 +1,23 @@
+{
+    "name": "Candy Fish",
+    "icon": "goetydelight:candy_fish",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Grants consumer:$(br)$(li)7-minute Nourishment$(li)5-minute Water Breathing$(li)Right-click Apostle/Apostle Minion to restore 10% of their maximum health"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/candy_fish"
+        },
+        {
+            "type": "spotlight",
+            "title": "Sauce Grilled Candy Fish",
+            "link_recipe": true,
+            "item": "goetydelight:sauce_grilled_candy_fish",
+            "scale": 1.2,
+            "text": "Grants consumer:$(br)$(li)8-minute Nourishment$(li)2-minute Scorching Aura$(li)Right-click Apostle/Apostle Minion to restore 15% of their maximum health"
+        }
+    ]
+}

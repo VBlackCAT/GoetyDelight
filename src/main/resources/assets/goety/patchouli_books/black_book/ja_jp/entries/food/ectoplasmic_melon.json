@@ -1,0 +1,15 @@
+{
+    "name": "氷のエクトプラズムスイカ",
+    "icon": "goetydelight:ectoplasmic_melon",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "「食べた時のゾッとするような冷たさは、唯一無二の体験だ。心配せずに楽しめ。」$(br)「酔っ払いがこのスイカを取り合って喧嘩することもないだろう。」$(br)プレイヤーにチルハイド I（5秒）を付与する。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/ectoplasmic_melon"
+        }
+    ]
+}

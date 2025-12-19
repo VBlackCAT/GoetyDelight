@@ -1,0 +1,15 @@
+{
+    "name": "Sundae Of The Philosophers Potion",
+    "icon": "goetydelight:sundae_of_the_philosophers_potion",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Mixing Philosopher's Stone with panacea, adding eggs and ice cubes, then tossing in a roadside berry yields... a sundae consumable only by certain lame undead creatures? Edible solely by Liches.$(br)Grants consumer:$(br)$(li)Permanent Eternity II & Soul Armor II$(li)30-minute Midas Touch$(li)Permanently increases magic resistance by 50% (single activation)$(li)+10% mining speed for all breakable blocks (three activations max)"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/sundae_of_the_philosophers_potion"
+        }
+    ]
+}

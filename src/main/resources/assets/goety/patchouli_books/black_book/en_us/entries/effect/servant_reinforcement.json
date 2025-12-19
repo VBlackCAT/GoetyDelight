@@ -1,0 +1,11 @@
+{
+    "name": "Servant Reinforcement.png",
+    "icon": "goetydelight:textures/mob_effect/servant_reinforcement.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "单次召唤的仆从数量翻倍。"
+        }
+    ]
+}
