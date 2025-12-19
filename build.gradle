@@ -307,6 +307,8 @@ dependencies {
     modRuntimeOnly  "blank:jerotesvillage-1.20.1-1.1.5.10"
     //nbt编辑器
     modRuntimeOnly  "curse.maven:nbtedit-reborn-678133:5984630"
+    //性能检测spark
+    modRuntimeOnly  "curse.maven:spark-361579:4738952"
 }
 
 
