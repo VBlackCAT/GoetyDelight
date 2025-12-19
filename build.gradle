@@ -309,6 +309,8 @@ dependencies {
     modRuntimeOnly  "curse.maven:nbtedit-reborn-678133:5984630"
     //性能检测spark
     modRuntimeOnly  "curse.maven:spark-361579:4738952"
+    modRuntimeOnly  "curse.maven:enchantment-descriptions-250419:7336071"
+    modRuntimeOnly  "curse.maven:bookshelf-228525:5423987"
 }
 
 

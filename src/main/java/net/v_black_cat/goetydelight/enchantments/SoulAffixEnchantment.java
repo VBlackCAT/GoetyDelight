@@ -9,6 +9,7 @@ import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.v_black_cat.goetydelight.config.Config;
 
 @Mod.EventBusSubscriber(modid = "goetydelight")
 public class SoulAffixEnchantment extends Enchantment {
@@ -65,9 +66,10 @@ public class SoulAffixEnchantment extends Enchantment {
     }
 
     private static void applySoulAffixDamage(LivingHurtEvent event, Player player, int enchantmentLevel) {
-        int soulEnergyCost = 50 * enchantmentLevel;
+        int soulEnergyCost = Config.getSoulAffixSoulCostPerLevel() * enchantmentLevel;
         if (SEHelper.getSoulsAmount(player, soulEnergyCost)) {
-            event.setAmount(event.getAmount() + enchantmentLevel);
+            double damagePerLevel = Config.getSoulAffixDamagePerLevel();
+            event.setAmount((float) (event.getAmount() + (enchantmentLevel * damagePerLevel)));
             SEHelper.decreaseSouls(player, soulEnergyCost);
         }
     }
