@@ -46,6 +46,11 @@ public class DelightRitualType implements IRitualType {
         return checkDelightRequirements(pos, level);
     }
 
+    @Override
+    public boolean getRequirement(RitualBlockEntity pTileEntity, @Nullable Player pPlayer, BlockPos pPos, Level pLevel) {
+        return checkDelightRequirements(pPos, pLevel);
+    }
+
     private boolean checkDelightRequirements(BlockPos pos, Level level) {
         // 使用与原版相同的检测范围
         final int RANGE = 5;
