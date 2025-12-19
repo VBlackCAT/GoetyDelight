@@ -155,7 +155,7 @@ public class MetamorphicScentGrassItem extends Item {
 
         if (hasMetamorphicItem(stack)) {
             ItemStack storedItem = getMetamorphicItem(stack);
-            tooltip.add(Component.translatable("item.metamorphic_scent_grass.metamorphic_item")
+            tooltip.add(Component.translatable("item.goetydelight.metamorphic_scent_grass.metamorphic_item")
                     .append(": ")
                     .append(storedItem.getHoverName())
                     .withStyle(ChatFormatting.GRAY));
