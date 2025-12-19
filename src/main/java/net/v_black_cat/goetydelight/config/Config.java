@@ -79,19 +79,15 @@ public class Config
             .comment("A list of items that cannot be copied by Metamorphic Scent Grass")
             .defineListAllowEmpty("MetamorphicScentGrassCopyBlacklist", List.of(), Config::validateItemName);
 
-
     //幻味草持续时长倍率
-
     private static final ForgeConfigSpec.DoubleValue METAMORPHIC_SCENT_GRASS_DURATION_MULTIPLIER = BUILDER
             .comment("Duration multiplier for Metamorphic Scent Grass effect (0.0 to 1.0)")
-            .defineInRange("metamorphicScentGrassDurationMultiplier", 0.3, 0.0, 1.0);
+            .defineInRange("metamorphicScentGrassDurationMultiplier", 0.1, 0.0, 1.0);
     //幻味草buff强度倍率
     private static final ForgeConfigSpec.DoubleValue METAMORPHIC_SCENT_GRASS_AMPLIFIER_MULTIPLIER = BUILDER
             .comment("Amplifier multiplier for Metamorphic Scent Grass effect (0.0 to 1.0)")
-            .defineInRange("metamorphicScentGrassAmplifierMultiplier", 0.5, 0.0, 1.0);
-
-
-
+            .defineInRange("metamorphicScentGrassAmplifierMultiplier", 0.3, 0.0, 1.0);
+    
     //幻味草复制数量
     private static final ForgeConfigSpec.IntValue METAMORPHIC_SCENT_GRASS_COPY_COUNT = BUILDER
                 .comment("The maximum number of effects that can be copied by Metamorphic Scent Grass (0-64)")
@@ -103,8 +99,24 @@ public class Config
             .defineListAllowEmpty("MetamorphicScentFruitCopyBlacklist", List.of(), Config::validateItemName);
     //幻味果复制数量
     private static final ForgeConfigSpec.IntValue METAMORPHIC_SCENT_FRUIT_COPY_COUNT = BUILDER
-            .comment("The maximum number of effects that can be copied by Metamorphic Scent Fruit (0-64)")
-            .defineInRange("metamorphicScentFruitCopyCount", 1, 0, 64);
+            .comment("The maximum number of effects that can be copied by Metamorphic Scent Fruit (1-64)")
+            .defineInRange("metamorphicScentFruitCopyCount", 1, 1, 64);
+
+    private static final ForgeConfigSpec.DoubleValue SOUL_AFFIX_DAMAGE_PER_LEVEL = BUILDER
+            .comment("Damage increase per level of Soul Affix enchantment")
+            .defineInRange("soulAffixDamagePerLevel", 1.0, 1.0, Double.MAX_VALUE);
+
+    private static final ForgeConfigSpec.IntValue SOUL_AFFIX_SOUL_COST_PER_LEVEL = BUILDER
+            .comment("Soul energy cost per level of Soul Affix enchantment")
+            .defineInRange("soulAffixSoulCostPerLevel", 10, 1, Integer.MAX_VALUE);
+
+    public static int getSoulAffixSoulCostPerLevel() {
+        return SOUL_AFFIX_SOUL_COST_PER_LEVEL.get();
+    }
+
+    public static double getSoulAffixDamagePerLevel() {
+        return SOUL_AFFIX_DAMAGE_PER_LEVEL.get();
+    }
 
     public static double getMetamorphicScentGrassDurationMultiplier() {
         return METAMORPHIC_SCENT_GRASS_DURATION_MULTIPLIER.get();
