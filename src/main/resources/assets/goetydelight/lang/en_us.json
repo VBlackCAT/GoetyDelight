@@ -126,5 +126,10 @@
   "entity.goetydelight.ghost_farmer.not_night": "Now... the melon is yet to ripen... wait till night falls...",
   "entity.goetydelight.ghost_farmer.trade": "Wraith Melon Farmer",
   "entity.goetydelight.ghost_farmer.attack_message": "Wraith Melon Farmer:Melon thieves, die!",
-  "info.goetydelight.research.vizier_recipe_get": "You have learned exotic recipes."
+  "info.goetydelight.research.vizier_recipe_get": "You have learned exotic recipes.",
+  "item.goetydelight.metamorphic_scent_grass.metamorphic_item": "Metamorphic Item:",
+  "item.goetydelight.metamorphic_scent_grass": "Metamorphic Scent Grass",
+  "block.goetydelight.metamorphic_scent_grass": "Metamorphic Scent Grass",
+  "item.goetydelight.metamorphic_scent_grass_seeds": "Metamorphic Scent Grass Seeds",
+  "item.goetydelight.metamorphic_scent_fruit": "Metamorphic Scent Fruit"
 }
