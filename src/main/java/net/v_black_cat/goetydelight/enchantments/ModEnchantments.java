@@ -26,7 +26,7 @@ public class ModEnchantments {
     public static final RegistryObject<Enchantment> SOUL_MENDING =
             ENCHANTMENTS.register("soul_mending",
                     () -> new SoulMendingEnchantment(
-                            Enchantment.Rarity.VERY_RARE,
+                            Enchantment.Rarity.COMMON,
                             EnchantmentCategory.BREAKABLE,
                             EquipmentSlot.values()
                     ));
@@ -36,6 +36,14 @@ public class ModEnchantments {
                     () -> new SoulHealingEnchantment(
                             Enchantment.Rarity.VERY_RARE,
                             EnchantmentCategory.ARMOR_CHEST,
+                            EquipmentSlot.values()
+                    ));
+
+    public static final RegistryObject<Enchantment> SOUL_AFFIX =
+            ENCHANTMENTS.register("soul_affix",
+                    () -> new SoulAffixEnchantment(
+                            Enchantment.Rarity.RARE,
+                            EnchantmentCategory.BREAKABLE,
                             EquipmentSlot.values()
                     ));
 

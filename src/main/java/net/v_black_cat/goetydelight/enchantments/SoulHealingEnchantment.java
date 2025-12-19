@@ -45,7 +45,7 @@ public class SoulHealingEnchantment extends Enchantment {
 
     @Override
     public boolean isTradeable() {
-        return false;
+        return true;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class SoulHealingEnchantment extends Enchantment {
 
     @Override
     public boolean canApplyAtEnchantingTable(@Nonnull ItemStack stack) {
-        return this.canEnchant(stack);
+        return false;
     }
 
     @Override
@@ -72,7 +72,7 @@ public class SoulHealingEnchantment extends Enchantment {
 
     @Override
     public boolean checkCompatibility(@NotNull Enchantment other) {
-        return super.checkCompatibility(other) && !(other instanceof MendingEnchantment) && other.isCompatibleWith(ModEnchantments.SOUL_MENDING.get());
+        return super.checkCompatibility(other) && !(other instanceof MendingEnchantment) && !(other.isCompatibleWith(ModEnchantments.SOUL_MENDING.get()));
     }
 
     @SubscribeEvent
@@ -80,7 +80,6 @@ public class SoulHealingEnchantment extends Enchantment {
         if (event.phase == TickEvent.Phase.END && event.player.tickCount % 10 == 0) {
             if(event.side.isServer()){
                 Player player = event.player;
-
                 ItemStack chestArmor = player.getItemBySlot(EquipmentSlot.CHEST);
                 if (!chestArmor.isEmpty()) {
                     int enchantmentLevel = chestArmor.getEnchantmentLevel(ModEnchantments.SOUL_HEALING.get());
@@ -89,7 +88,6 @@ public class SoulHealingEnchantment extends Enchantment {
                     }
                 }
             }
-
         }
     }
 
@@ -105,15 +103,7 @@ public class SoulHealingEnchantment extends Enchantment {
 
             if (SEHelper.getSoulsAmount(player,soulEnergyCost)) {
                 player.heal(healAmount);
-                SEHelper.soulDiscount(player);
-            }
-
-            if (player.getHealth() < player.getMaxHealth()-0.25F) {
-                if (!player.isDeadOrDying()) {
-                    if (player.getHealth() < (healAmount + player.getHealth())) {
-                        player.setHealth(player.getHealth() + 0.25F);
-                    }
-                }
+                SEHelper.decreaseSouls(player, soulEnergyCost);
             }
         }
     }
