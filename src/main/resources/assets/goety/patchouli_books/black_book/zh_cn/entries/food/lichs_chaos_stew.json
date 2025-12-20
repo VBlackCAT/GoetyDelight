@@ -1,15 +1,15 @@
 {
-    "name": "巫妖乱炖",
-    "icon": "goetydelight:lichs_chaos_stew",
-    "category": "goety:goetydelight/food",
-    "pages": [
-        {
-            "type": "patchouli:text",
-            "text": "仅巫妖可食用$(br)给予食用者：$(br)$(li)恢复16点饥饿值，12点饱和度；获得抗火（∞），永恒III（∞），尸鬼拒止（30:00）；所有仆从的数值增加20%（上限五次）。"
-        },
-        {
-            "type": "goety:cooking",
-            "recipe": "goetydelight:cooking/lichs_chaos_stew_block"
-        }
-    ]
+  "name": "巫妖乱炖",
+  "icon": "goetydelight:lichs_chaos_stew",
+  "category": "goety:goetydelight/food",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "仅种族为巫妖时可食用$(br)给予食用者：$(br)$(li)无限时长的抗火，永恒III$(li)30分钟的尸鬼拒止$(li)每次食用会使你的所有仆从的数值增加20%，最多可增加5次。"
+    },
+    {
+      "type": "goety:cooking",
+      "recipe": "goetydelight:cooking/lichs_chaos_stew_block"
+    }
+  ]
 }

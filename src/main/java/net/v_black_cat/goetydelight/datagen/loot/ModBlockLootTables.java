@@ -115,7 +115,7 @@ public class ModBlockLootTables extends BlockLootSubProvider {
                 ).withPool(LootPool.lootPool()
                         .when(matureCondition)
                         .add(LootItem.lootTableItem(ModItems.METAMORPHIC_SCENT_FRUIT.get())
-                                .when(LootItemRandomChanceCondition.randomChance(0.005f))
+                                .when(LootItemRandomChanceCondition.randomChance(0.025f))
                                 .apply(ApplyBonusCount.addUniformBonusCount(Enchantments.BLOCK_FORTUNE))));
     }
 

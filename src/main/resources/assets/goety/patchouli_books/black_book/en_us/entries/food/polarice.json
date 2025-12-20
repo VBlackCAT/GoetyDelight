@@ -1,0 +1,23 @@
+{
+  "name": "polaRice",
+  "icon": "goetydelight:polarice",
+  "category": "goety:goetydelight/food",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Upon consumption, grants the eater:$(br)$(li)5 minutes of Calamitous Plague$(br)$(li)5 minutes of Haste III$(br)$(br)Additionally, for 1 minute, allows the consumer to convert attacked targets into corresponding minions. By default, can only convert up to 10 minions with 50 health or less."
+    },
+    {
+      "type": "spotlight",
+      "title": "polaRice",
+      "link_recipe": true,
+      "item": "goetydelight:polarice",
+      "scale": 1.2,
+      "text": "Ectoplasm mixed with frosted pulp,$(br)Sweet-tear frozen snow-sand.$(br)A cold heart, a cold facade, a soulless puppet,$(br)White countenance, white curtain, served in a bowl.$(br)Lingering souls lost in the mortal dust,$(br)Forbidden taste remains on fingertips.$(br)Perhaps the mage is heartless indeed,$(br)That's why the north ice sealed the perfection."
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetydelight:ritual/polarice"
+    }
+  ]
+}
