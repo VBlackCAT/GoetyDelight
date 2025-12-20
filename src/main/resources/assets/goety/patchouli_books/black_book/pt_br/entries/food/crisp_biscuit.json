@@ -17,8 +17,7 @@
         },
         {
             "type": "goety:cooking",
-            "recipe": "goetydelight:cooking/crisp_biscuit_2",
-            "text": "wu1wu2 é um baka (idiota)"
+            "recipe": "goetydelight:cooking/crisp_biscuit_2"
         }
     ]
 }

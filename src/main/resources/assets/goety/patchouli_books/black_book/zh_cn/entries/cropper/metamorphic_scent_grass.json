@@ -1,0 +1,39 @@
+{
+  "name": "幻味草",
+  "icon": "goetydelight:metamorphic_scent_grass",
+  "category": "goety:goetydelight/cropper",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "传闻在末地有一种罕见的作物能假借美食之形，现佳肴之味"
+    },
+    {
+      "type": "spotlight",
+      "title": "幻味草种子",
+      "link_recipe": true,
+      "item": "goetydelight:metamorphic_scent_grass_seeds",
+      "scale": 1.2,
+      "text": "破坏紫菘植株时有小概率掉落"
+    },
+    {
+      "type": "spotlight",
+      "title": "幻味草",
+      "link_recipe": true,
+      "item": "goetydelight:metamorphic_scent_grass",
+      "scale": 1.2,
+      "text": "一种奇幻的作物，阅读花纹卷轴后在美食仪式中摆放12个之后可以复制黑暗祭坛上的食物，可惜的是它仅有相同的外形，并不具有相同的功效。但是曾有人说过存在一种极其稀有的果子，能够真正做到色效齐全"
+    },
+    {
+      "type": "patchouli:text",
+      "text": ""
+    },
+    {
+      "type": "patchouli:text",
+      "text": "黑魔法复现的奇特植株，能够完全拟真出食物的味道。从神庙回来后，我花了些时间破译了这份手稿，上面记载的的“幻味草”引起了我的注意。我想试试它。我按照记载播下种子，在月光下，我看到一颗新芽缓慢抽出。15个日月过去了，它终于成熟了。我迫不及待的冲入菜园，那些进贡给皇室的佳肴此刻在它面前什么也不是。如果它真的像记载中的那样……"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "它是七彩的，如梦似幻。我摘下十二株幻味草，放入仪式中，再放入那份珍藏许久的菜肴。不多时，一道菜肴便浮现在祭坛之中。我将其送入口中，那拟造的味道与记忆中别无二致。我几乎快要哭出来，我又想起了家，想起了许久未曾联系的他们，想起了漂泊许久的自己...$(br)“大人，您...还好吗”$(br)“没...没什么，你退下吧”$(br)“...是...”"
+    }
+  ]
+}

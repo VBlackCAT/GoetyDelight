@@ -36,6 +36,7 @@ public class ModCreativeModTabs {
          BLACKLIST.add(ModItems.PROMOTION_HARD_CANDY);
          BLACKLIST.add(ModItems.NOT_ANYTHING);
          BLACKLIST.add(ModItems.ROAST_LAOWANG);
+         BLACKLIST.add(ModItems.METAMORPHIC_SCENT_FRUIT);
 
 
 

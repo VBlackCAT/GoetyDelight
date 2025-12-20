@@ -9,7 +9,7 @@
         },
         {
             "type": "patchouli:text",
-            "text": "给予食用者：$(br)$(li)30秒的食芜者，$(li)30分钟的永恒$(li)5分钟的滋养$(li)2分钟的法术精通$(br)可无视饱食度食用，永恒buff的时间可以叠加，食尸者持续时间内食用该物品会使食尸者buff等级+1，持续时间*2（最高4级，持续10分钟）。同时每次食用会在聊天框弹$(4)食人术~"
+            "text": "给予食用者：$(br)$(li)30秒的食尸者，$(li)30分钟的永恒$(li)5分钟的滋养$(li)2分钟的法术精通$(br)可无视饱食度食用，永恒buff的时间可以叠加，食尸者持续时间内食用该物品会使食尸者buff等级+1，持续时间*2（最高4级，持续10分钟）。同时每次食用会在聊天框弹$(4)食人术~"
         },
         {
             "type": "goety:cooking",
@@ -17,8 +17,7 @@
         },
         {
             "type": "goety:cooking",
-            "recipe": "goetydelight:cooking/crisp_biscuit_2",
-            "text": "wu1wu2 is baka"
+            "recipe": "goetydelight:cooking/crisp_biscuit_2"
         }
     ]
 }
