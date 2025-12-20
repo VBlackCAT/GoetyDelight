@@ -56,28 +56,42 @@ public class MetamorphicScentGrassItem extends Item {
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity livingEntity) {
         livingEntity.eat(level, new ItemStack(stack.getItem(),1));
 
-        double metamorphicScentGrassDurationMultiplier = getMetamorphicScentGrassDurationMultiplier();
-        double metamorphicScentGrassAmplifierMultiplier = getMetamorphicScentGrassAmplifierMultiplier();
-        if (metamorphicScentGrassDurationMultiplier > 0.0D && metamorphicScentGrassAmplifierMultiplier > 0.0D) {
-            Iterator var5 = getMetamorphicItem(stack).getFoodProperties(livingEntity).getEffects().iterator();
-            while(var5.hasNext()) {
-                Pair<MobEffectInstance, Float> pair = (Pair)var5.next();
-                if (!level.isClientSide && pair.getFirst() != null && level.random.nextFloat() < (Float)pair.getSecond()) {
-                    MobEffectInstance originalEffect = pair.getFirst();
+        ItemStack metamorphicItem = getMetamorphicItem(stack);
+        if (!metamorphicItem.isEmpty()){
 
-                    int newDuration = (int) (originalEffect.getDuration()*metamorphicScentGrassDurationMultiplier);
-                    int newAmplifier = (int) ((originalEffect.getAmplifier()+1)*metamorphicScentGrassAmplifierMultiplier)-1;
 
-                    livingEntity.addEffect(new MobEffectInstance(
-                            originalEffect.getEffect(),
-                            newDuration,
-                            newAmplifier,
-                            originalEffect.isAmbient(),
-                            originalEffect.isVisible(),
-                            originalEffect.showIcon()
-                    ));
+            FoodProperties foodProperties = metamorphicItem.getFoodProperties(livingEntity);
+            if (foodProperties != null) {
+                List<Pair<MobEffectInstance, Float>> effects = foodProperties.getEffects();
+                if (!effects.isEmpty()){
+                    Iterator var5 = effects.iterator();
+                    double metamorphicScentGrassDurationMultiplier = getMetamorphicScentGrassDurationMultiplier();
+                    double metamorphicScentGrassAmplifierMultiplier = getMetamorphicScentGrassAmplifierMultiplier();
+                    if (metamorphicScentGrassDurationMultiplier > 0.0D && metamorphicScentGrassAmplifierMultiplier > 0.0D) {
+
+                        while(var5.hasNext()) {
+                            Pair<MobEffectInstance, Float> pair = (Pair)var5.next();
+                            if (!level.isClientSide && pair.getFirst() != null && level.random.nextFloat() < (Float)pair.getSecond()) {
+                                MobEffectInstance originalEffect = pair.getFirst();
+
+                                int newDuration = (int) (originalEffect.getDuration()*metamorphicScentGrassDurationMultiplier);
+                                int newAmplifier = (int) ((originalEffect.getAmplifier()+1)*metamorphicScentGrassAmplifierMultiplier)-1;
+
+                                livingEntity.addEffect(new MobEffectInstance(
+                                        originalEffect.getEffect(),
+                                        newDuration,
+                                        newAmplifier,
+                                        originalEffect.isAmbient(),
+                                        originalEffect.isVisible(),
+                                        originalEffect.showIcon()
+                                ));
+                            }
+                        }
+                    }
                 }
+
             }
+
         }
         stack.shrink(1);
         return stack;
