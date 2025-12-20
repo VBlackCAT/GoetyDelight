@@ -1,0 +1,13 @@
+{
+  "type": "goety:add_loot",
+  "chance": 0.001,
+  "replace": false,
+  "conditions": [
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:blocks/chorus_plant"
+    }
+  ],
+  "count": 1,
+  "item": "goetydelight:metamorphic_scent_grass_seeds"
+}

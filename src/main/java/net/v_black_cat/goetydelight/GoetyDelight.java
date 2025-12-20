@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartingEvent;
@@ -28,6 +29,7 @@ import net.v_black_cat.goetydelight.enchantments.ModEnchantments;
 import net.v_black_cat.goetydelight.entities.GhostFarmerRenderer;
 import net.v_black_cat.goetydelight.entities.ModEntities;
 import net.v_black_cat.goetydelight.item.ModCreativeModTabs;
+import net.v_black_cat.goetydelight.item.ModItems;
 import net.v_black_cat.goetydelight.loot.RegHelper;
 import net.v_black_cat.goetydelight.network.NetworkHandler;
 import net.v_black_cat.goetydelight.recipe.ModRecipeSerializers;
@@ -112,6 +114,14 @@ public class GoetyDelight
                 }
             }
         }
+        event.enqueueWork(() -> {
+            ComposterBlock.COMPOSTABLES.put(ModItems.METAMORPHIC_SCENT_GRASS.get(), 0.2F);
+            ComposterBlock.COMPOSTABLES.put(ModItems.METAMORPHIC_SCENT_FRUIT.get(), 0.75F);
+            ComposterBlock.COMPOSTABLES.put(ModItems.METAMORPHIC_SCENT_GRASS_SEEDS.get(), 0.05F);
+            ComposterBlock.COMPOSTABLES.put(ModItems.ECTOPLASMIC_MELON.get(), 0.50F);
+            ComposterBlock.COMPOSTABLES.put(ModItems.ECTOPLASMIC_MELON_SEEDS.get(), 0.09F);
+            ComposterBlock.COMPOSTABLES.put(ModBlocks.ECTOPLASMIC_MELON_BLOCK.get().asItem(), 0.95F);
+        });
 
         
         //Config.items.forEach((item) -> LOGGER.info("ITEM >> {}", item.toString()));
