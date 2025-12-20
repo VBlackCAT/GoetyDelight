@@ -77,13 +77,14 @@ public class Config
     //幻味草黑名单
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> METAMORPHIC_SCENT_GRASS_COPY_BLACKLIST = BUILDER
             .comment("A list of items that cannot be copied by Metamorphic Scent Grass")
-            .defineListAllowEmpty("MetamorphicScentGrassCopyBlacklist", List.of("goety_revelation:ascension_hard_candy",
+            .defineListAllowEmpty("MetamorphicScentGrassCopyBlacklist",
+                    List.of("goety_revelation:ascension_hard_candy",
                     "enigmaticdelicacy:abyssal_stew","enigmaticlegacy:forbidden_fruit","goetydelight:pure_drink","goetydelight:tainted_drink",
                     "goetydelight:snap_unholy_tripe","goetydelight:ancient_enchanted_golden_apple","goetydelight:lichs_chaos_stew",
                     "l2complements:life_essence","l2complements:totemic_apple","l2complements:enchanted_totemic_apple","hmag:insomnia_fruit",
                     "artifacts:everlasting_beef","artifacts:eternal_steak","born_in_chaos_v1:eternal_candy","avaritia_delight:infinity_apple",
                     "avaritia_delight:slice_of_endless_cake","avaritia_delight:infinity_taco","avaritia_delight:pasta_with_cosmic_meatballs",
-                    "avaritia_delight:infinity_large_hamburger","minecraft:apple"), Config::validateItemName);
+                    "avaritia_delight:infinity_large_hamburger","minecraft:apple"), Config::NoValidateItemName);
 
     //幻味草持续时长倍率
     private static final ForgeConfigSpec.DoubleValue METAMORPHIC_SCENT_GRASS_DURATION_MULTIPLIER = BUILDER
@@ -108,11 +109,11 @@ public class Config
                     "l2complements:life_essence","l2complements:totemic_apple","l2complements:enchanted_totemic_apple","hmag:insomnia_fruit",
                     "artifacts:everlasting_beef","artifacts:eternal_steak","born_in_chaos_v1:eternal_candy","avaritia_delight:infinity_apple",
                     "avaritia_delight:slice_of_endless_cake","avaritia_delight:infinity_taco","avaritia_delight:pasta_with_cosmic_meatballs",
-                    "avaritia_delight:infinity_large_hamburger","minecraft:apple"), Config::validateItemName);
+                    "avaritia_delight:infinity_large_hamburger","minecraft:apple"), Config::NoValidateItemName);
     //幻味果复制数量
     private static final ForgeConfigSpec.IntValue METAMORPHIC_SCENT_FRUIT_COPY_COUNT = BUILDER
             .comment("The maximum number of effects that can be copied by Metamorphic Scent Fruit (1-64)")
-            .defineInRange("metamorphicScentFruitCopyCount", 1, 1, 64);
+            .defineInRange("metamorphicScentFruitCopyCount", 1, 1, 12);
 
     private static final ForgeConfigSpec.DoubleValue SOUL_AFFIX_DAMAGE_PER_LEVEL = BUILDER
             .comment("Damage increase per level of Soul Affix enchantment")
@@ -201,6 +202,10 @@ public class Config
     private static boolean validateItemName(final Object obj)
     {
         return obj instanceof final String itemName && ForgeRegistries.ITEMS.containsKey(new ResourceLocation(itemName));
+    }
+    private static boolean NoValidateItemName(final Object obj)
+    {
+        return true;
     }
 
     @SubscribeEvent
