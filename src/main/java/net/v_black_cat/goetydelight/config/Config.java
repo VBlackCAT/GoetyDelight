@@ -77,12 +77,18 @@ public class Config
     //幻味草黑名单
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> METAMORPHIC_SCENT_GRASS_COPY_BLACKLIST = BUILDER
             .comment("A list of items that cannot be copied by Metamorphic Scent Grass")
-            .defineListAllowEmpty("MetamorphicScentGrassCopyBlacklist", List.of(), Config::validateItemName);
+            .defineListAllowEmpty("MetamorphicScentGrassCopyBlacklist", List.of("goety_revelation:ascension_hard_candy",
+                    "enigmaticdelicacy:abyssal_stew","enigmaticlegacy:forbidden_fruit","goetydelight:pure_drink","goetydelight:tainted_drink",
+                    "goetydelight:snap_unholy_tripe","goetydelight:ancient_enchanted_golden_apple","goetydelight:lichs_chaos_stew",
+                    "l2complements:life_essence","l2complements:totemic_apple","l2complements:enchanted_totemic_apple","hmag:insomnia_fruit",
+                    "artifacts:everlasting_beef","artifacts:eternal_steak","born_in_chaos_v1:eternal_candy","avaritia_delight:infinity_apple",
+                    "avaritia_delight:slice_of_endless_cake","avaritia_delight:infinity_taco","avaritia_delight:pasta_with_cosmic_meatballs",
+                    "avaritia_delight:infinity_large_hamburger","minecraft:apple"), Config::validateItemName);
 
     //幻味草持续时长倍率
     private static final ForgeConfigSpec.DoubleValue METAMORPHIC_SCENT_GRASS_DURATION_MULTIPLIER = BUILDER
             .comment("Duration multiplier for Metamorphic Scent Grass effect (0.0 to 1.0)")
-            .defineInRange("metamorphicScentGrassDurationMultiplier", 0.1, 0.0, 1.0);
+            .defineInRange("metamorphicScentGrassDurationMultiplier", 0.2, 0.0, 1.0);
     //幻味草buff强度倍率
     private static final ForgeConfigSpec.DoubleValue METAMORPHIC_SCENT_GRASS_AMPLIFIER_MULTIPLIER = BUILDER
             .comment("Amplifier multiplier for Metamorphic Scent Grass effect (0.0 to 1.0)")
@@ -96,7 +102,13 @@ public class Config
     //幻味果黑名单
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> METAMORPHIC_SCENT_FRUIT_COPY_BLACKLIST = BUILDER
             .comment("A list of items that cannot be copied by Metamorphic Scent Fruit")
-            .defineListAllowEmpty("MetamorphicScentFruitCopyBlacklist", List.of(), Config::validateItemName);
+            .defineListAllowEmpty("MetamorphicScentFruitCopyBlacklist", List.of("goety_revelation:ascension_hard_candy",
+                    "enigmaticdelicacy:abyssal_stew","enigmaticlegacy:forbidden_fruit","goetydelight:pure_drink","goetydelight:tainted_drink",
+                    "goetydelight:snap_unholy_tripe","goetydelight:ancient_enchanted_golden_apple","goetydelight:lichs_chaos_stew",
+                    "l2complements:life_essence","l2complements:totemic_apple","l2complements:enchanted_totemic_apple","hmag:insomnia_fruit",
+                    "artifacts:everlasting_beef","artifacts:eternal_steak","born_in_chaos_v1:eternal_candy","avaritia_delight:infinity_apple",
+                    "avaritia_delight:slice_of_endless_cake","avaritia_delight:infinity_taco","avaritia_delight:pasta_with_cosmic_meatballs",
+                    "avaritia_delight:infinity_large_hamburger","minecraft:apple"), Config::validateItemName);
     //幻味果复制数量
     private static final ForgeConfigSpec.IntValue METAMORPHIC_SCENT_FRUIT_COPY_COUNT = BUILDER
             .comment("The maximum number of effects that can be copied by Metamorphic Scent Fruit (1-64)")

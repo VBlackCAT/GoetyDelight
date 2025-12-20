@@ -235,9 +235,13 @@ public class MetamorphicScentGrassItem extends Item {
         String group = "goetydelight";
 
         ResourceLocation ritualType = new ResourceLocation("goety", "craft");
-        int duration = 3; // 30秒（20 ticks/秒）
+        int duration = 3; // 20秒（20 ticks/秒）
         int summonLife = -1; // 永久
-        int soulCost = 0; // 不需要灵魂消耗
+        int soulCost = 0;
+        if (activationItem.getFoodProperties(player) != null) {
+            FoodProperties foodProperties = activationItem.getFoodProperties(player);
+            soulCost = 2 * (foodProperties.getNutrition() + (int)(foodProperties.getSaturationModifier() * foodProperties.getNutrition()));
+        }
         String research = ""; // 不需要研究
 
         // 创建仪式配方
