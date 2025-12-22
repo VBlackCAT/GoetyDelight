@@ -167,7 +167,7 @@ public class LichsChaosStewItem extends Item {
         }
 
 
-        if (!Config.getSpeedBoostBlacklist().contains(minion.getType())) {
+        if (Config.getLichStewEnableSpeedBoost() && !Config.getSpeedBoostBlacklist().contains(minion.getType())) {
             AttributeInstance movementSpeed = minion.getAttribute(Attributes.MOVEMENT_SPEED);
             if (movementSpeed != null) {
                 double baseValue = movementSpeed.getBaseValue();
