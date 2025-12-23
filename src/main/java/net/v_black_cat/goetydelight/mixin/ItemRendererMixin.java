@@ -16,20 +16,6 @@ import static net.v_black_cat.goetydelight.item.MetamorphicScentGrassItem.Metamo
 
 @Mixin(ItemRenderer.class)
 public class ItemRendererMixin {
-
-    // 修改渲染方法中的物品堆栈
-    @ModifyVariable(
-            method = "render",
-            at = @At(
-                    value = "HEAD"
-            ),
-            name = "itemStack",
-            remap = false
-    )
-    private ItemStack modifyRenderedItemStack(ItemStack original) {
-        return MetamorphicScentGrassRenderItem(original);
-    }
-
     // 修改模型获取中的物品堆栈
     @ModifyVariable(
             method = "getModel",
@@ -40,32 +26,6 @@ public class ItemRendererMixin {
             remap = false
     )
     private ItemStack modifyModelItemStack(ItemStack original) {
-        return MetamorphicScentGrassRenderItem(original);
-    }
-
-    // 修改静态渲染方法中的物品堆栈
-    @ModifyVariable(
-            method = "renderStatic(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;IILcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/level/Level;I)V",
-            at = @At(
-                    value = "HEAD"
-            ),
-            name = "stack",
-            remap = false
-    )
-    private ItemStack modifyStaticRenderItemStack(ItemStack original) {
-        return MetamorphicScentGrassRenderItem(original);
-    }
-
-    // 修改带实体的静态渲染方法中的物品堆栈
-    @ModifyVariable(
-            method = "renderStatic(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;ZLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/level/Level;III)V",
-            at = @At(
-                    value = "HEAD"
-            ),
-            name = "itemStack",
-            remap = false
-    )
-    private ItemStack modifyEntityStaticRenderItemStack(ItemStack original) {
         return MetamorphicScentGrassRenderItem(original);
     }
 }
