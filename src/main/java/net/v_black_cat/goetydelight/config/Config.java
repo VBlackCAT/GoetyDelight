@@ -58,6 +58,9 @@ public class Config
             .defineListAllowEmpty("lichStewSpeedBoostBlacklist", List.of(
                "goety:redstone_monstrosity","goety:redstone_golem"
             ), Config::validateEntityName);
+    private static final ForgeConfigSpec.BooleanValue LICHS_CHAOS_STEW_ENABLE_SPEED_BOOST = BUILDER
+            .comment("Whether to enable movement speed boost for minions from Lich's Chaos Stew")
+            .define("lichStewEnableSpeedBoost", true);
     private static final ForgeConfigSpec.BooleanValue POLARICE_AFFECTS_BOSSES = BUILDER
             .comment("Whether bosses are affected by Polarice item")
             .define("polariceAffectsBosses", false);
@@ -178,6 +181,11 @@ public class Config
                 .map(entityName -> ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(entityName)))
                 .collect(Collectors.toSet());
     }
+
+    public static boolean getLichStewEnableSpeedBoost() {
+        return LICHS_CHAOS_STEW_ENABLE_SPEED_BOOST.get();
+    }
+
 
     public static double getCakeEffectRadius() {
         return CAKE_EFFECT_RADIUS.get();
