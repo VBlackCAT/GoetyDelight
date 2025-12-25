@@ -613,15 +613,32 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
     }
 
     public ItemStack useHeldItemOnMeal(ItemStack container) {
-        if (this.isContainerValid(container) && !this.getMeal().isEmpty()) {
+        ItemStack mealStack = this.getMeal();
+        if (mealStack.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+
+
+        if (!this.doesMealHaveContainer(mealStack)) {
+
+            if (container.isEmpty() ||
+                    (ItemStack.isSameItem(mealStack, container) && container.getCount() < container.getMaxStackSize())) {
+                ItemStack result = mealStack.split(1);
+                this.inventoryChanged();
+                return result;
+            } else {
+                return ItemStack.EMPTY;
+            }
+        }
+
+        else if (this.isContainerValid(container)) {
             container.shrink(1);
             this.inventoryChanged();
-            return this.getMeal().split(1);
+            return mealStack.split(1);
         } else {
             return ItemStack.EMPTY;
         }
     }
-
     private boolean doesMealHaveContainer(ItemStack meal) {
         return !this.mealContainerStack.isEmpty() || meal.hasCraftingRemainingItem();
     }
