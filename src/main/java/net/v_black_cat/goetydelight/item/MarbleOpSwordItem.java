@@ -20,11 +20,7 @@ public class MarbleOpSwordItem extends SwordItem {
 
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        // 正确的Accessor使用方式
-        ((LivingEntityAccessor) target).setDead(true);
-        target.deathTime = 0;
         target.setHealth(0);
-        target.die(new DamageSource((attacker.damageSources().explosion( attacker,  attacker)).typeHolder(), attacker));
         return YESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS;
     }
 }
