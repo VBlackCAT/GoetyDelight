@@ -4,7 +4,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tier;
-
+import net.v_black_cat.goetydelight.mixin.LivingEntityAccessor;
 
 public class MarbleOpSwordItem extends SwordItem {
     public MarbleOpSwordItem(Tier tier, int attackDamageModifier, float attackSpeedModifier, Properties properties) {
@@ -13,6 +13,8 @@ public class MarbleOpSwordItem extends SwordItem {
 
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        // 正确的Accessor使用方式
+        ((LivingEntityAccessor) target).setDead(true);
         return super.hurtEnemy(stack, target, attacker);
     }
 }
