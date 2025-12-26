@@ -136,7 +136,10 @@ jar {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
-    options.compilerArgs += '-Aquiet=true'
+    options.compilerArgs += [
+            "-AoutRefMapFile=${buildDir}/resources/main/${mod_id}.refmap.json",
+            "-AdefaultObfuscationEnv=searge"
+    ]
 }
 
 //mixin {
