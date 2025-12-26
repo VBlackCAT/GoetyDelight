@@ -1,5 +1,6 @@
 {
   "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8.5",
   "package": "net.v_black_cat.goetydelight.mixin",
   "refmap": "refmap.goetydelight.json",
   "mixins": [

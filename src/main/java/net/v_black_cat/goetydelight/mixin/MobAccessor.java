@@ -6,6 +6,6 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(Mob.class)
 public interface MobAccessor {
-    @Invoker
+    @Invoker("customServerAiStep")
     void callCustomServerAiStep();
 }
