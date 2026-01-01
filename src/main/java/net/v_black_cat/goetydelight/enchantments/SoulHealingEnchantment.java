@@ -9,6 +9,7 @@ import net.minecraft.world.item.enchantment.*;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.v_black_cat.goetydelight.config.Config;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -55,6 +56,10 @@ public class SoulHealingEnchantment extends Enchantment {
 
     @Override
     public boolean canEnchant(ItemStack stack) {
+        if (Config.getSoulHealingBlacklist().contains(stack.getItem())){
+            return false;
+        }
+
         return stack.getItem() instanceof ArmorItem &&
                ((ArmorItem) stack.getItem()).getEquipmentSlot() == EquipmentSlot.CHEST;
     }

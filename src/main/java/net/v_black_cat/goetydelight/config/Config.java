@@ -126,6 +126,40 @@ public class Config
             .comment("Soul energy cost per level of Soul Affix enchantment")
             .defineInRange("soulAffixSoulCostPerLevel", 10, 1, Integer.MAX_VALUE);
 
+    //附魔黑名单
+
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SOUL_MENDING_BLACKLIST = BUILDER
+            .comment("A list of items that cannot be enchanted with Soul Mending")
+            .defineListAllowEmpty("soulRepairBlacklist", List.of(), Config::NoValidateItemName);
+
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SOUL_HEALING_BLACKLIST = BUILDER
+            .comment("A list of items that cannot be enchanted with Soul Healing")
+            .defineListAllowEmpty("soulHealBlacklist", List.of(), Config::NoValidateItemName);
+
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SOUL_AFFIX_BLACKLIST = BUILDER
+            .comment("A list of items that cannot be enchanted with Soul Affix")
+            .defineListAllowEmpty("soulAffixBlacklist", List.of(), Config::NoValidateItemName);
+
+    public static Set<Item> getSoulMendingBlacklist() {
+        return SOUL_MENDING_BLACKLIST.get().stream()
+                .map(itemName -> ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName)))
+                .collect(Collectors.toSet());
+    }
+
+    public static Set<Item> getSoulHealingBlacklist() {
+        return SOUL_HEALING_BLACKLIST.get().stream()
+                .map(itemName -> ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName)))
+                .collect(Collectors.toSet());
+    }
+
+    public static Set<Item> getSoulAffixBlacklist() {
+        return SOUL_AFFIX_BLACKLIST.get().stream()
+                .map(itemName -> ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName)))
+                .collect(Collectors.toSet());
+    }
+
+
+
     public static int getSoulAffixSoulCostPerLevel() {
         return SOUL_AFFIX_SOUL_COST_PER_LEVEL.get();
     }
@@ -206,6 +240,8 @@ public class Config
     public static Set<Item> blacklistedItems;
     
     private static Consumer<Void> blackListUpdateListener;
+
+
 
     private static boolean validateItemName(final Object obj)
     {

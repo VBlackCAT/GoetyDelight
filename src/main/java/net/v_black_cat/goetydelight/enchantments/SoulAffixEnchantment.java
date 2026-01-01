@@ -73,4 +73,8 @@ public class SoulAffixEnchantment extends Enchantment {
             SEHelper.decreaseSouls(player, soulEnergyCost);
         }
     }
+    @Override
+    public boolean canEnchant(ItemStack stack) {
+        return !Config.getSoulAffixBlacklist().contains(stack.getItem());
+    }
 }
