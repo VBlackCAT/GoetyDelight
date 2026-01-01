@@ -41,21 +41,33 @@ public class SoulHealingEnchantment extends Enchantment {
 
     @Override
     public boolean isTreasureOnly() {
+        if(Config.isSoulHealingDisabled()){
+            return false;
+        }
         return true;
     }
 
     @Override
     public boolean isTradeable() {
+        if(Config.isSoulHealingDisabled()){
+            return false;
+        }
         return true;
     }
 
     @Override
     public boolean isDiscoverable() {
+        if(Config.isSoulHealingDisabled()){
+            return false;
+        }
         return true;
     }
 
     @Override
     public boolean canEnchant(ItemStack stack) {
+        if(Config.isSoulHealingDisabled()){
+            return false;
+        }
         if (Config.getSoulHealingBlacklist().contains(stack.getItem())){
             return false;
         }
