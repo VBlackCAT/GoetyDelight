@@ -26,7 +26,7 @@ public class ModEnchantments {
     public static final RegistryObject<Enchantment> SOUL_MENDING =
             ENCHANTMENTS.register("soul_mending",
                     () -> new SoulMendingEnchantment(
-                            Enchantment.Rarity.COMMON,
+                            Enchantment.Rarity.RARE,
                             EnchantmentCategory.BREAKABLE,
                             EquipmentSlot.values()
                     ));

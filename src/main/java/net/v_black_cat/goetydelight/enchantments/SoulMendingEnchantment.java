@@ -8,6 +8,7 @@ import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.v_black_cat.goetydelight.config.Config;
 
 @Mod.EventBusSubscriber(modid = "goetydelight")
 public class SoulMendingEnchantment extends Enchantment {
@@ -53,7 +54,10 @@ public class SoulMendingEnchantment extends Enchantment {
 
     @Override
     public boolean canEnchant(ItemStack stack) {
-        
+        if (Config.getSoulMendingBlacklist().contains(stack.getItem())){
+            return false;
+        }
+
         return stack.isDamageableItem();
     }
 
