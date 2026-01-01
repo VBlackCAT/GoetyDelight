@@ -34,16 +34,25 @@ public class SoulMendingEnchantment extends Enchantment {
 
     @Override
     public boolean isTreasureOnly() {
+        if(Config.isSoulMendingDisabled()){
+            return false;
+        }
         return false; 
     }
 
     @Override
     public boolean isTradeable() {
+        if(Config.isSoulMendingDisabled()){
+            return false;
+        }
         return true; 
     }
 
     @Override
     public boolean isDiscoverable() {
+        if(Config.isSoulMendingDisabled()){
+            return false;
+        }
         return true; 
     }
 
@@ -54,6 +63,9 @@ public class SoulMendingEnchantment extends Enchantment {
 
     @Override
     public boolean canEnchant(ItemStack stack) {
+        if(Config.isSoulMendingDisabled()){
+            return false;
+        }
         if (Config.getSoulMendingBlacklist().contains(stack.getItem())){
             return false;
         }

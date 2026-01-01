@@ -126,6 +126,32 @@ public class Config
             .comment("Soul energy cost per level of Soul Affix enchantment")
             .defineInRange("soulAffixSoulCostPerLevel", 10, 1, Integer.MAX_VALUE);
 
+    private static final ForgeConfigSpec.BooleanValue DISABLE_SOUL_MENDING = BUILDER
+            .comment("Disable Soul Mending enchantment entirely")
+            .define("disableSoulMending", false);
+
+    private static final ForgeConfigSpec.BooleanValue DISABLE_SOUL_HEALING = BUILDER
+            .comment("Disable Soul Healing enchantment entirely")
+            .define("disableSoulHealing", false);
+
+    private static final ForgeConfigSpec.BooleanValue DISABLE_SOUL_AFFIX = BUILDER
+            .comment("Disable Soul Affix enchantment entirely")
+            .define("disableSoulAffix", false);
+
+    public static boolean isSoulMendingDisabled() {
+        return DISABLE_SOUL_MENDING.get();
+    }
+
+    public static boolean isSoulHealingDisabled() {
+        return DISABLE_SOUL_HEALING.get();
+    }
+
+    public static boolean isSoulAffixDisabled() {
+        return DISABLE_SOUL_AFFIX.get();
+    }
+
+
+
     //附魔黑名单
 
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SOUL_MENDING_BLACKLIST = BUILDER

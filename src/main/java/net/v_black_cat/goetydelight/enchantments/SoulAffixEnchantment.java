@@ -34,21 +34,34 @@ public class SoulAffixEnchantment extends Enchantment {
 
     @Override
     public boolean isTreasureOnly() {
+        if(Config.isSoulAffixDisabled()){
+            return false;
+        }
+
         return true;
     }
 
     @Override
     public boolean isTradeable() {
+        if(Config.isSoulAffixDisabled()){
+            return false;
+        }
         return true;
     }
 
     @Override
     public boolean isDiscoverable() {
+        if(Config.isSoulAffixDisabled()){
+            return false;
+        }
         return true;
     }
 
     @Override
     public boolean isAllowedOnBooks() {
+        if(Config.isSoulAffixDisabled()){
+            return false;
+        }
         return true;
     }
 
@@ -75,6 +88,9 @@ public class SoulAffixEnchantment extends Enchantment {
     }
     @Override
     public boolean canEnchant(ItemStack stack) {
+        if(Config.isSoulAffixDisabled()){
+            return false;
+        }
         return !Config.getSoulAffixBlacklist().contains(stack.getItem());
     }
 }
