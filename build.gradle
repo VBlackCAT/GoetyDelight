@@ -137,8 +137,8 @@ jar {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
     options.compilerArgs += [
+            // 配置注解处理器输出的 refmap 文件路径
             "-AoutRefMapFile=${buildDir}/resources/main/${mod_id}.refmap.json",
-            "-AdefaultObfuscationEnv=searge"
     ]
 }
 
@@ -314,6 +314,9 @@ dependencies {
     modRuntimeOnly  "curse.maven:spark-361579:4738952"
     modRuntimeOnly  "curse.maven:enchantment-descriptions-250419:7336071"
     modRuntimeOnly  "curse.maven:bookshelf-228525:5423987"
+
+    //摩登ui
+    modRuntimeOnly "curse.maven:modern-ui-352491:6956345"
 }
 
 
