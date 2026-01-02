@@ -75,15 +75,13 @@ public class MetamorphicScentGrassItem extends Item {
                                 MobEffectInstance originalEffect = pair.getFirst();
 
                                 int newDuration = (int) (originalEffect.getDuration()*metamorphicScentGrassDurationMultiplier);
-                                int newAmplifier = (int) ((originalEffect.getAmplifier()+1)*metamorphicScentGrassAmplifierMultiplier)-1;
+
+                                int newAmplifier = Math.max(0, (int) (((originalEffect.getAmplifier()+1)*metamorphicScentGrassAmplifierMultiplier)-1));
 
                                 livingEntity.addEffect(new MobEffectInstance(
                                         originalEffect.getEffect(),
                                         newDuration,
-                                        newAmplifier,
-                                        originalEffect.isAmbient(),
-                                        originalEffect.isVisible(),
-                                        originalEffect.showIcon()
+                                        newAmplifier
                                 ));
                             }
                         }
