@@ -491,7 +491,7 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
                 for(int i = 0; i < 6; ++i) {
                     ItemStack slotStack = this.inventory.getStackInSlot(i);
                     if (slotStack.hasCraftingRemainingItem()) {
-                        this.ejectIngredientRemainder(slotStack.getCraftingRemainingItem());
+                        this.ejectIngredientRemainder(slotStack.getCraftingRemainingItem().copy().split(1));
                     } else if (INGREDIENT_REMAINDER_OVERRIDES.containsKey(slotStack.getItem())) {
                         this.ejectIngredientRemainder(((Item)INGREDIENT_REMAINDER_OVERRIDES.get(slotStack.getItem())).getDefaultInstance());
                     }
