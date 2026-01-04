@@ -7,7 +7,14 @@
     "goety:whisperer",
     "goety:wavewhisperer",
     "goety:ravaged",
-    "goety:ally_trampler",
+    {
+      "id": "goety:ally_trampler",
+      "required": false
+    },
+    {
+      "id": "goety:trampler_servant",
+      "required": false
+    },
     "goety:zombie_villager_servant",
     "goety:phantom_servant",
     "goety:zpiglin_servant",
@@ -30,7 +37,14 @@
     "goety:crusher_servant",
     "goety:storm_caster_servant",
     "goety:guardian_servant",
-    "goety:ally_vex",
+    {
+      "id": "goety:ally_vex",
+      "required": false
+    },
+    {
+      "id": "goety:vex_servant",
+      "required": false
+    },
     "goety:mini_ghast",
     "goety:redstone_cube",
     "goety:snareling_servant",
