@@ -5,11 +5,11 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "食用后给予食用者：$(br)$(li)5分钟的攀爬和滋养"
+            "text": "食用后给予食用者：$(br)$(li)5分钟的攀爬和滋养$(br)这堆食物是怎么和蜘蛛扯上关系的……"
         },
         {
-            "type": "goety:cooking",
-            "recipe": "goetydelight:cooking/full_spider_feast"
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/exotic_breakfast"
         }
     ]
 }
