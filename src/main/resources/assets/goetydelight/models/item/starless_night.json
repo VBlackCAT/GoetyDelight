@@ -10,6 +10,9 @@
     },
     "fixed": {
       "parent": "goetydelight:item/starless_night_inventory"
+    },
+    "ground": {
+      "parent": "goetydelight:item/starless_night_ground"
     }
   }
 }
