@@ -28,7 +28,7 @@ public class PermanentSaveEffectHandler {
                         -1, 
                         0,
                         false,
-                        true
+                        false
                 );
                 entity.addEffect(fireResistance);
             }
