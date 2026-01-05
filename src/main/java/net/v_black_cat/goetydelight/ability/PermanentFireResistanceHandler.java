@@ -27,7 +27,7 @@ public class PermanentFireResistanceHandler {
                         -1, 
                         0,
                         false, 
-                        true
+                        false
                 );
 
                 entity.addEffect(fireResistance);
