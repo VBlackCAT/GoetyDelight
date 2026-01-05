@@ -554,7 +554,7 @@ public class ModItems {
                 () -> new LichsChaosStewItem(basicItem().craftRemainder(Items.BOWL).stacksTo(1).rarity(Rarity.EPIC).food(
                         simpleFoodItemProperties(16, 12)
                                 .effect(() -> new MobEffectInstance(SAVE_EFFECTS.get(), -1, 2), 1.0F)
-                                .effect(() -> new MobEffectInstance(ModEffects.WIGHT_DENIAL.get(), minToTick(30), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(ModEffects.WIGHT_DENIAL.get(), minToTick(30), 0,false,false), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, -1, 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(30), 2), 1.0F)
                                 .build())));
@@ -574,9 +574,9 @@ public class ModItems {
         SUNDAE_OF_THE_PHILOSOPHERS_POTION = ITEMS.register("sundae_of_the_philosophers_potion",
                 () -> new SundaeOfThePhilosophersPotionItem(basicItem().stacksTo(16).rarity(Rarity.EPIC).food(
                         simpleFoodItemProperties(10, 6)
-                                .effect(() -> new MobEffectInstance(SAVE_EFFECTS.get(), Integer.MAX_VALUE, 1), 1.0F)
-                                .effect(() -> new MobEffectInstance(GOLD_TOUCHED.get(), minToTick(30), 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(SOUL_ARMOR.get(), Integer.MAX_VALUE, 1), 1.0F)
+                                .effect(() -> new MobEffectInstance(SAVE_EFFECTS.get(), -1, 1,false,false), 1.0F)
+                                .effect(() -> new MobEffectInstance(GOLD_TOUCHED.get(), minToTick(30), 0,false,false), 1.0F)
+                                .effect(() -> new MobEffectInstance(SOUL_ARMOR.get(), -1, 1,false,false), 1.0F)
                                 .build())));
         THE_BOX_OF_THE_DEAD = ITEMS.register("the_box_of_the_dead",
                 () -> new TheBoxOfTheDeadItem(basicItem().stacksTo(64).rarity(Rarity.UNCOMMON).food(
