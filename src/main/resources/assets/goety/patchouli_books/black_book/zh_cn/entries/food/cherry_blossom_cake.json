@@ -1,0 +1,19 @@
+{
+  "name": "樱花饼",
+  "icon": "goetydelight:cherry_blossom_cake",
+  "category": "goety:goetydelight/food",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "食用后根据食用者的幸运值增加下一次的攻击的伤害，每1点幸运增加0.5点攻击力$(br)$(br)$(br)$(br)试试对狐狸使用樱花簇叭，或许会有好事发生~"
+    },
+    {
+      "type": "spotlight",
+      "title": "樱花饼",
+      "link_recipe": true,
+      "item": "goetydelight:cherry_blossom_cake",
+      "scale": 1.2,
+      "text": "事件视界之外的力量，据说是来自狐神的祝福"
+    }
+  ]
+}
