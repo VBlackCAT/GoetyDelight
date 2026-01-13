@@ -1,0 +1,19 @@
+{
+  "name": "Cherry Blossom Cake",
+  "icon": "goetydelight:cherry_blossom_cake",
+  "category": "goety:goetydelight/food",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Increases the damage of the next attack based on the consumer's Luck, with each point of Luck adding 0.5 attack damage. $(br)$(br)$(br)$(br) Try using Cherry Clusters on foxes, maybe something good will happen~"
+    },
+    {
+      "type": "spotlight",
+      "title": "Cherry Blossom Cake",
+      "link_recipe": true,
+      "item": "goetydelight:cherry_blossom_cake",
+      "scale": 1.2,
+      "text": "A power beyond the event horizon, said to be a blessing from the Fox God."
+    }
+  ]
+}

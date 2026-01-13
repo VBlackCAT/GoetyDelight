@@ -1,5 +1,6 @@
 package net.v_black_cat.goetydelight.item.food;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -7,6 +8,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.entity.animal.Fox;
 import net.minecraft.core.particles.ParticleTypes;
@@ -19,6 +21,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.item.ModItems;
 
+import javax.annotation.Nullable;
+import java.util.List;
 import java.util.UUID;
 
 public class CherryBlossomCakeItem extends Item {
@@ -71,6 +75,12 @@ public class CherryBlossomCakeItem extends Item {
         if (attackDamage != null && attackDamage.getModifier(ATTACK_DAMAGE_UUID) != null) {
             attackDamage.removeModifier(ATTACK_DAMAGE_UUID);
         }
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
+        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
+        tooltipComponents.add(Component.translatable("tooltip.goetydelight.cherry_blossom_cake"));
     }
 
     @Mod.EventBusSubscriber
