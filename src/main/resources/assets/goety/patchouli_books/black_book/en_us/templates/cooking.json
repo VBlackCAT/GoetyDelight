@@ -97,26 +97,26 @@
         {
             "type": "patchouli:text",
             "text": "Cooking time:",
-            "x": 10,
-            "y": 63
+            "x": 0,
+            "y": 67
         },
         {
             "type": "patchouli:text",
             "text": "#cookTime",
-            "x": 46,
-            "y": 63
+            "x": 55,
+            "y": 67
         },
         {
             "type": "patchouli:text",
             "text": "Gain experience:",
-            "x": 10,
-            "y": 73
+            "x": 0,
+            "y": 77
         },
         {
             "type": "patchouli:text",
             "text": "#experience",
-            "x": 46,
-            "y": 73
+            "x":66,
+            "y": 77
         }
     ]
 }

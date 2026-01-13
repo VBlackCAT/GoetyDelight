@@ -12,8 +12,8 @@
             "recipe": "goetydelight:cooking/roasted_corpse_maggots"
         },
         {
-            "type": "Rotten Corpse Maggot Feast",
-            "title": "腐尸蛆虫盛宴",
+            "type": "spotlight",
+            "title": "Rotten Corpse Maggot Feast",
             "link_recipe": true,
             "item": "goetydelight:rotten_corpse_maggot_feast_block",
             "scale": 1.2,
