@@ -44,7 +44,7 @@ legacyForge {
 
         server {
             server()
-            programArgument '--nogui'
+//            programArgument '--nogui'
             systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
         }
 
@@ -277,13 +277,16 @@ dependencies {
 //    compileOnly  "curse.maven:goety-586095:7073504"//2.5.37.3
 //
 
-    modImplementation "curse.maven:goety-586095:7415009" // 2.5.43.1
-//    modImplementation "curse.maven:goety-586095:7327887"//2.5.40.1
+
 //    modRuntimeOnly "curse.maven:goety-586095:6778940"//2.5.36.1
 //    modRuntimeOnly "curse.maven:goety-586095:7170210"//2.5.36.5
 
+//    modImplementation "curse.maven:goety-586095:7415009" // 2.5.43.1
+    modImplementation "curse.maven:goety-586095:7436226"// 2.5.43.4
+//    modRuntimeOnly "curse.maven:goety-586095:7327887"//2.5.40.1
 
 //    modImplementation "curse.maven:goety-revelation-1236817:6892481"
+
     compileOnly "blank:[Forge]RevelationFix-1.20.1-3.8-all"
     modImplementation "curse.maven:curios-309927:6418456"
 
