@@ -162,7 +162,7 @@ public class PolariceItem extends BowlFoodItem {
                 }
                 log.info("Entity Servant Name: {}", servantTypeName_1);
 
-                if (targetEntity instanceof IOwned owned && owned.getTrueOwner() != attacker && !entityName.equals("lich")) {
+                if (targetEntity instanceof IOwned owned && owned.getTrueOwner() != attacker) {
                     boolean isOwnerPlayer = owned.getTrueOwner() instanceof Player;
                     if (!isOwnerPlayer) {
                         owned.setTrueOwner((LivingEntity) attacker);
@@ -192,7 +192,7 @@ public class PolariceItem extends BowlFoodItem {
                         for (EntityType<?> entityType : ForgeRegistries.ENTITY_TYPES.getValues()) {
                             ResourceLocation registryName = ForgeRegistries.ENTITY_TYPES.getKey(entityType);
                             if (registryName != null && registryName.getNamespace().contains("goety") &&
-                                    registryName.getPath().contains(servantTypeName_1)) {
+                                    registryName.getPath().contains(servantTypeName_1) && !entityName.equals("lich")) {
                                 LivingEntity tempEntity = (LivingEntity) entityType.create(level);
                                 if (tempEntity != null) {
                                     double servantMaxHealth = tempEntity.getAttributeBaseValue(Attributes.MAX_HEALTH);
