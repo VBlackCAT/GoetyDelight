@@ -16,6 +16,18 @@
     {
       "id": "goety_iron:dead_king_servant",
       "required": false
+    },
+    {
+      "id": "goetyawaken:wither_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:vizier_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:warden_servant",
+      "required": false
     }
   ]
 }

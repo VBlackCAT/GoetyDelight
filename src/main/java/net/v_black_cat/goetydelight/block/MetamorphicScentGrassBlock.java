@@ -67,7 +67,8 @@ public class MetamorphicScentGrassBlock extends CropBlock {
 
     @Override
     protected int getBonemealAgeIncrease(Level level) {
-        return 1;
+        int randomValue = level.random.nextInt(100);
+        return randomValue == 0 ? 1 : 0;
     }
 
     @Override
@@ -77,7 +78,7 @@ public class MetamorphicScentGrassBlock extends CropBlock {
             int i = this.getAge(state);
             if (i < this.getMaxAge()) {
                 float f = getGrowthSpeed(this, level, pos);
-                if (net.minecraftforge.common.ForgeHooks.onCropsGrowPre(level, pos, state, random.nextInt((int)(15.0F / f) + 1) == 0)) {
+                if (net.minecraftforge.common.ForgeHooks.onCropsGrowPre(level, pos, state, random.nextInt((int)(15.0F / 0.2f) + 1) == 0)) {
                     level.setBlock(pos, this.getStateForAge(i + 1), 2);
                     net.minecraftforge.common.ForgeHooks.onCropsGrowPost(level, pos, state);
                 }

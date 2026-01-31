@@ -47,6 +47,26 @@
     {
       "id": "goety_spillage:bound_freakager",
       "required": false
+    },
+    {
+      "id": "goetyawaken:crone_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:endersent_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:wraith_necromancer_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:wight_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:minister_servant",
+      "required": false
     }
   ]
 }

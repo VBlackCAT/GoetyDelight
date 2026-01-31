@@ -121,6 +121,26 @@
     {
       "id": "goety_spillage:preserver_servant",
       "required": false
+    },
+    {
+      "id": "goetyawaken:silverfish_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:endermite_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:caerbannog_rabbit_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:tormentor_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:preacher_servant",
+      "required": false
     }
   ]
 }
