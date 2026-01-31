@@ -38,7 +38,7 @@ public class SauceGrilledCandyFishItem extends Item {
             }
 
             return InteractionResult.SUCCESS;
-        }else if (entity.getEncodeId().equals("revelationfix:apostle_servant")) {
+        }else if (entity.getEncodeId().equals("revelationfix:apostle_servant") || entity.getEncodeId().equals("goetyawaken:apostle_servant")) {
             LivingEntity cat = (LivingEntity) entity;
             // 计算10%的最大生命值
             float maxHealth = cat.getMaxHealth();
