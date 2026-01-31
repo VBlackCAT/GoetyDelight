@@ -103,6 +103,26 @@
     {
       "id": "goety_spillage:chagrin_sentry",
       "required": false
+    },
+    {
+      "id": "goetyawaken:ice_creeper_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:enderman_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:shulker_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:royalguard_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:envioker_servant",
+      "required": false
     }
   ]
 }

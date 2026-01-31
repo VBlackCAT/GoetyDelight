@@ -3,6 +3,14 @@
     {
       "id": "revelationfix:apostle_servant",
       "required": false
+    },
+    {
+      "id": "goetyawaken:apostle_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:ender_keeper_servant",
+      "required": false
     }
   ]
 }

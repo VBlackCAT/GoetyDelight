@@ -39,12 +39,14 @@ public class RoastLaowangItem extends Item{
 
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
-        if (event.getEntity().getType() == EntityType.PIG) {
+        if (event.getEntity().getType() == EntityType.PIG && !event.getEntity().isBaby()) {
             if (event.getSource().typeHolder().unwrapKey().isPresent()) {
                 String damageTypeName = event.getSource().typeHolder().unwrapKey().get().location().toString();
-                if (damageTypeName.contains("lightning") || damageTypeName.contains("shock")) {
-                    ItemStack roastLaowang = new ItemStack(ModItems.ROAST_LAOWANG.get());
-                    event.getEntity().spawnAtLocation(roastLaowang);
+                if (damageTypeName.contains("lighting") || damageTypeName.contains("shock")) {
+                    if (random.nextFloat() < 0.25f) {
+                        ItemStack roastLaowang = new ItemStack(ModItems.ROAST_LAOWANG.get());
+                        event.getEntity().spawnAtLocation(roastLaowang);
+                    }
                 }
             }
         }

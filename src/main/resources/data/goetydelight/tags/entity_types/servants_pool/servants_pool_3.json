@@ -51,6 +51,14 @@
     {
       "id": "goety_iron:alchemist_servant",
       "required": false
+    },
+    {
+      "id": "goetyawaken:pale_golem_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:sorcerer_servant",
+      "required": false
     }
   ]
 }
