@@ -220,6 +220,15 @@ public class Config
                 .collect(Collectors.toSet());
     }
 
+    private static final ForgeConfigSpec.BooleanValue ENABLE_GOETY_REVELATION_COMPATIBILITY = BUILDER
+            .comment("Whether to enable compatibility with goety_revelation mod")
+            .define("enableGoetyRevelationCompatibility", true);
+
+
+    public static boolean isGoetyRevelationCompatibilityEnabled() {
+        return ENABLE_GOETY_REVELATION_COMPATIBILITY.get();
+    }
+
     public static int getMetamorphicScentGrassCopyCount() {
         return METAMORPHIC_SCENT_GRASS_COPY_COUNT.get();
     }
