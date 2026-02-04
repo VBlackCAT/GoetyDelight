@@ -103,8 +103,11 @@ public class GoetyDelight
         //LOGGER.info(Config.magicNumberIntroduction + Config.magicNumber);
         NetworkHandler.register();
 
-        if ( !ModList.get().isLoaded("goety_revelation")){
-            
+        boolean isGoetyRevelationLoaded = ModList.get().isLoaded("goety_revelation");
+        boolean isCompatibilityEnabled = Config.isGoetyRevelationCompatibilityEnabled();
+
+        // 如果未加载 goety_revelation 或者兼容性被禁用，则执行后续逻辑
+        if (!isGoetyRevelationLoaded || !isCompatibilityEnabled) {
             Optional<? extends ModContainer> goetyContainer = ModList.get().getModContainerById("goety");
             if (goetyContainer.isPresent()) {
                 DefaultArtifactVersion loadedVersion = (DefaultArtifactVersion) goetyContainer.get().getModInfo().getVersion();
