@@ -3,8 +3,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"0": "goetydelight:block/lichs_chaos_stew_block",
-		"particle": "goetydelight:block/lichs_chaos_stew_block"
+      "0": "goetydelight:block/bone_lord_ash_rice_stage_1",
+      "particle": "goetydelight:block/bone_lord_ash_rice_stage_1"
 	},
 	"elements": [
 		{
@@ -62,7 +62,7 @@
 	"groups": [
 		{
 			"name": "cooking pot",
-            "origin": [8, 8, 8],
+			"origin": [8, 8, 8],
 			"color": 0,
 			"children": [0, 1, 2, 3]
 		}

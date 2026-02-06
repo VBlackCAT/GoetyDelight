@@ -29,9 +29,12 @@
     },
     {
       "item": "farmersdelight:cooked_rice"
+    },
+    {
+      "item": "farmersdelight:cooking_pot"
     }
   ],
   "result": {
-    "item": "goetydelight:bone_lord_ash_rice"
+    "item": "goetydelight:bone_lord_ash_rice_block"
   }
 }

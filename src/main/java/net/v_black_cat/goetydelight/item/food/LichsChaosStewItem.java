@@ -41,7 +41,6 @@ public class LichsChaosStewItem extends Item {
     private static final UUID ATTACK_DAMAGE_BOOST_UUID = UUID.fromString("a90ad9a8-3776-44d1-b6c8-a464269f4bf5");
     private static final UUID MAX_HEALTH_BOOST_UUID = UUID.fromString("2d43842e-d85a-4590-8b6f-daafe15bcbcc");
     private static final UUID ARMOR_BOOST_UUID = UUID.fromString("f1a869ea-d50f-454b-847b-5b4779873078");
-    private static final UUID MOVEMENT_SPEED_BOOST_UUID = UUID.fromString("dc658e47-9850-4675-b940-f1caa5501dc5");
     private static final UUID ARMOR_TOUGHNESS_BOOST_UUID = UUID.fromString("c0c0c0c0-c0c0-c0c0-c0c0-c0c0c0c0c0c0");
 
     public LichsChaosStewItem(Properties properties) {
@@ -167,20 +166,6 @@ public class LichsChaosStewItem extends Item {
         }
 
 
-        if (Config.getLichStewEnableSpeedBoost() && !Config.getSpeedBoostBlacklist().contains(minion.getType())) {
-            AttributeInstance movementSpeed = minion.getAttribute(Attributes.MOVEMENT_SPEED);
-            if (movementSpeed != null) {
-                double baseValue = movementSpeed.getBaseValue();
-                double boostValue = baseValue * boostMultiplier;
-                movementSpeed.addPermanentModifier(new AttributeModifier(
-                        MOVEMENT_SPEED_BOOST_UUID,
-                        "Lich Stew Speed Boost",
-                        boostValue,
-                        AttributeModifier.Operation.ADDITION
-                ));
-            }
-        }
-
         AttributeInstance armorToughness = minion.getAttribute(Attributes.ARMOR_TOUGHNESS);
         if (armorToughness != null) {
             double baseValue = armorToughness.getBaseValue();
@@ -214,10 +199,6 @@ public class LichsChaosStewItem extends Item {
             armor.removeModifier(ARMOR_BOOST_UUID);
         }
 
-        AttributeInstance movementSpeed = minion.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (movementSpeed != null) {
-            movementSpeed.removeModifier(MOVEMENT_SPEED_BOOST_UUID);
-        }
         AttributeInstance armorToughness = minion.getAttribute(Attributes.ARMOR_TOUGHNESS);
         if (armorToughness != null) {
             armorToughness.removeModifier(ARMOR_TOUGHNESS_BOOST_UUID);

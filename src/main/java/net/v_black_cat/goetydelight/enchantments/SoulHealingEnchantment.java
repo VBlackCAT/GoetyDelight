@@ -88,8 +88,13 @@ public class SoulHealingEnchantment extends Enchantment {
     }
 
     @Override
-    public boolean checkCompatibility(@NotNull Enchantment other) {
-        return super.checkCompatibility(other) && !(other instanceof MendingEnchantment) && !(other.isCompatibleWith(ModEnchantments.SOUL_MENDING.get()));
+    public @NotNull Rarity getRarity() {
+        return Rarity.VERY_RARE;
+    }
+
+    @Override
+    public boolean checkCompatibility(Enchantment ench) {
+        return super.checkCompatibility(ench) && ench != Enchantments.MENDING;
     }
 
     @SubscribeEvent

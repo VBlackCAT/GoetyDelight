@@ -62,6 +62,11 @@ public class SoulMendingEnchantment extends Enchantment {
     }
 
     @Override
+    public Rarity getRarity() {
+       return Rarity.VERY_RARE;
+    }
+
+    @Override
     public boolean canEnchant(ItemStack stack) {
         if(Config.isSoulMendingDisabled()){
             return false;
