@@ -8,9 +8,14 @@
           "condition": "minecraft:survives_explosion"
         }
       ],
-      "entries": [],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "farmersdelight:cooking_pot"
+        }
+      ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "goetydelight:blocks/boat_stuffed_roasted_warden_block"
+  "random_sequence": "goetydelight:blocks/bone_lord_ash_rice_block"
 }

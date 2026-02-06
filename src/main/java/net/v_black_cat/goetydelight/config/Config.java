@@ -53,14 +53,6 @@ public class Config
     private static final ForgeConfigSpec.DoubleValue CAKE_EFFECT_RADIUS = BUILDER
             .comment("Effect radius for the cake item")
             .defineInRange("cakeEffectRadius", 32.0, 1.0, 256.0);
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SPEED_BOOST_BLACKLIST = BUILDER
-            .comment("List of entity types that are immune to movement speed boost from Lich's Chaos Stew")
-            .defineListAllowEmpty("lichStewSpeedBoostBlacklist", List.of(
-               "goety:redstone_monstrosity","goety:redstone_golem"
-            ), Config::validateEntityName);
-    private static final ForgeConfigSpec.BooleanValue LICHS_CHAOS_STEW_ENABLE_SPEED_BOOST = BUILDER
-            .comment("Whether to enable movement speed boost for minions from Lich's Chaos Stew")
-            .define("lichStewEnableSpeedBoost", true);
     private static final ForgeConfigSpec.BooleanValue POLARICE_AFFECTS_BOSSES = BUILDER
             .comment("Whether bosses are affected by Polarice item")
             .define("polariceAffectsBosses", false);
@@ -124,7 +116,7 @@ public class Config
 
     private static final ForgeConfigSpec.IntValue SOUL_AFFIX_SOUL_COST_PER_LEVEL = BUILDER
             .comment("Soul energy cost per level of Soul Affix enchantment")
-            .defineInRange("soulAffixSoulCostPerLevel", 10, 1, Integer.MAX_VALUE);
+            .defineInRange("soulAffixSoulCostPerLevel", 5, 1, Integer.MAX_VALUE);
 
     private static final ForgeConfigSpec.BooleanValue DISABLE_SOUL_MENDING = BUILDER
             .comment("Disable Soul Mending enchantment entirely")
@@ -245,16 +237,6 @@ public class Config
     public static double getPolariceHealthThreshold() {
         return POLARICE_HEALTH_THRESHOLD.get();
     }
-    public static Set<EntityType<?>> getSpeedBoostBlacklist() {
-        return SPEED_BOOST_BLACKLIST.get().stream()
-                .map(entityName -> ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(entityName)))
-                .collect(Collectors.toSet());
-    }
-
-    public static boolean getLichStewEnableSpeedBoost() {
-        return LICHS_CHAOS_STEW_ENABLE_SPEED_BOOST.get();
-    }
-
 
     public static double getCakeEffectRadius() {
         return CAKE_EFFECT_RADIUS.get();

@@ -458,8 +458,8 @@ public class ModItems {
 
 
         NIGHT_HEART_PEA_SOUP = ITEMS.register("night_heart_pea_soup",
-                () -> new NightHeartPeaSoupItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).food(
-                        simpleFoodItemProperties(16, 24)
+                () -> new NightHeartPeaSoupItem(basicItem().craftRemainder(Items.GLASS_BOTTLE).stacksTo(1).rarity(Rarity.UNCOMMON).food(
+                        simpleFoodItemProperties(7, 3)
                                 .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(5), 2), 1.0F)
                                 .effect(() -> new MobEffectInstance(SHADOW_WALK.get(), sToTick(60), 2), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 6000, 2), 1.0F)
@@ -497,8 +497,8 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(ModEffects.HUNTING_DENIAL.get(), minToTick(10), 0), 1.0F)
                                 .build())));
         BONE_LORD_ASH_RICE = ITEMS.register("bone_lord_ash_rice",
-                () -> new BoneLordAshRiceItem(basicItem().stacksTo(1).food(
-                        simpleFoodItemProperties(12, 16)
+                () -> new BoneLordAshRiceItem(basicItem().craftRemainder(Items.BOWL).stacksTo(1).food(
+                        simpleFoodItemProperties(6, 4)
                                 .effect(() -> new MobEffectInstance(CHILL_HIDE_EFFECT_SUPPLIER.get(), 6000, 1), 1.0F)
                                 .effect(() -> new MobEffectInstance(BUFF_EFFECT_SUPPLIER.get(), 6000, 2), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)

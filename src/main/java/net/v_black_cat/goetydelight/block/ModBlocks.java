@@ -107,6 +107,14 @@ public class ModBlocks {
             new LichsChaosStewBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
                     ModItems.LICHS_CHAOS_STEW, true),1);
 
+    public static final RegistryObject<Block> NIGHT_HEART_PEA_SOUP_BLOCK = registerBlock("night_heart_pea_soup_block",() ->
+            new NightHeartPeaSoupBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
+                    ModItems.NIGHT_HEART_PEA_SOUP, true),1);
+
+    public static final RegistryObject<Block> BONE_LORD_ASH_RICE_BLOCK = registerBlock("bone_lord_ash_rice_block",() ->
+            new BoneLordAshRiceBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
+                    ModItems.BONE_LORD_ASH_RICE, true),1);
+
     //坚守者
     public static final RegistryObject<Block>  BOAT_STUFFED_ROASTED_WARDEN_BlOCK= registerBlock("boat_stuffed_roasted_warden_block",
             () -> new BoatStuffedRoastedWardenBlock(

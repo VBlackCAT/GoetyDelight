@@ -15,13 +15,15 @@ import java.util.function.Supplier;
 
 import static net.v_black_cat.goetydelight.block.RoyalCakeBlock.rotateVoxelShape90Clockwise;
 
-public class LichsChaosStewBlock extends FeastBlock {
-    public LichsChaosStewBlock(Properties properties, Supplier<Item> servingItem, boolean hasLeftovers) {
+public class NightHeartPeaSoupBlock extends FeastBlock {
+    public NightHeartPeaSoupBlock(Properties properties, Supplier<Item> servingItem, boolean hasLeftovers) {
         super(properties, servingItem, hasLeftovers);
     }
     public int getMaxServings() {
         return 3;
     }
+
+
     public VoxelShape makeShape(){
         VoxelShape shape = Shapes.empty();
         shape = Shapes.join(shape, Shapes.box(0.125, 0, 0.125, 0.25, 0.625, 0.875), BooleanOp.OR);

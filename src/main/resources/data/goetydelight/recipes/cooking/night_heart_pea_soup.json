@@ -44,13 +44,13 @@
 
   "result": {
 
-    "item": "goetydelight:night_heart_pea_soup"
+    "item": "goetydelight:night_heart_pea_soup_block"
 
   },
 
   "container": {
 
-    "item": "minecraft:bowl"
+    "item": "farmersdelight:cooking_pot"
 
   }
 
