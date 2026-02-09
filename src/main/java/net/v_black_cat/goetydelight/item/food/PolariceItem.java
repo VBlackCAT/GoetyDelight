@@ -109,7 +109,8 @@ public class PolariceItem extends BowlFoodItem {
             entityId.equals(new ResourceLocation("minecraft:ender_dragon")) ||
             entityId.equals(new ResourceLocation("goety:ender_keeper")) ||
             entityId.equals(new ResourceLocation("goety:obsidian_monolith")) ||
-            entityId.equals(new ResourceLocation("twilightforest:lich"))
+            entityId.equals(new ResourceLocation("twilightforest:lich")) ||
+            entityId.equals(new ResourceLocation("goetyawaken:hostile_mushroom_monstrosity"))
         ) {
             isBanEntity = true;
         }

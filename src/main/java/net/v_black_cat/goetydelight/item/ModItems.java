@@ -125,6 +125,8 @@ public class ModItems {
     public static final RegistryObject<Item> ROAST_LAOWANG;
     public static final RegistryObject<Item> POLARICE;
     public static final RegistryObject<Item> METAMORPHIC_SCENT_FRUIT;
+    public static final RegistryObject<Item> FORBIDDDEN_SOUP_BUN;
+    public static final RegistryObject<Item> HIDDEN_PANCAKE;
 
     //种子
     public static final RegistryObject<Item> ECTOPLASMIC_MELON_SEEDS;
@@ -659,6 +661,20 @@ public class ModItems {
                                 .build())));
         METAMORPHIC_SCENT_FRUIT=ITEMS.register("metamorphic_scent_fruit",
                 () -> simpleFoodItem(10, 8,false));;
+
+        FORBIDDDEN_SOUP_BUN = ITEMS.register("forbidden_soup_bun",
+                () -> new ForbiddenSoupBunItem(basicItem().stacksTo(64).rarity(Rarity.UNCOMMON)
+                        .food(simpleFoodItemProperties(13, 5)
+                                .effect(() ->new MobEffectInstance(NYCTOPHOBIA.get(), 600, 0), 0.3F)
+                                .effect(() ->new MobEffectInstance(SENSE_LOSS.get(),600, 0), 0.7F)
+                                .build())));
+
+        HIDDEN_PANCAKE = ITEMS.register("hidden_pancake",
+                () -> new HiddenPancakeItem(basicItem().stacksTo(64).rarity(Rarity.RARE)
+                        .food(simpleFoodItemProperties(12, 7)
+                                .effect(() ->new MobEffectInstance(IRON_HIDE.get(), minToTick(1), 4), 1.0F)
+                                .effect(() ->new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(2), 1), 1.0F)
+                                .build())));
 
         // ==================== 种子物品 ====================
 
