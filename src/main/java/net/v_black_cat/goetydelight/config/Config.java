@@ -31,25 +31,6 @@ public class Config
                     "goetydelight:rotten_corpse_maggot_feast_block"
             ), Config::validateItemName);
 
-
-
-    private static final ForgeConfigSpec.IntValue MAX_ATTACK_COUNT = BUILDER
-            .comment("Maximum attack count for Starless Night item")
-            .defineInRange("starlessNightMaxAttackCount", 5, 1,2147483647);
-
-
-    private static final ForgeConfigSpec.DoubleValue STARLESS_NIGHT_SEARCH_RANGE = BUILDER
-            .comment("Search range for chain damage effect of Starless Night item")
-            .defineInRange("starlessNightSearchRange", 16.0, 1.0, 128.0);
-
-    private static final ForgeConfigSpec.IntValue STARLESS_NIGHT_MAX_CHAIN_TARGETS = BUILDER
-            .comment("Maximum number of targets for chain damage effect of Starless Night item")
-            .defineInRange("starlessNightMaxChainTargets", 10, 1, 2147483646);
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> STARLESS_NIGHT_WHITELIST = BUILDER
-            .comment("List of entity types that are immune to Starless Night damage when tamed by the player")
-            .defineListAllowEmpty("starlessNightWhitelist", List.of(
-                    "minecraft:villager"
-            ), Config::validateEntityName);
     private static final ForgeConfigSpec.DoubleValue CAKE_EFFECT_RADIUS = BUILDER
             .comment("Effect radius for the cake item")
             .defineInRange("cakeEffectRadius", 32.0, 1.0, 256.0);
@@ -246,12 +227,6 @@ public class Config
         return obj instanceof final String entityName && ForgeRegistries.ENTITY_TYPES.containsKey(new ResourceLocation(entityName));
     }
 
-    public static Set<EntityType<?>> getStarlessNightWhitelist() {
-        return STARLESS_NIGHT_WHITELIST.get().stream()
-                .map(entityName -> ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(entityName)))
-                .collect(Collectors.toSet());
-    }
-
     public static final ForgeConfigSpec SPEC = BUILDER.build();
 
     public static Set<Item> blacklistedItems;
@@ -286,13 +261,5 @@ public class Config
     public static void registerBlackListUpdateListener(Consumer<Void> listener) {
         blackListUpdateListener = listener;
     }
-    public static int getMaxAttackCount() {
-        return MAX_ATTACK_COUNT.get();
-    }
-    public static double getStarlessNightSearchRange() {
-        return STARLESS_NIGHT_SEARCH_RANGE.get();
-    }
-    public static int getStarlessNightMaxChainTargets() {
-        return STARLESS_NIGHT_MAX_CHAIN_TARGETS.get();
-    }
+
 }

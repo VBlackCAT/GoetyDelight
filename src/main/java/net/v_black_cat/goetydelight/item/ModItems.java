@@ -52,7 +52,6 @@ public class ModItems {
     // 武器物品
     public static final RegistryObject<Item> MARBLE_OP_SWORD;
     public static final RegistryObject<Item> PARASITIZED_WARDEN;
-    public static final RegistryObject<Item> STARLESS_NIGHT;
     //刷怪蛋
 
     public static final RegistryObject<Item> GHOST_FARMER_SPAWN_EGG;
@@ -196,9 +195,6 @@ public class ModItems {
         //大理石op剑
         MARBLE_OP_SWORD = ITEMS.register("marble_op_sword",
                 () -> new MarbleOpSwordItem(Tiers.WOOD, 1, 2, basicItem().rarity(Rarity.EPIC)));
-
-        STARLESS_NIGHT = ITEMS.register("starless_night",
-                () -> new StarlessNightitem(Tiers.valueOf("NETHERITE"), 7, -3, basicItem().rarity(Rarity.EPIC)));
 
         PARASITIZED_WARDEN = ITEMS.register("parasitized_warden",
                 () -> new Item(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON)));
