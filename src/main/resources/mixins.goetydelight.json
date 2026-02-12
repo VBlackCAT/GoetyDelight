@@ -12,7 +12,8 @@
     "MobAccessor",
     "RecipeManagerMixin",
     "SummonSpellMixin",
-    "WightSpawnerMixin"
+    "WightSpawnerMixin",
+    "LivingEntityMixin"
   ],
   "client": [
     "BookContentResourceListenerLoaderMixin",

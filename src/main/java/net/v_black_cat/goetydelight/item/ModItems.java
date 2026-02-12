@@ -51,6 +51,7 @@ public class ModItems {
 
     // 武器物品
     public static final RegistryObject<Item> MARBLE_OP_SWORD;
+    public static final RegistryObject<Item> FALSE_PROVERBS;
     public static final RegistryObject<Item> PARASITIZED_WARDEN;
     //刷怪蛋
 
@@ -179,6 +180,10 @@ public class ModItems {
         //黑暗金属刀
         DARK_KNIFE = registerWithTab("dark_knife",
                 () -> new DarkKnifeItem(ModTiers.DARK, 1F, -2.0F, basicItem().durability(512)));
+
+        FALSE_PROVERBS = ITEMS.register("false_proverbs",
+                () -> new FalseProverbsItem(ModTiers.VOID, 9.0f,-1, basicItem().rarity(Rarity.EPIC)));
+
 
         //诅咒金属刷子
         CURSED_METAL_BRUSH = ITEMS.register("cursed_metal_brush",
@@ -368,7 +373,7 @@ public class ModItems {
 
 
         ROASTED_CORPSE_MAGGOTS = ITEMS.register("roasted_corpse_maggots",
-                () -> new RoastedCorpseMaggotsitem(basicItem().stacksTo(16).food(
+                () -> new RoastedCorpseMaggotsitem(basicItem().craftRemainder(Items.BOWL).stacksTo(16).food(
                         simpleFoodItemProperties(5, 2)
                                 .build())));
 
@@ -542,7 +547,7 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(CLIMBING.get(), minToTick(5), 0), 1.0F)
                                 .build())));
         LIQUID_VOID_TEA_DRINK = ITEMS.register("liquid_void_tea_drink",
-                () -> new LiquidVoidTeaDrinkItem(basicItem().stacksTo(1)
+                () -> new LiquidVoidTeaDrinkItem(basicItem().stacksTo(16)
                         .food(new FoodProperties.Builder()
                                 .nutrition(0)
                                 .alwaysEat()
