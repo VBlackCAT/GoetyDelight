@@ -182,7 +182,7 @@ public class ModItems {
                 () -> new DarkKnifeItem(ModTiers.DARK, 1F, -2.0F, basicItem().durability(512)));
 
         FALSE_PROVERBS = ITEMS.register("false_proverbs",
-                () -> new FalseProverbsItem(ModTiers.VOID, 9.0f,-1, basicItem().rarity(Rarity.EPIC)));
+                () -> new FalseProverbsItem(ModTiers.VOID, 9,-1, basicItem().rarity(Rarity.EPIC)));
 
 
         //诅咒金属刷子

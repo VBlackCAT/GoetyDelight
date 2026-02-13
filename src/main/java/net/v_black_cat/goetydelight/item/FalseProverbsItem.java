@@ -6,29 +6,29 @@ import com.Polarice3.Goety.common.network.ModNetwork;
 import com.Polarice3.Goety.common.network.server.SPlayPlayerSoundPacket;
 import com.Polarice3.Goety.init.ModSounds;
 import com.Polarice3.Goety.utils.MathHelper;
-import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.RenderTypeHelper;
 import net.minecraftforge.client.event.RenderArmEvent;
-import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
-import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
-import net.minecraftforge.fml.earlydisplay.RenderElement;
+import net.minecraftforge.items.wrapper.PlayerArmorInvWrapper;
+import net.v_black_cat.goetydelight.event.PlayerLookHandler;
 import vectorwing.farmersdelight.common.item.KnifeItem;
 
 import java.util.Objects;
@@ -36,14 +36,14 @@ import java.util.UUID;
 
 
 @Mod.EventBusSubscriber
-public class FalseProverbsItem extends KnifeItem {
+public class FalseProverbsItem extends SwordItem {
     private static Vec3 originalPosition = null;
     private static final UUID Is_Shift_Key_UUID = UUID.fromString("4f5f5f5f-5f5f-5f5f-5f5f-5f5f5f5f5f5f");
     public static final String SHIFT_KEY_TAG = "IsShift";
-    Float newdamage =0.0f;
+    public static boolean WhetherInBack = false;
 
     public FalseProverbsItem(ModTiers tier, float attackDamage, float attackSpeed, Properties properties) {
-        super(tier, attackDamage, attackSpeed, properties);
+        super(tier, (int) attackDamage, attackSpeed, properties);
     }
 
     // 监听每 tick 事件，检测 Shift 按键
@@ -75,6 +75,7 @@ public class FalseProverbsItem extends KnifeItem {
                     if (persistentData.getBoolean(SHIFT_KEY_TAG)) {
                         player.getPersistentData().remove(SHIFT_KEY_TAG);
                         item.removeBonusAttributes(player);
+                        originalPosition = null;
                         player.setInvisible(false); // 取消隐身
                     }
                 }
@@ -83,6 +84,7 @@ public class FalseProverbsItem extends KnifeItem {
                 if (player.getPersistentData().getBoolean(SHIFT_KEY_TAG)) {
                     player.getPersistentData().remove(SHIFT_KEY_TAG);
                     Objects.requireNonNull(player.getAttribute(Attributes.MOVEMENT_SPEED)).removeModifier(Is_Shift_Key_UUID);
+                    originalPosition = null;
                     player.setInvisible(false); // 取消隐身
                 }
             }
@@ -113,13 +115,30 @@ public class FalseProverbsItem extends KnifeItem {
     }
 
     @SubscribeEvent
-    public void onLivingDamage(LivingDamageEvent event){
-        if (event.getEntity() instanceof Player player) {
+    public static void onLivingHurt(LivingHurtEvent event) {
+        if (event.getSource().getEntity() instanceof Player player) {
+            if (player.getMainHandItem().getItem() instanceof FalseProverbsItem) {
+                    if (event.getAmount() > 0.0F  && !WhetherInBack) {
+                        event.setAmount(event.getAmount() * 2.0f);
+                        if(originalPosition != null){
+                          player.teleportTo(originalPosition.x, originalPosition.y, originalPosition.z);
+                          originalPosition = null;
+                        }
+                    }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingDamage(LivingDamageEvent event){
+        if (event.getSource().getEntity() instanceof Player player) {
             if (player.getMainHandItem().getItem() instanceof FalseProverbsItem && player.getPersistentData().getBoolean(SHIFT_KEY_TAG)){
                 if (event.getAmount() > 0.0F) {
-                    newdamage = event.getAmount() * 3.0F;
-                    event.setAmount(newdamage);
-                    player.teleportTo(originalPosition.x, originalPosition.y, originalPosition.z);
+                    event.setAmount(event.getAmount() * 3.0F);
+                    if(originalPosition != null){
+                        player.teleportTo(originalPosition.x, originalPosition.y, originalPosition.z);
+                        originalPosition = null;
+                    }
                 }
             }
         }
@@ -127,23 +146,49 @@ public class FalseProverbsItem extends KnifeItem {
 
     @SubscribeEvent
     public static void onPlayerRenderPre(RenderPlayerEvent.Pre event) {
+        if(event.getEntity().level() instanceof ClientLevel){
         Player player = event.getEntity();
         if (player.getPersistentData().getBoolean(SHIFT_KEY_TAG)) {
             event.setCanceled(true);
         }
+     }
     }
 
     @SubscribeEvent
     public static void renderArm(RenderArmEvent event) {
         AbstractClientPlayer player = event.getPlayer();
-        if (event.getPlayer().getPersistentData().getBoolean(SHIFT_KEY_TAG)) {
-            if (event.getPlayer().getMainHandItem().isEmpty() && event.getArm() == event.getPlayer().getMainArm()) {
+        if (player.getPersistentData().getBoolean(SHIFT_KEY_TAG)) {
+            if (player.getMainHandItem().isEmpty() && event.getArm() == player.getMainArm()) {
                 event.setCanceled(true);
-            } else if (event.getPlayer().getOffhandItem().isEmpty() && event.getArm() != event.getPlayer().getMainArm()) {
+            } else if (player.getOffhandItem().isEmpty() && event.getArm() != player.getMainArm()) {
                 event.setCanceled(true);
             }
         }
     }
+
+    @SubscribeEvent
+    public static void onAttackEvent(LivingAttackEvent event) {
+        if (event.getSource().getEntity() instanceof Player player) {
+            if (player.getMainHandItem().getItem() instanceof FalseProverbsItem) {
+                // 获取攻击目标实体
+                Entity target = event.getEntity();
+                if (target != null) {
+                    // 计算玩家视线方向向量
+                    Vec3 playerLookVec = player.getViewVector(1.0F);
+                    // 计算从玩家指向目标的向量
+                    Vec3 playerToTarget = target.position().subtract(player.position()).normalize();
+                    // 计算点积
+                    double dotProduct = playerLookVec.dot(playerToTarget);
+                    // 判断是否在背后（点积小于 -0.5）
+                    if (dotProduct < -0.5) {
+                        WhetherInBack = true;
+                    }
+                }
+            }
+        }
+    }
+
+
 
     // 监听攻击事件
 //    @SubscribeEvent
