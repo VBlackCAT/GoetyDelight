@@ -28,9 +28,9 @@ import java.util.UUID;
 @Mod.EventBusSubscriber(modid = GoetyDelight.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class LichsChaosStewItem extends Item {
 
-    private static final int MAX_BOOST_COUNT = 5;
+    private static final int MAX_BOOST_COUNT = 6;
 
-    private static final double BOOST_PERCENTAGE = 0.2;
+    private static final double BOOST_PERCENTAGE = 0.15;
 
     private static final String STEW_BOOST_COUNT_TAG = "LichStewBoostCount";
 

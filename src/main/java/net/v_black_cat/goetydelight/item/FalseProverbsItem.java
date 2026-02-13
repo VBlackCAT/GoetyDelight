@@ -12,27 +12,26 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.RenderArmEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.items.wrapper.PlayerArmorInvWrapper;
-import net.v_black_cat.goetydelight.event.PlayerLookHandler;
-import vectorwing.farmersdelight.common.item.KnifeItem;
 
 import java.util.Objects;
 import java.util.UUID;
+
 
 
 @Mod.EventBusSubscriber
@@ -40,7 +39,7 @@ public class FalseProverbsItem extends SwordItem {
     private static Vec3 originalPosition = null;
     private static final UUID Is_Shift_Key_UUID = UUID.fromString("4f5f5f5f-5f5f-5f5f-5f5f-5f5f5f5f5f5f");
     public static final String SHIFT_KEY_TAG = "IsShift";
-    public static boolean WhetherInBack = false;
+    public static Level worldLevel = null;
 
     public FalseProverbsItem(ModTiers tier, float attackDamage, float attackSpeed, Properties properties) {
         super(tier, (int) attackDamage, attackSpeed, properties);
@@ -59,7 +58,8 @@ public class FalseProverbsItem extends SwordItem {
                         item.addBonusAttributes(player);
                         persistentData.putBoolean(SHIFT_KEY_TAG, true);
                         originalPosition = player.position();
-                        player.setInvisible(true); // 隐身
+                        worldLevel = player.level();
+                        player.setInvisible(true);
                         if (player.level() instanceof ServerLevel) {
                             for (int i = 0; i < 16; ++i) {
                                 double d0 = MathHelper.rgbToSpeed((double) 96.0F);
@@ -70,6 +70,7 @@ public class FalseProverbsItem extends SwordItem {
                             ModNetwork.sendTo(player, new SPlayPlayerSoundPacket((SoundEvent) ModSounds.END_WALK.get(), 1.0F, 1.0F));
                         }
                     }
+                    if(worldLevel != null && player.level() != worldLevel){originalPosition = null;}
                 } else {
                     // 松开 Shift 时取消状态
                     if (persistentData.getBoolean(SHIFT_KEY_TAG)) {
@@ -118,7 +119,7 @@ public class FalseProverbsItem extends SwordItem {
     public static void onLivingHurt(LivingHurtEvent event) {
         if (event.getSource().getEntity() instanceof Player player) {
             if (player.getMainHandItem().getItem() instanceof FalseProverbsItem) {
-                    if (event.getAmount() > 0.0F  && !WhetherInBack) {
+                    if (event.getAmount() > 0.0F) {
                         event.setAmount(event.getAmount() * 2.0f);
                         if(originalPosition != null){
                           player.teleportTo(originalPosition.x, originalPosition.y, originalPosition.z);
@@ -132,14 +133,19 @@ public class FalseProverbsItem extends SwordItem {
     @SubscribeEvent
     public static void onLivingDamage(LivingDamageEvent event){
         if (event.getSource().getEntity() instanceof Player player) {
-            if (player.getMainHandItem().getItem() instanceof FalseProverbsItem && player.getPersistentData().getBoolean(SHIFT_KEY_TAG)){
+            if (player.getMainHandItem().getItem() instanceof FalseProverbsItem item) {
+                if(player.isShiftKeyDown()){
                 if (event.getAmount() > 0.0F) {
+                    if(vectorwing.farmersdelight.common.item.enchantment.BackstabbingEnchantment.isLookingBehindTarget(event.getEntity(), player.getEyePosition()))
+                    {
                     event.setAmount(event.getAmount() * 3.0F);
+                    } else {
+                        event.setAmount(event.getAmount() * 2.0F);
+                    }
                     if(originalPosition != null){
                         player.teleportTo(originalPosition.x, originalPosition.y, originalPosition.z);
-                        originalPosition = null;
-                    }
-                }
+                        originalPosition = null;}
+                }}
             }
         }
     }
@@ -148,72 +154,36 @@ public class FalseProverbsItem extends SwordItem {
     public static void onPlayerRenderPre(RenderPlayerEvent.Pre event) {
         if(event.getEntity().level() instanceof ClientLevel){
         Player player = event.getEntity();
-        if (player.getPersistentData().getBoolean(SHIFT_KEY_TAG)) {
-            event.setCanceled(true);
+        if (player.getMainHandItem().getItem() instanceof FalseProverbsItem item) {
+            if(player.isShiftKeyDown()){
+            event.setCanceled(true);}
         }
-     }
+      }
     }
 
     @SubscribeEvent
     public static void renderArm(RenderArmEvent event) {
         AbstractClientPlayer player = event.getPlayer();
-        if (player.getPersistentData().getBoolean(SHIFT_KEY_TAG)) {
+        if (player.getMainHandItem().getItem() instanceof FalseProverbsItem item) {
+            if(player.isShiftKeyDown()){
             if (player.getMainHandItem().isEmpty() && event.getArm() == player.getMainArm()) {
                 event.setCanceled(true);
             } else if (player.getOffhandItem().isEmpty() && event.getArm() != player.getMainArm()) {
                 event.setCanceled(true);
-            }
+            }}
         }
     }
 
     @SubscribeEvent
-    public static void onAttackEvent(LivingAttackEvent event) {
-        if (event.getSource().getEntity() instanceof Player player) {
-            if (player.getMainHandItem().getItem() instanceof FalseProverbsItem) {
-                // 获取攻击目标实体
-                Entity target = event.getEntity();
-                if (target != null) {
-                    // 计算玩家视线方向向量
-                    Vec3 playerLookVec = player.getViewVector(1.0F);
-                    // 计算从玩家指向目标的向量
-                    Vec3 playerToTarget = target.position().subtract(player.position()).normalize();
-                    // 计算点积
-                    double dotProduct = playerLookVec.dot(playerToTarget);
-                    // 判断是否在背后（点积小于 -0.5）
-                    if (dotProduct < -0.5) {
-                        WhetherInBack = true;
-                    }
-                }
+    public static void onInvisibleChangeTarget(LivingChangeTargetEvent event) {
+        LivingEntity attacker = event.getEntity();
+        LivingEntity target = event.getNewTarget();
+        if(target instanceof Player player && !(attacker instanceof Player)){
+            if (player.getMainHandItem().getItem() instanceof FalseProverbsItem item) {
+                if(player.isShiftKeyDown()){
+                event.setCanceled(true);}
             }
         }
     }
 
-
-
-    // 监听攻击事件
-//    @SubscribeEvent
-//    public static void onAttack(AttackEntityEvent event) {
-//        Player player = event.getEntity();
-//        if (player.getMainHandItem().getItem() instanceof FalseProverbsItem) {
-//            FalseProverbsItem item = (FalseProverbsItem) player.getMainHandItem().getItem();
-//
-//            if (item.isInvisibleAndFast) {
-//                // 判断是否为背部攻击（简化判断：目标背对玩家）
-//                Vec3 lookVec = player.getViewVector(1.0F);
-//                Vec3 targetPos = event.getTarget().position();
-//                Vec3 playerToTarget = targetPos.subtract(player.position()).normalize();
-//
-//                double dotProduct = lookVec.dot(playerToTarget);
-//                if (dotProduct < -0.5) { // 背部攻击条件
-//                    // 应用三倍伤害
-//                    event.getTarget().hurt(player.damageSources().playerAttack(player), player.getAttackStrengthScale(0.5F) * 3.0F);
-//
-//                    // 传送回原始位置
-//                    if (item.originalPosition != null) {
-//                        player.teleportTo(item.originalPosition.x, item.originalPosition.y, item.originalPosition.z);
-//                    }
-//                }
-//            }
-//        }
-//    }
 }
