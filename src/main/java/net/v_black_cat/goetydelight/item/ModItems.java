@@ -182,7 +182,7 @@ public class ModItems {
                 () -> new DarkKnifeItem(ModTiers.DARK, 1F, -2.0F, basicItem().durability(512)));
 
         FALSE_PROVERBS = ITEMS.register("false_proverbs",
-                () -> new FalseProverbsItem(ModTiers.VOID, 9,-1, basicItem().rarity(Rarity.EPIC)));
+                () -> new FalseProverbsItem(ModTiers.VOID, 9,-2, basicItem().rarity(Rarity.EPIC)));
 
 
         //诅咒金属刷子
@@ -672,7 +672,7 @@ public class ModItems {
 
         HIDDEN_PANCAKE = ITEMS.register("hidden_pancake",
                 () -> new HiddenPancakeItem(basicItem().stacksTo(64).rarity(Rarity.RARE)
-                        .food(simpleFoodItemProperties(12, 7)
+                        .food(simpleFoodItemProperties(15, 7)
                                 .effect(() ->new MobEffectInstance(IRON_HIDE.get(), minToTick(1), 4), 1.0F)
                                 .effect(() ->new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(2), 1), 1.0F)
                                 .build())));

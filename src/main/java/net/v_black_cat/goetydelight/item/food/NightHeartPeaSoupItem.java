@@ -33,9 +33,9 @@ import java.util.UUID;
 
 public class NightHeartPeaSoupItem extends DrinkableItem implements IWand {
     // 最大加成次数
-    private static final int MAX_BOOST_COUNT = 5;
+    private static final int MAX_BOOST_COUNT = 12;
     // 每次加成的百分比
-    private static final double BOOST_PERCENTAGE = 0.1;
+    private static final double BOOST_PERCENTAGE = 0.05;
     // 玩家NBT标签键
     private static final String SOUP_BOOST_COUNT_TAG = "NightPeaSoupBoostCount";
     // 仆从NBT标签键
