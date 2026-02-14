@@ -6,7 +6,7 @@
   },
   "craftType": "forge",
   "research": "forbidden",
-  "soulCost": 30,
+  "soulCost": 50,
   "duration": 15,
   "ingredients": [
     {
@@ -16,6 +16,12 @@
       "item": "goety:dark_ingot"
     },
     {
+      "item": "goety:shadow_essence"
+    },
+    {
+      "item": "goety:shadow_essence"
+    },
+    {
       "item": "goety:void_echo"
     },
     {
@@ -23,18 +29,6 @@
     },
     {
       "item": "goety:end_walk_focus"
-    },
-    {
-      "item": "goety:void_shard"
-    },
-    {
-      "item": "goety:void_shard"
-    },
-    {
-      "item": "goety:void_shard"
-    },
-    {
-      "item": "goety:void_shard"
     },
     {
       "item": "goety:night_beacon"

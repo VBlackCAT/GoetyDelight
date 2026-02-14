@@ -28,6 +28,7 @@ import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.v_black_cat.goetydelight.config.Config;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -67,7 +68,7 @@ public class FalseProverbsItem extends SwordItem {
                                 double d2 = MathHelper.rgbToSpeed((double) 92.0F);
                                 ((ServerLevel) player.level()).sendParticles((SimpleParticleType) ModParticleTypes.CULT_SPELL.get(), player.getRandomX((double) 1.0F), player.getRandomY(), player.getRandomZ((double) 1.0F), 0, d0, d1, d2, (double) 0.5F);
                             }
-                            ModNetwork.sendTo(player, new SPlayPlayerSoundPacket((SoundEvent) ModSounds.END_WALK.get(), 1.0F, 1.0F));
+                            ModNetwork.sendTo(player, new SPlayPlayerSoundPacket((SoundEvent) ModSounds.END_WALK.get(), 0.5F, 1.0F));
                         }
                     }
                     if(worldLevel != null && player.level() != worldLevel){originalPosition = null;}
@@ -99,7 +100,7 @@ public class FalseProverbsItem extends SwordItem {
                 AttributeModifier modifier = new AttributeModifier(
                         Is_Shift_Key_UUID,
                         "Shift speed",
-                        2.0,
+                        Config.getShiftSpeedMultiplier(),
                         AttributeModifier.Operation.MULTIPLY_TOTAL
                 );
                 speedAttribute.addTransientModifier(modifier);
@@ -119,36 +120,40 @@ public class FalseProverbsItem extends SwordItem {
     public static void onLivingHurt(LivingHurtEvent event) {
         if (event.getSource().getEntity() instanceof Player player) {
             if (player.getMainHandItem().getItem() instanceof FalseProverbsItem) {
-                    if (event.getAmount() > 0.0F) {
-                        event.setAmount(event.getAmount() * 2.0f);
-                        if(originalPosition != null){
-                          player.teleportTo(originalPosition.x, originalPosition.y, originalPosition.z);
-                          originalPosition = null;
-                        }
+                if (event.getAmount() > 0.0F) {
+                    event.setAmount((float) (event.getAmount() * Config.getLivingHurtDamageMultiplier())); // 使用配置值
+                    if(originalPosition != null){
+                        player.teleportTo(originalPosition.x, originalPosition.y, originalPosition.z);
+                        originalPosition = null;
                     }
+                }
             }
         }
     }
+
 
     @SubscribeEvent
     public static void onLivingDamage(LivingDamageEvent event){
         if (event.getSource().getEntity() instanceof Player player) {
             if (player.getMainHandItem().getItem() instanceof FalseProverbsItem item) {
                 if(player.isShiftKeyDown()){
-                if (event.getAmount() > 0.0F) {
-                    if(vectorwing.farmersdelight.common.item.enchantment.BackstabbingEnchantment.isLookingBehindTarget(event.getEntity(), player.getEyePosition()))
-                    {
-                    event.setAmount(event.getAmount() * 3.0F);
-                    } else {
-                        event.setAmount(event.getAmount() * 2.0F);
+                    if (event.getAmount() > 0.0F) {
+                        if(vectorwing.farmersdelight.common.item.enchantment.BackstabbingEnchantment.isLookingBehindTarget(event.getEntity(), player.getEyePosition()))
+                        {
+                            event.setAmount((float) (event.getAmount() * Config.getLivingDamageBackstabMultiplier()));
+                        } else {
+                            event.setAmount((float) (event.getAmount() * Config.getLivingDamageGeneralMultiplier()));
+                        }
+                        if(originalPosition != null){
+                            player.teleportTo(originalPosition.x, originalPosition.y, originalPosition.z);
+                            originalPosition = null;
+                        }
                     }
-                    if(originalPosition != null){
-                        player.teleportTo(originalPosition.x, originalPosition.y, originalPosition.z);
-                        originalPosition = null;}
-                }}
+                }
             }
         }
     }
+
 
     @SubscribeEvent
     public static void onPlayerRenderPre(RenderPlayerEvent.Pre event) {
@@ -181,7 +186,7 @@ public class FalseProverbsItem extends SwordItem {
         if(target instanceof Player player && !(attacker instanceof Player)){
             if (player.getMainHandItem().getItem() instanceof FalseProverbsItem item) {
                 if(player.isShiftKeyDown()){
-                event.setCanceled(true);}
+                  event.setCanceled(true);}
             }
         }
     }

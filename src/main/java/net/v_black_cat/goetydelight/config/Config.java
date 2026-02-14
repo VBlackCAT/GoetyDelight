@@ -99,6 +99,27 @@ public class Config
             .comment("Soul energy cost per level of Soul Affix enchantment")
             .defineInRange("soulAffixSoulCostPerLevel", 5, 1, Integer.MAX_VALUE);
 
+    // Shift speed 倍数
+    private static final ForgeConfigSpec.DoubleValue SHIFT_SPEED_MULTIPLIER = BUILDER
+            .comment("Movement speed multiplier when Shift key is pressed")
+            .defineInRange("shiftSpeedMultiplier", 2.0, 0.0, Double.MAX_VALUE);
+
+    // LivingHurtEvent 伤害倍数
+    private static final ForgeConfigSpec.DoubleValue LIVING_HURT_DAMAGE_MULTIPLIER = BUILDER
+            .comment("Damage multiplier in LivingHurtEvent")
+            .defineInRange("livingHurtDamageMultiplier", 2.0, 0.0, Double.MAX_VALUE);
+
+    // LivingDamageEvent 一般伤害倍数
+    private static final ForgeConfigSpec.DoubleValue LIVING_DAMAGE_GENERAL_MULTIPLIER = BUILDER
+            .comment("General damage multiplier in LivingDamageEvent")
+            .defineInRange("livingDamageGeneralMultiplier", 2.0, 0.0, Double.MAX_VALUE);
+
+    // LivingDamageEvent 背刺伤害倍数
+    private static final ForgeConfigSpec.DoubleValue LIVING_DAMAGE_BACKSTAB_MULTIPLIER = BUILDER
+            .comment("Backstab damage multiplier in LivingDamageEvent")
+            .defineInRange("livingDamageBackstabMultiplier", 3.0, 0.0, Double.MAX_VALUE);
+
+
     private static final ForgeConfigSpec.BooleanValue DISABLE_SOUL_MENDING = BUILDER
             .comment("Disable Soul Mending enchantment entirely")
             .define("disableSoulMending", false);
@@ -221,6 +242,22 @@ public class Config
 
     public static double getCakeEffectRadius() {
         return CAKE_EFFECT_RADIUS.get();
+    }
+
+    public static double getShiftSpeedMultiplier() {
+        return SHIFT_SPEED_MULTIPLIER.get();
+    }
+
+    public static double getLivingHurtDamageMultiplier() {
+        return LIVING_HURT_DAMAGE_MULTIPLIER.get();
+    }
+
+    public static double getLivingDamageGeneralMultiplier() {
+        return LIVING_DAMAGE_GENERAL_MULTIPLIER.get();
+    }
+
+    public static double getLivingDamageBackstabMultiplier() {
+        return LIVING_DAMAGE_BACKSTAB_MULTIPLIER.get();
     }
 
     private static boolean validateEntityName(final Object obj) {

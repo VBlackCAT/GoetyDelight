@@ -1,0 +1,15 @@
+{
+    "name": "隐匿卷饼",
+    "icon": "goetydelight:hidden_pancake",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "把蓝图当卷皮吃下去何尝不是一种学习知识的途径？况且这饼皮的味道也不错嘛~$(br)给予食用者：$(li)1分钟的铁皮5$(li)2分钟的力量2$(br)同时解锁终结卷轴的配方进度（无视前置要求）$(br)左键由需要学习终结卷轴制作的仆从会复制一只5分钟寿命的对应仆从。只能生效一次，持续时间5分钟。"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/hidden_pancake"
+        }
+    ]
+}
