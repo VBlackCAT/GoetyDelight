@@ -1,0 +1,15 @@
+{
+    "name": "False Proverbs",
+    "icon": "goetydelight:false_proverbs",
+    "category": "goety:goetydelight/equipment",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "A legendary $(m)kitchen$() knife forged from dark metal, infused with the power of the void and the night.$(br)Hold Shift to become invisible and enter backstab mode."
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/false_proverbs"
+        }
+    ]
+}

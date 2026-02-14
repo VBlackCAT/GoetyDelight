@@ -1,0 +1,15 @@
+{
+    "name": "虚妄箴言",
+    "icon": "goetydelight:false_proverbs",
+    "category": "goety:goetydelight/equipment",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "以黑暗金属刀为载体，注入虚空与暗夜之力所铸而成的传奇$(m)菜$()小刀。$(br)按住shift隐身并进入背刺状态。"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/false_proverbs"
+        }
+    ]
+}

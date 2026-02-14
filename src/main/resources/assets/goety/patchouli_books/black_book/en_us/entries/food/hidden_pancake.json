@@ -1,0 +1,15 @@
+{
+    "name": "Hidden Pancake",
+    "icon": "goetydelight:hidden_pancake",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Isn't eating blueprints like consuming knowledge in another form? Besides, this wrapper tastes quite nice~$(br)Grants consumer:$(li)1-minute Iron V$(li)2-minute Strength II$(br)Also unlocks the Final Tome recipe progression (ignores prerequisite requirements).$(br)Left-clicking a minion that requires Final Tome learning replicates one corresponding minion with a 5-minute lifespan. Single-use only, lasts 5 minutes."
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/hidden_pancake"
+        }
+    ]
+}

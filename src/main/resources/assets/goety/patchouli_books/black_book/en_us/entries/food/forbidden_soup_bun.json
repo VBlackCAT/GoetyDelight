@@ -1,0 +1,15 @@
+{
+    "name": "Forbidden Soup Bun",
+    "icon": "goetydelight:forbidden_soup_bun",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Soup dumplings found in the ancient city, with both the filling and wrapper steeped in Sculk—probably not the best taste, to be honest.$(br)Eating them might make you see stars, and you might even bite into some forbidden knowledge fragments... This is likely the, errr, peculiar Spring Festival tradition of the ancient city's original inhabitants."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Upon consumption:$(br)$(li)30%% chance to grant 30 seconds of Blindness$(li)70%% chance to grant 30 seconds of Sensory Deprivation$(li)90%% chance to obtain a Forbidden Book Shard$(li)10%% chance to obtain a Forbidden Book Fragment"
+        }
+    ]
+}
