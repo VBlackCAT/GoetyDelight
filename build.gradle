@@ -282,12 +282,13 @@ dependencies {
 //    modRuntimeOnly "curse.maven:goety-586095:7170210"//2.5.36.5
 
 //    modImplementation "curse.maven:goety-586095:7415009" // 2.5.43.1
-    modImplementation "curse.maven:goety-586095:7436226"// 2.5.43.4
+//    modImplementation "curse.maven:goety-586095:7436226"// 2.5.43.4
 //    modRuntimeOnly "curse.maven:goety-586095:7327887"//2.5.40.1
+      modImplementation "curse.maven:goety-586095:7586938"// 2.5.46.1
 
 //    modImplementation "curse.maven:goety-revelation-1236817:6892481"
 
-    compileOnly "blank:[Forge]RevelationFix-1.20.1-3.8-all"
+     compileOnly "blank:[Forge]RevelationFix-1.20.1-4.0"
     modImplementation "curse.maven:curios-309927:6418456"
 
     //帕秋莉
@@ -311,8 +312,11 @@ dependencies {
 //    modRuntimeOnly  "blank:modulargolems-2.6.12"
     modRuntimeOnly  "blank:jerotes-1.20.1-1.2.0"
     modRuntimeOnly  "blank:jerotesvillage-1.20.1-1.1.5.10"
+    modRuntimeOnly  "blank:EndingLibrary-1.20.1-2.1-all"
+    modRuntimeOnly  "blank:GoetyRevelation-2.3"
+//    modRuntimeOnly  "curse.maven:goety-awaken-1412569:7629061" //1.3.3
     //nbt编辑器
-    modRuntimeOnly  "curse.maven:nbtedit-reborn-678133:5984630"
+    modRuntimeOnly  "curse.maven:ibe-editor-256822:4994072"
     //性能检测spark
     modRuntimeOnly  "curse.maven:spark-361579:4738952"
     modRuntimeOnly  "curse.maven:enchantment-descriptions-250419:7336071"

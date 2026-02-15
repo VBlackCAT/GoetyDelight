@@ -111,7 +111,7 @@ public class GoetyDelight
             Optional<? extends ModContainer> goetyContainer = ModList.get().getModContainerById("goety");
             if (goetyContainer.isPresent()) {
                 DefaultArtifactVersion loadedVersion = (DefaultArtifactVersion) goetyContainer.get().getModInfo().getVersion();
-                DefaultArtifactVersion requiredVersion = new DefaultArtifactVersion("2.5.37.0");
+                DefaultArtifactVersion requiredVersion = new DefaultArtifactVersion("2.5.46.2");
                 if (loadedVersion.compareTo(requiredVersion) >= 0) {
                     DelightRitualType.registerRitualType();
                 }
