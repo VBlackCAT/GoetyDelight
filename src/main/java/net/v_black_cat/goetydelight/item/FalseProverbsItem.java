@@ -16,10 +16,15 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RenderArmEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.event.TickEvent;
@@ -30,6 +35,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.config.Config;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -46,7 +53,101 @@ public class FalseProverbsItem extends SwordItem {
         super(tier, (int) attackDamage, attackSpeed, properties);
     }
 
-    // 监听每 tick 事件，检测 Shift 按键
+    // 玩家传送状态管理映射表
+    private static final Map<UUID, Boolean> playerTeleportStatus = new HashMap<>();
+
+    // 新增：玩家背部模型显示状态管理映射表
+    private static final Map<UUID, Boolean> playerBackModelStatus = new HashMap<>();
+
+    // 获取玩家传送状态
+    public static boolean getPlayerTeleportStatus(UUID playerUUID) {
+        return playerTeleportStatus.getOrDefault(playerUUID, false);
+    }
+
+    // 新增：获取玩家背部模型显示状态
+    public static boolean getPlayerBackModelStatus(UUID playerUUID) {
+        return playerBackModelStatus.getOrDefault(playerUUID, false);
+    }
+
+    // 设置玩家传送状态
+    public static void setPlayerTeleportStatus(UUID playerUUID, boolean status) {
+        playerTeleportStatus.put(playerUUID, status);
+    }
+
+    // 新增：设置玩家背部模型显示状态
+    public static void setPlayerBackModelStatus(UUID playerUUID, boolean status) {
+        playerBackModelStatus.put(playerUUID, status);
+    }
+
+    // 移除玩家传送状态
+    public static void removePlayerTeleportStatus(UUID playerUUID) {
+        playerTeleportStatus.remove(playerUUID);
+    }
+
+    // 新增：移除玩家背部模型显示状态
+    public static void removePlayerBackModelStatus(UUID playerUUID) {
+        playerBackModelStatus.remove(playerUUID);
+    }
+
+    public static boolean shouldShowBackModel(Player player) {
+        Inventory inventory = player.getInventory();
+        int falseProverbsCount = 0;
+        boolean hasInMainHand = false;
+        boolean hasInOffHand = false;
+
+        ItemStack mainHand = player.getMainHandItem();
+        if (mainHand.getItem() instanceof FalseProverbsItem) {
+            hasInMainHand = true;
+            falseProverbsCount++;
+        }
+
+        ItemStack offHand = player.getOffhandItem();
+        if (offHand.getItem() instanceof FalseProverbsItem) {
+            hasInOffHand = true;
+            falseProverbsCount++;
+        }
+
+        for (int i = 0; i < 36; i++) {
+            if (i == inventory.selected) {
+                continue;
+            }
+
+            ItemStack stack = inventory.getItem(i);
+            if (stack.getItem() instanceof FalseProverbsItem) {
+                falseProverbsCount++;
+            }
+        }
+
+        for (int i = 36; i < 40; i++) {
+            ItemStack stack = inventory.getItem(i);
+            if (stack.getItem() instanceof FalseProverbsItem) {
+                falseProverbsCount++;
+            }
+        }
+
+        return hasInOffHand ? false : (falseProverbsCount > 1 || (falseProverbsCount == 1 && !hasInMainHand));
+    }
+
+
+
+
+    // 重写方法使物品可以接受背刺附魔
+    @Override
+    public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
+        // 检查是否为背刺附魔
+        if (enchantment instanceof vectorwing.farmersdelight.common.item.enchantment.BackstabbingEnchantment) {
+            return true;
+        }
+        // 保持原有的附魔逻辑
+        return super.canApplyAtEnchantingTable(stack, enchantment);
+    }
+
+    // 重写方法定义可应用的附魔类型
+    @Override
+    public boolean isEnchantable(ItemStack stack) {
+        return true;
+    }
+
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         Player player = event.player;
@@ -59,6 +160,7 @@ public class FalseProverbsItem extends SwordItem {
                         item.addBonusAttributes(player);
                         persistentData.putBoolean(SHIFT_KEY_TAG, true);
                         originalPosition = player.position();
+                        setPlayerTeleportStatus(player.getUUID(), true);
                         worldLevel = player.level();
                         player.setInvisible(true);
                         if (player.level() instanceof ServerLevel) {
@@ -78,6 +180,7 @@ public class FalseProverbsItem extends SwordItem {
                         player.getPersistentData().remove(SHIFT_KEY_TAG);
                         item.removeBonusAttributes(player);
                         originalPosition = null;
+                        setPlayerTeleportStatus(player.getUUID(), false);
                         player.setInvisible(false); // 取消隐身
                     }
                 }
@@ -87,10 +190,14 @@ public class FalseProverbsItem extends SwordItem {
                     player.getPersistentData().remove(SHIFT_KEY_TAG);
                     Objects.requireNonNull(player.getAttribute(Attributes.MOVEMENT_SPEED)).removeModifier(Is_Shift_Key_UUID);
                     originalPosition = null;
+                    setPlayerTeleportStatus(player.getUUID(), false);
                     player.setInvisible(false); // 取消隐身
                 }
             }
         }
+        if(shouldShowBackModel(player)){
+            setPlayerBackModelStatus(player.getUUID(), true);
+        }else { setPlayerBackModelStatus(player.getUUID(), false);}
     }
     private void addBonusAttributes(Player player) {
         AttributeInstance speedAttribute = player.getAttribute(Attributes.MOVEMENT_SPEED);
@@ -120,12 +227,13 @@ public class FalseProverbsItem extends SwordItem {
     public static void onLivingHurt(LivingHurtEvent event) {
         if (event.getSource().getEntity() instanceof Player player) {
             if (player.getMainHandItem().getItem() instanceof FalseProverbsItem) {
+                if (!player.isShiftKeyDown() && !player.isUsingItem()) {
                 if (event.getAmount() > 0.0F) {
                     event.setAmount((float) (event.getAmount() * Config.getLivingHurtDamageMultiplier())); // 使用配置值
-                    if(originalPosition != null){
-                        player.teleportTo(originalPosition.x, originalPosition.y, originalPosition.z);
-                        originalPosition = null;
-                    }
+                   }
+                }
+                if(player.isShiftKeyDown() && !player.isUsingItem() && !getPlayerTeleportStatus(player.getUUID())){
+                     event.setAmount((float) (event.getAmount() * Config.getLivingDamageGeneralMultiplier()));
                 }
             }
         }
@@ -136,25 +244,26 @@ public class FalseProverbsItem extends SwordItem {
     public static void onLivingDamage(LivingDamageEvent event){
         if (event.getSource().getEntity() instanceof Player player) {
             if (player.getMainHandItem().getItem() instanceof FalseProverbsItem item) {
-                if(player.isShiftKeyDown()){
+                if(getPlayerTeleportStatus(player.getUUID())){
+                if(player.isShiftKeyDown() && !player.isUsingItem()){
                     if (event.getAmount() > 0.0F) {
                         if(vectorwing.farmersdelight.common.item.enchantment.BackstabbingEnchantment.isLookingBehindTarget(event.getEntity(), player.getEyePosition()))
                         {
                             event.setAmount((float) (event.getAmount() * Config.getLivingDamageBackstabMultiplier()));
-                        } else {
-                            event.setAmount((float) (event.getAmount() * Config.getLivingDamageGeneralMultiplier()));
+                            setPlayerTeleportStatus(player.getUUID(), false);
                         }
                         if(originalPosition != null){
                             player.teleportTo(originalPosition.x, originalPosition.y, originalPosition.z);
                             originalPosition = null;
                         }
                     }
-                }
+                }}
             }
         }
     }
 
 
+    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void onPlayerRenderPre(RenderPlayerEvent.Pre event) {
         if(event.getEntity().level() instanceof ClientLevel){
@@ -166,6 +275,7 @@ public class FalseProverbsItem extends SwordItem {
       }
     }
 
+    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void renderArm(RenderArmEvent event) {
         AbstractClientPlayer player = event.getPlayer();
@@ -185,9 +295,10 @@ public class FalseProverbsItem extends SwordItem {
         LivingEntity target = event.getNewTarget();
         if(target instanceof Player player && !(attacker instanceof Player)){
             if (player.getMainHandItem().getItem() instanceof FalseProverbsItem item) {
+                if(getPlayerTeleportStatus(player.getUUID())){
                 if(player.isShiftKeyDown()){
                   event.setCanceled(true);}
-            }
+            }}
         }
     }
 
