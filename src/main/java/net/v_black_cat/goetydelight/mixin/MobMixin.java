@@ -15,8 +15,9 @@ public abstract class MobMixin {
     private void onSetTarget(LivingEntity target, CallbackInfo ci) {
         if (target instanceof Player player){
             if (player.getMainHandItem().getItem() instanceof FalseProverbsItem item) {
+                if(FalseProverbsItem.getPlayerTeleportStatus(player.getUUID())){
                 if(player.isShiftKeyDown()){
-                ci.cancel();}
+                ci.cancel();}}
             }
         }
     }
