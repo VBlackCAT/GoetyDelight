@@ -6,10 +6,11 @@
   "mixins": [
     "ArtificialFlowerMixin",
     "BlockFinderMixin",
-    "DarkAltarBlockEntityMixin",
     "CookingPotBlockEntityMixin",
+    "DarkAltarBlockEntityMixin",
     "LivingEntityAccessor",
     "MobAccessor",
+    "MobMixin",
     "RecipeManagerMixin",
     "SummonSpellMixin",
     "WightSpawnerMixin"

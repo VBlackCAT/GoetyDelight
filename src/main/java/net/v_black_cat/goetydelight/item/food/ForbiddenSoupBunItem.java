@@ -21,13 +21,10 @@ public class ForbiddenSoupBunItem extends Item {
             ItemStack rewardItem = getRandomReward();
             if (!player.getInventory().add(rewardItem)) {
                 player.drop(rewardItem, false);
-                isEaten = true;
             }
+            isEaten = true;
             if (player.getAbilities().instabuild) {
                 return result;
-            }
-            if (result.isEmpty() && !isEaten) {
-                return getRandomReward(); // 再次随机生成奖励
             }
         }
         isEaten = false;
