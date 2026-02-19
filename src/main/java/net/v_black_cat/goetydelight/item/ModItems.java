@@ -53,6 +53,7 @@ public class ModItems {
     public static final RegistryObject<Item> MARBLE_OP_SWORD;
     public static final RegistryObject<Item> FALSE_PROVERBS;
     public static final RegistryObject<Item> PARASITIZED_WARDEN;
+    public static final RegistryObject<Item> VIZIERS_COOKBOOK;
     //刷怪蛋
 
     public static final RegistryObject<Item> GHOST_FARMER_SPAWN_EGG;
@@ -127,6 +128,13 @@ public class ModItems {
     public static final RegistryObject<Item> METAMORPHIC_SCENT_FRUIT;
     public static final RegistryObject<Item> FORBIDDDEN_SOUP_BUN;
     public static final RegistryObject<Item> HIDDEN_PANCAKE;
+    public static final RegistryObject<Item> CREAMY_BERRY_FISH_PASTE_DUMPLING_WITH_CHOCOLATE_SAUCE;
+    public static final RegistryObject<Item> OBSIDIAN_THICK_SOUP;
+    public static final RegistryObject<Item> SHAWARMA;
+    public static final RegistryObject<Item> RAKI;
+    public static final RegistryObject<Item> MENEMEN_WITH_BREAD;
+    public static final RegistryObject<Item> BAKLAVA;
+
 
     //种子
     public static final RegistryObject<Item> ECTOPLASMIC_MELON_SEEDS;
@@ -203,6 +211,9 @@ public class ModItems {
 
         PARASITIZED_WARDEN = ITEMS.register("parasitized_warden",
                 () -> new Item(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON)));
+
+        VIZIERS_COOKBOOK = ITEMS.register("viziers_cookbook",
+                () -> new Item(basicItem().stacksTo(1)));
 
         EXAMPLE_ITEM = ITEMS.register("example_item",
                 () -> new Item(basicItem().stacksTo(1)
@@ -675,6 +686,42 @@ public class ModItems {
                         .food(simpleFoodItemProperties(15, 7)
                                 .effect(() ->new MobEffectInstance(IRON_HIDE.get(), minToTick(1), 4), 1.0F)
                                 .effect(() ->new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(2), 1), 1.0F)
+                                .build())));
+
+        CREAMY_BERRY_FISH_PASTE_DUMPLING_WITH_CHOCOLATE_SAUCE = ITEMS.register("creamy_berry_fish_paste_dumpling_with_chocolate_sauce",
+                () -> new Item(basicItem().stacksTo(64).rarity(Rarity.EPIC)
+                        .food(simpleFoodItemProperties(20, 10)
+                                .effect(() ->new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, minToTick(5), 0), 1.0F)
+                                .build())));
+
+        OBSIDIAN_THICK_SOUP = ITEMS.register("obsidian_thick_soup",
+                () -> new Item(basicItem().stacksTo(64).rarity(Rarity.EPIC)
+                        .food(simpleFoodItemProperties(20, 10)
+                                .effect(() ->new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, minToTick(5), 0), 1.0F)
+                                .build())));
+
+        SHAWARMA = ITEMS.register("shawarma",
+                () -> new Item(basicItem().stacksTo(64).rarity(Rarity.EPIC)
+                        .food(simpleFoodItemProperties(20, 10)
+                                .effect(() ->new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, minToTick(5), 0), 1.0F)
+                                .build())));
+
+        RAKI = ITEMS.register("raki",
+                () -> new Item(basicItem().stacksTo(64).rarity(Rarity.EPIC)
+                        .food(simpleFoodItemProperties(20, 10)
+                                .effect(() ->new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, minToTick(5), 0), 1.0F)
+                                .build())));
+
+        MENEMEN_WITH_BREAD = ITEMS.register("menemen_with_bread",
+                () -> new Item(basicItem().stacksTo(64).rarity(Rarity.EPIC)
+                        .food(simpleFoodItemProperties(20, 10)
+                                .effect(() ->new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, minToTick(5), 0), 1.0F)
+                                .build())));
+
+        BAKLAVA = ITEMS.register("baklava",
+                () -> new Item(basicItem().stacksTo(64).rarity(Rarity.EPIC)
+                        .food(simpleFoodItemProperties(20, 10)
+                                .effect(() ->new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, minToTick(5), 0), 1.0F)
                                 .build())));
 
         // ==================== 种子物品 ====================
