@@ -312,8 +312,8 @@ dependencies {
 //    modRuntimeOnly  "blank:modulargolems-2.6.12"
     modRuntimeOnly  "blank:jerotes-1.20.1-1.2.0"
     modRuntimeOnly  "blank:jerotesvillage-1.20.1-1.1.5.10"
-    modRuntimeOnly  "blank:EndingLibrary-1.20.1-2.1-all"
-    modRuntimeOnly  "blank:GoetyRevelation-2.3"
+    modRuntimeOnly  "blank:EndingLibrary-1.20.1-2.1.1-all"
+    modRuntimeOnly  "curse.maven:goety-revelation-1236817:7638178"
 //    modRuntimeOnly  "curse.maven:goety-awaken-1412569:7629061" //1.3.3
     //nbt编辑器
     modRuntimeOnly  "curse.maven:ibe-editor-256822:4994072"
