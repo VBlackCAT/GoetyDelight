@@ -53,7 +53,7 @@ public class DelightRitualType implements IRitualType {
 
     private boolean checkDelightRequirements(BlockPos pos, Level level) {
         // 使用与原版相同的检测范围
-        final int RANGE = 5;
+        final int RANGE = 8;
 
         // 创建方块要求映射：方块类型 -> 需要数量
         Map<Block, Integer> blockRequirements = new HashMap<>();

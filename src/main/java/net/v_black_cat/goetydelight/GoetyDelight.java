@@ -103,20 +103,6 @@ public class GoetyDelight
         //LOGGER.info(Config.magicNumberIntroduction + Config.magicNumber);
         NetworkHandler.register();
 
-        boolean isGoetyRevelationLoaded = ModList.get().isLoaded("goety_revelation");
-        boolean isCompatibilityEnabled = Config.isGoetyRevelationCompatibilityEnabled();
-
-        // 如果未加载 goety_revelation 或者兼容性被禁用，则执行后续逻辑
-        if (!isGoetyRevelationLoaded || !isCompatibilityEnabled) {
-            Optional<? extends ModContainer> goetyContainer = ModList.get().getModContainerById("goety");
-            if (goetyContainer.isPresent()) {
-                DefaultArtifactVersion loadedVersion = (DefaultArtifactVersion) goetyContainer.get().getModInfo().getVersion();
-                DefaultArtifactVersion requiredVersion = new DefaultArtifactVersion("2.5.46.2");
-                if (loadedVersion.compareTo(requiredVersion) >= 0) {
-                    DelightRitualType.registerRitualType();
-                }
-            }
-        }
         event.enqueueWork(() -> {
             ComposterBlock.COMPOSTABLES.put(ModItems.METAMORPHIC_SCENT_GRASS.get(), 0.2F);
             ComposterBlock.COMPOSTABLES.put(ModItems.METAMORPHIC_SCENT_FRUIT.get(), 0.75F);
@@ -124,6 +110,7 @@ public class GoetyDelight
             ComposterBlock.COMPOSTABLES.put(ModItems.ECTOPLASMIC_MELON.get(), 0.50F);
             ComposterBlock.COMPOSTABLES.put(ModItems.ECTOPLASMIC_MELON_SEEDS.get(), 0.09F);
             ComposterBlock.COMPOSTABLES.put(ModBlocks.ECTOPLASMIC_MELON_BLOCK.get().asItem(), 0.95F);
+            DelightRitualType.registerRitualType();
         });
 
         
