@@ -108,15 +108,12 @@ public class DelightRitualType implements IRitualType {
         RitualRecipe recipe = tileEntity.getCurrentRitualRecipe();
 
         if (recipe.getId().toString().equals("goetydelight:ominous_ramune")) {
-
             returnSpecialItems(world, darkAltarPos, castingPlayer,new ItemStack(OMINOUS_ORB.get()));
             returnSpecialItems(world, darkAltarPos, castingPlayer,new ItemStack(BOUNCY_BUBBLE_FOCUS.get()));
-        }
-        if (recipe.getId().toString().equals("goetydelight:ominous_ramune_2")) {
+        }else if (recipe.getId().toString().equals("goetydelight:ominous_ramune_2")) {
             returnSpecialItems(world, darkAltarPos, castingPlayer,new ItemStack(OMINOUS_SHARD.get()));
             returnSpecialItems(world, darkAltarPos, castingPlayer,new ItemStack(BOUNCY_BUBBLE_FOCUS.get()));
-        }
-        if (recipe.getId().toString().equals("goetydelight:metamorphic_scent_grass_ritual")) {
+        } else if (recipe.getId().toString().equals("goetydelight:metamorphic_scent_grass_ritual")) {
             returnSpecialItems(world, darkAltarPos, castingPlayer,activationItem.copyWithCount(1));
         }
 
@@ -133,11 +130,17 @@ public class DelightRitualType implements IRitualType {
     }
 
     private void returnSpecialItems(Level world, BlockPos darkAltarPos, Player player, ItemStack returnItem) {
-        if (!player.getInventory().add(returnItem)) {
-            player.drop(returnItem, false);
+        if (player != null) {
+            if (!player.getInventory().add(returnItem)) {
+                player.drop(returnItem, false);
+            }
+            world.playSound(null, darkAltarPos, SoundEvents.ITEM_PICKUP,
+                    SoundSource.PLAYERS, 1.0F, 1.0F);
+        } else {
+            Block.popResource(world, darkAltarPos, returnItem);
+            world.playSound(null, darkAltarPos, SoundEvents.ITEM_PICKUP,
+                    SoundSource.BLOCKS, 1.0F, 1.0F);
         }
-        world.playSound(null, darkAltarPos, SoundEvents.ITEM_PICKUP,
-                SoundSource.PLAYERS, 1.0F, 1.0F);
     }
 
     public static void registerRitualType() {
