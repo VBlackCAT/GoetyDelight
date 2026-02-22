@@ -1,0 +1,44 @@
+{
+    "type": "goety:ritual",
+    "ritual_type": "goety:craft",
+    "activation_item": {
+        "item": "minecraft:honey_bottle"
+    },
+    "craftType": "culinary",
+    "research": "forbidden",
+    "soulCost": 24,
+    "duration": 7,
+    "ingredients": [
+        {
+            "item": "minecraft:stick"
+        },
+        {
+            "tag": "forge:dough"
+        },
+        {
+          "tag": "forge:dough"
+        },
+        {
+            "item": "goety:quick_growing_seed"
+        },
+        {
+            "item": "goety:quick_growing_seed"
+        },
+        {
+            "item": "goety:quick_growing_seed"
+        },
+        {
+            "item": "minecraft:sugar"
+        },
+        {
+            "item": "minecraft:sugar"
+        },
+        {
+            "tag": "forge:milk"
+        }
+    ],
+    "result": {
+        "item": "goetydelight:baklava",
+        "count": 16
+    }
+}

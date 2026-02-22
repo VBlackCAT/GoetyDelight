@@ -116,18 +116,18 @@ public class RubyHardCandyItem extends Item {
         if (currentLevel < MAX_POTENCY_LEVEL) {
             player.getPersistentData().putInt(POTENCY_LEVEL_TAG, currentLevel + 1);
 
-            // 应用强效等级效果（每级增加10点法术强度）
+            // 应用强效等级效果（每级增加1点法术强度）
             applyPotencyEffect(player, currentLevel + 1);
         }
     }
 
     // 应用强效等级效果
-    private void applyPotencyEffect(Player player, int level) {
+    public void applyPotencyEffect(Player player, int level) {
         // 移除可能存在的旧属性修改器
         removePotencyEffect(player);
 
-        // 计算法术强度加成值（每级2点）
-        double potencyBonus = 2 * level;
+        // 计算法术强度加成值（每级1点）
+        double potencyBonus = 1.0 * level;
 
         // 为所有非空属性应用效果
         applyAttributeModifier(player, ATTRIBUTE, potencyBonus);
@@ -228,7 +228,7 @@ public class RubyHardCandyItem extends Item {
 
             // 如果有免伤能力，减少50%伤害
             if (hasDamageReduction) {
-                float reducedDamage = event.getAmount() * 0.5f;
+                float reducedDamage = event.getAmount() * 0.75f;
                 event.setAmount(reducedDamage);
             }
         }
@@ -243,7 +243,7 @@ public class RubyHardCandyItem extends Item {
         int potencyLevel = player.getPersistentData().getInt("RubyCandyPotencyLevel");
         if (potencyLevel > 0) {
             // 重新应用效果
-            double potencyBonus = 2 * potencyLevel;
+            double potencyBonus = 1.0 * potencyLevel;
             
             // 为所有属性重新应用效果
             reapplyAttributeModifier(player, ATTRIBUTE, potencyBonus, "spell_potency");

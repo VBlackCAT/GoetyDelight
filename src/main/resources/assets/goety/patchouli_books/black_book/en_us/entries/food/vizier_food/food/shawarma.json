@@ -1,0 +1,27 @@
+{
+    "name": "Shawarma",
+    "icon": "goetydelight:shawarma",
+    "category": "goety:goetydelight/food/vizier_food/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "You carefully slice chicken, mutton and beef, stir blaze powder into tomato sauce, and place each ingredient onto pedestals. Then you roll the dough thin and round and put it on the top of the dark alter.$(br)Grants the consumer: $(br)$(li)2 minutes of Strength $(li)2.5 minutes of Cozy $(li)10 minutes of Nourishment"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/shawarma"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "As the ritual starts and soul energy emerges, sliced meat and sauces float up and gather above the alter, then hover and rub together themselves. Spicy, salty delicious scent reaches your nose as the air becomes hot. When color, aroma and taste all reach perfect, all ingredients cycle, dive toward the well-cooked pita wrap like birds back to their nests, then get wrapped together. "
+        },
+        {
+            "type": "patchouli:relations",
+            "title": "Tidbits",
+            "text": "“Tsk tsk tsk, even those blockheads in the Nether are better than these dullards.” $(br)“At least their bastions have some decent food to offer, though it’s a pity the limited supplies in the Nether severely restrict their culinary potential…”",
+            "entries": [
+                "goety:food/vizier_food/other/shawarma_story"
+            ]
+        }
+    ]
+}

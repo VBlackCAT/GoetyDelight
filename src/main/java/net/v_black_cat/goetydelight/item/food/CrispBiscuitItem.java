@@ -30,10 +30,7 @@ public class CrispBiscuitItem extends Item {
 
             MinecraftServer server = world.getServer();
             if (server != null) {
-                Component message = Component.literal("食人术~").withStyle(ChatFormatting.RED);
-                for (ServerPlayer onlinePlayer : server.getPlayerList().getPlayers()) {
-                    onlinePlayer.sendSystemMessage(message);
-                }
+                player.displayClientMessage(Component.translatable("message.goety.crisp_biscuit").withStyle(ChatFormatting.RED),true);
             }
         }
 

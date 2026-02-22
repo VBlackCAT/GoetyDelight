@@ -1,0 +1,15 @@
+{
+    "name": "Tidbits - Baklava",
+    "icon": "goetydelight:baklava",
+    "category": "goety:goetydelight/food/vizier_food/other",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "“Well, does that fit your appetite? Oh, this time truly moved to tears I guess…”$(br)“To be honest, if can’t make your chefs stop brainstorming, why don’t you try cooking by yourself?”$(br)“Local you make local meal, sounds way better than command your smatter chefs anyway. If not, you may try asking The Profane to teach you, they seem good temper.”$(br)“I’m kinda curious, dear Vizier. What’s your hometown like? From your cookbook I tasted out wide, boundless and hot, very different from the dark forest.”"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "“Do you return hometown, frequently? Or never? Anyway, wish you can enjoy authentic hometown feast soon.”$(br)“Until we meet again—wait wait wait the Ruby! OK, see ya!”"
+        }
+    ]
+}

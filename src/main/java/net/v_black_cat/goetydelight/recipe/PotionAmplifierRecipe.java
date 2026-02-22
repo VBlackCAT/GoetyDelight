@@ -2,6 +2,7 @@ package net.v_black_cat.goetydelight.recipe;
 
 import com.Polarice3.Goety.common.effects.brew.BrewEffectInstance;
 import com.Polarice3.Goety.common.items.brew.BrewItem;
+import com.Polarice3.Goety.common.items.brew.SplashBrewItem;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;
@@ -25,7 +26,7 @@ import net.v_black_cat.goetydelight.util.ModBrewUtils;
 
 import java.util.List;
 
-import static com.Polarice3.Goety.common.items.ModItems.BREW;
+import static com.Polarice3.Goety.common.items.ModItems.*;
 import static com.Polarice3.Goety.utils.BrewUtils.getBrewEffects;
 
 public class PotionAmplifierRecipe extends CustomRecipe {
@@ -44,7 +45,10 @@ public class PotionAmplifierRecipe extends CustomRecipe {
             ItemStack stack = pContainer.getItem(i);
             if (stack.isEmpty()) continue;
 
-            if (stack.getItem() == BREW.get()) {
+            if (stack.getItem() == BREW.get() ||
+                stack.getItem() == SPLASH_BREW.get() ||
+                stack.getItem() == LINGERING_BREW.get() ||
+                stack.getItem() == GAS_BREW.get()) {
                 if (hasNegativeEffects(stack)) {
                     hasWitchBrew = true;
                     brewStack = stack;
@@ -85,7 +89,10 @@ public class PotionAmplifierRecipe extends CustomRecipe {
         // 获取药水和放大器
         for (int i = 0; i < pContainer.getContainerSize(); i++) {
             ItemStack stack = pContainer.getItem(i);
-            if (stack.getItem() == BREW.get()) {
+            if (stack.getItem() == BREW.get() ||
+                stack.getItem() == SPLASH_BREW.get() ||
+                stack.getItem() == LINGERING_BREW.get() ||
+                stack.getItem() == GAS_BREW.get()) {
                 brewStack = stack;
             } else if (stack.getItem() == ModItems.REJECTED_DARK_MEAT_SOUP.get() ||
                     stack.getItem() == ModItems.CUP.get()) {

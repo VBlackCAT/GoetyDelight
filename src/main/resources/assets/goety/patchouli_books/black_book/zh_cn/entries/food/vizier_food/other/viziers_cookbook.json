@@ -1,0 +1,15 @@
+{
+    "name": "维齐尔菜谱",
+    "icon": "goetydelight:viziers_cookbook",
+    "category": "goety:goetydelight/food/vizier_food/other",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "灾厄宰相离开时不慎掉落的菜谱。菜谱上记载了一些应该是来自宰相家乡的佳肴做法，纸张略微发皱褪色，看得出来经常被翻动。你仿佛看到了无数个日夜里，被府邸难以下咽的餐点攻击了消化系统的宰相摩挲着菜谱流泪。"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "长期以来被林地府邸的黑暗料理折磨的宰相已经受够了卫道士厨师们惨绝人寰的厨艺，如果你能复刻出宰相家乡的料理，他说不定有厚礼相赠……"
+        }
+    ]
+}

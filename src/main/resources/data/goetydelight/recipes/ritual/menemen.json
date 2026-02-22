@@ -1,0 +1,40 @@
+{
+    "type": "goety:ritual",
+    "ritual_type": "goety:craft",
+    "activation_item": {
+        "item": "farmersdelight:cooking_pot"
+    },
+    "craftType": "culinary",
+    "research": "forbidden",
+    "soulCost": 24,
+    "duration": 7,
+    "ingredients": [
+        {
+            "tag": "forge:egg"
+        },
+        {
+          "tag": "forge:egg"
+        },
+        {
+          "tag": "forge:egg"
+        },
+        {
+            "tag": "forge:crops/tomato"
+        },
+        {
+            "tag": "forge:crops/tomato"
+        },
+        {
+            "tag": "forge:crops/tomato"
+        },
+        {
+            "tag": "forge:crops/onion"
+        },
+        {
+            "item": "minecraft:blaze_powder"
+        }
+    ],
+    "result": {
+        "item": "goetydelight:menemen"
+    }
+}

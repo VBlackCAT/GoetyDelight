@@ -1,0 +1,23 @@
+{
+    "name": "Raki",
+    "icon": "goetydelight:raki",
+    "category": "goety:goetydelight/food/vizier_food/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Alliums infused with amethyst mana didn’t do well in fermentation, so you replace grapes with sweet berries. For alcohol concentration, you use ectoplasm to catalyze nether warts.$(br)Grants the consumer: $(br)$(li)30 seconds of Stimulation and Swiftness II"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/raki"
+        },
+        {
+            "type": "patchouli:relations",
+            "title": "Tidbits",
+            "text": "“What, the legendary Vizier was no match for a single warrior?”",
+            "entries": [
+                "goety:food/vizier_food/other/story_raki"
+            ]
+        }
+    ]
+}
