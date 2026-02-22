@@ -1,0 +1,23 @@
+{
+    "name": "Tidbits - Shawarma",
+    "icon": "goetydelight:shawarma",
+    "category": "goety:goetydelight/food/vizier_food/other",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "“What do you mean that you just picked up my cookbook and cooked such dainty readily?”$(br)Slice beef, mutton and chicken, fully rub them with tomato sauce and blaze powder. Tightly pile sliced meat onto a huge, vertical rotating grill to make a large meat column, then light up the grill, gently roll the column in front of the flames. The chef needs to hold a long knife…an axe, to shave well-grilled pieces off the column and make inner part be grilled gradually. Melted meat fat flow down the column continuously, keep it moist and delicious. Then finally, use a grilled pita warp to roll up the meat pieces with cut-offed tomatoes, cabbages and onions, and a shawarma is freshly complete."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "The outer part of meat becomes toasty and crispy while the inner part keeps juicy and tender. Aroma of sauces is fully awakened, permeating every fiber of the meat, collectively creating an enticing flavor that is rich, complex, and savory with subtle spiciness. The soft pita wraps, juicy meat pieces, together with smooth and rich sauces, will support for the grandest dinner party of the Woodland Mansion…$(br)--At least this was what Vizier primed vindicator chefs with, as he regained his confidence in them."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "vizier spent a long time to make chefs understand what “rub” is: didn’t need to punch hard as to villagers, nor call a ravager to weight above (“GET IT OUT OF THE KITCHEN!!!”). Even if a meat column had been made successfully, chefs would “cook” it outside burnt and inside raw. Until someday, a short-term investigating apostle couldn’t bear illagers turning treats to trash, lit a fire tornado toward the column and cooked it just fine. At that evening, tantalizing aroma of roast meat filled the whole Mansion, everyone enjoyed a heavy meal, included ravagers."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "“Haha, no, I won’t stay here to teach cooking. It’s ok, Vizier, you must believe that your men are actually, emmm, talented in cooking! Just don’t let them brainstorm and every dish would be fine!”"
+        }
+    ]
+}

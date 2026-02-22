@@ -1,0 +1,40 @@
+{
+    "type": "goety:ritual",
+    "ritual_type": "goety:craft",
+    "activation_item": {
+      "tag": "forge:dough"
+    },
+    "craftType": "culinary",
+    "research": "vizier_cookbook",
+    "soulCost": 24,
+    "duration": 14,
+    "ingredients": [
+        {
+            "item": "minecraft:stick"
+        },
+        {
+            "item": "farmersdelight:cooked_chicken_cuts"
+        },
+        {
+            "item": "farmersdelight:cooked_mutton_chops"
+        },
+        {
+            "item": "minecraft:cooked_beef"
+        },
+        {
+            "item": "farmersdelight:cabbage_leaf"
+        },
+        {
+            "tag": "forge:crops/tomato"
+        },
+        {
+            "item": "farmersdelight:tomato_sauce"
+        },
+        {
+          "tag": "forge:crops/onion"
+        }
+    ],
+    "result": {
+        "item": "goetydelight:shawarma"
+    }
+}

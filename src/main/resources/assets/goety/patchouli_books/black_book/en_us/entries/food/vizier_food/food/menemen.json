@@ -1,0 +1,35 @@
+{
+    "name": "Menemen",
+    "icon": "goetydelight:menemen",
+    "category": "goety:goetydelight/food/vizier_food/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Such process is just a piece of cake for you now. Chop the onions into strips, dice the tomatoes, and beat the eggs, then leave the rest to the ritual—The inventor of this ritual must be a genius! "
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/menemen"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "The aromatic ingredients complement the perfectly heated, tender, and smooth scrambled eggs, making it flawless in both appearance and taste. From the recipe, you learn that this dish is best served with bread, so you take out a few breads from your travel backpack, stir them in the pan, and dip the bread fully coated in the sauce and eggs before eating. The warmth of the scrambled eggs enhances the wheat aroma of the bread, while the tenderness of the eggs and the spiciness of blaze powder create a perfect harmony... After a hearty meal, you decide to sleep off the indulgence, to relax your body and soul."
+        },
+        {
+            "type": "spotlight",
+            "title": "Menemen with Bread",
+            "link_recipe": true,
+            "item": "goetydelight:menemen_with_bread",
+            "scale": 1.2,
+            "text": "Obtained by right-clicking on a Plated Menemen with bread. One Plated Menemen can yield 5 servings of Menemen with Bread.$(br)Grants the consumer:$(br)$(li)3 minutes of Nourishment and Cozy$(li)30 seconds of Photosynthesis$(li)30 minutes of $(l:goety:effect/wight_denial)Wight Denial"
+        },
+        {
+            "type": "patchouli:relations",
+            "title": "Tidbits",
+            "text": "After a hearty meal, you decide to sleep off the indulgence, to relax your body and soul.",
+            "entries": [
+                "goety:food/vizier_food/other/menemen_story"
+            ]
+        }
+    ]
+}

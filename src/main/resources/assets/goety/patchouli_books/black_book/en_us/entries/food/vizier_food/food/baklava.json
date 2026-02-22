@@ -1,0 +1,31 @@
+{
+    "name": "Baklava",
+    "icon": "goetydelight:baklava",
+    "category": "goety:goetydelight/food/vizier_food/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "You carefully roll thin the dough, crush the quick growing seeds, then put a bottle of fresh honey from a campfire-smoked beehive onto the alter top."
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/baklava"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "The ritual begins as you watch the paper-thin pastry skin absorb the oil, layering upon the crushed quick growing seeds. Then, the entire altar area suddenly heats up, causing the layered pastry gradually expand while its color shifting from milky white to a delightful orange hue. At this moment, diluted honey syrup gushes from the bottle, evenly drizzle over the baklava, creating a delightful rustling sound as it meets the freshly baked, steaming crust. What a magnificent feast for the senses... "
+        },
+        {
+            "type": "patchouli:text",
+            "text": "You pick up a piece of baklava and took a bite, feeling the countless crisp textures between your lips and teeth, along with the pleasure and joy brought by the sugar-oil mixture. Even a lich might be lost in such a scorching and sweet indulgence…$(br)Wait, who’s floating beside?$(br)“Yeeeeart! Vizier! How do you know I live here—”$(br)“Oh, I used the ritual to con…call you here before, yeah, now I remember.”$(br)“So, you want me to cook you your hometown dishes?”$(br)“I’m afraid it’s not good. Aren’t you afraid I’ll poison the food?”$(br)“WTH is daily dishes poisonous enough…”$(br)“Wow you’d give me Soul Ruby in exchange?! Ugh…deal!”"
+        },
+        {
+            "type": "patchouli:relations",
+            "title": "follow-up",
+            "text": "",
+            "entries": [
+                "goety:food/vizier_food/other/baklava_story"
+            ]
+        }
+    ]
+}

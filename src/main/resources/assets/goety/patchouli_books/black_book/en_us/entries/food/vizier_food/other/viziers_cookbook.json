@@ -1,0 +1,15 @@
+{
+    "name": "Vizier’s cookbook",
+    "icon": "goetydelight:viziers_cookbook",
+    "category": "goety:goetydelight/food/vizier_food/other",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "A cookbook that was dropped from Vizier accidentally. Few recipes of Vizier’s hometown dishes are recorded on it, and through the slightly wrinkled, faded papers, you seem to imagine Vizier shedding tears, leafing through these recipes gently, after whose digestive system being attacked by garbage from Mansion’s kitchen for countless days and nights."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Vizier has been tortured by vindicator chefs’inhumane cooking skills for a long time. He may leave you a generous gift, if you can satisfy him with his hometown dishes…"
+        }
+    ]
+}

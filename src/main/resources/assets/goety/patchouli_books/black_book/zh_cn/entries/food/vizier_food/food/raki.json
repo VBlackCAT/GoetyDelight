@@ -1,0 +1,23 @@
+{
+    "name": "拉克酒",
+    "icon": "goetydelight:raki",
+    "category": "goety:goetydelight/food/vizier_food/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "注入了魔力的紫水晶和绒球葱发酵起来效果并不理想，因此你使用了甜浆果替代葡萄，并用灵质催化下界疣增进了酒精浓度。$(br)给予食用者：$(br)$(li)30秒的刺激感和迅捷ii"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/raki"
+        },
+        {
+            "type": "patchouli:relations",
+            "title": "趣闻",
+            "text": "“传说中的灾厄宰相居然不够勇士？”",
+            "entries": [
+                "goety:food/vizier_food/other/story_raki"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,31 @@
+{
+    "name": "蜜糖果仁千层酥",
+    "icon": "goetydelight:baklava",
+    "category": "goety:goetydelight/food/vizier_food/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "用木棍将面团小心翼翼地擀薄，再将速生之种细细碾碎；你从有营火熏着的蜂箱中舀出一瓶新鲜蜂蜜，将它放在了祭坛的中央。"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/baklava"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "仪式启动，你看着薄如蝉翼的面皮浸润了油，与碾碎的速生之种层层叠覆；随后整个祭坛区域温度骤增，层叠的面皮慢慢膨胀，颜色也从米白色变成了怡人的橘黄色。稀释的蜂蜜糖浆在此时从瓶子里涌出，均匀地浇淋在千层酥之上，与新鲜出炉的滚烫酥皮碰撞出美妙的窸窣声。多么美妙的视听嗅觉盛宴啊……你拿起一块千层酥咬下，感受着唇齿间万千酥脆的碰撞，与糖油混合物带来的愉悦和美好。即使是巫妖，或许也会沉溺于如此炽热而甜蜜的享受中吧。"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "——咦，旁边怎么飘了个人？$(br)“咿呀！宰相你是怎么知道我住在这里的？！”$(br)“哦哦我之前曾经用仪式把你骗——把您请来过，我想起来了。”$(br)“所以您的意思是，想让我来给您做家乡菜？”$(br)“这恐怕不好吧，您就不怕我在饭菜里下毒？”$(br)“什么叫平时吃的已经够毒了……”$(br)“您愿意用灵魂红宝石来交换？那，那也不是不行！”"
+        },
+        {
+            "type": "patchouli:relations",
+            "title": "后记",
+            "text": "",
+            "entries": [
+                "goety:food/vizier_food/other/baklava_story"
+            ]
+        }
+    ]
+}

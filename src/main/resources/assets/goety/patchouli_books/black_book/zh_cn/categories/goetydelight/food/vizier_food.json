@@ -1,0 +1,7 @@
+{
+    "name": "菜系-维齐尔食谱",
+    "description": "灾厄宰相的秘密菜谱，上面似乎还有一些泪痕。$(br)（貌似还有一点呕吐物的痕迹）",
+    "icon": "goetydelight:viziers_cookbook",
+    "parent": "goety:goetydelight/food",
+    "sortnum": 1
+}

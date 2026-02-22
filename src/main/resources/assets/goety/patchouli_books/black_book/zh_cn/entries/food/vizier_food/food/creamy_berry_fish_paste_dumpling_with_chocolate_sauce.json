@@ -1,0 +1,20 @@
+{
+    "name": "奶汁煮浆果鱼糜饺子配巧克力酱",
+    "icon": "goetydelight:creamy_berry_fish_paste_dumpling_with_chocolate_sauce",
+    "category": "goety:goetydelight/food/vizier_food/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "你对灾厄村民们狂野的料理风格早有耳闻，但直到你偷偷向一位卫道士厨师“请教经验”之后，你才真正领教了什么是比黑暗魔法更黑暗的东西：$(br)哈哈小伙计你真有眼光！早年我曾经跟着袭击队征战四方，拿下过种浆果的寒带村庄、种可可豆的热带村庄、打鱼的海边村庄和放牧牛羊的草原村庄……由此我开创了一种独特的料理，"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "只需要把鱼和甜浆果一起‘日’一声打成糊糊，包进饺子面皮里，再用奶汁一煮，撒上葱花沾巧克力酱……谁吃了不夸我一声南征北战料理圣手？”$(br)“没葱花？从地上随便拔把草就是，绿色纯天然。什么意思，鱼还需要去鳞和内脏？面粉要过筛？啥是过筛？哎呀小伙计你就按我这么做准没错，我每次给宰相大人品尝的时候他都感动得哭了！”"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/creamy_berry_fish_paste_dumpling_with_chocolate_sauce",
+            "text": "你的常识告诉你这样做出来的东西断然不会是美味，但你还是很好奇，这样的料理到底是怎么把宰相感动到哭的呢？于是你走向了$(l:goety:food/vizier_food/other/summon_vizier)自己的仪式祭坛……"
+        }
+    ]
+}
