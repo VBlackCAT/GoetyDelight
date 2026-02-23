@@ -137,6 +137,7 @@ public class GoetyDelight
             MenuScreens.register(ModMenuTypes.CURSED_INGOT_POT.get(), CursedIngotPotScreen::new);
             MenuScreens.register(ModMenuTypes.SHADE_STOVE.get(), ShadeStoveScreen::new);
             MenuScreens.register(ModMenuTypes.NIGHT_STOVE.get(), NightStoveScreen::new);
+            MenuScreens.register(ModMenuTypes.RESTAURANT.get(), RestaurantScreen::new);
             BlockEntityRenderers.register(ModBlockEntities.RENDER_BLOCK.get(), RenderBlockRenderer::new);
             EntityRenderers.register(ModEntities.GHOST_FARMER.get(), GhostFarmerRenderer::new);
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.ECTOPLASMIC_MELON_STEM.get(), RenderType.cutout());

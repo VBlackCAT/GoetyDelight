@@ -24,5 +24,6 @@ run
 libs
 run-data
 /src/test
+/src/main/java/net/v_black_cat/goetydelight/md
 # Files from Forge MDK
 forge*changelog.txt
