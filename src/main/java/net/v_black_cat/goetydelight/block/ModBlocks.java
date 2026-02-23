@@ -185,6 +185,12 @@ public class ModBlocks {
 
             ));
 
+    public static final RegistryObject<Block> RESTAURANT = registerBlock("restaurant",
+            () -> new RestaurantBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
+                    .noLootTable()
+                    .sound(SoundType.AMETHYST)));
+
+
 
     private static ToIntFunction<BlockState> litBlockEmission(int lightValue) {
         return (state) -> {
