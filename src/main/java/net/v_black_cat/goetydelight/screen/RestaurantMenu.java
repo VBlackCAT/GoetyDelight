@@ -1,6 +1,7 @@
 package net.v_black_cat.goetydelight.screen;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.game.ServerboundSetBeaconPacket;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
@@ -17,9 +18,12 @@ public class RestaurantMenu extends AbstractContainerMenu {
     public final RestaurantBlockEntity blockEntity;
     public final ItemStackHandler inventory;
     private final ContainerLevelAccess canInteractWithCallable;
+    private ContainerData dataAccess;
+    public static final int UPDATE_AREA_BUTTON_ID=1;
+    public static final int SWITCH_RENDER_AREA_BUTTON_ID=2;
 
     public RestaurantMenu(int pContainerId, Inventory pPlayerInventory, FriendlyByteBuf data) {
-        this(pContainerId, pPlayerInventory, getTileEntity(pPlayerInventory, data), new SimpleContainerData(4));
+        this(pContainerId, pPlayerInventory, getTileEntity(pPlayerInventory, data));
     }
 
 
@@ -34,10 +38,12 @@ public class RestaurantMenu extends AbstractContainerMenu {
         }
     }
 
-    public RestaurantMenu(int windowId, Inventory playerInventory, RestaurantBlockEntity blockEntity, ContainerData cookingPotDataIn) {
+    public RestaurantMenu(int windowId, Inventory playerInventory, RestaurantBlockEntity blockEntity) {
         super((MenuType) ModMenuTypes.RESTAURANT.get(), windowId);
         this.blockEntity = blockEntity;
         this.inventory = blockEntity.getInventory();
+        this.dataAccess = blockEntity.getDataAccess();
+        this.addDataSlots(dataAccess);
         this.canInteractWithCallable = ContainerLevelAccess.create(blockEntity.getLevel(), blockEntity.getBlockPos());  // 初始化访问权限
 
         int startX = 8;
@@ -112,6 +118,19 @@ public class RestaurantMenu extends AbstractContainerMenu {
         return stillValid(this.canInteractWithCallable, player, (net.minecraft.world.level.block.Block) ModBlocks.RESTAURANT.get());
     }
 
-    public void onKeyUpdateArea() {
+    @Override
+    public boolean clickMenuButton(Player player, int id) {
+        switch (id){
+            case UPDATE_AREA_BUTTON_ID:
+                this.blockEntity.updateRangesFromInventory();
+                break;
+            case SWITCH_RENDER_AREA_BUTTON_ID:
+                this.blockEntity.switchRenderArea();
+                break;
+        }
+
+        return super.clickMenuButton(player, id);
     }
+
+
 }

@@ -23,6 +23,7 @@ import net.v_black_cat.goetydelight.ability.AbilityRegistry;
 import net.v_black_cat.goetydelight.block.ModBlockEntities;
 import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.v_black_cat.goetydelight.block.RenderBlockRenderer;
+import net.v_black_cat.goetydelight.block.RestaurantBlockRenderer;
 import net.v_black_cat.goetydelight.config.Config;
 import net.v_black_cat.goetydelight.effect.ModEffects;
 import net.v_black_cat.goetydelight.enchantments.ModEnchantments;
@@ -139,6 +140,7 @@ public class GoetyDelight
             MenuScreens.register(ModMenuTypes.NIGHT_STOVE.get(), NightStoveScreen::new);
             MenuScreens.register(ModMenuTypes.RESTAURANT.get(), RestaurantScreen::new);
             BlockEntityRenderers.register(ModBlockEntities.RENDER_BLOCK.get(), RenderBlockRenderer::new);
+            BlockEntityRenderers.register(ModBlockEntities.RESTAURANT_BE.get(), RestaurantBlockRenderer::new);
             EntityRenderers.register(ModEntities.GHOST_FARMER.get(), GhostFarmerRenderer::new);
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.ECTOPLASMIC_MELON_STEM.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.ATTACHED_ECTOPLASMIC_MELON_STEM.get(), RenderType.cutout());

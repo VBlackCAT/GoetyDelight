@@ -49,13 +49,20 @@ public class RestaurantScreen extends AbstractContainerScreen<RestaurantMenu> {
         int xPos = this.menu.slots.get(0).x + 40;
         int yPos = this.menu.slots.get(0).y;
 
-        Button b5 = Button.builder(Component.literal(getTranslatedString("update_restaurant_area")), button -> {
-            this.menu.onKeyUpdateArea();
+        Button b1 = Button.builder(Component.literal(getTranslatedString("update_restaurant_area")), button -> {
+                    this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, RestaurantMenu.UPDATE_AREA_BUTTON_ID);
         }).pos(guiLeft + xPos + 60, guiTop + yPos)
                 .size(30, 20)
                 .tooltip(Tooltip.create(Component.literal(getTranslatedString("update_restaurant_area"))))
                 .build();
+        Button b2 = Button.builder(Component.literal(getTranslatedString("switch_render_area")), button -> {
+                    this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, RestaurantMenu.SWITCH_RENDER_AREA_BUTTON_ID);
+        }).pos(guiLeft + xPos + 60, guiTop + yPos+40)
+                .size(30, 20)
+                .tooltip(Tooltip.create(Component.literal(getTranslatedString("switch_render_area"))))
+                .build();
 
-        this.addRenderableWidget(b5);
+        this.addRenderableWidget(b1);
+        this.addRenderableWidget(b2);
     }
 }
