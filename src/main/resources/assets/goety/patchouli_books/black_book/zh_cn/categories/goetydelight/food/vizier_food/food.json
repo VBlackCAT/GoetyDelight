@@ -1,0 +1,7 @@
+{
+    "name": "食物",
+    "description": "来自灾厄宰相家乡的秘密菜谱。$(br)以及一道林地府邸专属黑暗料理……",
+    "icon": "goety:grimoire_of_goodwill",
+    "parent": "goety:goetydelight/food/vizier_food",
+    "sortnum": 1
+}

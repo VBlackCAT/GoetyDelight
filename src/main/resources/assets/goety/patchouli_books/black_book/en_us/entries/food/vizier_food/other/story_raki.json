@@ -1,0 +1,19 @@
+{
+    "name": "Tidbits - Raki",
+    "icon": "goetydelight:raki",
+    "category": "goety:goetydelight/food/vizier_food/other",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "“Hard liquor that symbolize equality, sincerity, and friendship, and also a symbol of warriors.”$(br)“It’s also called Beast’s Milk, as its transparent liquid would turn milk-white when added ice.”$(br)“You investigate the history of Mansion’s kitchen and find out: it’s the first and only cuisine from the cookbook that Vizier asked vindicator chefs to make.”"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "“Chefs had no idea with grapes, so they just fermented sugar and mushrooms together, then added some nether warts from their nether colleagues, stirred into juice and filtered.”$(br)“didn’t turn milk-white after added ice? Brainstormed master chef grabbed a bottle of milk and poured in.”“The milk-white hard liquor was delivered to Vizier at that dinnertime, which send him onto cloud nine.”$(br)“Regardless of etiquette, he grabbed and drank off, then fled through walls in horror and disappeared for 3 days.”"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "“Since then, Vizier never mentioned his cookbook again. The mansion announced that the great Vizier had nether wart intolerance, while under the table, all illagers whispering Vizier was ‘not warrior enough’…”"
+        }
+    ]
+}

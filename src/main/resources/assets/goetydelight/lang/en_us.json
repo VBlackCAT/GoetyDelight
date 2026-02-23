@@ -104,6 +104,13 @@
   "item.goetydelight.forbidden_soup_bun": "Forbidden Soup Bun",
   "item.goetydelight.hidden_pancake": "Hidden Pancake",
   "item.goetydelight.false_proverbs": "False Proverbs",
+  "item.goetydelight.viziers_cookbook": "Viziers Cookbook",
+  "item.goetydelight.creamy_berry_fish_paste_dumpling_with_chocolate_sauce": "Creamy Berry Fish Paste Dumpling With Chocolate Sauce",
+  "item.goetydelight.obsidian_thick_soup": "Obsidian Thick Soup",
+  "item.goetydelight.shawarma": "Shawarma",
+  "item.goetydelight.raki": "Raki",
+  "item.goetydelight.menemen_with_bread": "Menemen With Bread",
+  "item.goetydelight.baklava": "Baklava",
   "effect.goetydelight.spell_duration": "Spell Duration",
   "effect.goetydelight.spell_mastery": "Spell Mastery",
   "effect.goetydelight.the_pale_messenger": "The Pale Messenger",
@@ -130,11 +137,12 @@
   "entity.goetydelight.ghost_farmer.not_night": "Now... the melon is yet to ripen... wait till night falls...",
   "entity.goetydelight.ghost_farmer.trade": "Wraith Melon Farmer",
   "entity.goetydelight.ghost_farmer.attack_message": "Wraith Melon Farmer:Melon thieves, die!",
-  "info.goetydelight.research.vizier_recipe_get": "You have learned exotic recipes.",
+  "info.goetydelight.research.vizier_cookbook_get": "You have learned exotic recipes.",
   "item.goetydelight.metamorphic_scent_grass.metamorphic_item": "Metamorphic Item:",
   "item.goetydelight.metamorphic_scent_grass": "Metamorphic Scent Grass",
   "block.goetydelight.metamorphic_scent_grass": "Metamorphic Scent Grass",
   "item.goetydelight.metamorphic_scent_grass_seeds": "Metamorphic Scent Grass Seeds",
   "item.goetydelight.metamorphic_scent_fruit": "Metamorphic Scent Fruit",
-  "tooltip.goetydelight.cherry_blossom_cake": "Blessings from Xiaomeng Ying"
+  "tooltip.goetydelight.cherry_blossom_cake": "Blessings from Xiaomeng Ying",
+  "message.goety.crisp_biscuit": "eaten person"
 }

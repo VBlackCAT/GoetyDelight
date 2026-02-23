@@ -28,7 +28,7 @@ public class SpellMasteryEffect extends MobEffect {
             this.addAttributeModifier(
                     attribute,
                     SPELL_POTENCY_UUID.toString(),
-                    2, // 基础值（会被等级放大）
+                    1, // 基础值（会被等级放大）
                     AttributeModifier.Operation.ADDITION
             );
         }
@@ -36,7 +36,7 @@ public class SpellMasteryEffect extends MobEffect {
 
     @Override
     public double getAttributeModifierValue(int amplifier, AttributeModifier modifier) {
-        // 每级效果增加10点法术强度
+        // 每级效果增加1点法术强度
         // 公式：基础值 * (等级 + 1)
         return modifier.getAmount() * (amplifier + 1);
     }

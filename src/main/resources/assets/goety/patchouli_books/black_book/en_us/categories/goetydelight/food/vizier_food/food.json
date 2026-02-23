@@ -1,0 +1,7 @@
+{
+    "name": "Food",
+    "description": "Secret recipes from the Vizier's homeland. $(br)And an exclusive dark cuisine from the Woodland Mansion...",
+    "icon": "goety:grimoire_of_goodwill",
+    "parent": "goety:goetydelight/food/vizier_food",
+    "sortnum": 1
+}
