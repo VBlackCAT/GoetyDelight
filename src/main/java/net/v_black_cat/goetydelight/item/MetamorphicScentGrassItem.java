@@ -254,7 +254,7 @@ public class MetamorphicScentGrassItem extends Item {
             FoodProperties foodProperties = activationItem.getFoodProperties(player);
             soulCost = 2 * (foodProperties.getNutrition() + (int)(foodProperties.getSaturationModifier() * foodProperties.getNutrition()));
         }
-        String research = "floral_scroll"; // 不需要研究
+        String research = "floral_scroll";
 
         // 创建仪式配方
         RitualRecipe ritualRecipew = new RitualRecipe(

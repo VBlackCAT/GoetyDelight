@@ -109,6 +109,7 @@ public class HiddenPancakeItem extends Item {
                 // 设置生命值和位置
                 Float health = newEntity.getHealth();
                 newEntity.setHealth(health);
+                newEntity.addTag("HiddenPancake");
                 newEntity.moveTo(target.getX(), target.getY(), target.getZ());
 
                 IServant newServant = (IServant) newEntity;
@@ -189,7 +190,7 @@ public class HiddenPancakeItem extends Item {
 //        return InteractionResult.PASS;
 //    }
 
-    private static boolean isIsHiddenPancakeCopy(ResourceLocation entityId) {
+    public static boolean isIsHiddenPancakeCopy(ResourceLocation entityId) {
         boolean isHiddenPancakeCopy = false;
         if (entityId.equals(new ResourceLocation("goety:redstone_monstrosity")) ||
             entityId.equals(new ResourceLocation("goety_cataclysm:netherite_monstrosity")) ||

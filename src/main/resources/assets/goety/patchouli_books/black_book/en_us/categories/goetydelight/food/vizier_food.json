@@ -1,0 +1,7 @@
+{
+    "name": "Cuisine - Vizier's Recipes",
+    "description": "The secret cookbook of the Illager Vizier, which appears to have some tear stains on it. $(br)(And possibly a few traces of vomit...)",
+    "icon": "goetydelight:viziers_cookbook",
+    "parent": "goety:goetydelight/food",
+    "sortnum": 1
+}

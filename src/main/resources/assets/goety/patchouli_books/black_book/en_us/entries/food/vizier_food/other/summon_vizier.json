@@ -1,0 +1,23 @@
+{
+    "name": "A new way to summon Vizier based on dark cuisine",
+    "icon": "goety:dark_scroll",
+    "category": "goety:goetydelight/food/vizier_food/other",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Tired of searching for Woodland Mansions, you start to consider: as the Dark Scroll can call Vizier out IN a Mansion, how about run a ritual to MAKE UP a fake Mansion environment?"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "You choose the $(l:goety:rituals/magic_ritual)Magic Ritual$() to have a try, put some Mansion-characteristic blocks: dark oak wood planks and cobblestones, on the pedestals. However, these simple materials may still not be persuasive enough to make Vizier believe that the calling of Scroll comes from a real Woodland Mansion. You need something REALLY can remind Vizier that “this IS a Mansion!”$(br)Suddenly, you come up with a $(l:goety:food/vizier_food/food/creamy_berry_fish_paste_dumpling_with_chocolate_sauce)strange dark cuisine... （ "
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/please_vizier_eat_creamy_berry_fish_paste_dumpling_with_chocolate_sauce"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Bingo! Tiring dark forest journey has been swept into the garbage dump of history. The whole world would agree Vizier’ s stomach to become the only victim, probably…"
+        }
+    ]
+}

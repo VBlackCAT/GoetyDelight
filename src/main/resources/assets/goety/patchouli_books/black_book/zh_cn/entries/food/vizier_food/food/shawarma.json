@@ -1,0 +1,27 @@
+{
+    "name": "沙威玛",
+    "icon": "goetydelight:shawarma",
+    "category": "goety:goetydelight/food/vizier_food/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "你细细将鸡肉、羊肉与牛肉切成薄片，拌好了番茄酱和烈焰粉，将食材一项项码放在祭坛基座上。随后你将面团擀薄，摊在了黑暗祭坛顶上。"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/shawarma"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "仪式启动，随着灵魂能量的运转，切成薄片的肉类与调味料腾空而起，汇聚向祭坛的上空，盘旋着互相混合、揉搓，自动腌制；随后，祭坛周围的空气开始变得灼热，辛辣与咸香开始钻入你的鼻腔。当色香味均达到极致时，所有的食材如同鸟儿归巢一般飞向已经烤得恰到好处的面饼，随后被一同卷起裹紧。"
+        },
+        {
+            "type": "patchouli:relations",
+            "title": "趣闻",
+            "text": "“啧啧啧，这帮榆木脑袋甚至不如那帮下界光头”$(br)“他们的教堂至少还有美食可以吃啊，只可惜下界那资源严重限制了他们的发挥罢了……”",
+            "entries": [
+                "goety:food/vizier_food/other/shawarma_story"
+            ]
+        }
+    ]
+}

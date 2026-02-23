@@ -1,0 +1,17 @@
+{
+    "name": "灾厄宰相的珍藏菜谱",
+    "icon": "goetydelight:viziers_cookbook",
+    "category": "goety:rumors",
+    "read_by_default": true,
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "据我所知，灾厄村民的厨艺非常糟糕，以至于你在他们的前哨站只能找到面包马铃薯什么的（估计他们眼睛里只有对绿宝石和灵魂能量的渴望，唉……）$(br)但灾厄村民当中并非没有美食的渴望者。"
+        },
+        {
+            "type": "patchouli:quest",
+            "trigger": "goety:goety/respawn_miniboss",
+            "text": "根据小道消息，林地府邸的那个宰相手上藏了点好东西，$(l)来自他家乡的菜谱……"
+        }
+    ]
+}

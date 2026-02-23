@@ -33,7 +33,7 @@ public class MarbleOpSwordItem extends SwordItem {
     }
     private int attackCount = 0;
     private long lastAttackTime = 0;
-    private float entityReach = 3.0f;
+    private float entityReach = 30.0f;
     private long lastHealthSetTick = 0;
 
     private boolean isFriendly(Player player, LivingEntity entity) {
