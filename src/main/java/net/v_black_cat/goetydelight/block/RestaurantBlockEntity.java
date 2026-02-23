@@ -1,7 +1,6 @@
 package net.v_black_cat.goetydelight.block;
 
 import com.Polarice3.Goety.common.items.WaystoneItem;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.nbt.CompoundTag;
@@ -17,7 +16,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -30,9 +28,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.ItemStackHandler;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.entities.ai.customer.CustomerAi;
 import net.v_black_cat.goetydelight.screen.RestaurantMenu;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix4f;
 
 import javax.annotation.Nullable;
 import java.util.Set;
@@ -166,8 +164,18 @@ public class RestaurantBlockEntity extends BlockEntity implements MenuProvider {
         this(ModBlockEntities.RESTAURANT_BE.get(), pos, blockState);
     }
 
+    int countw =0;
     public static void serverTick(Level level, BlockPos pos, BlockState state, RestaurantBlockEntity blockEntity) {
+        if (blockEntity.countw <= 1){
+            if (level instanceof ServerLevel serverLevel) {
+                Vindicator vindicator = new Vindicator(EntityType.VINDICATOR, serverLevel);
+                serverLevel.addFreshEntity(vindicator);
+                CustomerAi.enableCustomerMode(vindicator, true);
+                vindicator.moveTo(pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, 0.0F, 0.0F);
+                blockEntity.countw++;
 
+            }
+        }
 
     }
 
@@ -247,7 +255,7 @@ public class RestaurantBlockEntity extends BlockEntity implements MenuProvider {
         return this.saveWithoutMetadata();
     }
 
-    private static void trySpawnVindicator(ServerLevel level, BlockPos[] range,RestaurantBlockEntity blockEntity) {
+    private static Vindicator trySpawnVindicator(ServerLevel level, BlockPos[] range,RestaurantBlockEntity blockEntity) {
 
         RandomSource random = level.getRandom();
         int x = Mth.randomBetweenInclusive(random, Math.min(range[0].getX(), range[1].getX()), Math.max(range[0].getX(), range[1].getX()));
@@ -256,39 +264,9 @@ public class RestaurantBlockEntity extends BlockEntity implements MenuProvider {
         int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
         BlockPos spawnPos = new BlockPos(x, y, z);
 
-        Vindicator vindicator = SpawnUtils.safeSpawnEntity(EntityType.VINDICATOR, level, spawnPos, MobSpawnType.EVENT);
-        if (vindicator != null) {
-            vindicator.goalSelector.removeAllGoals(goal -> true);
-            vindicator.targetSelector.removeAllGoals(goal -> true);
-            vindicator.getBrain().removeAllBehaviors();
-            // 添加前往用餐区域的目标行为
-            if (blockEntity.diningAreaRange[0] != null && blockEntity.diningAreaRange[1] != null) {
-                BlockPos diningTarget = new BlockPos(
-                    Mth.randomBetweenInclusive(random,
-                        Math.min(blockEntity.diningAreaRange[0].getX(), blockEntity.diningAreaRange[1].getX()),
-                        Math.max(blockEntity.diningAreaRange[0].getX(), blockEntity.diningAreaRange[1].getX())),
-                    blockEntity.diningAreaRange[0].getY(),
-                    Mth.randomBetweenInclusive(random,
-                        Math.min(blockEntity.diningAreaRange[0].getZ(), blockEntity.diningAreaRange[1].getZ()),
-                        Math.max(blockEntity.diningAreaRange[0].getZ(), blockEntity.diningAreaRange[1].getZ()))
-                );
+        return SpawnUtils.safeSpawnEntity(EntityType.VINDICATOR, level, spawnPos, MobSpawnType.EVENT);
 
-                // 添加移动到用餐区域的目标
-                vindicator.goalSelector.addGoal(1, new net.minecraft.world.entity.ai.goal.MoveToBlockGoal(vindicator, 1.0D, 10) {
-                    @Override
-                    protected boolean isValidTarget(LevelReader level, BlockPos pos) {
-                        return pos.equals(diningTarget);
-                    }
-
-                    @Override
-                    protected boolean findNearestBlock() {
-                        this.blockPos = diningTarget;
-                        return true;
-                    }
-                });
-            }
-        }
-        }
+    }
 
     @Override
     public Component getDisplayName() {
