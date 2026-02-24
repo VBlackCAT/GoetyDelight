@@ -12,8 +12,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -29,6 +27,10 @@ import net.v_black_cat.goetydelight.effect.ModEffects;
 import net.v_black_cat.goetydelight.enchantments.ModEnchantments;
 import net.v_black_cat.goetydelight.entities.GhostFarmerRenderer;
 import net.v_black_cat.goetydelight.entities.ModEntities;
+import net.v_black_cat.goetydelight.entities.ModEntityDataSerializers;
+import net.v_black_cat.goetydelight.entities.ai.ModActivity;
+import net.v_black_cat.goetydelight.entities.ai.ModMemory;
+import net.v_black_cat.goetydelight.entities.ai.ModSensor;
 import net.v_black_cat.goetydelight.item.ModCreativeModTabs;
 import net.v_black_cat.goetydelight.item.ModItems;
 import net.v_black_cat.goetydelight.loot.RegHelper;
@@ -41,10 +43,8 @@ import net.v_black_cat.goetydelight.screen.*;
 import net.v_black_cat.goetydelight.structures.ModStructurePieceTypes;
 import net.v_black_cat.goetydelight.structures.ModStructureProcessorTypes;
 import net.v_black_cat.goetydelight.structures.ModStructures;
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.slf4j.Logger;
 
-import java.util.Optional;
 import static net.v_black_cat.goetydelight.loot.ModLootModifier.GLOBAL_LOOT_MODIFIER_CODECS;
 import static net.v_black_cat.goetydelight.item.ModItems.ITEMS;
 import static net.v_black_cat.goetydelight.block.ModBlocks.BLOCKS;
@@ -82,7 +82,10 @@ public class GoetyDelight
         AbilityRegistry.registerAbilities();
         ModBlockEntities.register(modEventBus);
         ModMenuTypes.register(modEventBus);
-
+        ModActivity.register(modEventBus);
+        ModSensor.register(modEventBus);
+        ModMemory.register(modEventBus);
+        ModEntityDataSerializers.register(modEventBus);
 
         // 注册结构和结构片段、结构处理器
         ModStructures.register(modEventBus);
