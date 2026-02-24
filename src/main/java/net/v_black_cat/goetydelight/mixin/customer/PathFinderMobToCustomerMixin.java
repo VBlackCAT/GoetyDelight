@@ -49,24 +49,4 @@ public abstract class PathFinderMobToCustomerMixin implements ICustomerEntity {
         return goetyDelight$customerInventory;
     }
 
-    @Override
-    public List<ItemStack> goetyDelight$getOrder() {
-        PathfinderMob pathfinderMob = (PathfinderMob) (Object) this;
-        if (pathfinderMob.level().isClientSide){
-            return pathfinderMob.getEntityData().get(ICustomerEntity.ENTITY_DATA_ACCESSOR);
-        }else {
-            return goetyDelight$CustomerOrder;
-        }
-
-    }
-
-    @Override
-    public void goetyDelight$setOrder(List<ItemStack> order) {
-        PathfinderMob pathfinderMob = (PathfinderMob) (Object) this;
-        if ( !(pathfinderMob.level().isClientSide)){
-            this.goetyDelight$CustomerOrder = order;
-            pathfinderMob.getEntityData().set(ICustomerEntity.ENTITY_DATA_ACCESSOR, order);
-        }
-
-    }
 }

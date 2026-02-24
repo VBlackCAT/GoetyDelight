@@ -1,38 +1,29 @@
 package net.v_black_cat.goetydelight.mixin.customer;
 
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.Dynamic;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
-import net.v_black_cat.goetydelight.entities.ai.customer.CustomerAi;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.v_black_cat.goetydelight.entities.ModEntityDataSerializers;
 import net.v_black_cat.goetydelight.entities.ai.customer.ICustomerEntity;
 import net.v_black_cat.goetydelight.mixin.EntityAccessor;
-import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static net.v_black_cat.goetydelight.GoetyDelight.LOGGER;
+import java.util.List;
+
+import static net.v_black_cat.goetydelight.GoetyDelight.MODID;
 
 @Mixin(LivingEntity.class)
 public class LivingEntityToCustomerMixin {
 
-
-
-    @Inject(method = "defineSynchedData", at = @At("TAIL"))
-    private void goetyDelight$defineSynchedCustomerData(CallbackInfo ci) {
-        if((LivingEntity) (Object) this instanceof PathfinderMob mob){
-            if (mob instanceof ICustomerEntity customer){
-                customer.goetyDelight$defineSynchedCustomerData(((EntityAccessor)customer).getEntityData());
-            }
-        }
-
-    }
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
     private void goetyDelight$readCustomerData(CompoundTag nbt, CallbackInfo ci) {
@@ -55,6 +46,5 @@ public class LivingEntityToCustomerMixin {
         }
 
     }
-
 
 }

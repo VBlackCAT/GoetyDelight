@@ -1,9 +1,12 @@
 package net.v_black_cat.goetydelight.network;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.v_black_cat.goetydelight.GoetyDelight;
+
+import java.util.Optional;
 
 public class NetworkHandler {
     private static final String PROTOCOL_VERSION = "1";
@@ -14,7 +17,14 @@ public class NetworkHandler {
                 id++, ThrowSoupPacket.class, ThrowSoupPacket::encode, ThrowSoupPacket::decode, ThrowSoupPacket::handle);
         INSTANCE.registerMessage(
                 id++, SyncAbilityPacket.class, SyncAbilityPacket::encode, SyncAbilityPacket::decode, SyncAbilityPacket::handle);
-
+        INSTANCE.registerMessage(
+                id++,
+                CustomerItemListUpdatePacket.class,
+                CustomerItemListUpdatePacket::encode,
+                CustomerItemListUpdatePacket::decode,
+                CustomerItemListUpdatePacket::consume,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT)
+        );
     }
     public static void sendToServer(ThrowSoupPacket packet) {
         INSTANCE.sendToServer(packet);

@@ -7,7 +7,7 @@ import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 
-public class CustomerLookAtTargetSink extends Behavior<Mob> {
+public class CustomerLookAtTargetSink extends CustomerBehavior<Mob> {
     public CustomerLookAtTargetSink(int minDuration, int maxDuration) {
         super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryStatus.VALUE_PRESENT), minDuration, maxDuration);
     }

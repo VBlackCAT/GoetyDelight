@@ -3,6 +3,7 @@ package net.v_black_cat.goetydelight.entities.ai.customer;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -14,9 +15,15 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.network.PacketDistributor;
+import net.v_black_cat.goetydelight.capability.CustomerOrderItemProvider;
+import net.v_black_cat.goetydelight.capability.ICustomerOrderItemList;
 import net.v_black_cat.goetydelight.entities.ModEntityDataSerializers;
+import net.v_black_cat.goetydelight.network.CustomerItemListUpdatePacket;
+import net.v_black_cat.goetydelight.network.NetworkHandler;
 import org.slf4j.Logger;
 
+import java.util.Collections;
 import java.util.List;
 
 import static net.v_black_cat.goetydelight.GoetyDelight.LOGGER;
@@ -26,15 +33,40 @@ public interface ICustomerEntity {
     String TAG_CUSTOMER_INVENTORY = "GoetyDelightCustomerInventory";
 
     SimpleContainer goetyDelight$getCustomerInventory();
-    EntityDataAccessor<List<ItemStack>> ENTITY_DATA_ACCESSOR = SynchedEntityData.defineId(LivingEntity.class, ModEntityDataSerializers.ITEM_STACK_LIST.get());
 
 
     void goetyDelight$setCustomerMode(boolean enabled);
     boolean goetyDelight$isCustomerMode();
     Brain<PathfinderMob> goetyDelight$getCustomerBrain();
     void goetyDelight$setCustomerBrain(Brain<PathfinderMob> brain);
-    void goetyDelight$setOrder(java.util.List<net.minecraft.world.item.ItemStack> order);
-    java.util.List<net.minecraft.world.item.ItemStack> goetyDelight$getOrder();
+    default void goetyDelight$setOrder(List<ItemStack> order) {
+        if (this instanceof PathfinderMob mob) {
+            mob.getCapability(CustomerOrderItemProvider.CAPABILITY).ifPresent(cap -> {
+                cap.setItems(order);
+                if (!mob.level().isClientSide) {
+                    CompoundTag tag = new CompoundTag();
+                    ListTag listTag = new ListTag();
+                    for (ItemStack stack : order) {
+                        listTag.add(stack.save(new CompoundTag()));
+                    }
+                    tag.put("CustomerOrderItems", listTag);
+                    NetworkHandler.INSTANCE.send(
+                            PacketDistributor.TRACKING_ENTITY.with(() -> mob),
+                            new CustomerItemListUpdatePacket(mob.getId(), tag)
+                    );
+                }
+            });
+        }
+    }
+
+    default List<ItemStack> goetyDelight$getOrder() {
+        if (this instanceof PathfinderMob mob) {
+            return mob.getCapability(CustomerOrderItemProvider.CAPABILITY)
+                    .map(ICustomerOrderItemList::getItems)
+                    .orElse(Collections.emptyList());
+        }
+        return Collections.emptyList();
+    }
     static void CustomerPickUpItem(Mob mob, ICustomerEntity carrier, ItemEntity itemEntity) {
         ItemStack itemstack = itemEntity.getItem();
         if (mob.wantsToPickUp(itemstack)) {
@@ -73,12 +105,6 @@ public interface ICustomerEntity {
         this.goetyDelight$setCustomerBrain(CustomerAi.makeBrain(mob, dyn));
         this.goetyDelight$setCustomerMode(nbt.getBoolean("GoetyDelightCustomerMode"));
         this.readCustomerInventoryFromTag(nbt);
-
-        if (nbt.contains("GoetyDelightCustomerOrder")) {
-            ItemStack.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.get("GoetyDelightCustomerOrder"))
-                    .resultOrPartial(LOGGER::error)
-                    .ifPresent(this::goetyDelight$setOrder);
-        }
     }
     
     default void goetyDelight$addCustomerData(CompoundTag nbt) {
@@ -91,15 +117,5 @@ public interface ICustomerEntity {
         nbt.putBoolean("GoetyDelightCustomerMode", this.goetyDelight$isCustomerMode());
         this.writeCustomerInventoryToTag(nbt);
 
-        List<ItemStack> order = this.goetyDelight$getOrder();
-        if (order != null && !order.isEmpty()) {
-            ItemStack.CODEC.listOf().encodeStart(NbtOps.INSTANCE, order)
-                .resultOrPartial(LOGGER::error)
-                .ifPresent(tag -> nbt.put("GoetyDelightCustomerOrder", tag));
-        }
-    }
-
-    default void goetyDelight$defineSynchedCustomerData(SynchedEntityData entityData){
-        entityData.define(ENTITY_DATA_ACCESSOR, new java.util.ArrayList<ItemStack>());
     }
 }

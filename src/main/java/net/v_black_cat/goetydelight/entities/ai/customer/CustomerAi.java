@@ -11,12 +11,15 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.*;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.entity.schedule.Activity;
 import net.v_black_cat.goetydelight.entities.ai.ModActivity;
 import net.v_black_cat.goetydelight.entities.ai.ModMemory;
 import net.v_black_cat.goetydelight.entities.ai.ModSensor;
+
+import java.util.Set;
 
 public class CustomerAi {
 
@@ -87,8 +90,6 @@ public class CustomerAi {
     }
 
 
-    static int idleStartPriority = 100;
-
     public static Brain<PathfinderMob> makeBrain(PathfinderMob mob, Dynamic<?> dynamic){
         Brain.Provider<PathfinderMob> provider = Brain.provider(MEMORY_TYPES, SENSOR_TYPES);
 
@@ -109,10 +110,17 @@ public class CustomerAi {
     }
 
     private static void addCustomerActivities(Brain<PathfinderMob> brain, PathfinderMob mob) {
-        brain.addActivity(ModActivity.CUSTOMER.get(), 10, ImmutableList.of(
-                new CustomerFindPickupAreaBehavior(),
-                new CustomerPlaceOrderBehavior()
-        ));
+        Set<Pair<MemoryModuleType<?>, MemoryStatus>> customerConditions = ImmutableSet.of(
+                Pair.of(ModMemory.IS_IN_RESTAURANT.get(), MemoryStatus.VALUE_PRESENT)
+        );
+        brain.addActivityWithConditions(
+                ModActivity.CUSTOMER.get(),
+                ImmutableList.of(
+                        Pair.of(2,  new CustomerFindPickupAreaBehavior()),
+                        Pair.of(1, new CustomerPlaceOrderBehavior())
+                ),
+                customerConditions
+        );
     }
 
     public static Brain<PathfinderMob> makeBrain(PathfinderMob mob){
@@ -136,7 +144,7 @@ public class CustomerAi {
         brain.addActivity(Activity.IDLE, 10, ImmutableList.of(
                 new CustomerFindRestaurantBehavior(),
                 new RunOne<>(ImmutableList.of(
-                        Pair.of(new CustomerRandomStroll(1.0F), 2),
+//                        Pair.of(new CustomerRandomStroll(1.0F), 2),
                         Pair.of(new DoNothing(10, 20), 1)
                 ))
         ));
@@ -157,5 +165,8 @@ public class CustomerAi {
                 )
         );
     }
+
+
+
 
 }
