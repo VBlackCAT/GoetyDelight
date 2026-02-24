@@ -11,18 +11,18 @@ import org.spongepowered.asm.mixin.Unique;
 public abstract class PathFinderMobToCustomerMixin implements ICustomerEntity {
     @Unique
     public Brain<PathfinderMob> goetyDelight$customerBrain = CustomerAi.makeBrain((PathfinderMob) (Object) this);
-
+    @Unique
+    private boolean goetyDelight$customerMode = false;
 
 
     @Override
     public void goetyDelight$setCustomerMode(boolean enabled) {
-        PathfinderMob self = (PathfinderMob) (Object) this;
-        self.getPersistentData().putBoolean("GoetyDelightCustomerMode", enabled);
+        goetyDelight$customerMode = enabled;
     }
 
     @Override
     public boolean goetyDelight$isCustomerMode() {
-        return ((PathfinderMob) (Object) this).getPersistentData().getBoolean("GoetyDelightCustomerMode");
+        return goetyDelight$customerMode;
     }
 
     @Override
