@@ -29,6 +29,7 @@
   "block.goetydelight.lichs_chaos_stew_block": "Lichs Chaos Stew Block",
   "block.goetydelight.night_heart_pea_soup_block": "Night Heart Pea Soup Block",
   "block.goetydelight.bone_lord_ash_rice_block": "Bone Lord Ash Rice Block",
+  "block.goetydelight.menemen_block": "Menemen",
   "item.goetydelight.royal_cake": "Royal Cake Slice",
   "item.goetydelight.sweet_berry_pudding": "Sweet Berry Pudding",
   "item.goetydelight.tainted_drink": "Tainted Drink",
@@ -137,12 +138,16 @@
   "entity.goetydelight.ghost_farmer.not_night": "Now... the melon is yet to ripen... wait till night falls...",
   "entity.goetydelight.ghost_farmer.trade": "Wraith Melon Farmer",
   "entity.goetydelight.ghost_farmer.attack_message": "Wraith Melon Farmer:Melon thieves, die!",
-  "info.goetydelight.research.vizier_cookbook_get": "You have learned exotic recipes.",
+  "info.goety.items.vizier_cookbook": "A recipe for exotic delicacy",
+  "info.goetydelight.research.vizier_cookbook": "You have learned exotic recipes.",
   "item.goetydelight.metamorphic_scent_grass.metamorphic_item": "Metamorphic Item:",
   "item.goetydelight.metamorphic_scent_grass": "Metamorphic Scent Grass",
   "block.goetydelight.metamorphic_scent_grass": "Metamorphic Scent Grass",
   "item.goetydelight.metamorphic_scent_grass_seeds": "Metamorphic Scent Grass Seeds",
   "item.goetydelight.metamorphic_scent_fruit": "Metamorphic Scent Fruit",
   "tooltip.goetydelight.cherry_blossom_cake": "Blessings from Xiaomeng Ying",
-  "message.goety.crisp_biscuit": "eaten person"
+  "message.goety.crisp_biscuit": "eaten person",
+  "message.goetydelight.baklava.cooldown": "Cooling down, remaining time (seconds):",
+  "message.goetydelight.baklava.vizierspoken": "Being able to enjoy this taste makes it all worth it shedding tears of joy",
+  "message.goetydelight.baklava.successs": "Fed baklava to the target"
 }

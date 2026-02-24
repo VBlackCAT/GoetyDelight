@@ -5,18 +5,18 @@
         "item": "farmersdelight:cooking_pot"
     },
     "craftType": "culinary",
-    "research": "forbidden",
+    "research": "vizier_cookbook",
     "soulCost": 24,
     "duration": 7,
     "ingredients": [
         {
-            "tag": "forge:egg"
+         "tag": "forge:eggs"
         },
         {
-          "tag": "forge:egg"
+          "tag": "forge:eggs"
         },
         {
-          "tag": "forge:egg"
+          "tag": "forge:eggs"
         },
         {
             "tag": "forge:crops/tomato"
@@ -35,6 +35,6 @@
         }
     ],
     "result": {
-        "item": "goetydelight:menemen"
+        "item": "goetydelight:menemen_block"
     }
 }

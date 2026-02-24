@@ -48,7 +48,7 @@ public class BaklavaItem extends Item {
 
             if (currentTime - lastUseTime < VIZIER_COOLDOWN) {
                 long remainingTime = (VIZIER_COOLDOWN - (currentTime - lastUseTime)) / 20;
-                player.displayClientMessage(Component.literal("冷却中，剩余时间(秒)：" + remainingTime), true);
+                player.displayClientMessage(Component.translatable("message.goetydelight.baklava.cooldown" + remainingTime), true);
                 return InteractionResult.FAIL;
             }
             if (target instanceof Vizier && currentTime - lastUseTime > VIZIER_COOLDOWN) {
@@ -63,7 +63,7 @@ public class BaklavaItem extends Item {
                         new ItemStack(ModItems.SOUL_RUBY.get()));
                 target.level().addFreshEntity(itemEntity);
 
-                player.displayClientMessage(Component.literal("能吃上这一口，值啦*老泪纵横*"), true);
+                player.displayClientMessage(Component.translatable("message.goetydelight.baklava.vizierspoken"), true);
 
                 // 更新冷却时间到 PersistentData
                 persistentData.putLong(COOLDOWN_KEY, currentTime);
@@ -78,7 +78,7 @@ public class BaklavaItem extends Item {
                     stack.shrink(1);
                 }
 
-                player.displayClientMessage(Component.literal("已对目标喂食蜜糖果仁千层酥"), true);
+                player.displayClientMessage(Component.translatable("message.goetydelight.baklava.successs"), true);
                 return InteractionResult.SUCCESS;
             }
         }
