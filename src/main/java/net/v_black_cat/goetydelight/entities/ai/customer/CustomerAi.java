@@ -14,6 +14,9 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.entity.schedule.Activity;
+import net.v_black_cat.goetydelight.entities.ai.ModActivity;
+import net.v_black_cat.goetydelight.entities.ai.ModMemory;
+import net.v_black_cat.goetydelight.entities.ai.ModSensor;
 
 public class CustomerAi {
 
@@ -22,7 +25,9 @@ public class CustomerAi {
     static {
         {//传感器
             SENSOR_TYPES = ImmutableList.of(
-
+                    ModSensor.CUSTOMER_RESTAURANT_SENSOR.get(),
+                    ModSensor.CUSTOMER_NEAREST_LIVING_ENTITY_SENSOR.get(),
+                    ModSensor.CUSTOMER_IN_RESTAURANT_SENSOR.get()
             );
         }
         {
@@ -63,7 +68,19 @@ public class CustomerAi {
                     MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD, // 存储最近可见的未穿戴黄金的可攻击玩家
                     MemoryModuleType.NEAREST_PLAYER_HOLDING_WANTED_ITEM, // 存储最近持有想要物品的玩家
                     MemoryModuleType.ATE_RECENTLY,                 // 存储最近进食状态
-                    MemoryModuleType.NEAREST_REPELLENT         // 存储最近的驱避物
+                    MemoryModuleType.NEAREST_REPELLENT,         // 存储最近的驱避物
+                    ModMemory.ENTRANCE_RANGE.get(),
+                    ModMemory.DINING_RANGE.get(),
+                    ModMemory.PICKUP_RANGE.get(),
+                    ModMemory.EXIT_RANGE.get(),
+                    ModMemory.ALL_RANGE.get(),
+                    ModMemory.NEARBY_RESTAURANT.get(),
+                    ModMemory.CUSTOMER_PREFERENCE_LIST.get(),
+                    ModMemory.IS_IN_RESTAURANT.get(),
+                    ModMemory.IS_IN_ENTRANCE.get(),
+                    ModMemory.IS_IN_DINING.get(),
+                    ModMemory.IS_IN_PICKUP.get(),
+                    ModMemory.IS_IN_EXIT.get()
             );
         }
 
@@ -78,6 +95,8 @@ public class CustomerAi {
         Brain<PathfinderMob> brain = provider.makeBrain(dynamic);
         addCoreActivities(brain);
         addIdleActivities(brain, mob);
+
+        addCustomerActivities(brain, mob);
         brain.setCoreActivities(ImmutableSet.of(
                 Activity.CORE
         ));
@@ -88,6 +107,14 @@ public class CustomerAi {
 
         return brain;
     }
+
+    private static void addCustomerActivities(Brain<PathfinderMob> brain, PathfinderMob mob) {
+        brain.addActivity(ModActivity.CUSTOMER.get(), 10, ImmutableList.of(
+                new CustomerFindPickupAreaBehavior(),
+                new CustomerPlaceOrderBehavior()
+        ));
+    }
+
     public static Brain<PathfinderMob> makeBrain(PathfinderMob mob){
         NbtOps nbtops = NbtOps.INSTANCE;
         Dynamic<Tag> dyn = new Dynamic(nbtops, (Tag)nbtops.createMap(ImmutableMap.of(nbtops.createString("memories"), (Tag)nbtops.emptyMap())));
@@ -107,7 +134,11 @@ public class CustomerAi {
 
     private static void addIdleActivities(Brain<PathfinderMob> brain, PathfinderMob pathfinderMob) {
         brain.addActivity(Activity.IDLE, 10, ImmutableList.of(
-                new CustomerRandomStroll(1.0F)
+                new CustomerFindRestaurantBehavior(),
+                new RunOne<>(ImmutableList.of(
+                        Pair.of(new CustomerRandomStroll(1.0F), 2),
+                        Pair.of(new DoNothing(10, 20), 1)
+                ))
         ));
     }
     private static void addCoreActivities(Brain<PathfinderMob> brain) {
@@ -121,6 +152,7 @@ public class CustomerAi {
     public static void updateActivity(PathfinderMob pathfinderMob) {
         ((ICustomerEntity)pathfinderMob).goetyDelight$getCustomerBrain().setActiveActivityToFirstValid(
                 ImmutableList.of(
+                        ModActivity.CUSTOMER.get(),
                         Activity.IDLE
                 )
         );

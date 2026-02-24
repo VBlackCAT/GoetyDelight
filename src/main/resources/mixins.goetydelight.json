@@ -8,6 +8,7 @@
     "BlockFinderMixin",
     "CookingPotBlockEntityMixin",
     "DarkAltarBlockEntityMixin",
+    "EntityAccessor",
     "LivingEntityAccessor",
     "MobAccessor",
     "MobMixin",
