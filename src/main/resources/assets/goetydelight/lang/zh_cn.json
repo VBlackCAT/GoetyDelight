@@ -29,6 +29,7 @@
   "block.goetydelight.lichs_chaos_stew_block": "巫妖乱炖",
   "block.goetydelight.night_heart_pea_soup_block": "暗夜之心碗豆汤",
   "block.goetydelight.bone_lord_ash_rice_block": "骨头领主骨灰拌饭",
+  "block.goetydelight.menemen_block": "盘装炒蛋",
   "item.goetydelight.royal_cake": "皇家蛋糕切片",
   "item.goetydelight.sweet_berry_pudding": "甜浆果布丁",
   "item.goetydelight.tainted_drink": "不洁之饮",
@@ -137,12 +138,16 @@
   "entity.goetydelight.ghost_farmer.not_night": "现在...瓜尚未成熟...待夜幕降临...",
   "entity.goetydelight.ghost_farmer.trade": "幽灵瓜农",
   "entity.goetydelight.ghost_farmer.attack_message": "幽灵瓜农:就你劈我瓜是吧！",
-  "info.goetydelight.research.vizier_cookbook_get": "你已知晓异域菜谱",
+  "info.goety.items.vizier_cookbook": "一份异域佳肴的烹饪手册",
+  "info.goetydelight.research.vizier_cookbook": "你已知晓异域菜谱",
   "item.goetydelight.metamorphic_scent_grass.metamorphic_item": "幻化食物",
   "item.goetydelight.metamorphic_scent_grass": "幻味草",
   "block.goetydelight.metamorphic_scent_grass": "幻味草",
   "item.goetydelight.metamorphic_scent_grass_seeds": "幻味草种子",
   "item.goetydelight.metamorphic_scent_fruit": "幻味果",
   "tooltip.goetydelight.cherry_blossom_cake": "来自小梦樱的祝福",
-  "message.goety.crisp_biscuit": "食人术~"
+  "message.goety.crisp_biscuit": "食人术~",
+  "message.goetydelight.baklava.cooldown": "冷却中，剩余时间(秒):",
+  "message.goetydelight.baklava.vizierspoken": "能吃上这一口，值啦*老泪纵横*",
+  "message.goetydelight.baklava.successs": "已对目标喂食蜜糖果仁千层酥"
 }

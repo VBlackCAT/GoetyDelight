@@ -43,7 +43,7 @@ public class RoastLaowangItem extends Item{
             if (event.getSource().typeHolder().unwrapKey().isPresent()) {
                 String damageTypeName = event.getSource().typeHolder().unwrapKey().get().location().toString();
                 if (damageTypeName.contains("lightning") || damageTypeName.contains("shock")) {
-                    if (random.nextFloat() < 0.25f) {
+                    if (random.nextFloat() < 0.50f) {
                         ItemStack roastLaowang = new ItemStack(ModItems.ROAST_LAOWANG.get());
                         event.getEntity().spawnAtLocation(roastLaowang);
                     }

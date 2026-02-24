@@ -289,17 +289,17 @@ public class FalseProverbsItem extends SwordItem {
         }
     }
 
-    @SubscribeEvent
-    public static void onInvisibleChangeTarget(LivingChangeTargetEvent event) {
-        LivingEntity attacker = event.getEntity();
-        LivingEntity target = event.getNewTarget();
-        if(target instanceof Player player && !(attacker instanceof Player)){
-            if (player.getMainHandItem().getItem() instanceof FalseProverbsItem item) {
-                if(getPlayerTeleportStatus(player.getUUID())){
-                if(player.isShiftKeyDown()){
-                  event.setCanceled(true);}
-            }}
-        }
-    }
+//    @SubscribeEvent
+//    public static void onInvisibleChangeTarget(LivingChangeTargetEvent event) {
+//        LivingEntity attacker = event.getEntity();
+//        LivingEntity target = event.getNewTarget();
+//        if(target instanceof Player player && !(attacker instanceof Player)){
+//            if (player.getMainHandItem().getItem() instanceof FalseProverbsItem item) {
+//                if(getPlayerTeleportStatus(player.getUUID())){
+//                if(player.isShiftKeyDown()){
+//                  event.setCanceled(true);}
+//            }}
+//        }
+//    }
 
 }
