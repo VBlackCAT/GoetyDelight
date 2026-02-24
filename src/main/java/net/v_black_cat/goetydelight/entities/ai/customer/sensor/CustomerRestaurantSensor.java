@@ -16,7 +16,7 @@ import net.v_black_cat.goetydelight.entities.ai.customer.ICustomerEntity;
 import java.util.Set;
 
 public class CustomerRestaurantSensor extends Sensor<PathfinderMob> {
-    private static final int SCAN_RADIUS_SQR = 32 * 32;
+    private static final int SCAN_RADIUS_SQR = 128*128;
 
     public CustomerRestaurantSensor() {
         super(40);

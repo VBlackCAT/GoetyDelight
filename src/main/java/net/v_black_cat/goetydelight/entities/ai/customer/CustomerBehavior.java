@@ -89,21 +89,14 @@ public class CustomerBehavior<E extends LivingEntity> implements BehaviorControl
     }
 
     protected boolean hasRequiredMemories(E owner) {
-        Iterator var2 = this.entryCondition.entrySet().iterator();
-
-        MemoryModuleType memorymoduletype;
-        MemoryStatus memorystatus;
-        do {
-            if (!var2.hasNext()) {
-                return true;
+        for (Map.Entry<MemoryModuleType<?>, MemoryStatus> entry : this.entryCondition.entrySet()) {
+            MemoryModuleType<?> memoryModuleType = entry.getKey();
+            MemoryStatus memoryStatus = entry.getValue();
+            if (!((ICustomerEntity) owner).goetyDelight$getCustomerBrain().checkMemory(memoryModuleType, memoryStatus)) {
+                return false;
             }
-
-            Map.Entry<MemoryModuleType<?>, MemoryStatus> entry = (Map.Entry)var2.next();
-            memorymoduletype = (MemoryModuleType)entry.getKey();
-            memorystatus = (MemoryStatus)entry.getValue();
-        } while(((ICustomerEntity)owner).goetyDelight$getCustomerBrain().checkMemory(memorymoduletype, memorystatus));
-
-        return false;
+        }
+        return true;
     }
 
     public static enum Status {

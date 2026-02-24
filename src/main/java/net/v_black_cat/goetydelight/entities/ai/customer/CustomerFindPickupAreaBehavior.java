@@ -18,6 +18,7 @@ public class CustomerFindPickupAreaBehavior extends CustomerBehavior<PathfinderM
     public CustomerFindPickupAreaBehavior() {
         super(ImmutableMap.of(
                 ModMemory.IS_IN_RESTAURANT.get(), MemoryStatus.VALUE_PRESENT,
+                ModMemory.IS_IN_PICKUP.get(), MemoryStatus.VALUE_PRESENT,
                 ModMemory.PICKUP_RANGE.get(), MemoryStatus.VALUE_PRESENT,
                 MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT
         ), 60, 120);
@@ -25,9 +26,9 @@ public class CustomerFindPickupAreaBehavior extends CustomerBehavior<PathfinderM
 
     @Override
     protected boolean checkExtraStartConditions(ServerLevel level, PathfinderMob owner) {
-        Brain brain = ((ICustomerEntity) owner).goetyDelight$getCustomerBrain();
+        ICustomerEntity customerEntity = (ICustomerEntity) owner;
+        Brain brain = customerEntity.goetyDelight$getCustomerBrain();
         if (brain == null) return false;
-
         // 检查是否在餐厅内
         Optional<?> memoryOpt = brain.getMemory(ModMemory.IS_IN_RESTAURANT.get());
         boolean isInRestaurant = false;
@@ -65,9 +66,12 @@ public class CustomerFindPickupAreaBehavior extends CustomerBehavior<PathfinderM
             return false;
         }
 
-        // 检查是否已经在取餐区域内
-        Vec3 entityPos = entity.position();
-        return !isInPickupArea(brain, entityPos);
+
+        Optional<Boolean> isInPickupOpt = brain.getMemory(ModMemory.IS_IN_PICKUP.get());
+        if (isInPickupOpt.isPresent()) {
+            return !isInPickupOpt.get();
+        }
+        return false;
     }
 
     @Override
@@ -100,21 +104,6 @@ public class CustomerFindPickupAreaBehavior extends CustomerBehavior<PathfinderM
             // 清除行走目标
             brain.eraseMemory(MemoryModuleType.WALK_TARGET);
         }
-    }
-
-    /**
-     * 检查实体是否在取餐区域内
-     */
-    private boolean isInPickupArea(Brain brain, Vec3 entityPos) {
-        Optional<?> memoryOpt = brain.getMemory(ModMemory.PICKUP_RANGE.get());
-        if (memoryOpt.isPresent()) {
-            Object memoryObj = memoryOpt.get();
-            if (memoryObj instanceof AABB) {
-                AABB area = (AABB) memoryObj;
-                return area.contains(entityPos);
-            }
-        }
-        return false;
     }
 
     /**

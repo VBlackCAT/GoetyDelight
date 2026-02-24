@@ -67,14 +67,29 @@ public class RestaurantBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     public static java.util.Set<GlobalPos> getRestaurantPositions() {
-        return new java.util.HashSet<>(restaurantPositions);
+        return restaurantPositions;
     }
 
     @Override
     public void setRemoved() {
         super.setRemoved();
         if (this.level instanceof ServerLevel serverLevel) {
+            removeRestaurantPosition(serverLevel, this.worldPosition);
+        }
+    }
+
+    @Override
+    public void setLevel(Level level) {
+        super.setLevel(level);
+        if (this.level instanceof ServerLevel serverLevel) {
             addRestaurantPosition(serverLevel, this.worldPosition);
+        }
+    }
+    @Override
+    public void onChunkUnloaded() {
+        super.onChunkUnloaded();
+        if (this.level instanceof ServerLevel serverLevel) {
+            removeRestaurantPosition(serverLevel, this.worldPosition);
         }
     }
 

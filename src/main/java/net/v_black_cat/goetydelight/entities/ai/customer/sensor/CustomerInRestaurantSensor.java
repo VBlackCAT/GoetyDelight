@@ -33,7 +33,11 @@ public class CustomerInRestaurantSensor extends Sensor<PathfinderMob> {
         }
         
         // 更新总体餐厅状态
-        brain.setMemory(ModMemory.IS_IN_RESTAURANT.get(), isInRestaurant);
+        if (isInRestaurant) {
+            brain.setMemory(ModMemory.IS_IN_RESTAURANT.get(), true);
+        } else {
+            brain.eraseMemory(ModMemory.IS_IN_RESTAURANT.get());
+        }
         
         // 分别更新各个区域的状态
         updateAreaStatus(brain, entityPos);
@@ -84,19 +88,35 @@ public class CustomerInRestaurantSensor extends Sensor<PathfinderMob> {
     private void updateAreaStatus(Brain<?> brain, Vec3 entityPos) {
         // 更新入口区域状态
         boolean isInEntrance = isInArea(brain, ModMemory.ENTRANCE_RANGE.get(), entityPos);
-        brain.setMemory(ModMemory.ENTRANCE_RANGE.get(), isInEntrance ? getAreaAABB(brain, ModMemory.ENTRANCE_RANGE.get()) : null);
+        if (isInEntrance) {
+            brain.setMemory(ModMemory.ENTRANCE_RANGE.get(), getAreaAABB(brain, ModMemory.ENTRANCE_RANGE.get()));
+        } else {
+            brain.eraseMemory(ModMemory.ENTRANCE_RANGE.get());
+        }
         
         // 更新取餐区域状态
         boolean isInPickup = isInArea(brain, ModMemory.PICKUP_RANGE.get(), entityPos);
-        brain.setMemory(ModMemory.PICKUP_RANGE.get(), isInPickup ? getAreaAABB(brain, ModMemory.PICKUP_RANGE.get()) : null);
+        if (isInPickup) {
+            brain.setMemory(ModMemory.PICKUP_RANGE.get(), getAreaAABB(brain, ModMemory.PICKUP_RANGE.get()));
+        } else {
+            brain.eraseMemory(ModMemory.PICKUP_RANGE.get());
+        }
         
         // 更新用餐区域状态
         boolean isInDining = isInArea(brain, ModMemory.DINING_RANGE.get(), entityPos);
-        brain.setMemory(ModMemory.DINING_RANGE.get(), isInDining ? getAreaAABB(brain, ModMemory.DINING_RANGE.get()) : null);
+        if (isInDining) {
+            brain.setMemory(ModMemory.DINING_RANGE.get(), getAreaAABB(brain, ModMemory.DINING_RANGE.get()));
+        } else {
+            brain.eraseMemory(ModMemory.DINING_RANGE.get());
+        }
         
         // 更新出口区域状态
         boolean isInExit = isInArea(brain, ModMemory.EXIT_RANGE.get(), entityPos);
-        brain.setMemory(ModMemory.EXIT_RANGE.get(), isInExit ? getAreaAABB(brain, ModMemory.EXIT_RANGE.get()) : null);
+        if (isInExit) {
+            brain.setMemory(ModMemory.EXIT_RANGE.get(), getAreaAABB(brain, ModMemory.EXIT_RANGE.get()));
+        } else {
+            brain.eraseMemory(ModMemory.EXIT_RANGE.get());
+        }
     }
     
     /**
