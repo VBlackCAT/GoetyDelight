@@ -22,10 +22,11 @@ public class LivingEntityToCustomerMixin {
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
     private void goetyDelight$readCustomerData(CompoundTag nbt, CallbackInfo ci) {
         if((LivingEntity) (Object) this instanceof PathfinderMob mob){
-            boolean isCustomer = nbt.getBoolean("GoetyDelightCustomerMode");
-            if (isCustomer) {
+            if (mob instanceof ICustomerEntity customer){
                 Dynamic<Tag> dyn = new Dynamic(NbtOps.INSTANCE, nbt.get("CustomerBrain"));
-                ((ICustomerEntity) mob).goetyDelight$setCustomerBrain(CustomerAi.makeBrain(mob, dyn));
+                customer.goetyDelight$setCustomerBrain(CustomerAi.makeBrain(mob, dyn));
+                customer.goetyDelight$setCustomerMode(nbt.getBoolean("GoetyDelightCustomerMode"));
+
             }
         }
 
@@ -33,12 +34,15 @@ public class LivingEntityToCustomerMixin {
     @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
     private void goetyDelight$addCustomerData(CompoundTag nbt, CallbackInfo ci) {
         if((LivingEntity) (Object) this instanceof PathfinderMob mob){
-            DataResult<Tag> dataresult = ((ICustomerEntity)mob).goetyDelight$getCustomerBrain().serializeStart(NbtOps.INSTANCE);
-            Logger var10001 = LOGGER;
-            java.util.Objects.requireNonNull(var10001);
-            dataresult.resultOrPartial(var10001::error).ifPresent((p_21102_) -> {
-                nbt.put("CustomerBrain", p_21102_);
-            });
+            if (this instanceof ICustomerEntity customer) {
+                DataResult<Tag> dataresult = customer.goetyDelight$getCustomerBrain().serializeStart(NbtOps.INSTANCE);
+                Logger var10001 = LOGGER;
+                java.util.Objects.requireNonNull(var10001);
+                dataresult.resultOrPartial(var10001::error).ifPresent((p_21102_) -> {
+                    nbt.put("CustomerBrain", p_21102_);
+                });
+                nbt.putBoolean("GoetyDelightCustomerMode", customer.goetyDelight$isCustomerMode());
+            }
         }
 
     }

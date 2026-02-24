@@ -96,10 +96,12 @@ public class CustomerAi {
         return brain;
     }
     public static void enableCustomerMode(PathfinderMob mob, boolean enabled){
-        mob.getPersistentData().putBoolean("GoetyDelightCustomerMode", enabled);
+        if (mob instanceof ICustomerEntity customer){
+            customer.goetyDelight$setCustomerMode(enabled);
+        }
     }
     public static boolean isCustomerMode(PathfinderMob mob){
-        return mob.getPersistentData().getBoolean("GoetyDelightCustomerMode");
+        return mob instanceof ICustomerEntity customer && customer.goetyDelight$isCustomerMode();
     }
 
 
@@ -111,8 +113,7 @@ public class CustomerAi {
     private static void addCoreActivities(Brain<PathfinderMob> brain) {
         brain.addActivity(Activity.CORE, 0, ImmutableList.of(
                 new Swim(0.8F),
-                new AnimalPanic(2.0F),
-                new LookAtTargetSink(45, 90),
+                new CustomerLookAtTargetSink(45, 90),
                 new CustomerMoveToTargetSink(100, 200)
         ));
 
