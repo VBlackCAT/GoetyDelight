@@ -84,6 +84,7 @@ public class ModBlockLootTables extends BlockLootSubProvider {
         this.dropOther(ModBlocks.LICHS_CHAOS_STEW_BLOCK.get(), vectorwing.farmersdelight.common.registry.ModItems.COOKING_POT.get());
         this.dropOther(ModBlocks.NIGHT_HEART_PEA_SOUP_BLOCK.get(), vectorwing.farmersdelight.common.registry.ModItems.COOKING_POT.get());
         this.dropOther(ModBlocks.BONE_LORD_ASH_RICE_BLOCK.get(), vectorwing.farmersdelight.common.registry.ModItems.COOKING_POT.get());
+        this.dropOther(ModBlocks.MENEMEN_BLOCK.get(), vectorwing.farmersdelight.common.registry.ModItems.COOKING_POT.get());
         this.add(ModBlocks.MARBLE_SLAB.get(),
                 block -> createSlabItemTable(ModBlocks.MARBLE_SLAB.get()));
         this.add(ModBlocks.MARBLE_DOOR.get(),

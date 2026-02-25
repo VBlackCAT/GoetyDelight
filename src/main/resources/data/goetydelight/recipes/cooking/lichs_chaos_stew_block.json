@@ -25,5 +25,8 @@
   "recipe_book_tab": "meals",
   "result": {
     "item": "goetydelight:lichs_chaos_stew_block"
+  },
+  "container": {
+    "item": "farmersdelight:cooking_pot"
   }
 }
