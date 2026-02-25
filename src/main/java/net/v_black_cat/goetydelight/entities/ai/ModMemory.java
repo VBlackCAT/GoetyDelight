@@ -2,6 +2,8 @@ package net.v_black_cat.goetydelight.entities.ai;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
@@ -13,6 +15,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static net.v_black_cat.goetydelight.GoetyDelight.MODID;
 
@@ -67,6 +70,21 @@ public class ModMemory {
     public static final RegistryObject<MemoryModuleType<Boolean>> IS_IN_EXIT =
             MEMORY_MODULES.register("is_in_exit",
                     () -> new MemoryModuleType<>(Optional.of(Codec.BOOL)));
+
+    public static final RegistryObject<MemoryModuleType<List<ItemStack>>> FOOD_TO_PAY_LIST =
+            MEMORY_MODULES.register("food_to_pay_list",
+            () -> new MemoryModuleType<>(Optional.of(ItemStack.CODEC.listOf())));
+
+    public static final RegistryObject<MemoryModuleType<List<UUID>>> RESTAURANT_OWNER_UUID_LIST =
+            MEMORY_MODULES.register("restaurant_owner_uuid_list",
+            () -> new MemoryModuleType<>(Optional.of(UUIDUtil.CODEC.listOf())));
+
+    public static final RegistryObject<MemoryModuleType<LivingEntity>> NEAREST_ENTITY_HOLDING_THE_DESIRED_ITEM =
+            MEMORY_MODULES.register("nearest_entity_holding_the_desired_item",
+                    () -> new MemoryModuleType<>(Optional.empty()));
+
+
+
     public static void register(IEventBus eventBus) {
         MEMORY_MODULES.register(eventBus);
     }

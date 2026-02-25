@@ -7,6 +7,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.entities.ai.customer.sensor.CustomerInRestaurantSensor;
+import net.v_black_cat.goetydelight.entities.ai.customer.sensor.CustomerNearestLivingEntityHandDesiredItemSensor;
 import net.v_black_cat.goetydelight.entities.ai.customer.sensor.CustomerNearestLivingEntitySensor;
 import net.v_black_cat.goetydelight.entities.ai.customer.sensor.CustomerRestaurantSensor;
 
@@ -22,6 +23,8 @@ public class ModSensor {
             MOD_SENSORS.register("customer_nearest_living_entity_sensor", () -> new SensorType<>(CustomerNearestLivingEntitySensor::new));
     public static final RegistryObject<SensorType<CustomerInRestaurantSensor>> CUSTOMER_IN_RESTAURANT_SENSOR =
             MOD_SENSORS.register("customer_in_restaurant_sensor", () -> new SensorType<>(CustomerInRestaurantSensor::new));
+    public static final RegistryObject<SensorType<CustomerNearestLivingEntityHandDesiredItemSensor>> CUSTOMER_NEAREST_LIVING_ENTITY_HAND_DESIRED_ITEM_SENSOR =
+            MOD_SENSORS.register("customer_nearest_living_entity_hand_desired_item_sensor", () -> new SensorType<>(CustomerNearestLivingEntityHandDesiredItemSensor::new));
 
     public static void register(IEventBus eventBus) {
         MOD_SENSORS.register(eventBus);
