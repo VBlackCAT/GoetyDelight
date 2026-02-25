@@ -3,6 +3,7 @@ package net.v_black_cat.goetydelight.entities.ai.customer;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -33,6 +34,8 @@ public class CustomerPlaceOrderBehavior extends CustomerBehavior<PathfinderMob> 
         if (itemStacks != null && !itemStacks.isEmpty()) {
             return false;
         }
+        SimpleContainer simpleContainer = owner1.goetyDelight$getCustomerInventory();
+        if (!simpleContainer.isEmpty()) return false;
         return true;
     }
 

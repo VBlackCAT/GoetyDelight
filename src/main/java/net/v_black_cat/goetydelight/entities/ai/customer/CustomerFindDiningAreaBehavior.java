@@ -11,29 +11,27 @@ import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.List;
-import java.util.Optional;
 import net.v_black_cat.goetydelight.entities.ai.ModMemory;
 
-public class CustomerFindPickupAreaBehavior extends CustomerBehavior<PathfinderMob> {
+import java.util.List;
+import java.util.Map;
 
-    public CustomerFindPickupAreaBehavior() {
+public class CustomerFindDiningAreaBehavior extends CustomerBehavior<PathfinderMob>{
+    public CustomerFindDiningAreaBehavior() {
         super(ImmutableMap.of(
                 ModMemory.IS_IN_RESTAURANT.get(), MemoryStatus.VALUE_PRESENT,
-                ModMemory.IS_IN_PICKUP.get(), MemoryStatus.VALUE_ABSENT,
-                ModMemory.PICKUP_RANGE.get(), MemoryStatus.VALUE_PRESENT,
+                ModMemory.IS_IN_DINING.get(), MemoryStatus.VALUE_ABSENT,
+                ModMemory.DINING_RANGE.get(), MemoryStatus.VALUE_PRESENT,
                 MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT
         ), 60, 120);
     }
-
     @Override
     protected boolean checkExtraStartConditions(ServerLevel level, PathfinderMob owner) {
         ICustomerEntity owner1 = (ICustomerEntity) owner;
-        SimpleContainer simpleContainer = owner1.goetyDelight$getCustomerInventory();
         List<ItemStack> itemStacks = owner1.goetyDelight$getOrder();
-        if (!simpleContainer.isEmpty() && itemStacks.isEmpty()) return false;
-        return true;
+        SimpleContainer simpleContainer = owner1.goetyDelight$getCustomerInventory();
+        if (itemStacks.isEmpty()&&!simpleContainer.isEmpty()) return true;
+        return false;
     }
 
     @Override
@@ -46,17 +44,17 @@ public class CustomerFindPickupAreaBehavior extends CustomerBehavior<PathfinderM
         Brain brain = ((ICustomerEntity) entity).goetyDelight$getCustomerBrain();
         if (brain == null) return;
 
-        brain.getMemory(ModMemory.PICKUP_RANGE.get()).ifPresent(pickupAreaObj -> {
-            if (pickupAreaObj instanceof AABB) {
-                AABB pickupArea = (AABB) pickupAreaObj;
+        brain.getMemory(ModMemory.DINING_RANGE.get()).ifPresent(diningAreaObj -> {
+            if (diningAreaObj instanceof AABB) {
+                AABB diningArea = (AABB) diningAreaObj;
 
-                Vec3 targetPos = AABBRandomPos.getPos(entity, pickupArea, 3);
+                Vec3 targetPos = AABBRandomPos.getPos(entity, diningArea, 3);
 
                 if (targetPos == null) {
-                    targetPos = getAreaCenter(pickupArea);
+                    targetPos = getAreaCenter(diningArea);
                 }
-                
-                WalkTarget walkTarget = new WalkTarget(targetPos, 1.0F, 2); // 2格的接近距离
+
+                WalkTarget walkTarget = new WalkTarget(targetPos, 1.0F, 2);
                 brain.setMemory(MemoryModuleType.WALK_TARGET, walkTarget);
             }
         });

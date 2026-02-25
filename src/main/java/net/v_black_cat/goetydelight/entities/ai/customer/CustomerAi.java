@@ -32,7 +32,8 @@ public class CustomerAi {
             SENSOR_TYPES = ImmutableList.of(
                     ModSensor.CUSTOMER_RESTAURANT_SENSOR.get(),
                     ModSensor.CUSTOMER_NEAREST_LIVING_ENTITY_SENSOR.get(),
-                    ModSensor.CUSTOMER_IN_RESTAURANT_SENSOR.get()
+                    ModSensor.CUSTOMER_IN_RESTAURANT_SENSOR.get(),
+                    ModSensor.CUSTOMER_NEAREST_LIVING_ENTITY_HAND_DESIRED_ITEM_SENSOR.get()
             );
         }
         {
@@ -85,7 +86,10 @@ public class CustomerAi {
                     ModMemory.IS_IN_ENTRANCE.get(),
                     ModMemory.IS_IN_DINING.get(),
                     ModMemory.IS_IN_PICKUP.get(),
-                    ModMemory.IS_IN_EXIT.get()
+                    ModMemory.IS_IN_EXIT.get(),
+                    ModMemory.FOOD_TO_PAY_LIST.get(),
+                    ModMemory.RESTAURANT_OWNER_UUID_LIST.get(),
+                    ModMemory.NEAREST_ENTITY_HOLDING_THE_DESIRED_ITEM.get()
             );
         }
 
@@ -118,8 +122,13 @@ public class CustomerAi {
         brain.addActivityWithConditions(
                 ModActivity.CUSTOMER.get(),
                 ImmutableList.of(
-                        Pair.of(2,  new CustomerFindPickupAreaBehavior()),
-                        Pair.of(1, new CustomerPlaceOrderBehavior())
+                        Pair.of(1,  new CustomerFindPickupAreaBehavior()),
+                        Pair.of(1, new CustomerPlaceOrderBehavior()),
+                        Pair.of(1, new CustomerWaitForFoodBehavior()),
+                        Pair.of(1, new CustomerFindDiningAreaBehavior()),
+                        Pair.of(1, new CustomerEatFoodBehavior()),
+                        Pair.of(1, new CustomerPayBehavior()),
+                        Pair.of(1, new CustomerLookAtPlayerWithOrderItemBehavior())
                 ),
                 customerConditions
         );
@@ -145,6 +154,7 @@ public class CustomerAi {
     private static void addIdleActivities(Brain<PathfinderMob> brain, PathfinderMob pathfinderMob) {
         brain.addActivity(Activity.IDLE, 10, ImmutableList.of(
                 new CustomerFindRestaurantBehavior(),
+                new CustomerLookAtPlayerWithOrderItemBehavior(),
                 new RunOne<>(ImmutableList.of(
                         Pair.of(new CustomerRandomStroll(1.0F), 2),
                         Pair.of(new DoNothing(10, 20), 1)
