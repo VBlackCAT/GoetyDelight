@@ -1,0 +1,10 @@
+{
+  "type": "goety:brewing",
+  "ingredient": {
+    "item": "goety:dark_ingot"
+  },
+  "effect": "goetydelight:spell_duration",
+  "soulCost": 25,
+  "capacityExtra": 3,
+  "duration": 9000
+}

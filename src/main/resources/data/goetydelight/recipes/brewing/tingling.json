@@ -1,0 +1,10 @@
+{
+  "type": "goety:brewing",
+  "ingredient": {
+    "item": "goety:bouncy_bubble_focus"
+  },
+  "effect": "goetydelight:tingling",
+  "soulCost": 10,
+  "capacityExtra": 0,
+  "duration": 9000
+}
