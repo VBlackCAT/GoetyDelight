@@ -41,14 +41,7 @@ public class CustomerFindRestaurantBehavior extends CustomerBehavior<PathfinderM
     
     @Override
     protected boolean canStillUse(ServerLevel level, PathfinderMob entity, long gameTime) {
-        Brain brain = ((ICustomerEntity) entity).goetyDelight$getCustomerBrain();
-        if (brain == null) return false;
-        
-        
-        boolean isInRestaurant = (Boolean) brain.getMemory(ModMemory.IS_IN_RESTAURANT.get()).orElse(false);
-        return !isInRestaurant && 
-               brain.getMemory(ModMemory.NEARBY_RESTAURANT.get()).isPresent() && 
-               brain.getMemory(ModMemory.ENTRANCE_RANGE.get()).isPresent();
+        return false;
     }
     
     @Override
@@ -60,36 +53,27 @@ public class CustomerFindRestaurantBehavior extends CustomerBehavior<PathfinderM
         brain.getMemory(ModMemory.ENTRANCE_RANGE.get()).ifPresent(entranceAreaObj -> {
             if (entranceAreaObj instanceof AABB) {
                 AABB entranceArea = (AABB) entranceAreaObj;
+
+                Vec3 targetPos = AABBRandomPos.getPos(entity, entranceArea, 3);
+
+                if (targetPos == null) {
+                    targetPos = getAreaCenter(entranceArea);
+                }
                 
-                Vec3 targetPos = getAreaCenter(entranceArea);
                 WalkTarget walkTarget = new WalkTarget(targetPos, 1.0F, 2); 
                 brain.setMemory(MemoryModuleType.WALK_TARGET, walkTarget);
-                
-                
-                brain.setMemory(ModMemory.IS_IN_ENTRANCE.get(), true);
             }
         });
     }
     
     @Override
     protected void tick(ServerLevel level, PathfinderMob entity, long gameTime) {
-        
-        start(level, entity, gameTime);
+
     }
     
     @Override
     protected void stop(ServerLevel level, PathfinderMob entity, long gameTime) {
-        Brain brain = ((ICustomerEntity) entity).goetyDelight$getCustomerBrain();
-        if (brain != null) {
-            
-            brain.eraseMemory(MemoryModuleType.WALK_TARGET);
-            
-            
-            boolean isInRestaurant = (Boolean) brain.getMemory(ModMemory.IS_IN_RESTAURANT.get()).orElse(false);
-            if (!isInRestaurant) {
-                brain.eraseMemory(ModMemory.IS_IN_ENTRANCE.get());
-            }
-        }
+
     }
     
     

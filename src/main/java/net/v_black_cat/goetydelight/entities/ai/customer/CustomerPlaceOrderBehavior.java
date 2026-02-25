@@ -23,34 +23,17 @@ public class CustomerPlaceOrderBehavior extends CustomerBehavior<PathfinderMob> 
     public CustomerPlaceOrderBehavior() {
         super(ImmutableMap.of(
                 ModMemory.IS_IN_RESTAURANT.get(), MemoryStatus.VALUE_PRESENT,
-                ModMemory.PICKUP_RANGE.get(), MemoryStatus.VALUE_PRESENT
+                ModMemory.IS_IN_PICKUP.get(), MemoryStatus.VALUE_PRESENT
         ));
     }
     @Override
     protected boolean checkExtraStartConditions(ServerLevel level, PathfinderMob owner) {
         ICustomerEntity owner1 = (ICustomerEntity) owner;
-        Brain<?> brain = owner1.goetyDelight$getCustomerBrain();
-        if (brain == null) return false;
-
-
-        boolean isInRestaurant = brain.getMemory(ModMemory.IS_IN_RESTAURANT.get())
-                .map(Boolean.class::cast)
-                .orElse(false);
-        
-        if (!isInRestaurant) {
-            return false;
-        }
         List<ItemStack> itemStacks = owner1.goetyDelight$getOrder();
         if (itemStacks != null && !itemStacks.isEmpty()) {
             return false;
         }
-
-
-        Optional<Boolean> isInPickupOpt = brain.getMemory(ModMemory.IS_IN_PICKUP.get());
-        if (isInPickupOpt.isPresent()) {
-            return isInPickupOpt.get();
-        }
-        return false;
+        return true;
     }
 
     @Override
