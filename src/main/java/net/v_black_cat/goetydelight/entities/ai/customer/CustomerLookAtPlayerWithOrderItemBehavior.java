@@ -32,7 +32,8 @@ public class CustomerLookAtPlayerWithOrderItemBehavior extends CustomerBehavior<
 
     @Override
     protected void start(ServerLevel level, Mob entity, long gameTime) {
-        LivingEntity livingEntity = entity.getBrain().getMemory(ModMemory.NEAREST_ENTITY_HOLDING_THE_DESIRED_ITEM.get()).get();
-        entity.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(livingEntity, true));
+        ICustomerEntity customer = (ICustomerEntity) entity;
+        LivingEntity livingEntity = customer.goetyDelight$getCustomerBrain().getMemory(ModMemory.NEAREST_ENTITY_HOLDING_THE_DESIRED_ITEM.get()).get();
+        customer.goetyDelight$getCustomerBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(livingEntity, true));
     }
 }

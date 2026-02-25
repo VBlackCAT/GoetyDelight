@@ -72,16 +72,21 @@ public class CustomerWaitForFoodBehavior extends CustomerBehavior<PathfinderMob>
             List<ItemStack> order = customer.goetyDelight$getOrder();
             if (order != null && !order.isEmpty()){
                 boolean found = false;
-                for (ItemStack item : order) {
-                    if (ItemStack.isSameItemSameTags(item, stack)) {
-                        customer.goetyDelight$getCustomerInventory().addItem(stack.copy());
-                        order.remove(item);
-                        stack.shrink(1);
-                        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_PICKUP, player.getSoundSource(), 1.0F, 1.0F);
-                        found = true;
-                        break;
+                if (stack.isEmpty()){
+                    customer.goetyDelight$setOrder(order);
+                }else {
+                    for (ItemStack item : order) {
+                        if (ItemStack.isSameItemSameTags(item, stack)) {
+                            customer.goetyDelight$getCustomerInventory().addItem(stack.split(1));
+                            order.remove(item);
+                            customer.goetyDelight$setOrder(order);
+                            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_PICKUP, player.getSoundSource(), 1.0F, 1.0F);
+                            found = true;
+                            break;
+                        }
                     }
                 }
+
             }
         }
 

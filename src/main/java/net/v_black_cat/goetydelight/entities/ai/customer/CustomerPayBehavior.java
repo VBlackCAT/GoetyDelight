@@ -31,10 +31,11 @@ public class CustomerPayBehavior extends CustomerBehavior<PathfinderMob> {
 
     @Override
     protected void start(ServerLevel level, PathfinderMob entity, long gameTime) {
-        entity.getBrain().getMemory(ModMemory.FOOD_TO_PAY_LIST.get()).ifPresent(foodList -> {
+        ICustomerEntity customer = (ICustomerEntity) entity;
+        customer.goetyDelight$getCustomerBrain().getMemory(ModMemory.FOOD_TO_PAY_LIST.get()).ifPresent(foodList -> {
             processPayment(entity, foodList);
         });
-        entity.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(entity, true));
+        customer.goetyDelight$getCustomerBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(entity, true));
 
 
         super.start(level, entity, gameTime);
@@ -42,7 +43,32 @@ public class CustomerPayBehavior extends CustomerBehavior<PathfinderMob> {
 
     private void processPayment(PathfinderMob entity, java.util.List<net.minecraft.world.item.ItemStack> foodList) {
         for (ItemStack food : foodList) {
+            ItemStack emeraldStack = new ItemStack(net.minecraft.world.item.Items.EMERALD, 1);
+
+            net.minecraft.world.entity.item.ItemEntity emeraldEntity = new net.minecraft.world.entity.item.ItemEntity(
+                entity.level(),
+                entity.getX() + (entity.getRandom().nextDouble() - 0.5) * 2.0,
+                entity.getY() + 0.5,
+                entity.getZ() + (entity.getRandom().nextDouble() - 0.5) * 2.0,
+                emeraldStack
+            );
+
+            emeraldEntity.setDeltaMovement(
+                (entity.getRandom().nextDouble() - 0.5) * 0.2,
+                0.2,
+                (entity.getRandom().nextDouble() - 0.5) * 0.2
+            );
+
+            entity.level().addFreshEntity(emeraldEntity);
+
 
         }
+    }
+
+    @Override
+    protected void stop(ServerLevel level, PathfinderMob entity, long gameTime) {
+        ICustomerEntity customer = (ICustomerEntity) entity;
+        customer.goetyDelight$getCustomerBrain().eraseMemory(ModMemory.FOOD_TO_PAY_LIST.get());
+        super.stop(level, entity, gameTime);
     }
 }

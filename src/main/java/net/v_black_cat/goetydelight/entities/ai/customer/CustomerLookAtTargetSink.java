@@ -13,9 +13,7 @@ public class CustomerLookAtTargetSink extends CustomerBehavior<Mob> {
     }
 
     protected boolean canStillUse(ServerLevel level, Mob entity, long gameTime) {
-        return ((ICustomerEntity)entity).goetyDelight$getCustomerBrain().getMemory(MemoryModuleType.LOOK_TARGET).filter((p_23497_) -> {
-            return p_23497_.isVisibleBy(entity);
-        }).isPresent();
+        return true;
     }
 
     protected void stop(ServerLevel level, Mob entity, long gameTime) {
