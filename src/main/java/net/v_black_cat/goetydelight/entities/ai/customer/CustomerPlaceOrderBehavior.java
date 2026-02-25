@@ -58,7 +58,7 @@ public class CustomerPlaceOrderBehavior extends CustomerBehavior<PathfinderMob> 
     private List<ItemStack> generateOrder(PathfinderMob entity) {
 
         Brain<PathfinderMob> brain = ((ICustomerEntity) entity).goetyDelight$getCustomerBrain();
-        ArrayList<ItemStack> dishesList;
+        ArrayList<ItemStack> dishesList = new ArrayList<>();
         Optional<GlobalPos> memory = brain.getMemory(ModMemory.CURRENT_RESTAURANT_BLOCK_POSITION.get());
         if (memory.isPresent()) {
             GlobalPos blockPos = memory.get();
