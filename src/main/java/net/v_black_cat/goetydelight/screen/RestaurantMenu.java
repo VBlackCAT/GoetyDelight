@@ -21,6 +21,7 @@ public class RestaurantMenu extends AbstractContainerMenu {
     private ContainerData dataAccess;
     public static final int UPDATE_AREA_BUTTON_ID=1;
     public static final int SWITCH_RENDER_AREA_BUTTON_ID=2;
+    public static final int UPDATE_DISHES_LIST_BUTTON_ID=3;
 
     public RestaurantMenu(int pContainerId, Inventory pPlayerInventory, FriendlyByteBuf data) {
         this(pContainerId, pPlayerInventory, getTileEntity(pPlayerInventory, data));
@@ -126,6 +127,9 @@ public class RestaurantMenu extends AbstractContainerMenu {
                 break;
             case SWITCH_RENDER_AREA_BUTTON_ID:
                 this.blockEntity.switchRenderArea();
+                break;
+            case UPDATE_DISHES_LIST_BUTTON_ID:
+                this.blockEntity.updateDishesList();
                 break;
         }
 

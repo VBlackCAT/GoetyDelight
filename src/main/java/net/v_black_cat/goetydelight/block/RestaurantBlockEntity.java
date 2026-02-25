@@ -2,6 +2,7 @@ package net.v_black_cat.goetydelight.block;
 
 import com.Polarice3.Goety.common.items.WaystoneItem;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -24,8 +25,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.entities.ai.customer.CustomerAi;
@@ -33,6 +37,10 @@ import net.v_black_cat.goetydelight.screen.RestaurantMenu;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Mod.EventBusSubscriber(modid = GoetyDelight.MODID)
@@ -51,9 +59,51 @@ public class RestaurantBlockEntity extends BlockEntity implements MenuProvider {
     private static final int[] EXIT_AREA_RANGE_INVENTORY_INDEX = {8,9};
     private static final int INVENTORY_SIZE = 10;
     public boolean shouldRenderArea;
+    private static final Set<GlobalPos> restaurantPositions = new HashSet<>();
+    private ArrayList<ItemStack> dishesList = new ArrayList<ItemStack>();
+    private float restaurantExperience = 0.0f;
 
-    private static final Set<GlobalPos> restaurantPositions = new java.util.HashSet<>();
+    public ArrayList<ItemStack> getDishesList() {
+        return dishesList;
+    }
 
+    public float getRestaurantExperience() {
+        return restaurantExperience;
+    }
+
+    public void setRestaurantExperience(float experience) {
+        this.restaurantExperience = experience;
+        this.setChanged();
+        if (this.level != null) {
+            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 2);
+        }
+    }
+
+    public static float getTotalExpForLevel(int level) {
+        if (level <= 1) {
+            return 0.0f;
+        }
+        int n = level - 1;
+        return 1500.0f * n * (n + 1) / 2;
+    }
+
+    public int getRestaurantLevel() {
+        float totalExp = restaurantExperience;
+        int level = 1;
+        float requiredExp = 0;
+
+        while (true) {
+            requiredExp += level * 1500;
+            if (totalExp < requiredExp) {
+                return level;
+            }
+            level++;
+        }
+    }
+
+    public void addRestaurantExperience(float experience) {
+        setRestaurantExperience(this.restaurantExperience + experience);
+    }
     public static void addRestaurantPosition(Level level, BlockPos pos) {
         restaurantPositions.add(GlobalPos.of(level.dimension(), pos));
     }
@@ -174,6 +224,47 @@ public class RestaurantBlockEntity extends BlockEntity implements MenuProvider {
 
     }
 
+    public ArrayList<ItemStack> findFoodItems() {
+        ArrayList<ItemStack> foodList = new ArrayList<>();
+        int range = 8;
+        BlockPos center = this.worldPosition;
+
+        for (int dx = -range; dx <= range; dx++) {
+            for (int dy = -range; dy <= range; dy++) {
+                for (int dz = -range; dz <= range; dz++) {
+                    if (dx == 0 && dy == 0 && dz == 0) continue;
+                    BlockPos checkPos = center.offset(dx, dy, dz);
+                    if (!level.isLoaded(checkPos)) continue;
+                    BlockEntity blockEntity = level.getBlockEntity(checkPos);
+                    if (blockEntity != null) {
+                        LazyOptional<IItemHandler> capability = blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.UP);
+                        capability.ifPresent(handler -> {
+                            for (int slot = 0; slot < handler.getSlots(); slot++) {
+                                ItemStack stackInSlot = handler.getStackInSlot(slot).copy();
+                                if (!stackInSlot.isEmpty()) {
+                                    if (stackInSlot.getItem().isEdible()) {
+                                        ItemStack foodStack = stackInSlot.copy();
+                                        foodStack.setCount(1);
+                                        boolean isDuplicate = false;
+                                        for (ItemStack existingStack : foodList) {
+                                            if (ItemStack.matches(foodStack, existingStack)) {
+                                                isDuplicate = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!isDuplicate) {
+                                            foodList.add(foodStack);
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+        return foodList;
+    }
 
     RestaurantBlockEntity(BlockPos pos, BlockState blockState) {
         this(ModBlockEntities.RESTAURANT_BE.get(), pos, blockState);
@@ -206,6 +297,14 @@ public class RestaurantBlockEntity extends BlockEntity implements MenuProvider {
     private void inventoryChanged() {
         super.setChanged();
     }
+    public void updateDishesList() {
+        this.dishesList = findFoodItems();
+        this.setChanged();
+        if (this.level != null) {
+            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 2);
+        }
+    }
+
 
     public void updateRangesFromInventory() {
         updateRangeMarker();
@@ -310,6 +409,15 @@ public class RestaurantBlockEntity extends BlockEntity implements MenuProvider {
         saveAreaRange(tag, "ExitAreaRange", this.exitAreaRange);
         
         tag.putBoolean("ShouldRenderArea", this.shouldRenderArea);
+        tag.putFloat("RestaurantExperience", this.restaurantExperience);
+
+        CompoundTag dishesListTag = new CompoundTag();
+        int index = 0;
+        for (ItemStack dish : this.dishesList) {
+            dishesListTag.put("dish_" + index, dish.save(new CompoundTag()));
+            index++;
+        }
+        tag.put("DishesList", dishesListTag);
     }
 
     @Override
@@ -334,6 +442,22 @@ public class RestaurantBlockEntity extends BlockEntity implements MenuProvider {
         if (tag.contains("ShouldRenderArea")) {
             this.shouldRenderArea = tag.getBoolean("ShouldRenderArea");
         }
+        
+        if (tag.contains("RestaurantExperience")) {
+            this.restaurantExperience = tag.getFloat("RestaurantExperience");
+        }
+        if (tag.contains("DishesList")) {
+            CompoundTag dishesListTag = tag.getCompound("DishesList");
+            this.dishesList.clear();
+            for (String key : dishesListTag.getAllKeys()) {
+                CompoundTag itemTag = dishesListTag.getCompound(key);
+                ItemStack dish = ItemStack.of(itemTag);
+                if (!dish.isEmpty()) {
+                    this.dishesList.add(dish);
+                }
+            }
+        }
+
     }
 
     private void saveAreaRange(CompoundTag tag, String key, BlockPos[] range) {

@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
+import net.v_black_cat.goetydelight.block.RestaurantBlockEntity;
 
 import static net.v_black_cat.goetydelight.screen.ModMenuTypes.getTranslatedString;
 
@@ -30,6 +31,26 @@ public class RestaurantScreen extends AbstractContainerScreen<RestaurantMenu> {
             int y = slot.y + this.topPos;
             guiGraphics.fill(RenderType.guiOverlay(), x, y, x + 16, y + 16, 0x44FF0000);
         }
+
+        this.renderCustomLabels(guiGraphics, mouseX, mouseY);
+    }
+
+    protected void renderCustomLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
+
+        RestaurantBlockEntity blockEntity = this.menu.blockEntity;
+        int restaurantLevel = blockEntity.getRestaurantLevel();
+        float totalExpForLevel = RestaurantBlockEntity.getTotalExpForLevel(restaurantLevel);
+        float totalExpForNextLevel = RestaurantBlockEntity.getTotalExpForLevel(restaurantLevel+1);
+        float MaxExp = totalExpForNextLevel - totalExpForLevel;
+        float currentExp = blockEntity.getRestaurantExperience()-totalExpForLevel;
+        String s = currentExp+"/"+MaxExp;
+        int guiLeft = (this.width - this.imageWidth) / 2+80;
+        int guiTop = (this.height - this.imageHeight) / 2+55;
+        int size = blockEntity.getDishesList().size();
+        guiGraphics.drawString(this.font, String.valueOf(restaurantLevel), guiLeft, guiTop, 6666666, false);
+        guiGraphics.drawString(this.font, s, guiLeft,guiTop+10, 6666666, false);
+
+        guiGraphics.drawString(this.font, String.valueOf(size), guiLeft,guiTop+20, 6666666, false);
     }
 
     @Override
@@ -61,8 +82,15 @@ public class RestaurantScreen extends AbstractContainerScreen<RestaurantMenu> {
                 .size(30, 20)
                 .tooltip(Tooltip.create(Component.literal(getTranslatedString("switch_render_area"))))
                 .build();
+        Button b3 = Button.builder(Component.literal(getTranslatedString("update_dishes_list")), button -> {
+                    this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, RestaurantMenu.UPDATE_DISHES_LIST_BUTTON_ID);
+        }).pos(guiLeft + xPos + 60, guiTop + yPos+20)
+                .size(30, 20)
+                .tooltip(Tooltip.create(Component.literal(getTranslatedString("update_dishes_list"))))
+                .build();
 
         this.addRenderableWidget(b1);
         this.addRenderableWidget(b2);
+        this.addRenderableWidget(b3);
     }
 }
