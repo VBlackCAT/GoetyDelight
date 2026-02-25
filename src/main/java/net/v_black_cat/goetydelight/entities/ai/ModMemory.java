@@ -83,6 +83,10 @@ public class ModMemory {
             MEMORY_MODULES.register("nearest_entity_holding_the_desired_item",
                     () -> new MemoryModuleType<>(Optional.empty()));
 
+    public static final RegistryObject<MemoryModuleType<GlobalPos>> CURRENT_RESTAURANT_BLOCK_POSITION =
+            MEMORY_MODULES.register("current_restaurant_block_position",
+                    () -> new MemoryModuleType<>(Optional.of(GlobalPos.CODEC)));
+
 
 
     public static void register(IEventBus eventBus) {

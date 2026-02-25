@@ -53,6 +53,7 @@ public class CustomerRestaurantSensor extends Sensor<PathfinderMob> {
             brain.setMemory(ModMemory.PICKUP_RANGE.get(), createAABB(closestBE.getPickupAreaRange()));
             brain.setMemory(ModMemory.DINING_RANGE.get(), createAABB(closestBE.getDiningAreaRange()));
             brain.setMemory(ModMemory.EXIT_RANGE.get(), createAABB(closestBE.getExitAreaRange()));
+            brain.setMemory(ModMemory.CURRENT_RESTAURANT_BLOCK_POSITION.get(), GlobalPos.of(level.dimension(), closestBE.getBlockPos()));
         } else {
             eraseMemories(brain);
         }
@@ -72,6 +73,7 @@ public class CustomerRestaurantSensor extends Sensor<PathfinderMob> {
         brain.eraseMemory(ModMemory.DINING_RANGE.get());
         brain.eraseMemory(ModMemory.EXIT_RANGE.get());
         brain.eraseMemory(ModMemory.ALL_RANGE.get());
+        brain.eraseMemory(ModMemory.CURRENT_RESTAURANT_BLOCK_POSITION.get());
     }
 
     @Override
@@ -82,7 +84,8 @@ public class CustomerRestaurantSensor extends Sensor<PathfinderMob> {
                 ModMemory.ALL_RANGE.get(),
                 ModMemory.PICKUP_RANGE.get(),
                 ModMemory.DINING_RANGE.get(),
-                ModMemory.EXIT_RANGE.get()
+                ModMemory.EXIT_RANGE.get(),
+                ModMemory.CURRENT_RESTAURANT_BLOCK_POSITION.get()
         );
     }
 }
