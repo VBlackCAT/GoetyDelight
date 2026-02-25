@@ -1,0 +1,16 @@
+{
+    "name": "黑曜石浓汤",
+    "icon": "goetydelight:obsidian_thick_soup",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "最近，坊间流传起”喝哭泣黑曜石上滴落的液体可以登神“的传说，你对此嗤之以鼻。$(br)不过这也给你提供了思路：能够转化群系、召唤狱界生物的柱子上淌落的究竟是什么呢？仅仅只是一些成分特殊的液体，还是是某种具象化的魔法能量？也许只是某些古老存在将黑曜石当菜板切了洋葱，或是一些自遥远灾难延续至今的飘散意志在悲泣？$(br)管他这的那的，是液体就可以煮汤，能煮汤就可以食用。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/obsidian_thick_soup",
+            "text": "你大笔一挥，食材清单再添一样。至于喝完会有什么后果，那是之后的你才要考虑的事情——"
+        }
+    ]
+}

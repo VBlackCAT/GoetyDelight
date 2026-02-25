@@ -1,0 +1,10 @@
+{
+  "type": "goety:brewing",
+  "ingredient": {
+    "item": "goety:heart_of_the_night"
+  },
+  "effect": "goetydelight:servant_reinforcement",
+  "soulCost": 25,
+  "capacityExtra": 1,
+  "duration": 18000
+}

@@ -1,0 +1,10 @@
+{
+    "type": "goety:brewing",
+    "ingredient": {
+        "item": "goety:tall_skull"
+    },
+    "effect": "goetydelight:hunting_denial",
+    "soulCost": 25,
+    "capacityExtra": 1,
+    "duration": 18000
+}
