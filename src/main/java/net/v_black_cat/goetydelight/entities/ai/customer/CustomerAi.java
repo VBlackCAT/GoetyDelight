@@ -21,6 +21,8 @@ import net.v_black_cat.goetydelight.entities.ai.ModSensor;
 
 import java.util.Set;
 
+import static net.v_black_cat.goetydelight.GoetyDelight.LOGGER;
+
 public class CustomerAi {
 
     protected static ImmutableList<MemoryModuleType<?>> MEMORY_TYPES;
@@ -144,7 +146,7 @@ public class CustomerAi {
         brain.addActivity(Activity.IDLE, 10, ImmutableList.of(
                 new CustomerFindRestaurantBehavior(),
                 new RunOne<>(ImmutableList.of(
-//                        Pair.of(new CustomerRandomStroll(1.0F), 2),
+                        Pair.of(new CustomerRandomStroll(1.0F), 2),
                         Pair.of(new DoNothing(10, 20), 1)
                 ))
         ));
@@ -158,12 +160,40 @@ public class CustomerAi {
 
     }
     public static void updateActivity(PathfinderMob pathfinderMob) {
-        ((ICustomerEntity)pathfinderMob).goetyDelight$getCustomerBrain().setActiveActivityToFirstValid(
+        Brain<PathfinderMob> pathfinderMobBrain = ((ICustomerEntity) pathfinderMob).goetyDelight$getCustomerBrain();
+        pathfinderMobBrain.setActiveActivityToFirstValid(
                 ImmutableList.of(
                         ModActivity.CUSTOMER.get(),
                         Activity.IDLE
                 )
         );
+        LOGGER.debug("=========================实体信息========================");
+        ImmutableList<MemoryModuleType<?>> memoryModuleTypes = ImmutableList.of(
+                ModMemory.ENTRANCE_RANGE.get(),
+                ModMemory.DINING_RANGE.get(),
+                ModMemory.PICKUP_RANGE.get(),
+                ModMemory.EXIT_RANGE.get(),
+                ModMemory.ALL_RANGE.get(),
+                ModMemory.NEARBY_RESTAURANT.get(),
+                ModMemory.CUSTOMER_PREFERENCE_LIST.get(),
+                ModMemory.IS_IN_RESTAURANT.get(),
+                ModMemory.IS_IN_ENTRANCE.get(),
+                ModMemory.IS_IN_DINING.get(),
+                ModMemory.IS_IN_PICKUP.get(),
+                ModMemory.IS_IN_EXIT.get());
+        LOGGER.debug("当前activity: {}", pathfinderMobBrain.getActiveNonCoreActivity());
+
+
+        for (MemoryModuleType<?> memoryType : memoryModuleTypes) {
+            if (pathfinderMobBrain.hasMemoryValue(memoryType)) {
+                LOGGER.debug("记忆 {} 存在: {}", memoryType, pathfinderMobBrain.getMemory(memoryType).orElse(null));
+            } else {
+                LOGGER.debug("记忆 {} 不存在", memoryType);
+            }
+        }
+
+
+
     }
 
 

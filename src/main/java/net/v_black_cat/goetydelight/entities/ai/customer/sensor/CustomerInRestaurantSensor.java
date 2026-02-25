@@ -7,125 +7,91 @@ import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import net.v_black_cat.goetydelight.entities.ai.ModMemory;
 import net.v_black_cat.goetydelight.entities.ai.customer.ICustomerEntity;
 
 import java.util.Set;
 
 public class CustomerInRestaurantSensor extends Sensor<PathfinderMob> {
-    
+
     public CustomerInRestaurantSensor() {
-        super(20); // 每20tick更新一次
+        super(20); 
     }
-    
+
     @Override
     protected void doTick(ServerLevel level, PathfinderMob entity) {
         Brain<?> brain = ((ICustomerEntity) entity).goetyDelight$getCustomerBrain();
         if (brain == null) return;
-        
-        Vec3 entityPos = entity.position();
-        boolean isInRestaurant = false;
-        
-        // 检查是否在餐厅的任何区域内
-        if (isInAnyRestaurantArea(brain, entityPos)) {
-            isInRestaurant = true;
-        }
-        
-        // 更新总体餐厅状态
-        if (isInRestaurant) {
+
+
+        if (isInAnyRestaurantArea(entity, brain)) {
             brain.setMemory(ModMemory.IS_IN_RESTAURANT.get(), true);
         } else {
             brain.eraseMemory(ModMemory.IS_IN_RESTAURANT.get());
         }
+
+
+        updateAreaStatus(entity, brain);
+    }
+
+    
+    private boolean isInAnyRestaurantArea(PathfinderMob entity, Brain<?> brain) {
+        return isInArea(entity, brain, ModMemory.ALL_RANGE.get()) ||
+                isInArea(entity, brain, ModMemory.ENTRANCE_RANGE.get()) ||
+                isInArea(entity, brain, ModMemory.PICKUP_RANGE.get()) ||
+                isInArea(entity, brain, ModMemory.DINING_RANGE.get()) ||
+                isInArea(entity, brain, ModMemory.EXIT_RANGE.get());
+    }
+
+
+    private boolean isInArea(PathfinderMob entity, Brain<?> brain, MemoryModuleType<AABB> areaMemory) {
+        return brain.getMemory(areaMemory).map(area -> isEntityInBounds(entity, area)).orElse(false);
+    }
+
+    private boolean isEntityInBounds(PathfinderMob entity, AABB area) {
         
-        // 分别更新各个区域的状态
-        updateAreaStatus(brain, entityPos);
+        AABB entityBox = entity.getBoundingBox();
+
+        
+        double entityFootY = entity.getY(); 
+
+        
+        double horizontalPadding = 0.1; 
+        double verticalPadding = 0.1;   
+
+        
+        boolean isHorizontallyInside =
+                (area.minX + horizontalPadding) <= entityBox.minX &&
+                        (area.maxX - horizontalPadding) >= entityBox.maxX &&
+                        (area.minZ + horizontalPadding) <= entityBox.minZ &&
+                        (area.maxZ - horizontalPadding) >= entityBox.maxZ;
+
+        
+        
+        boolean isVerticallyInside =
+                (area.minY + verticalPadding) <= entityFootY &&
+                        (area.maxY - verticalPadding) >= entityFootY;
+
+        
+        return isHorizontallyInside && isVerticallyInside;
     }
     
-    /**
-     * 检查实体是否在餐厅的任何区域内
-     */
-    private boolean isInAnyRestaurantArea(Brain<?> brain, Vec3 entityPos) {
-        if (isInArea(brain, ModMemory.ALL_RANGE.get(), entityPos)) {
-            return true;
-        }
-        // 检查入口区域
-        if (isInArea(brain, ModMemory.ENTRANCE_RANGE.get(), entityPos)) {
-            return true;
-        }
-        
-        // 检查取餐区域
-        if (isInArea(brain, ModMemory.PICKUP_RANGE.get(), entityPos)) {
-            return true;
-        }
-        
-        // 检查用餐区域
-        if (isInArea(brain, ModMemory.DINING_RANGE.get(), entityPos)) {
-            return true;
-        }
-        
-        // 检查出口区域
-        if (isInArea(brain, ModMemory.EXIT_RANGE.get(), entityPos)) {
-            return true;
-        }
-        
-        return false;
+    private void updateAreaStatus(PathfinderMob entity, Brain<?> brain) {
+        updateSingleMemory(entity, brain, ModMemory.ENTRANCE_RANGE.get(), ModMemory.IS_IN_ENTRANCE.get());
+        updateSingleMemory(entity, brain, ModMemory.PICKUP_RANGE.get(), ModMemory.IS_IN_PICKUP.get());
+        updateSingleMemory(entity, brain, ModMemory.DINING_RANGE.get(), ModMemory.IS_IN_DINING.get());
+        updateSingleMemory(entity, brain, ModMemory.EXIT_RANGE.get(), ModMemory.IS_IN_EXIT.get());
     }
+
     
-    /**
-     * 检查实体是否在指定区域内
-     */
-    private boolean isInArea(Brain<?> brain, MemoryModuleType<AABB> areaMemory, Vec3 entityPos) {
-        return brain.getMemory(areaMemory)
-                .map(area -> area.contains(entityPos))
-                .orElse(false);
-    }
-    
-    /**
-     * 更新各个区域的状态
-     */
-    private void updateAreaStatus(Brain<?> brain, Vec3 entityPos) {
-        // 更新入口区域状态
-        boolean isInEntrance = isInArea(brain, ModMemory.ENTRANCE_RANGE.get(), entityPos);
-        if (isInEntrance) {
-            brain.setMemory(ModMemory.ENTRANCE_RANGE.get(), getAreaAABB(brain, ModMemory.ENTRANCE_RANGE.get()));
+    private void updateSingleMemory(PathfinderMob entity, Brain<?> brain, MemoryModuleType<AABB> rangeKey, MemoryModuleType<Boolean> boolKey) {
+        if (isInArea(entity, brain, rangeKey)) {
+            brain.setMemory(boolKey, true);
         } else {
-            brain.eraseMemory(ModMemory.ENTRANCE_RANGE.get());
-        }
-        
-        // 更新取餐区域状态
-        boolean isInPickup = isInArea(brain, ModMemory.PICKUP_RANGE.get(), entityPos);
-        if (isInPickup) {
-            brain.setMemory(ModMemory.PICKUP_RANGE.get(), getAreaAABB(brain, ModMemory.PICKUP_RANGE.get()));
-        } else {
-            brain.eraseMemory(ModMemory.PICKUP_RANGE.get());
-        }
-        
-        // 更新用餐区域状态
-        boolean isInDining = isInArea(brain, ModMemory.DINING_RANGE.get(), entityPos);
-        if (isInDining) {
-            brain.setMemory(ModMemory.DINING_RANGE.get(), getAreaAABB(brain, ModMemory.DINING_RANGE.get()));
-        } else {
-            brain.eraseMemory(ModMemory.DINING_RANGE.get());
-        }
-        
-        // 更新出口区域状态
-        boolean isInExit = isInArea(brain, ModMemory.EXIT_RANGE.get(), entityPos);
-        if (isInExit) {
-            brain.setMemory(ModMemory.EXIT_RANGE.get(), getAreaAABB(brain, ModMemory.EXIT_RANGE.get()));
-        } else {
-            brain.eraseMemory(ModMemory.EXIT_RANGE.get());
+            brain.eraseMemory(boolKey);
         }
     }
-    
-    /**
-     * 获取区域的AABB范围
-     */
-    private AABB getAreaAABB(Brain<?> brain, MemoryModuleType<AABB> areaMemory) {
-        return brain.getMemory(areaMemory).orElse(null);
-    }
-    
+
     @Override
     public Set<MemoryModuleType<?>> requires() {
         return ImmutableSet.of(
@@ -134,7 +100,6 @@ public class CustomerInRestaurantSensor extends Sensor<PathfinderMob> {
                 ModMemory.IS_IN_DINING.get(),
                 ModMemory.IS_IN_PICKUP.get(),
                 ModMemory.IS_IN_EXIT.get(),
-                ModMemory.ALL_RANGE.get(),
                 ModMemory.ENTRANCE_RANGE.get(),
                 ModMemory.PICKUP_RANGE.get(),
                 ModMemory.DINING_RANGE.get(),

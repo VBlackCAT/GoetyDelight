@@ -43,7 +43,7 @@ public class CustomerItemListUpdatePacket {
                 if (entity != null) {
                     entity.getCapability(CustomerOrderItemProvider.CAPABILITY).ifPresent(cap -> {
                         // 重用 Provider 的反序列化逻辑更新客户端数据
-                        ListTag listTag = packet.tag.getList("items", 10);
+                        ListTag listTag = packet.tag.getList("CustomerOrderItems", 10);
                         List<ItemStack> items = new ArrayList<>();
                         for (int i = 0; i < listTag.size(); i++) {
                             items.add(ItemStack.of(listTag.getCompound(i)));
