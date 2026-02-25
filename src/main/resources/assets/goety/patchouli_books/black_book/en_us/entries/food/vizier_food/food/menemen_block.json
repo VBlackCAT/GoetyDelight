@@ -1,6 +1,6 @@
 {
     "name": "Menemen",
-    "icon": "goetydelight:menemen",
+    "icon": "goetydelight:menemen_block",
     "category": "goety:goetydelight/food/vizier_food/food",
     "pages": [
         {
@@ -9,7 +9,7 @@
         },
         {
             "type": "goety:ritual",
-            "recipe": "goetydelight:ritual/menemen"
+            "recipe": "goetydelight:ritual/menemen_block"
         },
         {
             "type": "patchouli:text",
@@ -28,7 +28,7 @@
             "title": "Tidbits",
             "text": "After a hearty meal, you decide to sleep off the indulgence, to relax your body and soul.",
             "entries": [
-                "goety:food/vizier_food/other/menemen_story"
+                "goety:food/vizier_food/other/menemen_block_story"
             ]
         }
     ]

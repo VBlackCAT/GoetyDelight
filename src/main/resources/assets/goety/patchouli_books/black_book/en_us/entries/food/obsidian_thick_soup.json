@@ -1,0 +1,16 @@
+{
+    "name": "Obsidian Thick Soup",
+    "icon": "goetydelight:obsidian_thick_soup",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Recently, words spread that \"drinking the liquid dripping from the crying obsidian can make you ascend.\" You don't believe a word.$(br)However, this also provides you with some ideas: What exactly is dripping from the monolith, that can transform biomes and summon Nether mobs? Is it just some liquid with special ingredients, or is it some kind of materialized magic? Perhaps it's just some ancient existence using obsidian as a cutting board to chop onions, or it's the wailing of some scattered wills that have persisted since a distant disaster?"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/obsidian_thick_soup",
+            "text": "Well, regardless of its origin, if it's a liquid, it can be used to make soup, and if it can be used to make soup, it can be eaten. Grabbing a quill, you add another item to the list of ingredients. As for the consequences of drinking it? Just leave them to your later self."
+        }
+    ]
+}

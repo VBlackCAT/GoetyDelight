@@ -1,0 +1,10 @@
+{
+  "type": "goety:brewing",
+  "ingredient": {
+    "item": "goety:unholy_fabric"
+  },
+  "effect": "goetydelight:zombified_piglin_brute_servant_support",
+  "soulCost": 25,
+  "capacityExtra": 2,
+  "duration": 36000
+}
