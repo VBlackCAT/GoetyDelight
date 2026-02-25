@@ -115,6 +115,10 @@ public class ModBlocks {
             new BoneLordAshRiceBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
                     ModItems.BONE_LORD_ASH_RICE, true),1);
 
+    public static final RegistryObject<Block> MENEMEN_BLOCK = registerBlock("menemen_block",() ->
+            new MenemenBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
+                    ModItems.MENEMEN_WITH_BREAD, true),1);
+
     //坚守者
     public static final RegistryObject<Block>  BOAT_STUFFED_ROASTED_WARDEN_BlOCK= registerBlock("boat_stuffed_roasted_warden_block",
             () -> new BoatStuffedRoastedWardenBlock(
