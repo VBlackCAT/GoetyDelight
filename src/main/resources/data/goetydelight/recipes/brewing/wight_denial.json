@@ -1,0 +1,10 @@
+{
+    "type": "goety:brewing",
+    "ingredient": {
+        "item": "goety:shadow_essence"
+    },
+    "effect": "goetydelight:wight_denial",
+    "soulCost": 50,
+    "capacityExtra": 1,
+    "duration": 36000
+}

@@ -1,6 +1,6 @@
 {
     "name": "盘装炒蛋",
-    "icon": "goetydelight:menemen",
+    "icon": "goetydelight:menemen_block",
     "category": "goety:goetydelight/food/vizier_food/food",
     "pages": [
         {
@@ -9,7 +9,7 @@
         },
         {
             "type": "goety:ritual",
-            "recipe": "goetydelight:ritual/menemen"
+            "recipe": "goetydelight:ritual/menemen_block"
         },
         {
             "type": "patchouli:text",
@@ -28,7 +28,7 @@
             "title": "趣闻",
             "text": "温热的炒蛋激发了面包的麦香，鸡蛋的嫩滑与烈焰粉的辛辣交相辉映……你在饱餐一顿后决定饱睡一顿，好好放松一下身心。",
             "entries": [
-                "goety:food/vizier_food/other/menemen_story"
+                "goety:food/vizier_food/other/menemen_block_story"
             ]
         }
     ]

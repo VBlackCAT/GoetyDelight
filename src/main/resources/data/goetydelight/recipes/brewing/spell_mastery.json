@@ -1,0 +1,10 @@
+{
+  "type": "goety:brewing",
+  "ingredient": {
+    "item": "goetydelight:ruby_hard_candy"
+  },
+  "effect": "goetydelight:spell_mastery",
+  "soulCost": 25,
+  "capacityExtra": 3,
+  "duration": 9000
+}

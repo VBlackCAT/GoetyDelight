@@ -1,0 +1,10 @@
+{
+  "type": "goety:brewing",
+  "ingredient": {
+    "item": "goety:void_block"
+  },
+  "effect": "goetydelight:void_affix",
+  "soulCost": 25,
+  "capacityExtra": 2,
+  "duration": 4500
+}
