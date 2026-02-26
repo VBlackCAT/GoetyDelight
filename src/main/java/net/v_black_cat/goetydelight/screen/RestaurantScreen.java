@@ -70,11 +70,11 @@ public class RestaurantScreen extends AbstractContainerScreen<RestaurantMenu> {
         int xPos = this.menu.slots.get(0).x + 40;
         int yPos = this.menu.slots.get(0).y;
 
-        Button b1 = Button.builder(Component.literal(getTranslatedString("update_restaurant_area")), button -> {
-                    this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, RestaurantMenu.UPDATE_AREA_BUTTON_ID);
+        Button b1 = Button.builder(Component.literal(getTranslatedString("update_restaurant_info")), button -> {
+                    this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, RestaurantMenu.UPDATE_RESTAURANT_BUTTON_ID);
         }).pos(guiLeft + xPos + 60, guiTop + yPos)
                 .size(30, 20)
-                .tooltip(Tooltip.create(Component.literal(getTranslatedString("update_restaurant_area"))))
+                .tooltip(Tooltip.create(Component.literal(getTranslatedString("update_restaurant_info"))))
                 .build();
         Button b2 = Button.builder(Component.literal(getTranslatedString("switch_render_area")), button -> {
                     this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, RestaurantMenu.SWITCH_RENDER_AREA_BUTTON_ID);
@@ -82,15 +82,8 @@ public class RestaurantScreen extends AbstractContainerScreen<RestaurantMenu> {
                 .size(30, 20)
                 .tooltip(Tooltip.create(Component.literal(getTranslatedString("switch_render_area"))))
                 .build();
-        Button b3 = Button.builder(Component.literal(getTranslatedString("update_dishes_list")), button -> {
-                    this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, RestaurantMenu.UPDATE_DISHES_LIST_BUTTON_ID);
-        }).pos(guiLeft + xPos + 60, guiTop + yPos+20)
-                .size(30, 20)
-                .tooltip(Tooltip.create(Component.literal(getTranslatedString("update_dishes_list"))))
-                .build();
 
         this.addRenderableWidget(b1);
         this.addRenderableWidget(b2);
-        this.addRenderableWidget(b3);
     }
 }

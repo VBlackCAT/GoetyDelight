@@ -1,7 +1,6 @@
 package net.v_black_cat.goetydelight.screen;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.game.ServerboundSetBeaconPacket;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
@@ -19,9 +18,8 @@ public class RestaurantMenu extends AbstractContainerMenu {
     public final ItemStackHandler inventory;
     private final ContainerLevelAccess canInteractWithCallable;
     private ContainerData dataAccess;
-    public static final int UPDATE_AREA_BUTTON_ID=1;
+    public static final int UPDATE_RESTAURANT_BUTTON_ID =1;
     public static final int SWITCH_RENDER_AREA_BUTTON_ID=2;
-    public static final int UPDATE_DISHES_LIST_BUTTON_ID=3;
 
     public RestaurantMenu(int pContainerId, Inventory pPlayerInventory, FriendlyByteBuf data) {
         this(pContainerId, pPlayerInventory, getTileEntity(pPlayerInventory, data));
@@ -122,14 +120,12 @@ public class RestaurantMenu extends AbstractContainerMenu {
     @Override
     public boolean clickMenuButton(Player player, int id) {
         switch (id){
-            case UPDATE_AREA_BUTTON_ID:
+            case UPDATE_RESTAURANT_BUTTON_ID:
                 this.blockEntity.updateRangesFromInventory();
+                this.blockEntity.updateDishesList();
                 break;
             case SWITCH_RENDER_AREA_BUTTON_ID:
                 this.blockEntity.switchRenderArea();
-                break;
-            case UPDATE_DISHES_LIST_BUTTON_ID:
-                this.blockEntity.updateDishesList();
                 break;
         }
 

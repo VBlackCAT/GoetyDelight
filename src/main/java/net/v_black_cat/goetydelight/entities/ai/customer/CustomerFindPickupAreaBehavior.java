@@ -23,7 +23,9 @@ public class CustomerFindPickupAreaBehavior extends CustomerBehavior<PathfinderM
                 ModMemory.IS_IN_RESTAURANT.get(), MemoryStatus.VALUE_PRESENT,
                 ModMemory.IS_IN_PICKUP.get(), MemoryStatus.VALUE_ABSENT,
                 ModMemory.PICKUP_RANGE.get(), MemoryStatus.VALUE_PRESENT,
+                ModMemory.FOOD_TO_PAY_LIST.get(), MemoryStatus.REGISTERED,
                 MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT
+
         ), 60, 120);
     }
 
@@ -32,7 +34,13 @@ public class CustomerFindPickupAreaBehavior extends CustomerBehavior<PathfinderM
         ICustomerEntity owner1 = (ICustomerEntity) owner;
         SimpleContainer simpleContainer = owner1.goetyDelight$getCustomerInventory();
         List<ItemStack> itemStacks = owner1.goetyDelight$getOrder();
-        if (!simpleContainer.isEmpty() && itemStacks.isEmpty()) return false;
+        if (!simpleContainer.isEmpty()
+                && itemStacks.isEmpty()
+        ) return false;
+        if(!owner1.goetyDelight$getCustomerBrain().hasMemoryValue(ModMemory.FOOD_TO_PAY_LIST.get())
+                &&!owner1.goetyDelight$isHungry()) {
+            return false;
+        }
         return true;
     }
 

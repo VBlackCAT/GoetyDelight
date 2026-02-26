@@ -22,6 +22,8 @@ public abstract class PathFinderMobToCustomerMixin implements ICustomerEntity {
     private boolean goetyDelight$customerMode = false;
     @Unique
     private List<ItemStack> goetyDelight$CustomerOrder = null;
+    @Unique
+    private float goetyDelight$CustomerSatietyValue = 0.0F;
 
     @Override
     public void goetyDelight$setCustomerMode(boolean enabled) {
@@ -49,4 +51,13 @@ public abstract class PathFinderMobToCustomerMixin implements ICustomerEntity {
         return goetyDelight$customerInventory;
     }
 
+    @Override
+    public float goetyDelight$getCustomerSatietyValue() {
+        return goetyDelight$CustomerSatietyValue;
+    }
+
+    @Override
+    public void goetyDelight$setCustomerSatietyValue(float value) {
+        goetyDelight$CustomerSatietyValue = value;
+    }
 }

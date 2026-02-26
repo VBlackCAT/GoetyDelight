@@ -14,6 +14,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -87,7 +88,9 @@ public class ModMemory {
             MEMORY_MODULES.register("current_restaurant_block_position",
                     () -> new MemoryModuleType<>(Optional.of(GlobalPos.CODEC)));
 
-
+    public static final RegistryObject<MemoryModuleType<Map<ItemStack, Integer>>> ITEM_CONSUMPTION_COUNT =
+            MEMORY_MODULES.register("item_consumption_count",
+                    () -> new MemoryModuleType<>(Optional.of(Codec.unboundedMap(ItemStack.CODEC, Codec.INT))));
 
     public static void register(IEventBus eventBus) {
         MEMORY_MODULES.register(eventBus);
