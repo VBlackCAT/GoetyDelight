@@ -25,18 +25,11 @@ public class CustomerFindRestaurantBehavior extends CustomerBehavior<PathfinderM
     
     @Override
     protected boolean checkExtraStartConditions(ServerLevel level, PathfinderMob owner) {
-        Brain brain = ((ICustomerEntity) owner).goetyDelight$getCustomerBrain();
-        if (brain == null) return false;
-        
-        
-        boolean isInRestaurant = (Boolean) brain.getMemory(ModMemory.IS_IN_RESTAURANT.get()).orElse(false);
-        if (isInRestaurant) {
+        ICustomerEntity owner1 = (ICustomerEntity) owner;
+        if (!owner1.goetyDelight$isHungry()){
             return false;
         }
-        
-        
-        return brain.getMemory(ModMemory.NEARBY_RESTAURANT.get()).isPresent() && 
-               brain.getMemory(ModMemory.ENTRANCE_RANGE.get()).isPresent();
+        return true;
     }
     
     @Override

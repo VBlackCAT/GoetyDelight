@@ -89,7 +89,8 @@ public class CustomerAi {
                     ModMemory.IS_IN_EXIT.get(),
                     ModMemory.FOOD_TO_PAY_LIST.get(),
                     ModMemory.RESTAURANT_OWNER_UUID_LIST.get(),
-                    ModMemory.NEAREST_ENTITY_HOLDING_THE_DESIRED_ITEM.get()
+                    ModMemory.NEAREST_ENTITY_HOLDING_THE_DESIRED_ITEM.get(),
+                    ModMemory.ITEM_CONSUMPTION_COUNT.get()
             );
         }
 

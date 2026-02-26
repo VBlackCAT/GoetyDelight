@@ -1,18 +1,21 @@
 package net.v_black_cat.goetydelight.entities.ai.customer;
 
+import com.Polarice3.Goety.utils.SEHelper;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.v_black_cat.goetydelight.entities.ai.ModMemory;
 
-import java.util.Collections;
+import java.util.*;
 
 public class CustomerEatFoodBehavior extends CustomerBehavior<PathfinderMob> {
     private ItemStack currentFood = ItemStack.EMPTY;
@@ -24,6 +27,7 @@ public class CustomerEatFoodBehavior extends CustomerBehavior<PathfinderMob> {
         super(ImmutableMap.of(
                 ModMemory.IS_IN_RESTAURANT.get(), MemoryStatus.VALUE_PRESENT,
                 ModMemory.IS_IN_DINING.get(), MemoryStatus.VALUE_PRESENT,
+                ModMemory.ITEM_CONSUMPTION_COUNT.get(), MemoryStatus.REGISTERED,
                 MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT
         ), 5000, 5000);
     }
@@ -63,12 +67,16 @@ public class CustomerEatFoodBehavior extends CustomerBehavior<PathfinderMob> {
             ItemStack item = inventory.getItem(i);
             if (!item.isEmpty() && item.getItem().isEdible()) {
                 this.currentFood = item.copy(); 
-                this.useDuration = item.getItem().getUseDuration(item);
+                this.useDuration = getUseDuration(item);
                 this.eatingSlot = i;
                 this.useTick = 0;
                 break;
             }
         }
+    }
+
+    private static int getUseDuration(ItemStack item) {
+        return item.getItem().getUseDuration(item);
     }
 
     @Override
@@ -104,28 +112,71 @@ public class CustomerEatFoodBehavior extends CustomerBehavior<PathfinderMob> {
                 ICustomerEntity customer = (ICustomerEntity) owner;
                 var inventory = customer.goetyDelight$getCustomerInventory();
 
-                
+
+
                 ItemStack realStack = inventory.getItem(eatingSlot);
                 if (!realStack.isEmpty()) {
-                    var foodToPayList = customer.goetyDelight$getCustomerBrain().getMemory(ModMemory.FOOD_TO_PAY_LIST.get())
-                            .orElse(Collections.emptyList());
-                    var newList = new java.util.ArrayList<>(foodToPayList);
-                    newList.add(realStack);
-                    customer.goetyDelight$getCustomerBrain().setMemory(ModMemory.FOOD_TO_PAY_LIST.get(), newList);
-
+                    Brain<PathfinderMob> brain = customer.goetyDelight$getCustomerBrain();
+                    recordFoodToPayList(brain, realStack);
+                    recordFoodCountList(brain, realStack);
+                    int nutrition = getNutrition(owner, realStack);
+                    addSatiety((ICustomerEntity) owner, nutrition);
                     ItemStack result = owner.eat(level, realStack);
                     inventory.setItem(eatingSlot, result);
                 }
 
-                
+
                 if (inventory.isEmpty()) {
                     spawnPayment(level, owner);
                 }
 
-                
+
                 stop(level, owner, gameTime);
             }
         }
+    }
+
+    private static int getNutrition(PathfinderMob owner, ItemStack realStack) {
+        int nutrition=0;
+        FoodProperties foodProperties = realStack.getFoodProperties(owner);
+        if (foodProperties != null) {
+            nutrition = foodProperties.getNutrition();
+
+        }else {
+            nutrition=5;
+        }
+        return nutrition;
+    }
+
+    private static void addSatiety(ICustomerEntity owner, int nutrition) {
+        owner.goetyDelight$addCustomerSatietyValue(nutrition);
+    }
+
+    private void recordFoodCountList(Brain<PathfinderMob> brain, ItemStack realStack) {
+        Map<ItemStack, Integer> countMap = brain.getMemory(ModMemory.ITEM_CONSUMPTION_COUNT.get())
+                .orElse(new HashMap<>());
+        boolean foundMatch = false;
+        for (Map.Entry<ItemStack, Integer> entry : new ArrayList<>(countMap.entrySet())) {
+            ItemStack keyStack = entry.getKey();
+            if (realStack.matches(realStack,keyStack)) {
+                int newCount = entry.getValue() + realStack.getCount();
+                countMap.put(keyStack, newCount);
+                foundMatch = true;
+                break;
+            }
+        }
+        if (!foundMatch) {
+            countMap.put(realStack.copy(), realStack.getCount());
+        }
+        brain.setMemory(ModMemory.ITEM_CONSUMPTION_COUNT.get(), countMap);
+    }
+
+    private static void recordFoodToPayList(Brain<PathfinderMob> brain, ItemStack realStack) {
+        var foodToPayList = brain.getMemory(ModMemory.FOOD_TO_PAY_LIST.get())
+                .orElse(Collections.emptyList());
+        var newList = new ArrayList<>(foodToPayList);
+        newList.add(realStack);
+        brain.setMemory(ModMemory.FOOD_TO_PAY_LIST.get(), newList);
     }
 
     private void spawnPayment(ServerLevel level, PathfinderMob owner) {
