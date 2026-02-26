@@ -7,6 +7,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.*;
@@ -15,6 +16,10 @@ import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.entity.schedule.Activity;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.v_black_cat.goetydelight.entities.ICustomerEntity;
 import net.v_black_cat.goetydelight.entities.ai.ModActivity;
 import net.v_black_cat.goetydelight.entities.ai.ModMemory;
 import net.v_black_cat.goetydelight.entities.ai.ModSensor;
@@ -33,7 +38,8 @@ public class CustomerAi {
                     ModSensor.CUSTOMER_RESTAURANT_SENSOR.get(),
                     ModSensor.CUSTOMER_NEAREST_LIVING_ENTITY_SENSOR.get(),
                     ModSensor.CUSTOMER_IN_RESTAURANT_SENSOR.get(),
-                    ModSensor.CUSTOMER_NEAREST_LIVING_ENTITY_HAND_DESIRED_ITEM_SENSOR.get()
+                    ModSensor.CUSTOMER_NEAREST_LIVING_ENTITY_HAND_DESIRED_ITEM_SENSOR.get(),
+                    ModSensor.CUSTOMER_HURT_BY_SENSOR.get()
             );
         }
         {
@@ -90,7 +96,10 @@ public class CustomerAi {
                     ModMemory.FOOD_TO_PAY_LIST.get(),
                     ModMemory.RESTAURANT_OWNER_UUID_LIST.get(),
                     ModMemory.NEAREST_ENTITY_HOLDING_THE_DESIRED_ITEM.get(),
-                    ModMemory.ITEM_CONSUMPTION_COUNT.get()
+                    ModMemory.ITEM_CONSUMPTION_COUNT.get(),
+                    ModMemory.IS_HUNGRY_ON_ENTER.get(),
+                    ModMemory.IS_FULL_AFTER_DINING_RESTAURANT.get(),
+                    ModMemory.PAID_LOOT_COUNT.get()
             );
         }
 
@@ -129,7 +138,9 @@ public class CustomerAi {
                         Pair.of(1, new CustomerFindDiningAreaBehavior()),
                         Pair.of(1, new CustomerEatFoodBehavior()),
                         Pair.of(1, new CustomerPayBehavior()),
-                        Pair.of(1, new CustomerLookAtPlayerWithOrderItemBehavior())
+                        Pair.of(1, new CustomerLookAtPlayerWithOrderItemBehavior()),
+                        Pair.of(2, new CustomerFindExitBehavior()),
+                        Pair.of(1, new CustomerExitBehavior())
                 ),
                 customerConditions
         );
@@ -191,7 +202,15 @@ public class CustomerAi {
                 ModMemory.IS_IN_ENTRANCE.get(),
                 ModMemory.IS_IN_DINING.get(),
                 ModMemory.IS_IN_PICKUP.get(),
-                ModMemory.IS_IN_EXIT.get());
+                ModMemory.IS_IN_EXIT.get()
+                );
+//        ImmutableList<MemoryModuleType<?>> memoryModuleTypes = ImmutableList.of(
+//                ModMemory.IS_IN_RESTAURANT.get(),
+//                ModMemory.IS_IN_EXIT.get(),
+//                ModMemory.ALL_RANGE.get(),
+//                ModMemory.FOOD_TO_PAY_LIST.get(),
+//                MemoryModuleType.WALK_TARGET
+//                );
         LOGGER.debug("当前activity: {}", pathfinderMobBrain.getActiveNonCoreActivity());
 
 

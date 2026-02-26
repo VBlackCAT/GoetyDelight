@@ -8,7 +8,7 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.phys.AABB;
 import net.v_black_cat.goetydelight.entities.ai.ModMemory;
-import net.v_black_cat.goetydelight.entities.ai.customer.ICustomerEntity;
+import net.v_black_cat.goetydelight.entities.ICustomerEntity;
 
 import java.util.Set;
 
@@ -20,12 +20,18 @@ public class CustomerInRestaurantSensor extends Sensor<PathfinderMob> {
 
     @Override
     protected void doTick(ServerLevel level, PathfinderMob entity) {
-        Brain<?> brain = ((ICustomerEntity) entity).goetyDelight$getCustomerBrain();
+        ICustomerEntity entity1 = (ICustomerEntity) entity;
+        Brain<?> brain = entity1.goetyDelight$getCustomerBrain();
         if (brain == null) return;
 
 
         if (isInAnyRestaurantArea(entity, brain)) {
             brain.setMemory(ModMemory.IS_IN_RESTAURANT.get(), true);
+            if (!brain.hasMemoryValue(ModMemory.IS_HUNGRY_ON_ENTER.get())){
+                if (entity1.goetyDelight$isHungry()){
+                    brain.setMemory(ModMemory.IS_HUNGRY_ON_ENTER.get(), true);
+                }
+            }
         } else {
             brain.eraseMemory(ModMemory.IS_IN_RESTAURANT.get());
         }
@@ -49,33 +55,18 @@ public class CustomerInRestaurantSensor extends Sensor<PathfinderMob> {
     }
 
     private boolean isEntityInBounds(PathfinderMob entity, AABB area) {
-        
-        AABB entityBox = entity.getBoundingBox();
+        double footX = entity.getX();
+        double footY = entity.getBoundingBox().minY;
+        double footZ = entity.getZ();
 
-        
-        double entityFootY = entity.getY(); 
+        double epsilon = 0.001;
+        boolean isInside =
+                (area.minX - epsilon) <= footX && footX <= (area.maxX + epsilon) &&
+                        (area.minY - epsilon) <= footY && footY <= (area.maxY + epsilon) &&
+                        (area.minZ - epsilon) <= footZ && footZ <= (area.maxZ + epsilon);
 
-        
-        double horizontalPadding = 0.1; 
-        double verticalPadding = 0.1;   
-
-        
-        boolean isHorizontallyInside =
-                (area.minX + horizontalPadding) <= entityBox.minX &&
-                        (area.maxX - horizontalPadding) >= entityBox.maxX &&
-                        (area.minZ + horizontalPadding) <= entityBox.minZ &&
-                        (area.maxZ - horizontalPadding) >= entityBox.maxZ;
-
-        
-        
-        boolean isVerticallyInside =
-                (area.minY + verticalPadding) <= entityFootY &&
-                        (area.maxY - verticalPadding) >= entityFootY;
-
-        
-        return isHorizontallyInside && isVerticallyInside;
+        return isInside;
     }
-    
     private void updateAreaStatus(PathfinderMob entity, Brain<?> brain) {
         updateSingleMemory(entity, brain, ModMemory.ENTRANCE_RANGE.get(), ModMemory.IS_IN_ENTRANCE.get());
         updateSingleMemory(entity, brain, ModMemory.PICKUP_RANGE.get(), ModMemory.IS_IN_PICKUP.get());
@@ -103,7 +94,8 @@ public class CustomerInRestaurantSensor extends Sensor<PathfinderMob> {
                 ModMemory.ENTRANCE_RANGE.get(),
                 ModMemory.PICKUP_RANGE.get(),
                 ModMemory.DINING_RANGE.get(),
-                ModMemory.EXIT_RANGE.get()
+                ModMemory.EXIT_RANGE.get(),
+                ModMemory.IS_HUNGRY_ON_ENTER.get()
         );
     }
 }

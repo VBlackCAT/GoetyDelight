@@ -1,7 +1,6 @@
 package net.v_black_cat.goetydelight.entities.ai.customer;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.core.GlobalPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.Brain;
@@ -10,6 +9,7 @@ import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.v_black_cat.goetydelight.entities.ICustomerEntity;
 import net.v_black_cat.goetydelight.entities.ai.ModMemory;
 
 public class CustomerFindRestaurantBehavior extends CustomerBehavior<PathfinderMob> {

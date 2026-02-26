@@ -7,7 +7,7 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.GoetyDelight;
-import net.v_black_cat.goetydelight.entities.ai.customer.ICustomerEntity;
+import net.v_black_cat.goetydelight.entities.ICustomerEntity;
 
 @Mod.EventBusSubscriber(modid = GoetyDelight.MODID)
 public class CapabilityEventHandler {

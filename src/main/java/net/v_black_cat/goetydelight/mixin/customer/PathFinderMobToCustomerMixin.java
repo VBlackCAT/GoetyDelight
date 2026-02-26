@@ -5,10 +5,9 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.item.ItemStack;
 import net.v_black_cat.goetydelight.entities.ai.customer.CustomerAi;
-import net.v_black_cat.goetydelight.entities.ai.customer.ICustomerEntity;
+import net.v_black_cat.goetydelight.entities.ICustomerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.Inject;
 
 import java.util.List;
 

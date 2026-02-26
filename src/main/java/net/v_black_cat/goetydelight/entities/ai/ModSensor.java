@@ -6,10 +6,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
-import net.v_black_cat.goetydelight.entities.ai.customer.sensor.CustomerInRestaurantSensor;
-import net.v_black_cat.goetydelight.entities.ai.customer.sensor.CustomerNearestLivingEntityHandDesiredItemSensor;
-import net.v_black_cat.goetydelight.entities.ai.customer.sensor.CustomerNearestLivingEntitySensor;
-import net.v_black_cat.goetydelight.entities.ai.customer.sensor.CustomerRestaurantSensor;
+import net.v_black_cat.goetydelight.entities.ai.customer.sensor.*;
 
 import static net.v_black_cat.goetydelight.GoetyDelight.MODID;
 
@@ -25,6 +22,8 @@ public class ModSensor {
             MOD_SENSORS.register("customer_in_restaurant_sensor", () -> new SensorType<>(CustomerInRestaurantSensor::new));
     public static final RegistryObject<SensorType<CustomerNearestLivingEntityHandDesiredItemSensor>> CUSTOMER_NEAREST_LIVING_ENTITY_HAND_DESIRED_ITEM_SENSOR =
             MOD_SENSORS.register("customer_nearest_living_entity_hand_desired_item_sensor", () -> new SensorType<>(CustomerNearestLivingEntityHandDesiredItemSensor::new));
+    public static final RegistryObject<SensorType<CustomerHurtBySensor>> CUSTOMER_HURT_BY_SENSOR =
+            MOD_SENSORS.register("customer_hurt_by_sensor", () -> new SensorType<>(CustomerHurtBySensor::new));
 
     public static void register(IEventBus eventBus) {
         MOD_SENSORS.register(eventBus);

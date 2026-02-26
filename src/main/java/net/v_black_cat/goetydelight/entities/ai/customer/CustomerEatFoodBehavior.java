@@ -1,6 +1,5 @@
 package net.v_black_cat.goetydelight.entities.ai.customer;
 
-import com.Polarice3.Goety.utils.SEHelper;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -13,6 +12,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.v_black_cat.goetydelight.entities.ICustomerEntity;
 import net.v_black_cat.goetydelight.entities.ai.ModMemory;
 
 import java.util.*;
@@ -28,6 +28,7 @@ public class CustomerEatFoodBehavior extends CustomerBehavior<PathfinderMob> {
                 ModMemory.IS_IN_RESTAURANT.get(), MemoryStatus.VALUE_PRESENT,
                 ModMemory.IS_IN_DINING.get(), MemoryStatus.VALUE_PRESENT,
                 ModMemory.ITEM_CONSUMPTION_COUNT.get(), MemoryStatus.REGISTERED,
+                ModMemory.IS_FULL_AFTER_DINING_RESTAURANT.get(), MemoryStatus.REGISTERED,
                 MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT
         ), 5000, 5000);
     }
@@ -122,12 +123,15 @@ public class CustomerEatFoodBehavior extends CustomerBehavior<PathfinderMob> {
                     int nutrition = getNutrition(owner, realStack);
                     addSatiety((ICustomerEntity) owner, nutrition);
                     ItemStack result = owner.eat(level, realStack);
+                    if (customer.goetyDelight$isFull()){
+                        brain.setMemory(ModMemory.IS_FULL_AFTER_DINING_RESTAURANT.get(), true);
+                    }
                     inventory.setItem(eatingSlot, result);
                 }
 
 
                 if (inventory.isEmpty()) {
-                    spawnPayment(level, owner);
+//                    spawnPayment(level, owner);
                 }
 
 
@@ -158,7 +162,7 @@ public class CustomerEatFoodBehavior extends CustomerBehavior<PathfinderMob> {
         boolean foundMatch = false;
         for (Map.Entry<ItemStack, Integer> entry : new ArrayList<>(countMap.entrySet())) {
             ItemStack keyStack = entry.getKey();
-            if (realStack.matches(realStack,keyStack)) {
+            if (ItemStack.matches(realStack,keyStack)) {
                 int newCount = entry.getValue() + realStack.getCount();
                 countMap.put(keyStack, newCount);
                 foundMatch = true;

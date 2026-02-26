@@ -5,7 +5,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.GoalSelector;
 import net.v_black_cat.goetydelight.entities.ai.customer.CustomerAi;
-import net.v_black_cat.goetydelight.entities.ai.customer.ICustomerEntity;
+import net.v_black_cat.goetydelight.entities.ICustomerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;

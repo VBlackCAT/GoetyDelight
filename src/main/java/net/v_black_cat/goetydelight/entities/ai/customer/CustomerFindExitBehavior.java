@@ -9,20 +9,31 @@ import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.v_black_cat.goetydelight.entities.ICustomerEntity;
 import net.v_black_cat.goetydelight.entities.ai.ModMemory;
-
-import java.util.Map;
 
 public class CustomerFindExitBehavior extends CustomerBehavior<PathfinderMob> {
     public CustomerFindExitBehavior() {
         super(ImmutableMap.of(
                 ModMemory.IS_IN_RESTAURANT.get(), MemoryStatus.VALUE_PRESENT,
                 ModMemory.IS_IN_EXIT.get(), MemoryStatus.VALUE_ABSENT,
+                ModMemory.IS_HUNGRY_ON_ENTER.get(), MemoryStatus.REGISTERED,
+                ModMemory.IS_FULL_AFTER_DINING_RESTAURANT.get(), MemoryStatus.REGISTERED,
                 ModMemory.EXIT_RANGE.get(), MemoryStatus.VALUE_PRESENT,
                 ModMemory.FOOD_TO_PAY_LIST.get(), MemoryStatus.VALUE_ABSENT,
                 MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT
 
         ), 60, 120);
+    }
+
+    @Override
+    protected boolean checkExtraStartConditions(ServerLevel level, PathfinderMob owner) {
+        ICustomerEntity owner1 = (ICustomerEntity) owner;
+        Brain<PathfinderMob> pathfinderMobBrain = owner1.goetyDelight$getCustomerBrain();
+        if (pathfinderMobBrain.hasMemoryValue(ModMemory.IS_HUNGRY_ON_ENTER.get())){
+            return pathfinderMobBrain.hasMemoryValue(ModMemory.IS_FULL_AFTER_DINING_RESTAURANT.get());
+        }
+        return true;
     }
 
     @Override
