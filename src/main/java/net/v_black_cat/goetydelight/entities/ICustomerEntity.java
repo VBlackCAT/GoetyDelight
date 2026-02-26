@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.entities.ai.customer;
+package net.v_black_cat.goetydelight.entities;
 
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
@@ -6,8 +6,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -22,7 +20,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
 import net.v_black_cat.goetydelight.capability.CustomerOrderItemProvider;
 import net.v_black_cat.goetydelight.capability.ICustomerOrderItemList;
-import net.v_black_cat.goetydelight.entities.ModEntityDataSerializers;
+import net.v_black_cat.goetydelight.entities.ai.customer.CustomerAi;
 import net.v_black_cat.goetydelight.network.CustomerItemListUpdatePacket;
 import net.v_black_cat.goetydelight.network.NetworkHandler;
 import org.slf4j.Logger;
@@ -32,7 +30,6 @@ import java.util.List;
 
 import static net.v_black_cat.goetydelight.GoetyDelight.LOGGER;
 
-@Mod.EventBusSubscriber
 public interface ICustomerEntity {
 
     String TAG_CUSTOMER_INVENTORY = "GoetyDelightCustomerInventory";
@@ -47,9 +44,39 @@ public interface ICustomerEntity {
     void goetyDelight$setCustomerBrain(Brain<PathfinderMob> brain);
     float goetyDelight$getCustomerSatietyValue();
     void goetyDelight$setCustomerSatietyValue(float value);
-    default boolean goetyDelight$isHungry() {
-        return goetyDelight$getCustomerSatietyValue() < (goetyDelight$getCustomerMaxSatietyValue() * 0.3f);
+    long goetyDelight$getEnterCustomerModeCooldown();
+    void goetyDelight$setEnterCustomerModeCooldown(long cooldown);
+    default void goetyDelight$reduceEnterCustomerModeCooldown(long reduction) {
+        long currentCooldown = goetyDelight$getEnterCustomerModeCooldown();
+        if (currentCooldown > 0) {
+            goetyDelight$setEnterCustomerModeCooldown(currentCooldown - reduction);
+        }
     }
+
+
+
+    default boolean goetyDelight$canEnterCustomerMode() {
+        return goetyDelight$getEnterCustomerModeCooldown()<=1;
+    }
+
+    default void goetyDelight$enterCustomerModeAndCheckCoolDown() {
+        if (goetyDelight$canEnterCustomerMode()) {
+            goetyDelight$setCustomerMode(true);
+        }
+    }
+
+
+
+    default boolean goetyDelight$isHungry() {
+        float v = 0.3f;
+        return goetyDelight$getCustomerSatietyValue() < (goetyDelight$getCustomerMaxSatietyValue() * v);
+    }
+    default boolean goetyDelight$isFull() {
+        float v = 0.95f;
+        return goetyDelight$getCustomerSatietyValue() >= goetyDelight$getCustomerMaxSatietyValue()* v;
+    }
+
+
     default void goetyDelight$addCustomerSatietyValue(float value){
         if(value>0){
             float v = goetyDelight$getCustomerSatietyValue() + value;
@@ -71,20 +98,6 @@ public interface ICustomerEntity {
             }
         }
     };
-
-    @SubscribeEvent
-    static void onLivingTick(LivingEvent.LivingTickEvent event) {
-        if (event.getEntity().level().isClientSide()) {
-            return;
-        }
-        if (event.getEntity() instanceof ICustomerEntity customerEntity) {
-            LivingEntity livingEntity = (LivingEntity) customerEntity;
-            if (livingEntity.tickCount % 240 == 0) {
-                customerEntity.goetyDelight$SubtractionCustomerSatietyValue(customerEntity.goetyDelight$getCustomerMaxSatietyValue() * 0.01f);
-            }
-        }
-    }
-
     default float goetyDelight$getCustomerMaxSatietyValue() {
         if (this instanceof PathfinderMob mob) {
             float maxHealth = (float) mob.getAttributeBaseValue(Attributes.MAX_HEALTH);

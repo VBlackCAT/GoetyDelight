@@ -13,7 +13,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
-import java.util.Optional;
+
+import net.v_black_cat.goetydelight.entities.ICustomerEntity;
 import net.v_black_cat.goetydelight.entities.ai.ModMemory;
 
 public class CustomerFindPickupAreaBehavior extends CustomerBehavior<PathfinderMob> {
@@ -23,7 +24,9 @@ public class CustomerFindPickupAreaBehavior extends CustomerBehavior<PathfinderM
                 ModMemory.IS_IN_RESTAURANT.get(), MemoryStatus.VALUE_PRESENT,
                 ModMemory.IS_IN_PICKUP.get(), MemoryStatus.VALUE_ABSENT,
                 ModMemory.PICKUP_RANGE.get(), MemoryStatus.VALUE_PRESENT,
+                ModMemory.IS_HUNGRY_ON_ENTER.get(), MemoryStatus.VALUE_PRESENT,
                 ModMemory.FOOD_TO_PAY_LIST.get(), MemoryStatus.REGISTERED,
+                ModMemory.IS_FULL_AFTER_DINING_RESTAURANT.get(), MemoryStatus.REGISTERED,
                 MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT
 
         ), 60, 120);
@@ -37,8 +40,9 @@ public class CustomerFindPickupAreaBehavior extends CustomerBehavior<PathfinderM
         if (!simpleContainer.isEmpty()
                 && itemStacks.isEmpty()
         ) return false;
-        if(!owner1.goetyDelight$getCustomerBrain().hasMemoryValue(ModMemory.FOOD_TO_PAY_LIST.get())
-                &&!owner1.goetyDelight$isHungry()) {
+        Brain<PathfinderMob> pathfinderMobBrain = owner1.goetyDelight$getCustomerBrain();
+        if(!pathfinderMobBrain.hasMemoryValue(ModMemory.FOOD_TO_PAY_LIST.get())
+                && pathfinderMobBrain.hasMemoryValue(ModMemory.IS_FULL_AFTER_DINING_RESTAURANT.get())) {
             return false;
         }
         return true;

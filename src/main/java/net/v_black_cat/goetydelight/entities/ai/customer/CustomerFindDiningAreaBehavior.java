@@ -11,10 +11,10 @@ import net.minecraft.world.entity.ai.memory.WalkTarget;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.v_black_cat.goetydelight.entities.ICustomerEntity;
 import net.v_black_cat.goetydelight.entities.ai.ModMemory;
 
 import java.util.List;
-import java.util.Map;
 
 public class CustomerFindDiningAreaBehavior extends CustomerBehavior<PathfinderMob>{
     public CustomerFindDiningAreaBehavior() {

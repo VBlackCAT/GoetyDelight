@@ -11,7 +11,7 @@ import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.phys.AABB;
 import net.v_black_cat.goetydelight.block.RestaurantBlockEntity;
 import net.v_black_cat.goetydelight.entities.ai.ModMemory;
-import net.v_black_cat.goetydelight.entities.ai.customer.ICustomerEntity;
+import net.v_black_cat.goetydelight.entities.ICustomerEntity;
 
 import java.util.Set;
 

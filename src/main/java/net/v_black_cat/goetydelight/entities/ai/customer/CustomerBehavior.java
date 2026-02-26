@@ -6,8 +6,8 @@ import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.behavior.BehaviorControl;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
+import net.v_black_cat.goetydelight.entities.ICustomerEntity;
 
-import java.util.Iterator;
 import java.util.Map;
 
 public class CustomerBehavior<E extends LivingEntity> implements BehaviorControl<E> {
@@ -97,13 +97,5 @@ public class CustomerBehavior<E extends LivingEntity> implements BehaviorControl
             }
         }
         return true;
-    }
-
-    public static enum Status {
-        STOPPED,
-        RUNNING;
-
-        private Status() {
-        }
     }
 }

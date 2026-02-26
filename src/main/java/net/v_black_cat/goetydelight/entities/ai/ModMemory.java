@@ -7,7 +7,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -91,6 +90,19 @@ public class ModMemory {
     public static final RegistryObject<MemoryModuleType<Map<ItemStack, Integer>>> ITEM_CONSUMPTION_COUNT =
             MEMORY_MODULES.register("item_consumption_count",
                     () -> new MemoryModuleType<>(Optional.of(Codec.unboundedMap(ItemStack.CODEC, Codec.INT))));
+
+    public static final RegistryObject<MemoryModuleType<Boolean>> IS_HUNGRY_ON_ENTER =
+            MEMORY_MODULES.register("is_hungry_on_enter",
+                    () -> new MemoryModuleType<>(Optional.of(Codec.BOOL)));
+    public static final RegistryObject<MemoryModuleType<Boolean>> IS_FULL_AFTER_DINING_RESTAURANT =
+            MEMORY_MODULES.register("is_full_after_dining_restaurant",
+                    () -> new MemoryModuleType<>(Optional.of(Codec.BOOL)));
+
+    public static final RegistryObject<MemoryModuleType<Integer>> PAID_LOOT_COUNT =
+            MEMORY_MODULES.register("paid_loot_count",
+                    () -> new MemoryModuleType<>(Optional.of(Codec.INT)));
+
+
 
     public static void register(IEventBus eventBus) {
         MEMORY_MODULES.register(eventBus);
