@@ -1,6 +1,6 @@
 {
     "type": "goety:ritual",
-    "ritual_type": "goety:craft",
+    "ritual_type": "goety:summon_tamed",
     "activation_item": {
         "item": "goety:dark_scroll"
     },

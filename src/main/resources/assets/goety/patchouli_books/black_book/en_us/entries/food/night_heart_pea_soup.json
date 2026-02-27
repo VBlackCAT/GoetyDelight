@@ -5,12 +5,11 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "Grants consumer:$(br)$(li)1-minute Shadowmeld IV$(li)5-minute Strength IV$(li)5-minute Resistance III$(li)10-minute Nourishment$(li)10-minute Comfort$(br)Upon consumption: turns time to night, doubles minions summoned per cast (5-minute duration), grants all minions permanent 10% bonus to attack, max HP, and armor (max 5 activations), doubles minion capacity limit (single activation)."
+            "text": "Grants the consumer:$(br)$(li)1 minute of Shadowmeld 4$(li)5 minutes of Strength 4$(li)5 minutes of Resistance 3$(li)10 minutes of Nourishment$(li)10 minutes of Comfort$(br)Upon consumption, time is set to night, the number of minions summoned in a single cast is doubled (lasting 5 minutes), all minions permanently gain a +5% bonus to Attack, Health, and Armor (stacks up to 12 times), and the minion cap is doubled (applies only once)."
         },
         {
             "type": "goety:cooking",
             "recipe": "goetydelight:cooking/night_heart_pea_soup"
         }
-        
     ]
 }

@@ -5,7 +5,7 @@
     "pages": [
         {
             "type": "patchouli:text",
-          "text": "Can only be consumed when the race is Lich.$(br)Grants the consumer:$(br)$(li)Fire Resistance with unlimited duration, Eternity III$(li)30 minutes of Wight Ward$(li)Each consumption increases the attributes of all your minions by 20%, up to a maximum of 5 times."
+            "text": "Only edible if your race is Lich.$(br)Grants the consumer:$(li)Infinite Fire Resistance and Eternal III$(li)Wight Bane for 30 minutes$(li)Each consumption increases the stats of all your minions by 15%, up to a maximum of 6 times."
         },
         {
             "type": "goety:cooking",
