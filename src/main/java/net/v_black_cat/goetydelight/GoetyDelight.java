@@ -12,6 +12,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -35,6 +36,9 @@ import net.v_black_cat.goetydelight.item.ModCreativeModTabs;
 import net.v_black_cat.goetydelight.item.ModItems;
 import net.v_black_cat.goetydelight.loot.RegHelper;
 import net.v_black_cat.goetydelight.network.NetworkHandler;
+import net.v_black_cat.goetydelight.proxy.ClientProxy;
+import net.v_black_cat.goetydelight.proxy.Modproxy;
+import net.v_black_cat.goetydelight.proxy.Serverproxy;
 import net.v_black_cat.goetydelight.recipe.ModRecipeSerializers;
 import net.v_black_cat.goetydelight.render.animation.RotationEffectHandler;
 
@@ -58,8 +62,10 @@ public class GoetyDelight
     public static final String MODID = "goetydelight";
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
+    private final Modproxy PROXY;
     public GoetyDelight(FMLJavaModLoadingContext context)
     {
+        this.PROXY = (Modproxy) DistExecutor.unsafeRunForDist(() -> () -> new ClientProxy(context), () -> () -> new Serverproxy(context));
         IEventBus modEventBus = context.getModEventBus();
 
         // Register the commonSetup method for modloading
