@@ -81,9 +81,10 @@ public class ModBlockLootTables extends BlockLootSubProvider {
         this.dropOther(ModBlocks.BOAT_STUFFED_ROASTED_WARDEN_BlOCK.get(), Items.DARK_OAK_BOAT);
         this.dropOther(ModBlocks.VOID_GEL_JELLY_BLOCK.get(), Items.BOWL);
         this.dropOther(ModBlocks.STUFFED_TALL_SKULL_RICE_BLOCK.get(), com.Polarice3.Goety.common.blocks.ModBlocks.TALL_SKULL_ITEM.get());
-        this.dropOther(ModBlocks.LICHS_CHAOS_STEW_BLOCK.get(), vectorwing.farmersdelight.common.registry.ModItems.COOKING_POT.get());
-        this.dropOther(ModBlocks.NIGHT_HEART_PEA_SOUP_BLOCK.get(), vectorwing.farmersdelight.common.registry.ModItems.COOKING_POT.get());
-        this.dropOther(ModBlocks.BONE_LORD_ASH_RICE_BLOCK.get(), vectorwing.farmersdelight.common.registry.ModItems.COOKING_POT.get());
+//        this.dropOther(ModBlocks.LICHS_CHAOS_STEW_BLOCK.get(), vectorwing.farmersdelight.common.registry.ModItems.COOKING_POT.get());
+        this.dropOther(ModBlocks.LICHS_CHAOS_STEW_BLOCK.get(), ModBlocks.CURSED_INGOT_POT.get());
+        this.dropOther(ModBlocks.NIGHT_HEART_PEA_SOUP_BLOCK.get(), ModBlocks.CURSED_INGOT_POT.get());
+        this.dropOther(ModBlocks.BONE_LORD_ASH_RICE_BLOCK.get(), ModBlocks.CURSED_INGOT_POT.get());
         this.dropOther(ModBlocks.MENEMEN_BLOCK.get(), vectorwing.farmersdelight.common.registry.ModItems.COOKING_POT.get());
         this.add(ModBlocks.MARBLE_SLAB.get(),
                 block -> createSlabItemTable(ModBlocks.MARBLE_SLAB.get()));

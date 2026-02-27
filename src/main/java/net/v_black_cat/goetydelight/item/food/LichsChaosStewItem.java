@@ -26,7 +26,7 @@ import net.v_black_cat.goetydelight.config.Config;
 import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = GoetyDelight.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class LichsChaosStewItem extends Item {
+public class LichsChaosStewItem extends BowlFoodItem {
 
     private static final int MAX_BOOST_COUNT = 6;
 

@@ -3,6 +3,7 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'net.neoforged.moddev.legacyforge' version '2.0.115'
+    id 'org.jetbrains.kotlin.jvm'
 }
 
 tasks.named('wrapper', Wrapper).configure {
@@ -110,6 +111,7 @@ repositories {
         name = "Jared's maven"
         url = "https://maven.blamejared.com/"
     }
+    mavenCentral()
 }
 
 configurations {
@@ -126,6 +128,7 @@ mixin {
 
 dependencies {
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
 jar {
@@ -369,4 +372,7 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+kotlin {
+    jvmToolchain(17)
 }
