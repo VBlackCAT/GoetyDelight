@@ -8,12 +8,16 @@
     "BlockFinderMixin",
     "CookingPotBlockEntityMixin",
     "DarkAltarBlockEntityMixin",
+    "EntityAccessor",
     "LivingEntityAccessor",
     "MobAccessor",
     "MobMixin",
     "RecipeManagerMixin",
     "SummonSpellMixin",
-    "WightSpawnerMixin"
+    "WightSpawnerMixin",
+    "customer.LivingEntityToCustomerMixin",
+    "customer.MobAiRedirectMixin",
+    "customer.PathFinderMobToCustomerMixin"
   ],
   "client": [
     "BookContentResourceListenerLoaderMixin",
