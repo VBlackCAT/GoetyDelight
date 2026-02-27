@@ -23,17 +23,22 @@ public class AABBRandomPos {
         
         int minY = (int) Math.max(searchBox.minY, mob.getY() - verticalRange);
         int maxY = (int) Math.min(searchBox.maxY, mob.getY() + verticalRange);
-        
-        
-        
-        
+
+        if (minY > maxY) {
+            maxY = minY;
+        }
+
+        int verticalRangeActual = Math.max(1, maxY - minY + 1);
+
+        final int finalMinY = minY;
+        final int finalVerticalRange = verticalRangeActual;
 
         return RandomPos.generateRandomPos(() -> {
             
             double randomX = searchBox.minX + mob.getRandom().nextDouble() * (searchBox.maxX - searchBox.minX);
             double randomZ = searchBox.minZ + mob.getRandom().nextDouble() * (searchBox.maxZ - searchBox.minZ);
             
-            int randomY = minY + mob.getRandom().nextInt(maxY - minY + 1);
+            int randomY = finalMinY + mob.getRandom().nextInt(finalVerticalRange);
 
             BlockPos candidatePos = new BlockPos((int) randomX, randomY, (int) randomZ);
 
