@@ -30,6 +30,7 @@ public class CustomerInRestaurantSensor extends Sensor<PathfinderMob> {
             if (!brain.hasMemoryValue(ModMemory.IS_HUNGRY_ON_ENTER.get())){
                 if (entity1.goetyDelight$isHungry()){
                     brain.setMemory(ModMemory.IS_HUNGRY_ON_ENTER.get(), true);
+                    brain.eraseMemory(ModMemory.IS_FULL_AFTER_DINING_RESTAURANT.get());
                 }
             }
         } else {

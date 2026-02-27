@@ -153,9 +153,9 @@ public class CustomerAi {
         Brain<PathfinderMob> brain = makeBrain(mob, dyn);
         return brain;
     }
-    public static void enableCustomerMode(PathfinderMob mob, boolean enabled){
+    public static void enableCustomerMode(PathfinderMob mob){
         if (mob instanceof ICustomerEntity customer){
-            customer.goetyDelight$setCustomerMode(enabled);
+            customer.goetyDelight$enterCustomerModeAndCheckCoolDown();
         }
     }
     public static boolean isCustomerMode(PathfinderMob mob){
@@ -177,7 +177,10 @@ public class CustomerAi {
         brain.addActivity(Activity.CORE, 0, ImmutableList.of(
                 new Swim(0.8F),
                 new CustomerLookAtTargetSink(45, 90),
-                new CustomerMoveToTargetSink(100, 200)
+                new CustomerMoveToTargetSink(100, 200),
+                new CustomerExitModeInOutCoreAndFullBehavior(),
+                new CustomerExitModeInOutCoreAndHasHurtByBehavior(),
+                new CustomerExitModeInRestaurantCoreBehavior()
         ));
 
     }
@@ -189,6 +192,7 @@ public class CustomerAi {
                         Activity.IDLE
                 )
         );
+/*
         LOGGER.debug("=========================实体信息========================");
         ImmutableList<MemoryModuleType<?>> memoryModuleTypes = ImmutableList.of(
                 ModMemory.ENTRANCE_RANGE.get(),
@@ -221,6 +225,7 @@ public class CustomerAi {
                 LOGGER.debug("记忆 {} 不存在", memoryType);
             }
         }
+*/
 
 
 

@@ -9,15 +9,14 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.Brain;
-import net.minecraft.world.entity.ai.behavior.EntityTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -27,6 +26,7 @@ import net.minecraft.world.phys.AABB;
 import net.v_black_cat.goetydelight.block.RestaurantBlockEntity;
 import net.v_black_cat.goetydelight.entities.ICustomerEntity;
 import net.v_black_cat.goetydelight.entities.ai.ModMemory;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -75,17 +75,47 @@ public class CustomerPayBehavior extends CustomerBehavior<PathfinderMob> {
 
         Optional<Integer> countMemory = pathfinderMobBrain.getMemory(ModMemory.PAID_LOOT_COUNT.get());
         int paidLootCount = countMemory.orElse(0);
-        if (paidLootCount <2){
-            if (customer.goetyDelight$getCustomerSatietyValue()/customer.goetyDelight$getCustomerMaxSatietyValue()>0.3*(paidLootCount+1)){
-                payLootPart(entity,pathfinderMobBrain,paidLootCount,blockEntity);
-            }
-        }
-        if (customer.goetyDelight$isFull()){
-            payLoot(entity,pathfinderMobBrain,paidLootCount,blockEntity);
-        }
+
+        payLoot(entity, paidLootCount, customer, pathfinderMobBrain, blockEntity);
 
 
         super.start(level, entity, gameTime);
+    }
+
+    private void payLoot(PathfinderMob entity, int paidLootCount, ICustomerEntity customer, Brain<PathfinderMob> pathfinderMobBrain, BlockEntity blockEntity) {
+        if(!entity.getPersistentData().contains("forge:bosses")){
+            if (paidLootCount <2){
+                if (customer.goetyDelight$getCustomerSatietyValue()/ customer.goetyDelight$getCustomerMaxSatietyValue()>0.3*(paidLootCount +1)){
+                    payLootPart(entity, pathfinderMobBrain, paidLootCount, blockEntity);
+                }
+            }
+            if (customer.goetyDelight$isFull()){
+                payLoot(entity, pathfinderMobBrain, paidLootCount, blockEntity);
+            }
+        }else {
+            double bossPayLootProbability = getBossPayLootProbability(entity, blockEntity);
+            if (paidLootCount <2){
+                if (customer.goetyDelight$getCustomerSatietyValue()/ customer.goetyDelight$getCustomerMaxSatietyValue()>0.3*(paidLootCount +1)){
+                   if (entity.getRandom().nextDouble()<bossPayLootProbability){
+                       payLootPart(entity, pathfinderMobBrain, paidLootCount, blockEntity);
+                   }
+                }
+            }
+            if (customer.goetyDelight$isFull()){
+                if (entity.getRandom().nextDouble()<bossPayLootProbability) {
+                    payLoot(entity, pathfinderMobBrain, paidLootCount, blockEntity);
+                }
+            }
+        }
+    }
+
+    private double getBossPayLootProbability(PathfinderMob entity, BlockEntity blockEntity) {
+        float bonusMultiplier = 0;
+        if (blockEntity instanceof RestaurantBlockEntity restaurant) {
+             bonusMultiplier = getRestaurantLevelBonusMultiplier(restaurant);
+        }
+        double bossPayLootProbability = bonusMultiplier * 0.15 + 0.1;
+        return bossPayLootProbability;
     }
 
     private void payLoot(PathfinderMob entity,
@@ -204,7 +234,7 @@ public class CustomerPayBehavior extends CustomerBehavior<PathfinderMob> {
 
         float bonusMultiplier = 1.0f;
         if (blockEntity instanceof RestaurantBlockEntity restaurant) {
-            bonusMultiplier = getRestaurantLevelBonusMultiplier(restaurant);
+            bonusMultiplier = bonusMultiplier+getRestaurantLevelBonusMultiplier(restaurant);
         }
 
         int totalCount = filteredLoot.stream()
@@ -275,43 +305,24 @@ public class CustomerPayBehavior extends CustomerBehavior<PathfinderMob> {
             GlobalPos blockPos = memory.get();
             blockEntity = entity.level().getBlockEntity(blockPos.pos());
         }
-        for (ItemStack food : foodList) {
 
-            ItemStack emeraldStack = new ItemStack(Items.EMERALD, 1);
+            
 
-            ItemEntity emeraldEntity = new ItemEntity(
-                entity.level(),
-                entity.getX() + (entity.getRandom().nextDouble() - 0.5) * 2.0,
-                entity.getY() + 0.5,
-                entity.getZ() + (entity.getRandom().nextDouble() - 0.5) * 2.0,
-                emeraldStack
-            );
+        payMoney(entity,blockEntity,foodList);
 
-            emeraldEntity.setDeltaMovement(
-                (entity.getRandom().nextDouble() - 0.5) * 0.2,
-                0.2,
-                (entity.getRandom().nextDouble() - 0.5) * 0.2
-            );
-
-            payMoney(entity, food, blockEntity);
-
-            if (blockEntity != null){
-                payResturantExp(blockEntity);
-            }
-
-
-            entity.level().addFreshEntity(emeraldEntity);
-
-
+        if (blockEntity != null){
+            payResturantExp(blockEntity);
         }
+            
+
     }
     private float getRestaurantLevelBonusMultiplier(RestaurantBlockEntity restaurantBlockEntity) {
         int restaurantLevel = restaurantBlockEntity.getRestaurantLevel();
-        float bonusMultiplier = 1.0f + (restaurantLevel * 0.05f);
+        float bonusMultiplier = restaurantLevel * 0.05f;
         return Math.min(bonusMultiplier, 2.0f);
     }
 
-    private void payMoney(PathfinderMob entity, ItemStack food, BlockEntity blockEntity) {
+    private void payMoney(PathfinderMob entity, BlockEntity blockEntity, List<ItemStack> foodList) {
         Map<ItemStack, Integer> moneyWeights = new HashMap<>();
         moneyWeights.put(new ItemStack(Items.EMERALD, 1), 60);
         moneyWeights.put(new ItemStack(Items.GOLD_INGOT, 1), 20);
@@ -319,30 +330,89 @@ public class CustomerPayBehavior extends CustomerBehavior<PathfinderMob> {
         moneyWeights.put(new ItemStack(ModItems.ECTOPLASM.get(), 1), 10);
         moneyWeights.put(new ItemStack(ModItems.TREASURE_POUCH.get(), 1), 1);
         RandomSource random = entity.getRandom();
-         int moneyCount = getMoneyCountByFood(food);
-        ArrayList<ItemStack> itemStacks = drawItemsByWeight(moneyWeights, moneyCount, random);
+        ArrayList<ItemStack> totalItemStacks = new ArrayList<>();
+        for (ItemStack food : foodList) {
+            ArrayList<ItemStack> itemStacks = getSingleDishValueItemStacks(food, moneyWeights, random);
+            totalItemStacks.addAll(itemStacks);
+        }
         if (blockEntity != null && blockEntity instanceof RestaurantBlockEntity restaurantBlockEntity){
-            float bonusMultiplier = getRestaurantLevelBonusMultiplier(restaurantBlockEntity);
-            int size = itemStacks.size();
-            int count = (int) ((size * bonusMultiplier)-size);
-            if (!itemStacks.isEmpty()) {
+            float restaurantLevelBonusMultiplier = getRestaurantLevelBonusMultiplier(restaurantBlockEntity);
+            float menuDishCountBonusMultiplier = getMenuDishCountBonusMultiplier(restaurantBlockEntity);
+            float entityPreferenceMultiplier = getEntityPreferenceMultiplier(entity, foodList);
+            float foodValueMultiplier = getFoodValueMultiplier(entity,foodList);
+            int size = totalItemStacks.size();
+            int count = (int) ((size * (1+restaurantLevelBonusMultiplier+menuDishCountBonusMultiplier+entityPreferenceMultiplier+foodValueMultiplier))-size);
+            if (!totalItemStacks.isEmpty()) {
                 if (count > 0) {
-                    ArrayList<ItemStack> originalItems = new ArrayList<>(itemStacks);
+                    ArrayList<ItemStack> originalItems = new ArrayList<>(totalItemStacks);
                     for (int i = 0; i < count; i++) {
                         int randomIndex = random.nextInt(originalItems.size());
-                        itemStacks.add(originalItems.get(randomIndex).copy());
+                        totalItemStacks.add(originalItems.get(randomIndex).copy());
                     }
                 }
             }
         }
-        for (ItemStack itemStack : itemStacks) {
+        Map<ItemStack, Integer> itemCountMap = new HashMap<>();
+        for (ItemStack stack : totalItemStacks) {
+            boolean found = false;
+            for (ItemStack key : itemCountMap.keySet()) {
+                if (ItemStack.matches(key, stack)) {
+                    itemCountMap.put(key, itemCountMap.get(key) + stack.getCount());
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                itemCountMap.put(stack.copy(), stack.getCount());
+            }
+        }
+        totalItemStacks.clear();
+        for (Map.Entry<ItemStack, Integer> entry : itemCountMap.entrySet()) {
+            ItemStack stack = entry.getKey();
+            stack.setCount(entry.getValue());
+            totalItemStacks.add(stack);
+        }
+        for (ItemStack itemStack : totalItemStacks) {
             dropPay(entity, itemStack);
         }
+    }
 
+    private float getFoodValueMultiplier(PathfinderMob entity, List<ItemStack> foodList) {
+        float CountValue = 0;
 
+        for (ItemStack food : foodList) {
+                FoodProperties foodProperties = food.getFoodProperties(entity);
+                if (foodProperties != null) {
+                    float nutrition = foodProperties.getNutrition();
+                    float saturationModifier = foodProperties.getSaturationModifier();
+                    CountValue += nutrition * saturationModifier;
+                }
+        }
 
+        double foodCountValueBonusMultiplier = getFoodCountValueBonusMultiplier(CountValue, 3);
+        return (float) foodCountValueBonusMultiplier;
+    }
 
+    private double getFoodCountValueBonusMultiplier(float x, double limit) {
+        double v = approachLimit(x, limit, 20*limit, 0.05);
+        return v;
+    }
 
+    private float getEntityPreferenceMultiplier(PathfinderMob entity, List<ItemStack> foodList) {
+        return 0;
+    }
+
+    private float getMenuDishCountBonusMultiplier(RestaurantBlockEntity restaurantBlockEntity) {
+        int size = restaurantBlockEntity.getDishesList().size();
+        float menuDishCountBonusMultiplier = (float) (getMenuCountBonusMultiplierApproachLimit(size, 3));
+
+        return menuDishCountBonusMultiplier;
+    }
+
+    private @NotNull ArrayList<ItemStack> getSingleDishValueItemStacks(ItemStack food, Map<ItemStack, Integer> moneyWeights, RandomSource random) {
+        int moneyCount = getMoneyCountByFood(food);
+        ArrayList<ItemStack> itemStacks = drawItemsByWeight(moneyWeights, moneyCount, random);
+        return itemStacks;
     }
 
     private static void dropPay(PathfinderMob entity, ItemStack itemStack) {
@@ -359,13 +429,13 @@ public class CustomerPayBehavior extends CustomerBehavior<PathfinderMob> {
         food.getItem().getRarity(food);
         switch (food.getRarity()) {
             case COMMON:
-                return 5;
+                return 2;
             case UNCOMMON:
-                return 8;
+                return 4;
             case RARE:
-                return 10;
+                return 8;
             case EPIC:
-                return 15;
+                return 12;
             default:
                 return 5;
         }
@@ -421,5 +491,17 @@ public class CustomerPayBehavior extends CustomerBehavior<PathfinderMob> {
             pathfinderMobBrain.setMemory(ModMemory.RESTAURANT_OWNER_UUID_LIST.get(), new ArrayList<>(uuidSet));
         }
         super.stop(level, entity, gameTime);
+    }
+
+
+    public static double getMenuCountBonusMultiplierApproachLimit(int x, double limit) {
+        double v = approachLimit(x, limit, 20*limit, 0.05);
+        return v;
+
+    }
+
+    public static double approachLimit(double x, double limit, double inflectionPoint, double steepness) {
+        double exponent = -steepness * (x - inflectionPoint);
+        return limit / (1.0 + Math.exp(exponent));
     }
 }

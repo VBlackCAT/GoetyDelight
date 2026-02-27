@@ -192,6 +192,7 @@ public class ModBlocks {
     public static final RegistryObject<Block> RESTAURANT = registerBlock("restaurant",
             () -> new RestaurantBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
                     .noLootTable()
+                    .noOcclusion()
                     .sound(SoundType.AMETHYST)));
 
 
