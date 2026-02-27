@@ -49,7 +49,11 @@ public interface ICustomerEntity {
     default void goetyDelight$reduceEnterCustomerModeCooldown(long reduction) {
         long currentCooldown = goetyDelight$getEnterCustomerModeCooldown();
         if (currentCooldown > 0) {
-            goetyDelight$setEnterCustomerModeCooldown(currentCooldown - reduction);
+            if (currentCooldown > reduction) {
+                goetyDelight$setEnterCustomerModeCooldown(currentCooldown - reduction);
+            } else {
+                goetyDelight$setEnterCustomerModeCooldown(0);
+            }
         }
     }
 
@@ -184,6 +188,7 @@ public interface ICustomerEntity {
         this.goetyDelight$setCustomerBrain(CustomerAi.makeBrain(mob, dyn));
         this.goetyDelight$setCustomerMode(nbt.getBoolean("GoetyDelightCustomerMode"));
         this.goetyDelight$setCustomerSatietyValue(nbt.getFloat("GoetyDelightCustomerSatietyValue"));
+        this.goetyDelight$setEnterCustomerModeCooldown(nbt.getLong("GoetyDelightCustomerEnterCustomerModeCooldown"));
         this.readCustomerInventoryFromTag(nbt);
     }
     
@@ -196,6 +201,7 @@ public interface ICustomerEntity {
         });
         nbt.putBoolean("GoetyDelightCustomerMode", this.goetyDelight$isCustomerMode());
         nbt.putFloat("GoetyDelightCustomerSatietyValue", this.goetyDelight$getCustomerSatietyValue());
+        nbt.putLong("GoetyDelightCustomerEnterCustomerModeCooldown", this.goetyDelight$getEnterCustomerModeCooldown());
         this.writeCustomerInventoryToTag(nbt);
     }
 }

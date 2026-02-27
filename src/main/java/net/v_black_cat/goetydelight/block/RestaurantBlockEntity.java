@@ -10,6 +10,8 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.monster.Vindicator;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -24,6 +26,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
@@ -32,6 +35,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.entities.ICustomerEntity;
 import net.v_black_cat.goetydelight.entities.ai.customer.CustomerAi;
 import net.v_black_cat.goetydelight.screen.RestaurantMenu;
 import org.jetbrains.annotations.NotNull;
@@ -62,6 +66,16 @@ public class RestaurantBlockEntity extends BlockEntity implements MenuProvider {
     private static final Set<GlobalPos> restaurantPositions = new HashSet<>();
     private ArrayList<ItemStack> dishesList = new ArrayList<ItemStack>();
     private float restaurantExperience = 0.0f;
+    private boolean isOpen = false;
+
+
+public void setOpen(boolean open) {
+    this.isOpen = open;
+    this.setChanged();
+    if (this.level != null) {
+        this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 2);
+    }
+}
 
     public ArrayList<ItemStack> getDishesList() {
         return dishesList;
@@ -269,21 +283,42 @@ public class RestaurantBlockEntity extends BlockEntity implements MenuProvider {
     RestaurantBlockEntity(BlockPos pos, BlockState blockState) {
         this(ModBlockEntities.RESTAURANT_BE.get(), pos, blockState);
     }
-
-    int countw =0;
     public static void serverTick(Level level, BlockPos pos, BlockState state, RestaurantBlockEntity blockEntity) {
-        if (blockEntity.countw <= 1){
-            if (level instanceof ServerLevel serverLevel) {
-                Vindicator vindicator = new Vindicator(EntityType.VINDICATOR, serverLevel);
-                serverLevel.addFreshEntity(vindicator);
-                CustomerAi.enableCustomerMode(vindicator, true);
-                vindicator.moveTo(pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, 0.0F, 0.0F);
-                blockEntity.countw++;
-
+        if (level instanceof ServerLevel serverLevel) {
+            if (serverLevel.getRandom().nextInt(100) == 0) {
+                blockEntity.affectNearbyEntities();
             }
         }
 
+
     }
+
+
+
+
+
+
+    private void affectNearbyEntities() {
+        int restaurantLevel = getRestaurantLevel();
+        int range = Math.min(32 * restaurantLevel, 256);
+        float chance = 0.01f * restaurantLevel;
+
+        if (level instanceof ServerLevel serverLevel) {
+            List<Entity> nearbyEntities = serverLevel.getEntitiesOfClass(Entity.class, 
+                new AABB(worldPosition).inflate(range));
+
+            for (Entity entity : nearbyEntities) {
+                if (serverLevel.getRandom().nextFloat() < chance) {
+                    if (entity instanceof ICustomerEntity customer) {
+                       customer.goetyDelight$enterCustomerModeAndCheckCoolDown();
+                    }
+                }
+            }
+        }
+    }
+
+
+
 
     private ItemStackHandler createHandler() {
         return new ItemStackHandler(INVENTORY_SIZE){

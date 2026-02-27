@@ -61,6 +61,7 @@ public class CustomerEvent {
         }
         if (event.getEntity() instanceof ICustomerEntity customerEntity) {
             LivingEntity livingEntity = (LivingEntity) customerEntity;
+            customerEntity.goetyDelight$reduceEnterCustomerModeCooldown(1);
             if (livingEntity.tickCount % 240 == 0) {
                 customerEntity.goetyDelight$SubtractionCustomerSatietyValue(customerEntity.goetyDelight$getCustomerMaxSatietyValue() * 0.01f);
             }

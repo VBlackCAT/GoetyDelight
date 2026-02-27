@@ -19,17 +19,14 @@ public class CustomerExitBehavior extends CustomerBehavior<PathfinderMob>{
                 ModMemory.IS_IN_EXIT.get(), MemoryStatus.VALUE_PRESENT,
                 ModMemory.ALL_RANGE.get(), MemoryStatus.VALUE_PRESENT,
                 ModMemory.FOOD_TO_PAY_LIST.get(), MemoryStatus.VALUE_ABSENT,
+                ModMemory.IS_FULL_AFTER_DINING_RESTAURANT.get(), MemoryStatus.VALUE_PRESENT,
                 MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT
         ), 60, 120);
     }
 
     @Override
     protected boolean checkExtraStartConditions(ServerLevel level, PathfinderMob owner) {
-        if (((ICustomerEntity) owner).goetyDelight$isHungry()){
-            return false;
-        }else {
-            return true;
-        }
+        return true;
     }
 
     @Override
@@ -63,5 +60,12 @@ public class CustomerExitBehavior extends CustomerBehavior<PathfinderMob>{
                 }
             }
         });
+    }
+
+    @Override
+    protected void stop(ServerLevel level, PathfinderMob entity, long gameTime) {
+        ICustomerEntity entity1 = (ICustomerEntity) entity;
+        Brain<PathfinderMob> pathfinderMobBrain = entity1.goetyDelight$getCustomerBrain();
+        pathfinderMobBrain.eraseMemory(ModMemory.IS_HUNGRY_ON_ENTER.get());
     }
 }

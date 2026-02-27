@@ -5,7 +5,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.EntityTracker;
@@ -19,7 +19,7 @@ import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 import net.v_black_cat.goetydelight.entities.ICustomerEntity;
 
-public class CustomerMoveToTargetSink extends CustomerBehavior<Mob> {
+public class CustomerMoveToTargetSink extends CustomerBehavior<PathfinderMob> {
     private static final int MAX_COOLDOWN_BEFORE_RETRYING = 40;
     private int remainingCooldown;
     @Nullable
@@ -39,7 +39,7 @@ public class CustomerMoveToTargetSink extends CustomerBehavior<Mob> {
                 MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_PRESENT), minDuration, maxDuration);
     }
 
-    protected boolean checkExtraStartConditions(ServerLevel level, Mob owner) {
+    protected boolean checkExtraStartConditions(ServerLevel level, PathfinderMob owner) {
         if (this.remainingCooldown > 0) {
             --this.remainingCooldown;
             return false;
@@ -61,7 +61,7 @@ public class CustomerMoveToTargetSink extends CustomerBehavior<Mob> {
         }
     }
 
-    protected boolean canStillUse(ServerLevel level, Mob entity, long gameTime) {
+    protected boolean canStillUse(ServerLevel level, PathfinderMob entity, long gameTime) {
         if (this.path != null && this.lastTargetPos != null) {
             Optional<WalkTarget> optional = ((ICustomerEntity) entity).goetyDelight$getCustomerBrain().getMemory(MemoryModuleType.WALK_TARGET);
             boolean flag = (Boolean)optional.map(CustomerMoveToTargetSink::isWalkTargetSpectator).orElse(false);
@@ -72,7 +72,7 @@ public class CustomerMoveToTargetSink extends CustomerBehavior<Mob> {
         }
     }
 
-    protected void stop(ServerLevel level, Mob entity, long gameTime) {
+    protected void stop(ServerLevel level, PathfinderMob entity, long gameTime) {
         if (((ICustomerEntity) entity).goetyDelight$getCustomerBrain().hasMemoryValue(MemoryModuleType.WALK_TARGET) && !this.reachedTarget(entity, (WalkTarget)((ICustomerEntity) entity).goetyDelight$getCustomerBrain().getMemory(MemoryModuleType.WALK_TARGET).get()) && entity.getNavigation().isStuck()) {
             this.remainingCooldown = level.getRandom().nextInt(40);
         }
@@ -83,12 +83,12 @@ public class CustomerMoveToTargetSink extends CustomerBehavior<Mob> {
         this.path = null;
     }
 
-    protected void start(ServerLevel level, Mob entity, long gameTime) {
+    protected void start(ServerLevel level, PathfinderMob entity, long gameTime) {
         ((ICustomerEntity) entity).goetyDelight$getCustomerBrain().setMemory(MemoryModuleType.PATH, this.path);
         entity.getNavigation().moveTo(this.path, (double)this.speedModifier);
     }
 
-    protected void tick(ServerLevel level, Mob owner, long gameTime) {
+    protected void tick(ServerLevel level, PathfinderMob owner, long gameTime) {
         Path path = owner.getNavigation().getPath();
         Brain<?> brain = ((ICustomerEntity) owner).goetyDelight$getCustomerBrain();
         if (this.path != path) {
@@ -106,7 +106,7 @@ public class CustomerMoveToTargetSink extends CustomerBehavior<Mob> {
 
     }
 
-    private boolean tryComputePath(Mob mob, WalkTarget target, long time) {
+    private boolean tryComputePath(PathfinderMob mob, WalkTarget target, long time) {
         BlockPos blockpos = target.getTarget().currentBlockPosition();
         this.path = mob.getNavigation().createPath(blockpos, 0);
         this.speedModifier = target.getSpeedModifier();
@@ -135,7 +135,7 @@ public class CustomerMoveToTargetSink extends CustomerBehavior<Mob> {
         return false;
     }
 
-    private boolean reachedTarget(Mob mob, WalkTarget target) {
+    private boolean reachedTarget(PathfinderMob mob, WalkTarget target) {
         return target.getTarget().currentBlockPosition().distManhattan(mob.blockPosition()) <= target.getCloseEnoughDist();
     }
 

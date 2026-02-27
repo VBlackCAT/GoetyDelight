@@ -30,7 +30,7 @@ public class RestaurantBlockRenderer implements BlockEntityRenderer<RestaurantBl
             BlockPos[] pickupArea = blockEntity.getPickupAreaRange();
             BlockPos[] entranceArea = blockEntity.getEntranceAreaRange();
             BlockPos[] exitArea = blockEntity.getExitAreaRange();
-            //渲染标记区域 - 橙色
+            //渲染总区域 - 橙色
             if (rangeMarker[0] != null && rangeMarker[1] != null) {
                 renderAreaBox(poseStack, bufferSource, rangeMarker[0], rangeMarker[1],
                              1.0F, 0.5F, 0.0F,
