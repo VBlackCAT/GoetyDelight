@@ -1,0 +1,15 @@
+{
+    "name": "Snap Unholy Tripe",
+    "icon": "goetydelight:snap_unholy_tripe",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Grants the consumer:$(br)$(li)10 seconds of Saturation$(li)30 minutes of Nourishment and Fire Resistance$(li)5 minutes of $(l:goety:effect/the_pale_messenger)The Pale Messenger$()$(br)Also grants immunity to freezing and powder snow damage for 30 minutes."
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/snap_unholy_tripe"
+        }
+    ]
+}
