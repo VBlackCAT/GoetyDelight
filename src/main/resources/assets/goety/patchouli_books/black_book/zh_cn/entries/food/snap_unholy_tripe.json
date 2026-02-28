@@ -1,0 +1,15 @@
+{
+    "name": "砰砰不洁旺",
+    "icon": "goetydelight:snap_unholy_tripe",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "给予食用者：$(br)$(li)10秒的饱和$(li)30分钟的滋养和抗火$(li)5分钟的$(l:goety:effect/the_pale_messenger)苍白使者$()$(br)30分钟内免疫冰冻及细雪伤害。"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/snap_unholy_tripe"
+        }
+    ]
+}
