@@ -12,9 +12,16 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.item.FalseProverbsItemModel;
 import org.jetbrains.annotations.NotNull;
 
+@Mod.EventBusSubscriber(modid = GoetyDelight.MODID, bus = Mod.EventBusSubscriber.Bus.MOD , value = Dist.CLIENT)
 public class FalseProverbsItemRender extends BlockEntityWithoutLevelRenderer {
     public FalseProverbsItemRender(BlockEntityRenderDispatcher blockEntityRenderDispatcher, EntityModelSet entityModelSet) {
         super(blockEntityRenderDispatcher, entityModelSet);
@@ -30,5 +37,11 @@ public class FalseProverbsItemRender extends BlockEntityWithoutLevelRenderer {
         this.model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
         VertexConsumer glowVertexConsumer = ItemRenderer.getFoilBufferDirect(multiBufferSource, RenderType.entityCutoutNoCull(GLOW_TEXTURE), true, itemStack.hasFoil());
         this.model.renderToBuffer(poseStack, glowVertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public void onRegisterLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(FalseProverbsItemModel.LAYER_LOCATION, FalseProverbsItemModel::createBodyLayer);
     }
 }
