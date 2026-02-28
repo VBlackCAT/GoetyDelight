@@ -313,8 +313,8 @@ dependencies {
     modRuntimeOnly  "blank:Jade-1.20.1-Forge-11.13.1"
     modRuntimeOnly  "blank:l2library-2.5.3"
 //    modRuntimeOnly  "blank:modulargolems-2.6.12"
-    modRuntimeOnly  "blank:jerotes-1.20.1-1.2.0"
-    modRuntimeOnly  "blank:jerotesvillage-1.20.1-1.1.5.10"
+    modRuntimeOnly  "curse.maven:jerotes-warehouse-1249728:7633801"
+    modRuntimeOnly  "curse.maven:jerotes-village-1004844:7633938"
     modRuntimeOnly  "blank:EndingLibrary-1.20.1-2.1.1-all"
     modRuntimeOnly  "curse.maven:goety-revelation-1236817:7638178"
 //    modRuntimeOnly  "curse.maven:goety-awaken-1412569:7629061" //1.3.3
