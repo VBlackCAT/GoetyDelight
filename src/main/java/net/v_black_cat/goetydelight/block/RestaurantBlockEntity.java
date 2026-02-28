@@ -581,10 +581,6 @@ public void setOpen(boolean open) {
             return true;
         }
     }
-    @SubscribeEvent
-    public static void RenderWorldLast(RenderLevelStageEvent event) {
-
-    }
 }
 
 
