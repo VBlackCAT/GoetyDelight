@@ -44,12 +44,12 @@ public class RestaurantScreen extends AbstractContainerScreen<RestaurantMenu> {
         float MaxExp = totalExpForNextLevel - totalExpForLevel;
         float currentExp = blockEntity.getRestaurantExperience()-totalExpForLevel;
         String s = currentExp+"/"+MaxExp;
-        int guiLeft = (this.width - this.imageWidth) / 2+80;
-        int guiTop = (this.height - this.imageHeight) / 2+55;
+        int guiLeft = (this.width - this.imageWidth) / 2+60;
+        int guiTop = (this.height - this.imageHeight) / 2-20;
         int size = blockEntity.getDishesList().size();
-        guiGraphics.drawString(this.font, String.valueOf(restaurantLevel), guiLeft, guiTop, 6666666, false);
-        guiGraphics.drawString(this.font, s, guiLeft,guiTop+10, 6666666, false);
-        guiGraphics.drawString(this.font, String.valueOf(size), guiLeft,guiTop+20, 6666666, false);
+        guiGraphics.drawString(this.font, getTranslatedString("restaurant_level") + ": " + String.valueOf(restaurantLevel), guiLeft, guiTop, 6666666, false);
+        guiGraphics.drawString(this.font, getTranslatedString("restaurant_exp") + ": " + s, guiLeft, guiTop + 10, 6666666, false);
+        guiGraphics.drawString(this.font, getTranslatedString("restaurant_dishes") + ": " + String.valueOf(size), guiLeft, guiTop + 20, 6666666, false);
 
         boolean open = blockEntity.getOpen();
         if(open){
@@ -70,7 +70,7 @@ public class RestaurantScreen extends AbstractContainerScreen<RestaurantMenu> {
     void initButton(){
 
         int guiLeft = (this.width - this.imageWidth) / 2;
-        int guiTop = (this.height - this.imageHeight) / 2;
+        int guiTop = (this.height - this.imageHeight) / 2-20;
 
 
         int xPos = this.menu.slots.get(0).x + 40;
