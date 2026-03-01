@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.v_black_cat.goetydelight.block.RestaurantBlockEntity;
 import net.v_black_cat.goetydelight.entities.ICustomerEntity;
 import net.v_black_cat.goetydelight.entities.ai.ModMemory;
+import net.v_black_cat.goetydelight.entities.ai.customer.preference.PreferenceManager;
 import net.v_black_cat.goetydelight.item.ModItems;
 
 import java.util.*;
@@ -71,7 +72,7 @@ public class CustomerPlaceOrderBehavior extends CustomerBehavior<PathfinderMob> 
             }
         }
 
-        Map<ItemStack, Integer> foodWeights = calculateFoodWeights(dishesList, entity);
+        Map<ItemStack, Float> foodWeights = calculateFoodWeights(dishesList, entity);
         if (foodWeights.isEmpty()) {
             return getDefaultOrder();
         }
@@ -79,11 +80,11 @@ public class CustomerPlaceOrderBehavior extends CustomerBehavior<PathfinderMob> 
         return selectWeightedOrder(foodWeights);
     }
 
-    private Map<ItemStack, Integer> calculateFoodWeights(List<ItemStack> dishesList, PathfinderMob entity) {
-        Map<ItemStack, Integer> foodWeights = new HashMap<>();
+    private Map<ItemStack, Float> calculateFoodWeights(List<ItemStack> dishesList, PathfinderMob entity) {
+        Map<ItemStack, Float> foodWeights = new HashMap<>();
         if (dishesList != null && !dishesList.isEmpty()) {
             for (ItemStack dish : dishesList) {
-                int weight = calculateWeight(dish, entity);
+                float weight = calculateWeight(dish, entity);
                 if (weight > 0) {
                     foodWeights.put(dish, weight);
                 }
@@ -92,22 +93,22 @@ public class CustomerPlaceOrderBehavior extends CustomerBehavior<PathfinderMob> 
         return foodWeights;
     }
 
-    private List<ItemStack> selectWeightedOrder(Map<ItemStack, Integer> foodWeights) {
+    private List<ItemStack> selectWeightedOrder(Map<ItemStack, Float> foodWeights) {
         List<ItemStack> weightedOrder = new ArrayList<>();
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        int totalWeight = foodWeights.values().stream().mapToInt(Integer::intValue).sum();
+        float totalWeight = (float) foodWeights.values().stream().mapToDouble(Float::doubleValue).sum();
 
         if (totalWeight <= 0) {
             return getDefaultOrder();
         }
 
         while (weightedOrder.size() < 4 && !foodWeights.isEmpty()) {
-            int randomValue = random.nextInt(totalWeight);
-            int currentWeight = 0;
+            float randomValue = random.nextFloat() * totalWeight;
+            float currentWeight = 0;
 
-            Iterator<Map.Entry<ItemStack, Integer>> iterator = foodWeights.entrySet().iterator();
+            Iterator<Map.Entry<ItemStack, Float>> iterator = foodWeights.entrySet().iterator();
             while (iterator.hasNext()) {
-                Map.Entry<ItemStack, Integer> entry = iterator.next();
+                Map.Entry<ItemStack, Float> entry = iterator.next();
                 currentWeight += entry.getValue();
                 if (randomValue < currentWeight) {
                     weightedOrder.add(entry.getKey());
@@ -135,11 +136,11 @@ public class CustomerPlaceOrderBehavior extends CustomerBehavior<PathfinderMob> 
     }
 
 
-    private int calculateWeight(ItemStack dish, PathfinderMob entity) {
+    private float calculateWeight(ItemStack dish, PathfinderMob entity) {
         ICustomerEntity customer = (ICustomerEntity) entity;
         Brain<PathfinderMob> brain = customer.goetyDelight$getCustomerBrain();
 
-        int baseWeight = 10;
+        float baseWeight = 10.0f;
 
         if (!dish.isEdible()) {
             return 0;
@@ -150,32 +151,56 @@ public class CustomerPlaceOrderBehavior extends CustomerBehavior<PathfinderMob> 
             return baseWeight;
         }
 
-        int maxSatietyWeightBonus = getMaxSatietyWeightBonus(foodProps, customer);
+        float maxSatietyWeightBonus = getMaxSatietyWeightBonus(foodProps, customer);
         float repeatOrderReductionMultiplier = getRepeatOrderReductionMultiplier(dish, brain);
         float itemRarityImprovementMultiplier = getItemRarityImprovementMultiplier(dish);
         float specialIndependentMultiplier = getSpecialIndependentMultiplier(entity, dish);
-        int specialBaseAdditive = getSpecialBaseAdditive(entity, dish);
+        float specialBaseAdditive = getSpecialBaseAdditive(entity, dish);
         float specialPublicMultiplier = getSpecialPublicMultiplier(entity, dish);
 
-        int adjustedWeight = (int) ((baseWeight + maxSatietyWeightBonus + specialBaseAdditive) 
-                                  * repeatOrderReductionMultiplier 
-                                  * itemRarityImprovementMultiplier 
-                                  * specialIndependentMultiplier 
-                                  * specialPublicMultiplier);
+        float adjustedWeight = (baseWeight + maxSatietyWeightBonus + specialBaseAdditive) 
+                             * repeatOrderReductionMultiplier 
+                             * itemRarityImprovementMultiplier 
+                             * specialIndependentMultiplier 
+                             * specialPublicMultiplier;
         
         return adjustedWeight;
     }
 
-    private int getSpecialBaseAdditive(PathfinderMob entity, ItemStack dish) {
-        return 1;
+    private float getSpecialBaseAdditive(PathfinderMob entity, ItemStack dish) {
+        float weight=0f;
+        weight += getCustomerBrainPreferenceWeight(entity, dish);
+        weight += getCustomerDataPreferenceWeight(entity, dish);
+
+        return weight;
+    }
+
+    private float getCustomerDataPreferenceWeight(PathfinderMob entity, ItemStack dish) {
+        float weight = PreferenceManager.getWeight(entity, dish);
+        return weight;
+    }
+
+    private float getCustomerBrainPreferenceWeight(PathfinderMob entity, ItemStack dish) {
+        if (entity instanceof ICustomerEntity customer){
+            Optional<Map<ItemStack, Float>> memory = customer.goetyDelight$getCustomerBrain().getMemory(ModMemory.CUSTOMER_BRAIN_PREFERENCE_LIST.get());
+            if (memory.isPresent()) {
+                Map<ItemStack, Float> preferenceMap = memory.get();
+                for (Map.Entry<ItemStack, Float> entry : preferenceMap.entrySet()) {
+                    if (ItemStack.matches(entry.getKey(), dish)) {
+                        return entry.getValue();
+                    }
+                }
+            }
+        }
+        return 0;
     }
 
     private float getSpecialPublicMultiplier(PathfinderMob entity, ItemStack dish) {
-        return 1;
+        return 1.0f;
     }
 
     private float getSpecialIndependentMultiplier(PathfinderMob entity, ItemStack dish) {
-        return 1;
+        return 1.0f;
     }
 
     private float getItemRarityImprovementMultiplier(ItemStack dish) {
@@ -207,17 +232,17 @@ public class CustomerPlaceOrderBehavior extends CustomerBehavior<PathfinderMob> 
         return reductionMultiplier;
     }
 
-    private static int getMaxSatietyWeightBonus(FoodProperties foodProps, ICustomerEntity customer) {
+    private static float getMaxSatietyWeightBonus(FoodProperties foodProps, ICustomerEntity customer) {
         int nutrition = foodProps.getNutrition();
         float saturationModifier = foodProps.getSaturationModifier();
         float foodValue = nutrition + (nutrition * saturationModifier * 2.0f);
 
         float appetiteMultiplier = 1.5f;
         float maxSatiety = customer.goetyDelight$getCustomerMaxSatietyValue();
-        int weightBonus = (int) (maxSatiety * foodValue * appetiteMultiplier);
+        float weightBonus = maxSatiety * foodValue * appetiteMultiplier;
 
         if (maxSatiety > 40.0f && foodValue < 5.0f) {
-            weightBonus /= 2;
+            weightBonus /= 2.0f;
         }
         return weightBonus;
     }
