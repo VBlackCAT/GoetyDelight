@@ -49,8 +49,14 @@ public class RestaurantScreen extends AbstractContainerScreen<RestaurantMenu> {
         int size = blockEntity.getDishesList().size();
         guiGraphics.drawString(this.font, String.valueOf(restaurantLevel), guiLeft, guiTop, 6666666, false);
         guiGraphics.drawString(this.font, s, guiLeft,guiTop+10, 6666666, false);
-
         guiGraphics.drawString(this.font, String.valueOf(size), guiLeft,guiTop+20, 6666666, false);
+
+        boolean open = blockEntity.getOpen();
+        if(open){
+            guiGraphics.drawString(this.font, getTranslatedString("open"), guiLeft,guiTop+30, 6666666, false);
+        }else{
+            guiGraphics.drawString(this.font, getTranslatedString("closed"), guiLeft,guiTop+30, 6666666, false);
+        }
     }
 
     @Override
@@ -78,12 +84,28 @@ public class RestaurantScreen extends AbstractContainerScreen<RestaurantMenu> {
                 .build();
         Button b2 = Button.builder(Component.literal(getTranslatedString("switch_render_area")), button -> {
                     this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, RestaurantMenu.SWITCH_RENDER_AREA_BUTTON_ID);
-        }).pos(guiLeft + xPos + 60, guiTop + yPos+40)
+        }).pos(guiLeft + xPos + 60, guiTop + yPos+20)
                 .size(30, 20)
                 .tooltip(Tooltip.create(Component.literal(getTranslatedString("switch_render_area"))))
                 .build();
 
+        Button b3 = Button.builder(Component.literal(getTranslatedString("switch_restaurant")), button -> {
+                    this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, RestaurantMenu.SWITCH_RESTAURANT_BUTTON_ID);
+        }).pos(guiLeft + xPos + 60, guiTop + yPos+40)
+                .size(30, 20)
+                .tooltip(Tooltip.create(Component.literal(getTranslatedString("switch_restaurant"))))
+                .build();
+
+        Button b4 = Button.builder(Component.literal(getTranslatedString("soul_lure")), button -> {
+                    this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, RestaurantMenu.SOUL_LURE_BUTTON_ID);
+        }).pos(guiLeft + xPos + 60, guiTop + yPos+60)
+                .size(30, 20)
+                .tooltip(Tooltip.create(Component.literal(getTranslatedString("soul_lure"))))
+                .build();
+
         this.addRenderableWidget(b1);
         this.addRenderableWidget(b2);
+        this.addRenderableWidget(b3);
+        this.addRenderableWidget(b4);
     }
 }
