@@ -47,9 +47,9 @@ public class ModMemory {
     public static final RegistryObject<MemoryModuleType<AABB>> EXIT_RANGE =
             MEMORY_MODULES.register("exit_range", () -> new MemoryModuleType<>(Optional.of(AABB_CODEC)));
 
-    public static final RegistryObject<MemoryModuleType<List<ItemStack>>> CUSTOMER_PREFERENCE_LIST =
-            MEMORY_MODULES.register("customer_preference_list",
-            () -> new MemoryModuleType<>(Optional.of(ItemStack.CODEC.listOf())));
+    public static final RegistryObject<MemoryModuleType<Map<ItemStack, Float>>> CUSTOMER_BRAIN_PREFERENCE_LIST =
+            MEMORY_MODULES.register("customer_brain_preference_list",
+                    () -> new MemoryModuleType<>(Optional.of(Codec.unboundedMap(ItemStack.CODEC, Codec.FLOAT))));
 
     public static final RegistryObject<MemoryModuleType<Boolean>> IS_IN_RESTAURANT =
             MEMORY_MODULES.register("is_in_restaurant",
