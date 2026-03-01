@@ -1,6 +1,8 @@
 package net.v_black_cat.goetydelight.block;
 
+import com.Polarice3.Goety.api.items.magic.ITotem;
 import com.Polarice3.Goety.common.items.WaystoneItem;
+import com.Polarice3.Goety.utils.SEHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
@@ -42,10 +44,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
+import static com.Polarice3.Goety.common.items.ModItems.SOUL_TRANSFER;
 
 @Mod.EventBusSubscriber(modid = GoetyDelight.MODID)
 public class RestaurantBlockEntity extends BlockEntity implements MenuProvider {
@@ -55,27 +56,33 @@ public class RestaurantBlockEntity extends BlockEntity implements MenuProvider {
     private BlockPos[] pickupAreaRange = new BlockPos[2];
     private BlockPos[] entranceAreaRange = new BlockPos[2];
     private BlockPos[] exitAreaRange = new BlockPos[2];
+    private BlockPos[] foodStorageAreaRange = new BlockPos[2];
     private ItemStackHandler inventory = this.createHandler();
     private static final int[] RANGE_MARKER_INVENTORY_INDEX = {0,1};
     private static final int[] DINING_AREA_RANGE_INVENTORY_INDEX = {2,3};
     private static final int[] PICKUP_AREA_RANGE_INVENTORY_INDEX = {4,5};
     private static final int[] ENTRANCE_AREA_RANGE_INVENTORY_INDEX = {6,7};
     private static final int[] EXIT_AREA_RANGE_INVENTORY_INDEX = {8,9};
-    private static final int INVENTORY_SIZE = 10;
+    private static final int[] FOOD_STORAGE_AREA_RANGE_INVENTORY_INDEX = {10,11};
+    private static final int SOUL_INVENTORY_INDEX = 12;
+    private static final int INVENTORY_SIZE = 13;
     public boolean shouldRenderArea;
     private static final Set<GlobalPos> restaurantPositions = new HashSet<>();
     private ArrayList<ItemStack> dishesList = new ArrayList<ItemStack>();
     private float restaurantExperience = 0.0f;
     private boolean isOpen = false;
 
-
-public void setOpen(boolean open) {
-    this.isOpen = open;
-    this.setChanged();
-    if (this.level != null) {
-        this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 2);
+    public boolean getOpen() {
+        return isOpen;
     }
-}
+
+    public void setOpen(boolean open) {
+        this.isOpen = open;
+        this.setChanged();
+        if (this.level != null) {
+            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 2);
+        }
+    }
 
     public ArrayList<ItemStack> getDishesList() {
         return dishesList;
@@ -185,6 +192,16 @@ public void setOpen(boolean open) {
         return pickupAreaRange;
     }
 
+    public BlockPos[] getFoodStorageAreaRange() {
+        return foodStorageAreaRange;
+    }
+
+    public void setFoodStorageArea(BlockPos start, BlockPos end) {
+        this.foodStorageAreaRange[0] = start;
+        this.foodStorageAreaRange[1] = end;
+    }
+
+
     public void setEntranceArea(BlockPos start, BlockPos end) {
         this.entranceAreaRange[0] = start;
         this.entranceAreaRange[1] = end;
@@ -194,6 +211,8 @@ public void setOpen(boolean open) {
         this.exitAreaRange[0] = start;
         this.exitAreaRange[1] = end;
     }
+
+
 
     public BlockPos[] getEntranceAreaRange() {
         return entranceAreaRange;
@@ -280,6 +299,58 @@ public void setOpen(boolean open) {
         return foodList;
     }
 
+
+    public ArrayList<ItemStack> findFoodItemsFromFoodStorageArea() {
+        ArrayList<ItemStack> foodList = new ArrayList<>();
+        BlockPos[] foodStorageArea = getFoodStorageAreaRange();
+        if (foodStorageArea == null || foodStorageArea.length < 2) {
+            return foodList;
+        }
+        BlockPos corner1 = foodStorageArea[0];
+        BlockPos corner2 = foodStorageArea[1];
+
+        int minX = Math.min(corner1.getX(), corner2.getX());
+        int minY = Math.min(corner1.getY(), corner2.getY());
+        int minZ = Math.min(corner1.getZ(), corner2.getZ());
+        int maxX = Math.max(corner1.getX(), corner2.getX());
+        int maxY = Math.max(corner1.getY(), corner2.getY());
+        int maxZ = Math.max(corner1.getZ(), corner2.getZ());
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    BlockPos checkPos = new BlockPos(x, y, z);
+                    if (!level.isLoaded(checkPos)) continue;
+
+                    BlockEntity blockEntity = level.getBlockEntity(checkPos);
+                    if (blockEntity != null) {
+                        LazyOptional<IItemHandler> capability = blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.UP);
+                        capability.ifPresent(handler -> {
+                            for (int slot = 0; slot < handler.getSlots(); slot++) {
+                                ItemStack stackInSlot = handler.getStackInSlot(slot).copy();
+                                if (!stackInSlot.isEmpty() && stackInSlot.getItem().isEdible()) {
+                                    ItemStack foodStack = stackInSlot.copy();
+                                    foodStack.setCount(1);
+                                    boolean isDuplicate = false;
+                                    for (ItemStack existingStack : foodList) {
+                                        if (ItemStack.matches(foodStack, existingStack)) {
+                                            isDuplicate = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!isDuplicate) {
+                                        foodList.add(foodStack);
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+        return foodList;
+    }
+
     RestaurantBlockEntity(BlockPos pos, BlockState blockState) {
         this(ModBlockEntities.RESTAURANT_BE.get(), pos, blockState);
     }
@@ -294,10 +365,6 @@ public void setOpen(boolean open) {
     }
 
 
-
-
-
-
     private void affectNearbyEntities() {
         int restaurantLevel = getRestaurantLevel();
         int range = Math.min(32 * restaurantLevel, 256);
@@ -310,7 +377,11 @@ public void setOpen(boolean open) {
             for (Entity entity : nearbyEntities) {
                 if (serverLevel.getRandom().nextFloat() < chance) {
                     if (entity instanceof ICustomerEntity customer) {
-                       customer.goetyDelight$enterCustomerModeAndCheckCoolDown();
+                        if (customer instanceof OwnableEntity ownable && ownable.getOwner() != null){
+
+                        }else {
+                            customer.goetyDelight$enterCustomerModeAndCheckCoolDown();
+                        }
                     }
                 }
             }
@@ -333,7 +404,7 @@ public void setOpen(boolean open) {
         super.setChanged();
     }
     public void updateDishesList() {
-        this.dishesList = findFoodItems();
+        this.dishesList = findFoodItemsFromFoodStorageArea();
         this.setChanged();
         if (this.level != null) {
             this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 2);
@@ -347,6 +418,7 @@ public void setOpen(boolean open) {
         updatePickupAreaRange();
         updateEntranceAreaRange();
         updateExitAreaRange();
+        updateFoodStorageAreaRange();
         this.setChanged();
         if (this.level != null) {
             this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 2);
@@ -361,6 +433,14 @@ public void setOpen(boolean open) {
         
         this.rangeMarker[0] = start;
         this.rangeMarker[1] = end;
+    }
+
+    private void updateFoodStorageAreaRange() {
+        ItemStack stack1 = inventory.getStackInSlot(FOOD_STORAGE_AREA_RANGE_INVENTORY_INDEX[0]);
+        ItemStack stack2 = inventory.getStackInSlot(FOOD_STORAGE_AREA_RANGE_INVENTORY_INDEX[1]);
+        BlockPos start = WaystoneItem.getBlockPos(stack1);
+        BlockPos end = WaystoneItem.getBlockPos(stack2);
+        setFoodStorageArea(start, end);
     }
 
     private void updateDiningAreaRange() {
@@ -442,7 +522,8 @@ public void setOpen(boolean open) {
         saveAreaRange(tag, "PickupAreaRange", this.pickupAreaRange);
         saveAreaRange(tag, "EntranceAreaRange", this.entranceAreaRange);
         saveAreaRange(tag, "ExitAreaRange", this.exitAreaRange);
-        
+        saveAreaRange(tag, "FoodStorageAreaRange", this.foodStorageAreaRange);
+
         tag.putBoolean("ShouldRenderArea", this.shouldRenderArea);
         tag.putFloat("RestaurantExperience", this.restaurantExperience);
 
@@ -453,7 +534,10 @@ public void setOpen(boolean open) {
             index++;
         }
         tag.put("DishesList", dishesListTag);
+        tag.putBoolean("isOpen", isOpen);
     }
+
+
 
     @Override
     public void load(CompoundTag tag) {
@@ -473,7 +557,8 @@ public void setOpen(boolean open) {
         loadAreaRange(tag, "PickupAreaRange", this.pickupAreaRange);
         loadAreaRange(tag, "EntranceAreaRange", this.entranceAreaRange);
         loadAreaRange(tag, "ExitAreaRange", this.exitAreaRange);
-        
+        loadAreaRange(tag, "FoodStorageAreaRange", this.foodStorageAreaRange);
+
         if (tag.contains("ShouldRenderArea")) {
             this.shouldRenderArea = tag.getBoolean("ShouldRenderArea");
         }
@@ -491,6 +576,9 @@ public void setOpen(boolean open) {
                     this.dishesList.add(dish);
                 }
             }
+        }
+        if (tag.contains("isOpen")) {
+            this.isOpen = tag.getBoolean("isOpen");
         }
 
     }
@@ -520,6 +608,18 @@ public void setOpen(boolean open) {
         if (this.level != null) {
             this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 2);
         }
+    }
+    public void switchRestaurant() {
+        isOpen = !isOpen;
+        this.setChanged();
+        if (this.level != null) {
+            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 2);
+        }
+    }
+
+    public void soul_lure() {
+        deSoulEnergy(150/getRestaurantLevel());
+        affectNearbyEntities();
     }
 
     class SpawnUtils {
@@ -580,6 +680,88 @@ public void setOpen(boolean open) {
 
             return true;
         }
+    }
+
+    private boolean hasSoulEnergy() {
+        ItemStack soulSource = this.inventory.getStackInSlot(SOUL_INVENTORY_INDEX);
+        if (soulSource.isEmpty()) {
+            return false;
+        }
+
+        if (isSoulTransferItem(soulSource)) {
+            return hasValidSoulTransferOwner(soulSource);
+        }
+
+        if (isTotemItem(soulSource)) {
+            return hasSoulsInTotem(soulSource);
+        }
+
+        return false;
+    }
+
+    public void addSoulEnergy(int amount) {
+        ItemStack soulSource = this.inventory.getStackInSlot(SOUL_INVENTORY_INDEX);
+        if (soulSource.isEmpty()) {
+            return;
+        }
+        if (isSoulTransferItem(soulSource)) {
+            addSoulToTransferItem(soulSource, amount);
+        }
+        else if (isTotemItem(soulSource)) {
+            addSoulToTotem(soulSource, amount);
+        }
+    }
+    public void deSoulEnergy(int amount) {
+        ItemStack soulSource = this.inventory.getStackInSlot(SOUL_INVENTORY_INDEX);
+        if (soulSource.isEmpty()) {
+            return;
+        }
+        if (isSoulTransferItem(soulSource)) {
+            deSoulToTransferItem(soulSource, amount);
+        }
+        else if (isTotemItem(soulSource)) {
+            deSoulToTotem(soulSource, amount);
+        }
+    }
+
+    private boolean isSoulTransferItem(ItemStack stack) {
+        return stack.getItem() == SOUL_TRANSFER.get() && stack.hasTag() && stack.getTag().contains("owner");
+    }
+
+    private boolean isTotemItem(ItemStack stack) {
+        return stack.getItem() instanceof ITotem && stack.hasTag() && stack.getTag().contains("Souls");
+    }
+
+    private boolean hasValidSoulTransferOwner(ItemStack soulSource) {
+        UUID ownerUuid = soulSource.getTag().getUUID("owner");
+        Player owner = this.level.getPlayerByUUID(ownerUuid);
+        return owner != null && SEHelper.getSEActive(owner) && SEHelper.getSESouls(owner) > 0;
+    }
+
+    private boolean hasSoulsInTotem(ItemStack soulSource) {
+        return soulSource.getTag().getInt("Souls") > 0;
+    }
+
+    private void addSoulToTransferItem(ItemStack soulSource, int amount) {
+        UUID ownerUuid = soulSource.getTag().getUUID("owner");
+        Player owner = this.level.getPlayerByUUID(ownerUuid);
+        if (owner != null) {
+            SEHelper.increaseSouls(owner, amount);
+        }
+    }
+    private void deSoulToTransferItem(ItemStack soulSource, int amount) {
+        UUID ownerUuid = soulSource.getTag().getUUID("owner");
+        Player owner = this.level.getPlayerByUUID(ownerUuid);
+        if (owner != null) {
+            SEHelper.decreaseSouls(owner, amount);
+        }
+    }
+
+    private void addSoulToTotem(ItemStack soulSource, int amount) {
+        ITotem.increaseSouls(soulSource, amount);
+    }
+    private void deSoulToTotem(ItemStack soulSource, int amount) {
+        ITotem.decreaseSouls(soulSource, amount);
     }
 }
 

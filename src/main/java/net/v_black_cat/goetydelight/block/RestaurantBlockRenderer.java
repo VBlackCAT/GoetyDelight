@@ -60,7 +60,12 @@ public class RestaurantBlockRenderer implements BlockEntityRenderer<RestaurantBl
                 renderAreaBox(poseStack, bufferSource, exitArea[0], exitArea[1], 
                              1.0F, 1.0F, 0.0F, 0.4F, blockEntity.getBlockPos());
             }
-            
+            // 渲染食物存储区域 - 紫色
+            BlockPos[] storageArea = blockEntity.getFoodStorageAreaRange();
+            if (storageArea[0] != null && storageArea[1] != null) {
+                renderAreaBox(poseStack, bufferSource, storageArea[0], storageArea[1], 
+                             0.5F, 0.0F, 0.5F, 0.4F, blockEntity.getBlockPos());
+            }
             poseStack.popPose();
         }
     }
@@ -107,13 +112,11 @@ public class RestaurantBlockRenderer implements BlockEntityRenderer<RestaurantBl
     
     @Override
     public int getViewDistance() {
-        return 64; // 设置较大的视距以便远距离也能看到区域渲染
+        return 64;
     }
-    
+
     @Override
     public boolean shouldRender(RestaurantBlockEntity blockEntity, Vec3 cameraPos) {
-        // 基于方块位置和摄像机位置判断是否应该渲染
-        return Vec3.atCenterOf(blockEntity.getBlockPos())
-                .closerThan(cameraPos, this.getViewDistance());
+        return true;
     }
 }

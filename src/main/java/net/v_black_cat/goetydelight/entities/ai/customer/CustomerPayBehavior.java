@@ -163,6 +163,8 @@ public class CustomerPayBehavior extends CustomerBehavior<PathfinderMob> {
 
             float bonusMultiplier = getRestaurantLevelBonusMultiplier(restaurant);
 
+            restaurant.addSoulEnergy((int) (25 * bonusMultiplier));
+
             int totalCount = filteredLoot.stream()
                     .mapToInt(ItemStack::getCount)
                     .sum();
