@@ -262,7 +262,6 @@ public class FalseProverbsItem extends SwordItem {
         }
     }
 
-
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public static void onPlayerRenderPre(RenderPlayerEvent.Pre event) {

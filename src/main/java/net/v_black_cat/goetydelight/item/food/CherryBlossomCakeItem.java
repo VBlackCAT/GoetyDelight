@@ -1,6 +1,10 @@
 package net.v_black_cat.goetydelight.item.food;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -20,6 +24,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.item.ModItems;
+import net.v_black_cat.goetydelight.util.GetKillCount;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -39,19 +44,29 @@ public class CherryBlossomCakeItem extends Item {
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         ItemStack resultStack = super.finishUsingItem(stack, level, entity);
 
-        if (!level.isClientSide) {
+        if (!level.isClientSide && entity instanceof Player player) {
+            if(GetKillCount.getKillCount((ServerPlayer) player, EntityType.FOX) ==0){
             // 移除任何现有的樱桃蛋糕攻击力加成
             removeAttackDamageBoost(entity);
 
             // 获取实体的幸运值（如果有）
             AttributeInstance luckAttribute = entity.getAttribute(Attributes.LUCK);
+            AttributeInstance attackAttribute = entity.getAttribute(Attributes.ATTACK_DAMAGE);
             double luckValue = luckAttribute != null ? luckAttribute.getValue() : 0;
 
-            // 每点幸运值增加0.5点攻击力
-            double attackBoost = luckValue * 0.5;
+            // 每点幸运值增加(1点+0.2%攻击力)攻击力
+            double attackBoost = 0;
+            if (attackAttribute != null) {
+                attackBoost = luckValue + attackAttribute.getValue() * 0.002;
+            }
 
             // 添加攻击力加成
-            addAttackDamageBoost(entity, attackBoost);
+            addAttackDamageBoost(entity, attackBoost);}
+            else {
+                LightningBolt lightning = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
+                lightning.setPos(entity.getX(), entity.getY(), entity.getZ());
+                level.addFreshEntity(lightning);
+            }
         }
 
         return resultStack;
@@ -87,6 +102,8 @@ public class CherryBlossomCakeItem extends Item {
     public static class CherryBlossomCakeEventHandler {
         @SubscribeEvent
         public static void onPlayerAttack(LivingHurtEvent event) {
+            if (event.getSource().getEntity() instanceof Player && event.getSource().getEntity().level() instanceof ServerLevel){
+            if (GetKillCount.getKillCount((ServerPlayer) event.getSource().getEntity(), EntityType.FOX) == 0){
             // 检查攻击者是否有樱桃蛋糕的攻击力加成
             if (event.getSource().getEntity() instanceof LivingEntity attacker) {
                 AttributeInstance attackDamage = attacker.getAttribute(Attributes.ATTACK_DAMAGE);
@@ -94,7 +111,7 @@ public class CherryBlossomCakeItem extends Item {
                     // 移除加成（仅对一次攻击生效）
                     attackDamage.removeModifier(ATTACK_DAMAGE_UUID);
                 }
-            }
+            }}}
         }
 
         @SubscribeEvent
@@ -105,15 +122,13 @@ public class CherryBlossomCakeItem extends Item {
 
             // 检查手持物品是否为樱花簇（PINK_PETALS）
             if (stack.getItem() == net.minecraft.world.item.Items.PINK_PETALS &&
-                    event.getTarget() instanceof Fox fox) {
-
+                    event.getTarget() instanceof Fox fox ) {
                 // 仅在服务端处理
-                if (!level.isClientSide()) {
+                if (!level.isClientSide()&& GetKillCount.getKillCount((ServerPlayer) player, EntityType.FOX) ==0) {
                     // 消耗手中的粉红色花簇
                     if (!player.getAbilities().instabuild) {
                         stack.shrink(1);
                     }
-
                     ItemStack cherryBlossomCake = new ItemStack(ModItems.CHERRY_BLOSSOM_CAKE.get());
                     fox.spawnAtLocation(cherryBlossomCake);
 
