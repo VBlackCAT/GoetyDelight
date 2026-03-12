@@ -102,19 +102,19 @@ public class NightHeartPeaSoupItem extends DrinkableItem implements IWand {
             }
         }
 
-        // 处理玻璃瓶的返还逻辑
-        if (entity instanceof Player player) {
-            if (player.getAbilities().instabuild) {
-                return result; // 创造模式不消耗物品
-            }
-
-            // 尝试将玻璃瓶添加到玩家物品栏
-            if (result.isEmpty()) {
-                return new ItemStack(Items.GLASS_BOTTLE); // 如果原物品已消耗完，直接返还碗
-            } else if (!player.getInventory().add(new ItemStack(Items.GLASS_BOTTLE))) {
-                player.drop(new ItemStack(Items.GLASS_BOTTLE), false); // 背包满时掉落碗
-            }
-        }
+//        // 处理玻璃瓶的返还逻辑
+//        if (entity instanceof Player player) {
+//            if (player.getAbilities().instabuild) {
+//                return result; // 创造模式不消耗物品
+//            }
+//
+//            // 尝试将玻璃瓶添加到玩家物品栏
+//            if (result.isEmpty()) {
+//                return new ItemStack(Items.GLASS_BOTTLE); // 如果原物品已消耗完，直接返还
+//            } else if (!player.getInventory().add(new ItemStack(Items.GLASS_BOTTLE))) {
+//                player.drop(new ItemStack(Items.GLASS_BOTTLE), false); // 背包满时掉落
+//            }
+//        }
 
         return result;
     }

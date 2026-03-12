@@ -1,8 +1,9 @@
 package net.v_black_cat.goetydelight.item;
 
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import vectorwing.farmersdelight.common.item.KnifeItem;
 
 public class DarkKnifeItem extends KnifeItem {
@@ -10,11 +11,11 @@ public class DarkKnifeItem extends KnifeItem {
         super(tier, attackDamage, attackSpeed, properties);
     }
 
-    @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        float baseDamage = this.getAttackDamage();
-        float boostedDamage = baseDamage * 1.5f;
-        target.hurt(target.damageSources().mobAttack(attacker), boostedDamage);
-        return super.hurtEnemy(stack, target, attacker);
+    @SubscribeEvent
+    public static void onLivingHurt(LivingHurtEvent event) {
+        LivingEntity entity = event.getEntity();
+        if (entity.getMainHandItem().getItem() instanceof DarkKnifeItem) {
+            event.setAmount(event.getAmount() * 1.5f);
+        }
     }
 }

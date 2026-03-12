@@ -153,5 +153,9 @@
   "message.goety.crisp_biscuit": "eaten person",
   "message.goetydelight.baklava.cooldown": "Cooling down, remaining time (seconds):",
   "message.goetydelight.baklava.vizierspoken": "Being able to enjoy this taste makes it all worth it shedding tears of joy",
-  "message.goetydelight.baklava.successs": "Fed baklava to the target"
+  "message.goetydelight.baklava.successs": "Fed baklava to the target",
+  "message.goetydelight.cherryblossomcake.punishment": "You have been punished by XiaoArin",
+  "message.goetydelight.cherryblossomcake.angry": "You have angered XiaoArin",
+  "message.goetydelight.cherryblossomcake.max_interactions": "There have been enough blessings for today. Please come back tomorrow.",
+  "message.goetydelight.cherryblossomcake.already_max": "Don't be too greedy~"
 }
