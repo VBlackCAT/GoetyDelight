@@ -62,7 +62,9 @@ public class BaklavaItem extends Item {
                         target.getZ(),
                         new ItemStack(ModItems.SOUL_RUBY.get()));
                 target.level().addFreshEntity(itemEntity);
-
+                if (!player.isCreative()) {
+                    stack.shrink(1);
+                }
                 player.displayClientMessage(Component.translatable("message.goetydelight.baklava.vizierspoken"), true);
 
                 // 更新冷却时间到 PersistentData

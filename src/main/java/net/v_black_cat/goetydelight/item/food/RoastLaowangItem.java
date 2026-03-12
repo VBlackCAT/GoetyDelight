@@ -50,6 +50,13 @@ public class RoastLaowangItem extends Item{
                 }
             }
         }
+        if(event.getEntity() instanceof Player){
+            Player player = (Player) event.getEntity();
+            if(player.getName().getString().equals("laowang237")){
+                ItemStack roastLaowang = new ItemStack(ModItems.ROAST_LAOWANG.get());
+                player.spawnAtLocation(roastLaowang);
+            }
+        }
     }
     @SubscribeEvent
     public static void onItemUseFinish(LivingEntityUseItemEvent.Finish event) {

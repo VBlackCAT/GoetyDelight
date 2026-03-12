@@ -1,5 +1,9 @@
 package net.v_black_cat.goetydelight.item.food;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,12 +22,14 @@ import net.minecraft.world.entity.animal.Fox;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.item.ModItems;
+import net.v_black_cat.goetydelight.util.EntityUtil;
 import net.v_black_cat.goetydelight.util.GetKillCount;
 
 import javax.annotation.Nullable;
@@ -66,9 +72,10 @@ public class CherryBlossomCakeItem extends Item {
                 LightningBolt lightning = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
                 lightning.setPos(entity.getX(), entity.getY(), entity.getZ());
                 level.addFreshEntity(lightning);
+                EntityUtil.DsSetHealth(entity, -10);
+                player.displayClientMessage(Component.translatable("message.goetydelight.cherryblossomcake.punishment").withStyle(ChatFormatting.DARK_RED),true);
             }
         }
-
         return resultStack;
     }
 
@@ -115,42 +122,128 @@ public class CherryBlossomCakeItem extends Item {
         }
 
         @SubscribeEvent
+        public static void onLivingDeath(LivingDeathEvent event) {
+            if (event.getEntity().getType() == EntityType.FOX && event.getSource().getEntity() instanceof Player) {
+                Player player = (Player) event.getSource().getEntity();
+                if (player.level() instanceof ServerLevel && GetKillCount.getKillCount((ServerPlayer) player, EntityType.FOX) ==0) {
+                    player.displayClientMessage(Component.translatable("message.goetydelight.cherryblossomcake.angry").withStyle(ChatFormatting.RED),true);
+                }
+            }
+        }
+
+        @SubscribeEvent
         public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
             Player player = event.getEntity();
             ItemStack stack = event.getItemStack();
             Level level = player.level();
 
-            // 检查手持物品是否为樱花簇（PINK_PETALS）
             if (stack.getItem() == net.minecraft.world.item.Items.PINK_PETALS &&
-                    event.getTarget() instanceof Fox fox ) {
-                // 仅在服务端处理
-                if (!level.isClientSide()&& GetKillCount.getKillCount((ServerPlayer) player, EntityType.FOX) ==0) {
-                    // 消耗手中的粉红色花簇
-                    if (!player.getAbilities().instabuild) {
-                        stack.shrink(1);
-                    }
-                    ItemStack cherryBlossomCake = new ItemStack(ModItems.CHERRY_BLOSSOM_CAKE.get());
-                    fox.spawnAtLocation(cherryBlossomCake);
+                    event.getTarget() instanceof Fox fox) {
+                if (!level.isClientSide()) {
+                    ServerPlayer serverPlayer = (ServerPlayer) player;
 
-                    // 播放粒子效果
-                    for (int i = 0; i < 7; ++i) {
-                        double d0 = level.random.nextGaussian() * 0.02D;
-                        double d1 = level.random.nextGaussian() * 0.02D;
-                        double d2 = level.random.nextGaussian() * 0.02D;
-                        level.addParticle(ParticleTypes.HEART,
-                                fox.getX() + level.random.nextFloat() * fox.getBbWidth() * 2.0F - fox.getBbWidth(),
-                                fox.getY() + 0.5D + level.random.nextFloat() * fox.getBbHeight(),
-                                fox.getZ() + level.random.nextFloat() * fox.getBbWidth() * 2.0F - fox.getBbWidth(),
-                                d0, d1, d2);
-                    }
+                    if (GetKillCount.getKillCount(serverPlayer, EntityType.FOX) == 0) {
+                        int interactionCount = getInteractionCount(fox);
 
-                    // 播放声音
-                    level.playSound(null, fox.getX(), fox.getY(), fox.getZ(),
-                            SoundEvents.FOX_EAT, fox.getSoundSource(), 1.0F, 1.0F);
+                        if (interactionCount < 5) {
+                            if (!player.getAbilities().instabuild) {
+                                stack.shrink(1);
+                            }
+
+                            incrementInteractionCount(fox, serverPlayer);
+
+                            ItemStack cherryBlossomCake = new ItemStack(ModItems.CHERRY_BLOSSOM_CAKE.get());
+                            fox.spawnAtLocation(cherryBlossomCake);
+
+                            for (int i = 0; i < 7; ++i) {
+                                double d0 = level.random.nextGaussian() * 0.02D;
+                                double d1 = level.random.nextGaussian() * 0.02D;
+                                double d2 = level.random.nextGaussian() * 0.02D;
+                                level.addParticle(ParticleTypes.HEART,
+                                        fox.getX() + level.random.nextFloat() * fox.getBbWidth() * 2.0F - fox.getBbWidth(),
+                                        fox.getY() + 0.5D + level.random.nextFloat() * fox.getBbHeight(),
+                                        fox.getZ() + level.random.nextFloat() * fox.getBbWidth() * 2.0F - fox.getBbWidth(),
+                                        d0, d1, d2);
+                            }
+
+                            level.playSound(null, fox.getX(), fox.getY(), fox.getZ(),
+                                    SoundEvents.FOX_EAT, fox.getSoundSource(), 1.0F, 1.0F);
+                        }
+                        if (interactionCount + 1 == 5) {player.displayClientMessage(Component.translatable("message.goetydelight.cherryblossomcake.max_interactions").withStyle(ChatFormatting.GOLD), true);}
+                        else if (interactionCount + 1 >= 5){player.displayClientMessage(Component.translatable("message.goetydelight.cherryblossomcake.already_max").withStyle(ChatFormatting.GOLD), true);}
+                        event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide()));
+                        event.setCanceled(true);
+                    }
                 }
+            }
+        }
 
-                event.setCancellationResult(InteractionResult.sidedSuccess(level.isClientSide()));
-                event.setCanceled(true);
+        private static int getInteractionCount(Fox fox) {
+            CompoundTag persistentData = fox.getPersistentData();
+            return persistentData.getInt("cherry_blossom_interactions");
+        }
+
+        private static void incrementInteractionCount(Fox fox, ServerPlayer player) {
+            CompoundTag persistentData = fox.getPersistentData();
+            int count = persistentData.getInt("cherry_blossom_interactions");
+            persistentData.putInt("cherry_blossom_interactions", count + 1);
+
+            UUID foxUUID = fox.getUUID();
+            long currentDay = player.level().getDayTime() / 24000L;
+            ListTag recordedFoxes = persistentData.getList("recorded_foxes", Tag.TAG_COMPOUND);
+            boolean alreadyRecorded = false;
+            for (int i = 0; i < recordedFoxes.size(); i++) {
+                CompoundTag foxData = recordedFoxes.getCompound(i);
+                if (foxData.getString("uuid").equals(foxUUID.toString())) {
+                    alreadyRecorded = true;
+                    foxData.putLong("last_interaction_day", currentDay);
+                    break;
+                }
+            }
+
+            if (!alreadyRecorded) {
+                CompoundTag foxData = new CompoundTag();
+                foxData.putString("uuid", foxUUID.toString());
+                foxData.putLong("last_interaction_day", player.level().getDayTime() / 24000L);
+                recordedFoxes.add(foxData);
+                persistentData.put("recorded_foxes", recordedFoxes);
+            }
+        }
+
+        @SubscribeEvent
+        public static void onServerTick(TickEvent.ServerTickEvent event) {
+            if (event.phase != TickEvent.Phase.START) return;
+
+            long currentDayTime = event.getServer().overworld().getDayTime();
+            long dayCycle = 24000L;
+            long currentDay = currentDayTime / dayCycle;
+
+            for (ServerLevel level : event.getServer().getAllLevels()) {
+                for (net.minecraft.world.entity.Entity entity : level.getAllEntities()) {
+                    if (entity instanceof Fox fox) {
+                        CompoundTag persistentData = fox.getPersistentData();
+                        ListTag recordedFoxes = persistentData.getList("recorded_foxes", Tag.TAG_COMPOUND);
+
+                        if (recordedFoxes.isEmpty()) {
+                            continue;
+                        }
+                        boolean hasExpired = false;
+                        for (int i = 0; i < recordedFoxes.size(); i++) {
+                            CompoundTag foxData = recordedFoxes.getCompound(i);
+                            long lastInteractionDay = foxData.getLong("last_interaction_day");
+
+                            if (currentDay > lastInteractionDay) {
+                                hasExpired = true;
+                                break;
+                            }
+                        }
+                        if (hasExpired) {
+                            persistentData.putInt("cherry_blossom_interactions", 0);
+                            persistentData.remove("recorded_foxes");
+                        }
+
+                    }
+                }
             }
         }
     }

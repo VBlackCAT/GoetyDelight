@@ -43,7 +43,7 @@ import java.util.UUID;
 
 
 @Mod.EventBusSubscriber
-public class FalseProverbsItem extends SwordItem {
+public class FalseProverbsItem extends SwordItem{
     private static Vec3 originalPosition = null;
     private static final UUID Is_Shift_Key_UUID = UUID.fromString("4f5f5f5f-5f5f-5f5f-5f5f-5f5f5f5f5f5f");
     public static final String SHIFT_KEY_TAG = "IsShift";
@@ -234,6 +234,9 @@ public class FalseProverbsItem extends SwordItem {
                 }
                 if(player.isShiftKeyDown() && !player.isUsingItem() && !getPlayerTeleportStatus(player.getUUID())){
                      event.setAmount((float) (event.getAmount() * Config.getLivingDamageGeneralMultiplier()));
+                }
+                if(player.isShiftKeyDown() && !player.isUsingItem() && getPlayerTeleportStatus(player.getUUID()) && !vectorwing.farmersdelight.common.item.enchantment.BackstabbingEnchantment.isLookingBehindTarget(event.getEntity(), player.getEyePosition())){
+                    event.setAmount((float) (event.getAmount() * Config.getLivingDamageGeneralMultiplier()));
                 }
             }
         }
