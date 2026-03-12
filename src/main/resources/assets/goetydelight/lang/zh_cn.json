@@ -154,8 +154,8 @@
   "message.goetydelight.baklava.cooldown": "冷却中，剩余时间(秒):",
   "message.goetydelight.baklava.vizierspoken": "能吃上这一口，值啦*老泪纵横*",
   "message.goetydelight.baklava.successs": "已对目标喂食蜜糖果仁千层酥",
-  "message.goetydelight.cherryblossomcake.punishment": "你受到了小梦樱的惩罚",
-  "message.goetydelight.cherryblossomcake.angry": "你触怒了小梦樱",
+  "message.goetydelight.cherryblossomcake.punishment": "你误食了只属于祝福者的圣物，被降下了天罚",
+  "message.goetydelight.cherryblossomcake.angry": "你令小梦樱感到伤心，你不再是可以被赐福者",
   "message.goetydelight.cherryblossomcake.max_interactions": "今天的祝福已经够多了，请明天再来吧",
   "message.goetydelight.cherryblossomcake.already_max": "不可以太贪心哟~"
 }

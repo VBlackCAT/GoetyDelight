@@ -154,8 +154,8 @@
   "message.goetydelight.baklava.cooldown": "Cooling down, remaining time (seconds):",
   "message.goetydelight.baklava.vizierspoken": "Being able to enjoy this taste makes it all worth it shedding tears of joy",
   "message.goetydelight.baklava.successs": "Fed baklava to the target",
-  "message.goetydelight.cherryblossomcake.punishment": "You have been punished by XiaoArin",
-  "message.goetydelight.cherryblossomcake.angry": "You have angered XiaoArin",
+  "message.goetydelight.cherryblossomcake.punishment": "You have made XiaoArin feel sad. You are no longer one who can receive blessings.",
+  "message.goetydelight.cherryblossomcake.angry": "You have mistakenly consumed a sacred relic meant only for the blessed, and divine punishment has been cast upon you.",
   "message.goetydelight.cherryblossomcake.max_interactions": "There have been enough blessings for today. Please come back tomorrow.",
   "message.goetydelight.cherryblossomcake.already_max": "Don't be too greedy~"
 }

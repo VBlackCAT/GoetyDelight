@@ -34,6 +34,7 @@ import net.v_black_cat.goetydelight.util.GetKillCount;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class CherryBlossomCakeItem extends Item {
@@ -69,17 +70,71 @@ public class CherryBlossomCakeItem extends Item {
             // 添加攻击力加成
             addAttackDamageBoost(entity, attackBoost);}
             else {
-                LightningBolt lightning = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
-                lightning.setPos(entity.getX(), entity.getY(), entity.getZ());
-                level.addFreshEntity(lightning);
-                EntityUtil.DsSetHealth(entity, -10);
-                player.displayClientMessage(Component.translatable("message.goetydelight.cherryblossomcake.punishment").withStyle(ChatFormatting.DARK_RED),true);
+//                LightningBolt lightning = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
+//                lightning.setPos(entity.getX(), entity.getY(), entity.getZ());
+//                level.addFreshEntity(lightning);
+//                EntityUtil.DsSetHealth(entity, -10);
+//                player.displayClientMessage(Component.translatable("message.goetydelight.cherryblossomcake.punishment").withStyle(ChatFormatting.DARK_RED),true);
+                spawnLightningAndDamage(entity, player, level);
+
+                // 设置标记，用于后续雷击
+                CompoundTag tag = entity.getPersistentData();
+                tag.putLong("CherryBlossomPunishmentTime", level.getGameTime());
+                tag.putInt("CherryBlossomPunishmentCount", 0);
             }
         }
         return resultStack;
     }
 
-    private void addAttackDamageBoost(LivingEntity entity, double boostAmount) {
+    private static void spawnLightningAndDamage(LivingEntity entity, Player player, Level level) {
+        if (!level.isClientSide) {
+            LightningBolt lightning = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
+            lightning.setPos(entity.getX(), entity.getY(), entity.getZ());
+            level.addFreshEntity(lightning);
+
+            double maxHealth = Objects.requireNonNull(entity.getAttribute(Attributes.MAX_HEALTH)).getValue();
+            double health = entity.getHealth();
+            double damageAmount = maxHealth * 0.32;
+            EntityUtil.DsSetHealth(entity, (float) (health-damageAmount));
+
+            if (entity instanceof Player p) {
+                p.displayClientMessage(Component.translatable("message.goetydelight.cherryblossomcake.punishment").withStyle(ChatFormatting.DARK_RED), true);
+            }
+        }
+    }
+    @SubscribeEvent
+    public static void onServerTick(TickEvent.ServerTickEvent event) {
+        if (event.phase != TickEvent.Phase.START) return;
+
+        for (ServerLevel level : event.getServer().getAllLevels()) {
+            for (net.minecraft.world.entity.Entity entity : level.getAllEntities()) {
+                if (entity instanceof LivingEntity livingEntity) {
+                    CompoundTag tag = livingEntity.getPersistentData();
+                    if (tag.contains("CherryBlossomPunishmentTime")) {
+                        long startTime = tag.getLong("CherryBlossomPunishmentTime");
+                        int count = tag.getInt("CherryBlossomPunishmentCount");
+                        long currentTime = level.getGameTime();
+
+                        if (count < 3 && currentTime >= startTime + (count + 1) * 20) {
+                            if (livingEntity instanceof Player player) {
+                                spawnLightningAndDamage(livingEntity, player, level);
+                            } else {
+                                spawnLightningAndDamage(livingEntity, null, level);
+                            }
+                            tag.putInt("CherryBlossomPunishmentCount", count + 1);
+
+                            if (count + 1 >= 3) {
+                                tag.remove("CherryBlossomPunishmentTime");
+                                tag.remove("CherryBlossomPunishmentCount");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+        private void addAttackDamageBoost(LivingEntity entity, double boostAmount) {
         AttributeInstance attackDamage = entity.getAttribute(Attributes.ATTACK_DAMAGE);
         if (attackDamage != null && boostAmount > 0) {
             AttributeModifier modifier = new AttributeModifier(
@@ -110,15 +165,15 @@ public class CherryBlossomCakeItem extends Item {
         @SubscribeEvent
         public static void onPlayerAttack(LivingHurtEvent event) {
             if (event.getSource().getEntity() instanceof Player && event.getSource().getEntity().level() instanceof ServerLevel){
-            if (GetKillCount.getKillCount((ServerPlayer) event.getSource().getEntity(), EntityType.FOX) == 0){
-            // 检查攻击者是否有樱桃蛋糕的攻击力加成
-            if (event.getSource().getEntity() instanceof LivingEntity attacker) {
-                AttributeInstance attackDamage = attacker.getAttribute(Attributes.ATTACK_DAMAGE);
-                if (attackDamage != null && attackDamage.getModifier(ATTACK_DAMAGE_UUID) != null) {
-                    // 移除加成（仅对一次攻击生效）
-                    attackDamage.removeModifier(ATTACK_DAMAGE_UUID);
-                }
-            }}}
+                if (GetKillCount.getKillCount((ServerPlayer) event.getSource().getEntity(), EntityType.FOX) == 0){
+                    // 检查攻击者是否有樱桃蛋糕的攻击力加成
+                    if (event.getSource().getEntity() instanceof LivingEntity attacker) {
+                        AttributeInstance attackDamage = attacker.getAttribute(Attributes.ATTACK_DAMAGE);
+                        if (attackDamage != null && attackDamage.getModifier(ATTACK_DAMAGE_UUID) != null) {
+                            // 移除加成（仅对一次攻击生效）
+                            attackDamage.removeModifier(ATTACK_DAMAGE_UUID);
+                        }
+                    }}}
         }
 
         @SubscribeEvent
@@ -178,38 +233,6 @@ public class CherryBlossomCakeItem extends Item {
             }
         }
 
-        private static int getInteractionCount(Fox fox) {
-            CompoundTag persistentData = fox.getPersistentData();
-            return persistentData.getInt("cherry_blossom_interactions");
-        }
-
-        private static void incrementInteractionCount(Fox fox, ServerPlayer player) {
-            CompoundTag persistentData = fox.getPersistentData();
-            int count = persistentData.getInt("cherry_blossom_interactions");
-            persistentData.putInt("cherry_blossom_interactions", count + 1);
-
-            UUID foxUUID = fox.getUUID();
-            long currentDay = player.level().getDayTime() / 24000L;
-            ListTag recordedFoxes = persistentData.getList("recorded_foxes", Tag.TAG_COMPOUND);
-            boolean alreadyRecorded = false;
-            for (int i = 0; i < recordedFoxes.size(); i++) {
-                CompoundTag foxData = recordedFoxes.getCompound(i);
-                if (foxData.getString("uuid").equals(foxUUID.toString())) {
-                    alreadyRecorded = true;
-                    foxData.putLong("last_interaction_day", currentDay);
-                    break;
-                }
-            }
-
-            if (!alreadyRecorded) {
-                CompoundTag foxData = new CompoundTag();
-                foxData.putString("uuid", foxUUID.toString());
-                foxData.putLong("last_interaction_day", player.level().getDayTime() / 24000L);
-                recordedFoxes.add(foxData);
-                persistentData.put("recorded_foxes", recordedFoxes);
-            }
-        }
-
         @SubscribeEvent
         public static void onServerTick(TickEvent.ServerTickEvent event) {
             if (event.phase != TickEvent.Phase.START) return;
@@ -244,6 +267,63 @@ public class CherryBlossomCakeItem extends Item {
 
                     }
                 }
+
+                for (net.minecraft.world.entity.Entity entity : level.getAllEntities()) {
+                    if (entity instanceof LivingEntity livingEntity) {
+                        CompoundTag tag = livingEntity.getPersistentData();
+                        if (tag.contains("CherryBlossomPunishmentTime")) {
+                            long startTime = tag.getLong("CherryBlossomPunishmentTime");
+                            int count = tag.getInt("CherryBlossomPunishmentCount");
+                            long currentTime = level.getGameTime();
+
+                            if (count < 3 && currentTime >= startTime + count * 20) {
+                                if (livingEntity instanceof Player player) {
+                                    spawnLightningAndDamage(livingEntity, player, level);
+                                } else {
+                                    spawnLightningAndDamage(livingEntity, null, level);
+                                }
+                                tag.putInt("CherryBlossomPunishmentCount", count + 1);
+
+                                if (count + 1 >= 3) {
+                                    tag.remove("CherryBlossomPunishmentTime");
+                                    tag.remove("CherryBlossomPunishmentCount");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private static int getInteractionCount(Fox fox) {
+            CompoundTag persistentData = fox.getPersistentData();
+            return persistentData.getInt("cherry_blossom_interactions");
+        }
+
+        private static void incrementInteractionCount(Fox fox, ServerPlayer player) {
+            CompoundTag persistentData = fox.getPersistentData();
+            int count = persistentData.getInt("cherry_blossom_interactions");
+            persistentData.putInt("cherry_blossom_interactions", count + 1);
+
+            UUID foxUUID = fox.getUUID();
+            long currentDay = player.level().getDayTime() / 24000L;
+            ListTag recordedFoxes = persistentData.getList("recorded_foxes", Tag.TAG_COMPOUND);
+            boolean alreadyRecorded = false;
+            for (int i = 0; i < recordedFoxes.size(); i++) {
+                CompoundTag foxData = recordedFoxes.getCompound(i);
+                if (foxData.getString("uuid").equals(foxUUID.toString())) {
+                    alreadyRecorded = true;
+                    foxData.putLong("last_interaction_day", currentDay);
+                    break;
+                }
+            }
+
+            if (!alreadyRecorded) {
+                CompoundTag foxData = new CompoundTag();
+                foxData.putString("uuid", foxUUID.toString());
+                foxData.putLong("last_interaction_day", player.level().getDayTime() / 24000L);
+                recordedFoxes.add(foxData);
+                persistentData.put("recorded_foxes", recordedFoxes);
             }
         }
     }
