@@ -135,6 +135,7 @@ public class ModItems {
     public static final RegistryObject<Item> RAKI;
     public static final RegistryObject<Item> MENEMEN_WITH_BREAD;
     public static final RegistryObject<Item> BAKLAVA;
+    public static final RegistryObject<Item> CUSTOM_DOLL;
 
 
 
@@ -143,6 +144,7 @@ public class ModItems {
     public static final RegistryObject<Item> METAMORPHIC_SCENT_GRASS_SEEDS;
 
     public static final RegistryObject<Item> MENU;
+    public static final RegistryObject<Item> DOLL_ITEM;
     // ==================== 效果供应商常量 ====================
     public static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
     public static final Supplier<MobEffect> NOURISHMENT_EFFECT_SUPPLIER = farmersDelightBuff("nourishment");
@@ -171,6 +173,8 @@ public class ModItems {
 
         NOT_ANYTHING = ITEMS.register("not_anything",
                 () -> new Item(basicItem().stacksTo(1)));
+
+        CUSTOM_DOLL = ITEMS.register("custom_doll", () -> new CustomDollItem(ModBlocks.CUSTOM_DOLL.get()));
 
         METAMORPHIC_SCENT_GRASS = ITEMS.register("metamorphic_scent_grass",
             () -> new MetamorphicScentGrassItem(basicItem().stacksTo(64).food(simpleFoodItemProperties(2,3).build())));
@@ -344,7 +348,7 @@ public class ModItems {
                                 .build())));
 
         QUICK_GROWING_SEED_POPCORN = ITEMS.register("quick_growing_seed_popcorn",
-                () -> new Item(basicItem().stacksTo(1).food(
+                () -> new Item(basicItem().stacksTo(16).food(
                         simpleFoodItemProperties(8, 5)
                                 .effect(() -> new MobEffectInstance(MobEffects.SATURATION, 100, 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(COMFORT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
@@ -754,6 +758,8 @@ public class ModItems {
                 () -> new ForgeSpawnEggItem(ModEntities.GHOST_FARMER, 0xFFFFFF,0xFFFFFF, new Item.Properties()));
 
         MENU = registerWithTab("menu", () -> new MenuItem(new Item.Properties()));
+
+        DOLL_ITEM = registerWithTab("doll_item", () -> new Item(new Item.Properties()));
     }
 
 

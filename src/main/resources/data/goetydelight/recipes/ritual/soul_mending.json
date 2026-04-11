@@ -1,0 +1,41 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "minecraft:book"
+  },
+  "craftType": "magic",
+  "soulCost": 10,
+  "duration": 10,
+  "ingredients": [
+    {
+      "item": "minecraft:quartz"
+    },
+    {
+      "item": "minecraft:quartz"
+    },
+    {
+      "item": "minecraft:lapis_lazuli"
+    },
+    {
+      "item": "minecraft:experience_bottle"
+    },
+    {
+      "item": "goety:haunted_jug"
+    },
+    {
+      "item": "goety:totem_of_roots"
+    }
+  ],
+  "result": {
+    "item": "minecraft:enchanted_book",
+    "nbt": {
+      "StoredEnchantments": [
+        {
+          "id": "goetydelight:soul_mending",
+          "lvl": 3
+        }
+      ]
+    }
+  }
+}

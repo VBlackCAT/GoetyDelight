@@ -1,0 +1,38 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "minecraft:book"
+  },
+  "craftType": "magic",
+  "soulCost": 10,
+  "duration": 10,
+  "ingredients": [
+    {
+      "item": "minecraft:enchanted_golden_apple"
+    },
+    {
+      "item": "goety:quick_growing_seed"
+    },
+    {
+      "item": "goety:quick_growing_seed"
+    },
+    {
+      "item": "goetydelight:gathering_soul_embryos"
+    },
+    {
+      "item": "goety:soul_heal_focus"
+    }
+  ],
+  "result": {
+    "item": "minecraft:enchanted_book",
+    "nbt": {
+      "StoredEnchantments": [
+        {
+          "id": "goetydelight:soul_healing",
+          "lvl": 1
+        }
+      ]
+    }
+  }
+}

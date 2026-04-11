@@ -43,7 +43,7 @@ public class ModEnchantments {
             ENCHANTMENTS.register("soul_affix",
                     () -> new SoulAffixEnchantment(
                             Enchantment.Rarity.RARE,
-                            EnchantmentCategory.BREAKABLE,
+                            EnchantmentCategory.ARMOR,
                             EquipmentSlot.values()
                     ));
 

@@ -16,7 +16,6 @@
     "SummonSpellMixin",
     "WightSpawnerMixin",
     "customer.LivingEntityToCustomerMixin",
-    "customer.MobAiRedirectMixin",
     "customer.PathFinderMobToCustomerMixin"
   ],
   "client": [

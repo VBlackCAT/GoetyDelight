@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClientHandle {
+    private static int cachedFoxKillCount = 0;
     static void handleCustomerItemListUpdatePacket(CustomerItemListUpdatePacket packet) {
         Level level = Minecraft.getInstance().level;
         if (level != null) {
@@ -26,5 +27,13 @@ public class ClientHandle {
                 });
             }
         }
+    }
+
+    static void handleSyncFoxKillCountPacket(SyncFoxKillCountPacket packet) {
+        cachedFoxKillCount = packet.foxKillCount();
+    }
+
+    public static int getCachedFoxKillCount() {
+        return cachedFoxKillCount;
     }
 }

@@ -1,12 +1,16 @@
 package net.v_black_cat.goetydelight.item.food;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stat;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,13 +26,17 @@ import net.minecraft.world.entity.animal.Fox;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionResult;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.NetworkDirection;
 import net.v_black_cat.goetydelight.item.ModItems;
+import net.v_black_cat.goetydelight.network.NetworkHandler;
+import net.v_black_cat.goetydelight.network.SyncFoxKillCountPacket;
 import net.v_black_cat.goetydelight.util.EntityUtil;
 import net.v_black_cat.goetydelight.util.GetKillCount;
 
@@ -94,7 +102,7 @@ public class CherryBlossomCakeItem extends Item {
 
             double maxHealth = Objects.requireNonNull(entity.getAttribute(Attributes.MAX_HEALTH)).getValue();
             double health = entity.getHealth();
-            double damageAmount = maxHealth * 0.32;
+            double damageAmount = maxHealth * 0.25;
             EntityUtil.DsSetHealth(entity, (float) (health-damageAmount));
 
             if (entity instanceof Player p) {
@@ -155,13 +163,40 @@ public class CherryBlossomCakeItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
-        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
-        tooltipComponents.add(Component.translatable("tooltip.goetydelight.cherry_blossom_cake"));
+    public void appendHoverText(ItemStack stack, Level world, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
+        int foxKillCount = net.v_black_cat.goetydelight.network.ClientHandle.getCachedFoxKillCount();
+
+        if (foxKillCount == 0) {
+            tooltipComponents.add(Component.translatable("tooltip.goetydelight.cherry_blossom_cake_good").withStyle(ChatFormatting.GOLD));
+        }else{
+            tooltipComponents.add(Component.translatable("tooltip.goetydelight.cherry_blossom_cake_bad").withStyle(ChatFormatting.DARK_RED));
+        }
     }
 
     @Mod.EventBusSubscriber
     public static class CherryBlossomCakeEventHandler {
+        @SubscribeEvent
+        public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+            if (!event.getEntity().level().isClientSide && event.getEntity() instanceof ServerPlayer player) {
+                int foxKillCount = GetKillCount.getKillCount(player, EntityType.FOX);
+                NetworkHandler.sendToClient(
+                        new SyncFoxKillCountPacket(foxKillCount),
+                        player
+                );
+            }
+        }
+        @SubscribeEvent
+        public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+            if (!event.player.level().isClientSide && event.player instanceof ServerPlayer player && event.phase == TickEvent.Phase.END) {
+                if (player.tickCount % 100 == 0) {
+                    int foxKillCount = GetKillCount.getKillCount(player, EntityType.FOX);
+                    NetworkHandler.sendToClient(
+                            new SyncFoxKillCountPacket(foxKillCount),
+                            player
+                    );
+                }
+            }
+        }
         @SubscribeEvent
         public static void onPlayerAttack(LivingHurtEvent event) {
             if (event.getSource().getEntity() instanceof Player && event.getSource().getEntity().level() instanceof ServerLevel){
@@ -182,6 +217,11 @@ public class CherryBlossomCakeItem extends Item {
                 Player player = (Player) event.getSource().getEntity();
                 if (player.level() instanceof ServerLevel && GetKillCount.getKillCount((ServerPlayer) player, EntityType.FOX) ==0) {
                     player.displayClientMessage(Component.translatable("message.goetydelight.cherryblossomcake.angry").withStyle(ChatFormatting.RED),true);
+                    int foxKillCount = GetKillCount.getKillCount((ServerPlayer) player, EntityType.FOX);
+                    NetworkHandler.sendToClient(
+                            new SyncFoxKillCountPacket(foxKillCount),
+                            (ServerPlayer) player
+                    );
                 }
             }
         }

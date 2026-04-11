@@ -6,6 +6,8 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.GoalSelector;
 import net.v_black_cat.goetydelight.entities.ai.customer.CustomerAi;
 import net.v_black_cat.goetydelight.entities.ICustomerEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -13,6 +15,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(Mob.class)
 public abstract class MobAiRedirectMixin {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MobAiRedirectMixin.class);
 
     @Shadow
     protected abstract void customServerAiStep();
@@ -39,9 +43,21 @@ public abstract class MobAiRedirectMixin {
     private void goetyDelight$redirectCustomAiStep(Mob instance) {
         if (instance instanceof ICustomerEntity customer && customer.goetyDelight$isCustomerMode()) {
 
-            if (customer.goetyDelight$getCustomerBrain() != null) {
-                 customer.goetyDelight$getCustomerBrain().tick((ServerLevel)instance.level(), (PathfinderMob)instance);
-                CustomerAi.updateActivity((PathfinderMob)instance);
+            if (customer.goetyDelight$getCustomerBrain() != null && instance instanceof PathfinderMob pathfinderMob) {
+                try {
+                    if (!instance.level().isClientSide && instance.level() instanceof ServerLevel serverLevel) {
+                        if (pathfinderMob.getNavigation() != null) {
+                            customer.goetyDelight$getCustomerBrain().tick(serverLevel, pathfinderMob);
+                            CustomerAi.updateActivity(pathfinderMob);
+                        } else {
+                            customer.goetyDelight$setCustomerMode(false);
+                            LOGGER.warn("Disabled customer mode for {} due to null navigation", instance);
+                        }
+                    }
+                } catch (Exception e) {
+                    customer.goetyDelight$setCustomerMode(false);
+                    LOGGER.error("Error during customer AI tick for {}, disabling customer mode", instance, e);
+                }
             }
 
         } else {

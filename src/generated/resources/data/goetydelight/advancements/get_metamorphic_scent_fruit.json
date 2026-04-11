@@ -1,0 +1,38 @@
+{
+  "parent": "goetydelight:get_metamorphic_scent_grass_seeds",
+  "criteria": {
+    "metamorphic_scent_fruit": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "goetydelight:metamorphic_scent_fruit"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "goetydelight.advancement.get_metamorphic_scent_fruit.description"
+    },
+    "frame": "challenge",
+    "hidden": true,
+    "icon": {
+      "item": "goetydelight:metamorphic_scent_fruit"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "goetydelight.advancement.get_metamorphic_scent_fruit.title"
+    }
+  },
+  "requirements": [
+    [
+      "metamorphic_scent_fruit"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
