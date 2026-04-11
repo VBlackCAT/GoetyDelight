@@ -1,11 +1,13 @@
 package net.v_black_cat.goetydelight;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -18,6 +20,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.v_black_cat.goetydelight.ability.AbilityRegistry;
+import net.v_black_cat.goetydelight.bedrock.BedrockModel;
 import net.v_black_cat.goetydelight.block.ModBlockEntities;
 import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.v_black_cat.goetydelight.block.RenderBlockRenderer;
@@ -36,6 +39,7 @@ import net.v_black_cat.goetydelight.item.ModItems;
 import net.v_black_cat.goetydelight.loot.RegHelper;
 import net.v_black_cat.goetydelight.network.NetworkHandler;
 import net.v_black_cat.goetydelight.recipe.ModRecipeSerializers;
+import net.v_black_cat.goetydelight.render.DollEntityRender;
 import net.v_black_cat.goetydelight.render.animation.RotationEffectHandler;
 
 import net.v_black_cat.goetydelight.ritual.DelightRitualType;
@@ -43,7 +47,10 @@ import net.v_black_cat.goetydelight.screen.*;
 import net.v_black_cat.goetydelight.structures.ModStructurePieceTypes;
 import net.v_black_cat.goetydelight.structures.ModStructureProcessorTypes;
 import net.v_black_cat.goetydelight.structures.ModStructures;
+import net.v_black_cat.goetydelight.util.ModSounds;
 import org.slf4j.Logger;
+
+import java.io.InputStream;
 
 import static net.v_black_cat.goetydelight.loot.ModLootModifier.GLOBAL_LOOT_MODIFIER_CODECS;
 import static net.v_black_cat.goetydelight.item.ModItems.ITEMS;
@@ -70,6 +77,8 @@ public class GoetyDelight
         BLOCKS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so items get registered
         ITEMS.register(modEventBus);
+
+        ModSounds.SOUND_EVENTS.register(modEventBus);
 
         GLOBAL_LOOT_MODIFIER_CODECS.register(modEventBus);
         // Register ourselves for server and other game events we are interested in
@@ -145,6 +154,7 @@ public class GoetyDelight
             BlockEntityRenderers.register(ModBlockEntities.RENDER_BLOCK.get(), RenderBlockRenderer::new);
             BlockEntityRenderers.register(ModBlockEntities.RESTAURANT_BE.get(), RestaurantBlockRenderer::new);
             EntityRenderers.register(ModEntities.GHOST_FARMER.get(), GhostFarmerRenderer::new);
+            EntityRenderers.register(ModEntities.DOLL_ENTITY.get(),DollEntityRender::new);
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.ECTOPLASMIC_MELON_STEM.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.ATTACHED_ECTOPLASMIC_MELON_STEM.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.DRIPMARBLE_BLOCK.get(), RenderType.cutout());

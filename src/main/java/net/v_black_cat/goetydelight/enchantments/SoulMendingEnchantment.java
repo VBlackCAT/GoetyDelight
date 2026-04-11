@@ -1,6 +1,10 @@
 package net.v_black_cat.goetydelight.enchantments;
+import com.Polarice3.Goety.api.entities.IOwned;
 import com.Polarice3.Goety.utils.SEHelper;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -9,6 +13,9 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.config.Config;
+import net.v_black_cat.goetydelight.util.SearchServant;
+
+import java.util.List;
 
 @Mod.EventBusSubscriber(modid = "goetydelight")
 public class SoulMendingEnchantment extends Enchantment {
@@ -78,17 +85,46 @@ public class SoulMendingEnchantment extends Enchantment {
         return stack.isDamageableItem();
     }
 
-    
+
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END && event.player.tickCount % 4 == 0) {
-            Player player = event.player;
+        if (event.phase == TickEvent.Phase.END && event.player.tickCount % 4 == 0 && !event.player.level().isClientSide()) {
+            if (event.player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                net.minecraft.server.level.ServerLevel level = (net.minecraft.server.level.ServerLevel) serverPlayer.level();
 
-            
-            for (ItemStack stack : player.getAllSlots()) {
-                int enchantmentLevel = stack.getEnchantmentLevel(ModEnchantments.SOUL_MENDING.get());
-                if (stack.isEnchanted() && enchantmentLevel > 0) {
-                    repairItemWithSoulEnergy(player, stack, enchantmentLevel);
+                SearchServant.scanServantsForPlayer(level, serverPlayer);
+
+                java.util.Optional<SearchServant.ServantData> servantDataOpt = SearchServant.getServantData(serverPlayer);
+                if (servantDataOpt.isPresent()) {
+                    SearchServant.ServantData servantData = servantDataOpt.get();
+
+                    for (ItemStack stack : serverPlayer.getAllSlots()) {
+                        int enchantmentLevel = stack.getEnchantmentLevel(ModEnchantments.SOUL_MENDING.get());
+                        if (enchantmentLevel > 0) {
+                            repairItemWithSoulEnergy(serverPlayer, stack, enchantmentLevel);
+                        }
+                    }
+
+                    for (java.util.UUID servantUUID : servantData.servantUUIDs) {
+                        Entity entity = level.getEntity(servantUUID);
+                        if (entity instanceof LivingEntity servant) {
+                            if (servant instanceof IOwned owned && owned.getTrueOwner() instanceof Player owner) {
+                                for (ItemStack stack : servant.getAllSlots()) {
+                                    int enchantmentLevel = stack.getEnchantmentLevel(ModEnchantments.SOUL_MENDING.get());
+                                    if (enchantmentLevel > 0) {
+                                        repairItemWithSoulEnergy(owner, stack, enchantmentLevel);
+                                    }
+                                }
+                            }else if (servant instanceof OwnableEntity ownableEntity && ownableEntity.getOwner() instanceof Player owner) {
+                                for (ItemStack stack : servant.getAllSlots()) {
+                                    int enchantmentLevel = stack.getEnchantmentLevel(ModEnchantments.SOUL_MENDING.get());
+                                    if (enchantmentLevel > 0) {
+                                        repairItemWithSoulEnergy(owner, stack, enchantmentLevel);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -100,12 +136,11 @@ public class SoulMendingEnchantment extends Enchantment {
 
         if (currentDamage <= 0) return;
 
-        int repairAmount = enchantmentLevel;
-        int actualRepair = Math.min(repairAmount, currentDamage);
+        int actualRepair = Math.min(enchantmentLevel, currentDamage);
 
         int requiredSouls;
         if (enchantmentLevel > 9) {
-            requiredSouls = 0;
+            requiredSouls = 1;
         } else if (actualRepair < enchantmentLevel) {
             requiredSouls = Math.max(1, 5 - enchantmentLevel / 2);
         } else {
@@ -116,23 +151,7 @@ public class SoulMendingEnchantment extends Enchantment {
                 SEHelper.decreaseSouls(player, requiredSouls);
             }
             int newDamage = currentDamage - actualRepair;
-            stack.setDamageValue(newDamage);}
-
-        
-//        int actualRepair = Math.min(repairAmount, currentDamage);
-//
-//        if (actualRepair<enchantmentLevel) return;
-//
-//        int soulCostPerPoint = 5;
-//        int requiredSouls = actualRepair * soulCostPerPoint;
-//
-//
-//        if (SEHelper.getSoulsAmount(player, requiredSouls)) {
-//            SEHelper.decreaseSouls(player, requiredSouls);
-//
-//
-//            int newDamage = currentDamage - actualRepair;
-//            stack.setDamageValue(newDamage);
-//        }
+            stack.setDamageValue(newDamage);
+        }
     }
 }

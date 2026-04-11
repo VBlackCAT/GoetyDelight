@@ -2,6 +2,7 @@ package net.v_black_cat.goetydelight.block;
 
 
 
+import com.Polarice3.Goety.utils.SoundUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.BlockItem;
@@ -64,6 +65,7 @@ public class ModBlocks {
     public static final RegistryObject<Block> MARBLE_DOOR = registerBlock("marble_door", () -> new DoorBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.AMETHYST).noOcclusion(), BlockSetType.IRON));
     public static final RegistryObject<Block> MARBLE_TRAPDOOR = registerBlock("marble_trapdoor", () -> new TrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.AMETHYST).noOcclusion(), BlockSetType.IRON));
 
+    public static final RegistryObject<Block> CUSTOM_DOLL = BLOCKS.register("custom_doll", CustomDollBlock::new);
 
     //暗夜炉灶
     public static final RegistryObject<Block> NIGHT_STOVE = registerBlock("night_stove",() ->

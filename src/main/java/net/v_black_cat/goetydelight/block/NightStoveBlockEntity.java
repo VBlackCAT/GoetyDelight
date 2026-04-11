@@ -1,5 +1,6 @@
 package net.v_black_cat.goetydelight.block;
 
+import com.Polarice3.Goety.api.entities.IOwned;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -11,6 +12,7 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -22,7 +24,6 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -278,10 +279,10 @@ public class NightStoveBlockEntity extends BaseContainerBlockEntity implements W
     }
 
     // 给予玩家效果
-    private void applyEffectsToNearbyPlayers() {
+    private void applyEffectsToNearbyEntities() {
         if (level == null || level.isClientSide) return;
 
-        // 获取32格范围内的所有玩家
+        // 获取 32 格范围内的所有玩家
         AABB area = new AABB(
                 worldPosition.getX() - 32, worldPosition.getY() - 32, worldPosition.getZ() - 32,
                 worldPosition.getX() + 32, worldPosition.getY() + 32, worldPosition.getZ() + 32
@@ -290,30 +291,57 @@ public class NightStoveBlockEntity extends BaseContainerBlockEntity implements W
         List<Player> players = level.getEntitiesOfClass(Player.class, area);
 
         for (Player player : players) {
-            // 给予抗火效果（10秒）
+            // 给予抗火效果（10 秒）
             player.addEffect(new MobEffectInstance(
                     MobEffects.FIRE_RESISTANCE,
-                    200, // 10秒 * 20 tick/秒
+                    200,
                     0,
                     false,
                     false
             ));
 
-            // 给予生命恢复效果（10秒）
+            // 给予生命恢复效果（10 秒）
             player.addEffect(new MobEffectInstance(
                     MobEffects.REGENERATION,
-                    200, // 10秒 * 20 tick/秒
+                    200,
                     0,
                     false,
                     false
             ));
 
-            // 给予NightStove能力（10秒）
+            // 给予 NightStove 能力（10 秒）
             TimedAbilitySystem.addAbilityToEntity(
                     player,
                     AbilityRegistry.NIGHT_STOVE,
-                    200 // 10秒 * 20 tick/秒
+                    200
             );
+
+            List<LivingEntity> alliedEntities = level.getEntitiesOfClass(LivingEntity.class, area,
+                    entity -> entity != player && isAlliedTo(player, entity));
+
+            for (LivingEntity ally : alliedEntities) {
+                ally.addEffect(new MobEffectInstance(
+                        MobEffects.FIRE_RESISTANCE,
+                        200,
+                        0,
+                        false,
+                        false
+                ));
+
+                ally.addEffect(new MobEffectInstance(
+                        MobEffects.REGENERATION,
+                        200,
+                        0,
+                        false,
+                        false
+                ));
+
+                TimedAbilitySystem.addAbilityToEntity(
+                        ally,
+                        AbilityRegistry.NIGHT_STOVE,
+                        200
+                );
+            }
         }
     }
 
@@ -348,11 +376,10 @@ public class NightStoveBlockEntity extends BaseContainerBlockEntity implements W
             blockEntity.cookingProgress = Mth.clamp(blockEntity.cookingProgress - 2, 0, blockEntity.cookingTotalTime);
         }
 
-        // 每5秒给予玩家效果
         blockEntity.effectTimer++;
         if (blockEntity.effectTimer >= 100) { // 5秒 * 20 tick/秒
             blockEntity.effectTimer = 0;
-            blockEntity.applyEffectsToNearbyPlayers();
+            blockEntity.applyEffectsToNearbyEntities();
         }
 
         if (isWorkingBefore != blockEntity.isWorking()) {
@@ -364,5 +391,13 @@ public class NightStoveBlockEntity extends BaseContainerBlockEntity implements W
         if (changed) {
             blockEntity.setChanged();
         }
+    }
+
+    private boolean isAlliedTo(Player player, LivingEntity entity) {
+        if (entity instanceof IOwned owned && owned.getTrueOwner() == player) {
+            return true;
+        }
+
+        return player.getTeam() != null && entity.getTeam() == player.getTeam();
     }
 }

@@ -3,7 +3,9 @@ package net.v_black_cat.goetydelight.item.food;
 import com.Polarice3.Goety.api.entities.ally.IServant;
 import com.Polarice3.Goety.common.research.ResearchList;
 import com.Polarice3.Goety.utils.SEHelper;
+import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.advancements.critereon.ConsumeItemTrigger;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,6 +19,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.v_black_cat.goetydelight.item.ModItems;
+
+import java.util.Objects;
 
 public class HiddenPancakeItem extends Item {
     public HiddenPancakeItem(Properties pProperties) {
@@ -42,9 +46,11 @@ public class HiddenPancakeItem extends Item {
 
                         // 触发成就
                         if (player instanceof ServerPlayer serverPlayer) {
-                            CriteriaTriggers.CONSUME_ITEM.trigger(serverPlayer, stack);
+                            Advancement advancement = serverPlayer.getServer().getAdvancements().getAdvancement(new ResourceLocation("goety:goety/read_terminus_scroll"));
+                            if (advancement != null) {
+                                serverPlayer.getAdvancements().award(advancement, "terminus_scroll");
+                            }
                         }
-
                         // 发送成功消息（服务端通知客户端）
                         player.displayClientMessage(Component.translatable("info.goety.research.terminus"), true);
 
@@ -57,7 +63,10 @@ public class HiddenPancakeItem extends Item {
                 } else {
                     // 已拥有研究，触发成就并发送提示
                     if (player instanceof ServerPlayer serverPlayer) {
-                        CriteriaTriggers.CONSUME_ITEM.trigger(serverPlayer, stack);
+                        Advancement advancement = serverPlayer.getServer().getAdvancements().getAdvancement(new ResourceLocation("goety:goety/read_terminus_scroll"));
+                        if (advancement != null) {
+                            serverPlayer.getAdvancements().award(advancement, "terminus_scroll");
+                        }
                     }
                     player.displayClientMessage(Component.translatable("info.goety.research.already"), true);
                 }

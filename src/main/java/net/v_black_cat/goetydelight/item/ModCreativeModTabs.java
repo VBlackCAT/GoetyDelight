@@ -38,6 +38,7 @@ public class ModCreativeModTabs {
          BLACKLIST.add(ModItems.NOT_ANYTHING);
          BLACKLIST.add(ModItems.ROAST_LAOWANG);
          BLACKLIST.add(ModItems.METAMORPHIC_SCENT_FRUIT);
+         BLACKLIST.add(ModItems.DOLL_ITEM);
 
 
 
@@ -61,6 +62,7 @@ public class ModCreativeModTabs {
          BLACKLIST.add(ModBlocks.JUNGLE_MARBLE);
          BLACKLIST.add(ModBlocks.MARBLE_TRAPDOOR);
          BLACKLIST.add(ModBlocks.RENDER_BLOCK);
+         BLACKLIST.add(ModBlocks.CUSTOM_DOLL);
 
     }
 

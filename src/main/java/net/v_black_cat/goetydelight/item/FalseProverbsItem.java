@@ -34,6 +34,8 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.config.Config;
+import net.v_black_cat.goetydelight.network.NetworkHandler;
+import net.v_black_cat.goetydelight.network.SyncBackModelPacket;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -198,6 +200,13 @@ public class FalseProverbsItem extends SwordItem{
         if(shouldShowBackModel(player)){
             setPlayerBackModelStatus(player.getUUID(), true);
         }else { setPlayerBackModelStatus(player.getUUID(), false);}
+
+        if (!player.level().isClientSide) {
+            SyncBackModelPacket packet = new SyncBackModelPacket(player.getId(), getPlayerBackModelStatus(player.getUUID()));
+            for (net.minecraft.server.level.ServerPlayer serverPlayer : ((net.minecraft.server.level.ServerLevel) player.level()).players()) {
+                NetworkHandler.sendToClient(packet, serverPlayer);
+            }
+        }
     }
     private void addBonusAttributes(Player player) {
         AttributeInstance speedAttribute = player.getAttribute(Attributes.MOVEMENT_SPEED);

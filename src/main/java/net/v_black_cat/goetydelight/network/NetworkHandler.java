@@ -1,6 +1,7 @@
 package net.v_black_cat.goetydelight.network;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
@@ -25,10 +26,38 @@ public class NetworkHandler {
                 CustomerItemListUpdatePacket::consume,
                 Optional.of(NetworkDirection.PLAY_TO_CLIENT)
         );
+        INSTANCE.registerMessage(
+                id++,
+                SyncFoxKillCountPacket.class,
+                SyncFoxKillCountPacket::encode,
+                SyncFoxKillCountPacket::decode,
+                SyncFoxKillCountPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT)
+        );
+        INSTANCE.registerMessage(
+                id++,
+                SyncBackModelPacket.class,
+                SyncBackModelPacket::encode,
+                SyncBackModelPacket::decode,
+                SyncBackModelPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT)
+        );
     }
+    public static void sendToClient(SyncFoxKillCountPacket packet, ServerPlayer player) {
+        INSTANCE.sendTo(packet, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+    }
+
     public static void sendToServer(ThrowSoupPacket packet) {
         INSTANCE.sendToServer(packet);
     }
 
+    public static void sendToClient(SyncBackModelPacket packet, net.minecraft.server.level.ServerPlayer player) {
+        INSTANCE.sendTo(packet, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+    }
+
+    public static void init() {
+        INSTANCE.registerMessage(2, CustomDollReloadMessage.class, CustomDollReloadMessage::encode, CustomDollReloadMessage::decode, CustomDollReloadMessage::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+    }
 
 }

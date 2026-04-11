@@ -1,0 +1,38 @@
+{
+  "parent": "goetydelight:root",
+  "criteria": {
+    "night_stove": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "goetydelight:night_stove"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "goetydelight.advancement.get_night_stove.description"
+    },
+    "frame": "challenge",
+    "hidden": false,
+    "icon": {
+      "item": "goetydelight:night_stove"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "goetydelight.advancement.get_night_stove.title"
+    }
+  },
+  "requirements": [
+    [
+      "night_stove"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

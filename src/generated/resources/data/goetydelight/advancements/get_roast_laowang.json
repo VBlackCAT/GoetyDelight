@@ -1,0 +1,38 @@
+{
+  "parent": "goetydelight:root",
+  "criteria": {
+    "roast_laowang": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "goetydelight:roast_laowang"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "goetydelight.advancement.get_roast_laowang.description"
+    },
+    "frame": "task",
+    "hidden": true,
+    "icon": {
+      "item": "goetydelight:roast_laowang"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "goetydelight.advancement.get_roast_laowang.title"
+    }
+  },
+  "requirements": [
+    [
+      "roast_laowang"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

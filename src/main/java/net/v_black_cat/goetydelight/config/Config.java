@@ -93,7 +93,7 @@ public class Config
 
     private static final ForgeConfigSpec.DoubleValue SOUL_AFFIX_DAMAGE_PER_LEVEL = BUILDER
             .comment("Damage increase per level of Soul Affix enchantment")
-            .defineInRange("soulAffixDamagePerLevel", 1.0, 1.0, Double.MAX_VALUE);
+            .defineInRange("soulAffixDamagePerLevel", 0.4, 0.0, Double.MAX_VALUE);
 
     private static final ForgeConfigSpec.IntValue SOUL_AFFIX_SOUL_COST_PER_LEVEL = BUILDER
             .comment("Soul energy cost per level of Soul Affix enchantment")
@@ -107,12 +107,12 @@ public class Config
     // LivingHurtEvent 伤害倍数
     private static final ForgeConfigSpec.DoubleValue LIVING_HURT_DAMAGE_MULTIPLIER = BUILDER
             .comment("Damage multiplier in LivingHurtEvent")
-            .defineInRange("livingHurtDamageMultiplier", 2.0, 0.0, Double.MAX_VALUE);
+            .defineInRange("livingHurtDamageMultiplier", 1.8, 0.0, Double.MAX_VALUE);
 
     // LivingDamageEvent 一般伤害倍数
     private static final ForgeConfigSpec.DoubleValue LIVING_DAMAGE_GENERAL_MULTIPLIER = BUILDER
             .comment("General damage multiplier in LivingDamageEvent")
-            .defineInRange("livingDamageGeneralMultiplier", 2.0, 0.0, Double.MAX_VALUE);
+            .defineInRange("livingDamageGeneralMultiplier", 1.8, 0.0, Double.MAX_VALUE);
 
     // LivingDamageEvent 背刺伤害倍数
     private static final ForgeConfigSpec.DoubleValue LIVING_DAMAGE_BACKSTAB_MULTIPLIER = BUILDER

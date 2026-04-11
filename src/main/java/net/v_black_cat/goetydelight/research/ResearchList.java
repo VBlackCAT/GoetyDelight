@@ -8,17 +8,17 @@ import java.util.Map;
 
 public class ResearchList {
     public static Map<String, Research> RESEARCH_LIST = Maps.newHashMap();
-    public static Research VIZIER_COOKBOOK = new Research("vizier_cookbook");
+    public static Research VIZIERS_COOKBOOK = new Research("viziers_cookbook");
     public static void registerResearch(String id, Research research) {
         RESEARCH_LIST.put(id, research);
     }
 
     static {
-        com.Polarice3.Goety.common.research.ResearchList.registerResearch(VIZIER_COOKBOOK.getId(), VIZIER_COOKBOOK);
+        com.Polarice3.Goety.common.research.ResearchList.registerResearch(VIZIERS_COOKBOOK.getId(), VIZIERS_COOKBOOK);
     }
     public static Map<String, Research> getResearchList() {
         Map<String, Research> researches = Maps.newHashMap();
-        researches.put(VIZIER_COOKBOOK.getId(), VIZIER_COOKBOOK);
+        researches.put(VIZIERS_COOKBOOK.getId(), VIZIERS_COOKBOOK);
         if (!RESEARCH_LIST.isEmpty()) {
             researches.putAll(RESEARCH_LIST);
         }

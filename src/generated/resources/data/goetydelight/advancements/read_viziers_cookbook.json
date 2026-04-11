@@ -1,0 +1,33 @@
+{
+  "display": {
+    "icon": {
+      "item": "goetydelight:viziers_cookbook"
+    },
+    "title": {
+      "translate": "goetydelight.advancements.viziers_cookbook.title"
+    },
+    "description": {
+      "translate": "goetydelight.advancements.viziers_cookbook.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "parent": "goetydelight:root",
+  "criteria": {
+    "viziers_cookbook": {
+      "conditions": {
+        "item": {
+          "items": [
+            "goetydelight:viziers_cookbook"
+          ]
+        }
+      },
+      "trigger": "minecraft:consume_item"
+    }
+  },
+  "requirements": [
+    ["viziers_cookbook"]
+  ]
+}

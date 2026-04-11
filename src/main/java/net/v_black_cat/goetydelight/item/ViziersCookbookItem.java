@@ -6,7 +6,7 @@ import net.v_black_cat.goetydelight.research.ResearchList;
 
 public class ViziersCookbookItem extends Scroll {
     public ViziersCookbookItem() {
-        super(ResearchList.VIZIER_COOKBOOK);
+        super(ResearchList.VIZIERS_COOKBOOK);
     }
     @Override
     public Component researchGet() {

@@ -1,0 +1,41 @@
+{
+    "type": "goety:ritual",
+    "ritual_type": "goety:craft",
+    "activation_item": {
+        "item": "minecraft:book"
+    },
+    "craftType": "magic",
+    "soulCost": 10,
+    "duration": 10,
+    "ingredients": [
+        {
+            "item": "minecraft:sculk"
+        },
+        {
+            "item": "minecraft:sculk"
+        },
+        {
+            "item": "minecraft:sculk"
+        },
+        {
+            "item": "minecraft:echo_shard"
+        },
+        {
+            "item": "minecraft:echo_shard"
+        },
+        {
+            "item": "goety:forbidden_piece"
+        }
+    ],
+    "result": {
+        "item": "minecraft:enchanted_book",
+        "nbt": {
+            "StoredEnchantments": [
+                {
+                    "id": "goetydelight:soul_affix",
+                    "lvl": 5
+                }
+            ]
+        }
+    }
+}

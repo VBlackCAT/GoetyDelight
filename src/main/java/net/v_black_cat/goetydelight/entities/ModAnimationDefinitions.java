@@ -6,8 +6,6 @@ import net.minecraft.client.animation.Keyframe;
 import net.minecraft.client.animation.KeyframeAnimations;
 
 public class ModAnimationDefinitions {
-
-
         public static final AnimationDefinition ANIMATION_GHOST_FARMER_IDLE = AnimationDefinition.Builder.withLength(8.0F).looping()
                 .addAnimation("wraith", new AnimationChannel(AnimationChannel.Targets.ROTATION,
                         new Keyframe(0.0F, KeyframeAnimations.degreeVec(10.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
@@ -97,4 +95,15 @@ public class ModAnimationDefinitions {
                 ))
                 .build();
 
+    public static final AnimationDefinition DOLL_TOUCH = AnimationDefinition.Builder.withLength(0.8333F).looping()
+            .addAnimation("dollBlock", new AnimationChannel(AnimationChannel.Targets.SCALE,
+                    new Keyframe(0.0F, KeyframeAnimations.scaleVec(1.0F, 1.0F, 1.0F), AnimationChannel.Interpolations.LINEAR),
+                    new Keyframe(0.0833F, KeyframeAnimations.scaleVec(1.15F, 0.9F, 1.15F), AnimationChannel.Interpolations.CATMULLROM),
+                    new Keyframe(0.2083F, KeyframeAnimations.scaleVec(1.01F, 0.98F, 1.01F), AnimationChannel.Interpolations.CATMULLROM),
+                    new Keyframe(0.3333F, KeyframeAnimations.scaleVec(1.03F, 1.04F, 1.03F), AnimationChannel.Interpolations.CATMULLROM),
+                    new Keyframe(0.4583F, KeyframeAnimations.scaleVec(1.0F, 1.0F, 1.0F), AnimationChannel.Interpolations.CATMULLROM),
+                    new Keyframe(0.5833F, KeyframeAnimations.scaleVec(1.01F, 1.02F, 1.01F), AnimationChannel.Interpolations.CATMULLROM),
+                    new Keyframe(0.8333F, KeyframeAnimations.scaleVec(1.0F, 1.0F, 1.0F), AnimationChannel.Interpolations.CATMULLROM)
+            ))
+            .build();
 }

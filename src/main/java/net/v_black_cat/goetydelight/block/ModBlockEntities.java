@@ -6,7 +6,6 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
-import vectorwing.farmersdelight.common.block.entity.CookingPotBlockEntity;
 
 public class ModBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
@@ -33,6 +32,9 @@ public class ModBlockEntities {
 
     public static final RegistryObject<BlockEntityType<RestaurantBlockEntity>> RESTAURANT_BE = BLOCK_ENTITIES.register("restaurant",
             () -> BlockEntityType.Builder.of(RestaurantBlockEntity::new, ModBlocks.RESTAURANT.get()).build(null));
+
+    public static RegistryObject<BlockEntityType<CustomDollBlockEntity>> CUSTOM_DOLL_BE = BLOCK_ENTITIES.register("custom_doll", () ->
+            BlockEntityType.Builder.of(CustomDollBlockEntity::new, ModBlocks.CUSTOM_DOLL.get()).build(null));
 
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);

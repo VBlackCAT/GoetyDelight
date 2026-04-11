@@ -1,0 +1,47 @@
+{
+    "type": "goety:ritual",
+    "ritual_type": "goety:craft",
+    "activation_item": {
+        "item": "minecraft:budding_amethyst"
+    },
+    "craftType": "geoturgy",
+    "research": "forbidden",
+    "soulCost": 2500,
+    "duration": 8,
+    "ingredients": [
+        {
+            "item": "minecraft:sculk"
+        },
+        {
+            "item": "minecraft:sculk"
+        },
+        {
+            "item": "minecraft:sculk"
+        },
+        {
+            "item": "minecraft:sculk"
+        },
+        {
+            "item": "minecraft:sculk_catalyst"
+        },
+        {
+            "item": "minecraft:sculk_catalyst"
+        },
+        {
+            "item": "minecraft:sculk_catalyst"
+        },
+        {
+            "item": "goetydelight:soul_convergence_room"
+        },
+        {
+            "item": "goetydelight:soul_convergence_room"
+        },
+        {
+            "item": "goetydelight:soul_convergence_room"
+        }
+    ],
+    "result": {
+        "item": "minecraft:echo_shard",
+        "count": 32
+    }
+}

@@ -1,0 +1,34 @@
+{
+    "type": "goety:ritual",
+    "ritual_type": "goety:craft",
+    "activation_item": {
+        "item": "minecraft:echo_shard"
+    },
+    "craftType": "geoturgy",
+    "soulCost": 1250,
+    "duration": 8,
+    "ingredients": [
+        {
+            "item": "minecraft:sculk"
+        },
+        {
+            "item": "minecraft:sculk"
+        },
+        {
+            "item": "minecraft:sculk"
+        },
+        {
+            "item": "minecraft:sculk_catalyst"
+        },
+      {
+        "item": "goetydelight:gathering_soul_embryos"
+      },
+      {
+        "item": "goetydelight:gathering_soul_embryos"
+      }
+    ],
+    "result": {
+        "item": "minecraft:echo_shard",
+        "count": 6
+    }
+}
