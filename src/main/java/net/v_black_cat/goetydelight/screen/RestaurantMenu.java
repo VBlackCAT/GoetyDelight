@@ -1,5 +1,8 @@
 package net.v_black_cat.goetydelight.screen;
 
+import com.Polarice3.Goety.api.items.magic.ITotem;
+import com.Polarice3.Goety.common.items.ModItems;
+import com.Polarice3.Goety.common.items.WaystoneItem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -20,6 +23,8 @@ public class RestaurantMenu extends AbstractContainerMenu {
     private ContainerData dataAccess;
     public static final int UPDATE_RESTAURANT_BUTTON_ID =1;
     public static final int SWITCH_RENDER_AREA_BUTTON_ID=2;
+    public static final int SWITCH_RESTAURANT_BUTTON_ID = 3;
+    public static final int SOUL_LURE_BUTTON_ID = 4;
 
     public RestaurantMenu(int pContainerId, Inventory pPlayerInventory, FriendlyByteBuf data) {
         this(pContainerId, pPlayerInventory, getTileEntity(pPlayerInventory, data));
@@ -52,7 +57,7 @@ public class RestaurantMenu extends AbstractContainerMenu {
         int borderSlotSize = 18;
 
         // 添加3行*2列的格子，从inventory获取
-        for (int row = 0; row < 5; ++row) {
+        for (int row = 0; row < 6; ++row) {
             for (int col = 0; col < 2; ++col) {
                 int slotIndex = col + row * 2;
                 int xPos = inputStartX + col * borderSlotSize;
@@ -63,9 +68,26 @@ public class RestaurantMenu extends AbstractContainerMenu {
                     yPos-=18*3;
                 }
 
-                this.addSlot(new SlotItemHandler(this.inventory, slotIndex, xPos, yPos));
+                this.addSlot(new SlotItemHandler(this.inventory, slotIndex, xPos, yPos){
+                    @Override
+                    public boolean mayPlace(ItemStack stack) {
+                        if (stack.is(ModItems.WAYSTONE.get())) {
+                            return true;
+                        }
+                        return false;
+                    }
+                });
             }
         }
+
+        this.addSlot(new SlotItemHandler(this.inventory, 12, startX, startY){
+            @Override
+            public boolean mayPlace(ItemStack stack) {
+                return stack.getItem() instanceof ITotem || stack.getItem() == ModItems.SOUL_TRANSFER.get();
+            }
+        });
+
+
 
         // 玩家物品栏
         int startPlayerInvY = startY * 4 + 12;
@@ -126,6 +148,12 @@ public class RestaurantMenu extends AbstractContainerMenu {
                 break;
             case SWITCH_RENDER_AREA_BUTTON_ID:
                 this.blockEntity.switchRenderArea();
+                break;
+            case SWITCH_RESTAURANT_BUTTON_ID:
+                this.blockEntity.switchRestaurant();
+                break;
+            case SOUL_LURE_BUTTON_ID:
+                this.blockEntity.soul_lure();
                 break;
         }
 

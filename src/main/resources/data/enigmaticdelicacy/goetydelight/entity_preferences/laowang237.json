@@ -1,0 +1,14 @@
+{
+  "entity": {
+    "type": "minecraft:pig",
+    "nbt": "{CustomName: '{\"text\":\"laowang237\"}'}"
+
+},
+  "preferences": [
+    {
+      "predicate": { "items": ["enigmaticdelicacy:divine_fruit_pie"] },
+      "weight": 9999999.0
+    }
+  ]
+}
+

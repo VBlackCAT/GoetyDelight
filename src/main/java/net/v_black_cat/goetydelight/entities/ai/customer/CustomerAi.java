@@ -7,7 +7,6 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.*;
@@ -16,17 +15,12 @@ import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.entity.schedule.Activity;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.entities.ICustomerEntity;
 import net.v_black_cat.goetydelight.entities.ai.ModActivity;
 import net.v_black_cat.goetydelight.entities.ai.ModMemory;
 import net.v_black_cat.goetydelight.entities.ai.ModSensor;
 
 import java.util.Set;
-
-import static net.v_black_cat.goetydelight.GoetyDelight.LOGGER;
 
 public class CustomerAi {
 
@@ -87,7 +81,7 @@ public class CustomerAi {
                     ModMemory.EXIT_RANGE.get(),
                     ModMemory.ALL_RANGE.get(),
                     ModMemory.NEARBY_RESTAURANT.get(),
-                    ModMemory.CUSTOMER_PREFERENCE_LIST.get(),
+                    ModMemory.CUSTOMER_BRAIN_PREFERENCE_LIST.get(),
                     ModMemory.IS_IN_RESTAURANT.get(),
                     ModMemory.IS_IN_ENTRANCE.get(),
                     ModMemory.IS_IN_DINING.get(),
