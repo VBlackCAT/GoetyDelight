@@ -163,6 +163,8 @@ public class CustomerPayBehavior extends CustomerBehavior<PathfinderMob> {
 
             float bonusMultiplier = getRestaurantLevelBonusMultiplier(restaurant);
 
+            restaurant.addSoulEnergy((int) (25 * bonusMultiplier));
+
             int totalCount = filteredLoot.stream()
                     .mapToInt(ItemStack::getCount)
                     .sum();
@@ -323,12 +325,12 @@ public class CustomerPayBehavior extends CustomerBehavior<PathfinderMob> {
     }
 
     private void payMoney(PathfinderMob entity, BlockEntity blockEntity, List<ItemStack> foodList) {
-        Map<ItemStack, Integer> moneyWeights = new HashMap<>();
-        moneyWeights.put(new ItemStack(Items.EMERALD, 1), 60);
-        moneyWeights.put(new ItemStack(Items.GOLD_INGOT, 1), 20);
-        moneyWeights.put(new ItemStack(Items.DIAMOND, 1), 9);
-        moneyWeights.put(new ItemStack(ModItems.ECTOPLASM.get(), 1), 10);
-        moneyWeights.put(new ItemStack(ModItems.TREASURE_POUCH.get(), 1), 1);
+        Map<ItemStack, Float> moneyWeights = new HashMap<>();
+        moneyWeights.put(new ItemStack(Items.EMERALD, 1), 60.0f);
+        moneyWeights.put(new ItemStack(Items.GOLD_INGOT, 1), 20.0f);
+        moneyWeights.put(new ItemStack(Items.DIAMOND, 1), 9.0f);
+        moneyWeights.put(new ItemStack(ModItems.ECTOPLASM.get(), 1), 10.0f);
+        moneyWeights.put(new ItemStack(ModItems.TREASURE_POUCH.get(), 1), 1.0f);
         RandomSource random = entity.getRandom();
         ArrayList<ItemStack> totalItemStacks = new ArrayList<>();
         for (ItemStack food : foodList) {
@@ -409,7 +411,7 @@ public class CustomerPayBehavior extends CustomerBehavior<PathfinderMob> {
         return menuDishCountBonusMultiplier;
     }
 
-    private @NotNull ArrayList<ItemStack> getSingleDishValueItemStacks(ItemStack food, Map<ItemStack, Integer> moneyWeights, RandomSource random) {
+    private @NotNull ArrayList<ItemStack> getSingleDishValueItemStacks(ItemStack food, Map<ItemStack, Float> moneyWeights, RandomSource random) {
         int moneyCount = getMoneyCountByFood(food);
         ArrayList<ItemStack> itemStacks = drawItemsByWeight(moneyWeights, moneyCount, random);
         return itemStacks;
@@ -441,15 +443,15 @@ public class CustomerPayBehavior extends CustomerBehavior<PathfinderMob> {
         }
     }
 
-    private ArrayList<ItemStack> drawItemsByWeight(Map<ItemStack, Integer> weights, int count, RandomSource random) {
+    private ArrayList<ItemStack> drawItemsByWeight(Map<ItemStack, Float> weights, int count, RandomSource random) {
         ArrayList<ItemStack> result = new ArrayList<>();
-        int totalWeight = weights.values().stream().mapToInt(Integer::intValue).sum();
+        float totalWeight = (float) weights.values().stream().mapToDouble(Float::doubleValue).sum();
         
         for (int i = 0; i < count; i++) {
-            int randomValue = random.nextInt(totalWeight);
-            int currentWeight = 0;
+            float randomValue = random.nextFloat() * totalWeight;
+            float currentWeight = 0;
             
-            for (Map.Entry<ItemStack, Integer> entry : weights.entrySet()) {
+            for (Map.Entry<ItemStack, Float> entry : weights.entrySet()) {
                 currentWeight += entry.getValue();
                 if (randomValue < currentWeight) {
                     result.add(entry.getKey().copy());
