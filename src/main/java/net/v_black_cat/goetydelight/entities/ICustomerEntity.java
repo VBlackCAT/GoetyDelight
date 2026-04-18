@@ -183,14 +183,20 @@ public interface ICustomerEntity {
         tag.put(TAG_CUSTOMER_INVENTORY, this.goetyDelight$getCustomerInventory().createTag());
     }
 
-    default void goetyDelight$readCustomerData(CompoundTag nbt, PathfinderMob mob) {
-        Dynamic<Tag> dyn = new Dynamic(NbtOps.INSTANCE, nbt.get("CustomerBrain"));
+default void goetyDelight$readCustomerData(CompoundTag nbt, PathfinderMob mob) {
+    if (nbt.contains("CustomerBrain", 10)) {
+        Dynamic<Tag> dyn = new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("CustomerBrain"));
         this.goetyDelight$setCustomerBrain(CustomerAi.makeBrain(mob, dyn));
-        this.goetyDelight$setCustomerMode(nbt.getBoolean("GoetyDelightCustomerMode"));
-        this.goetyDelight$setCustomerSatietyValue(nbt.getFloat("GoetyDelightCustomerSatietyValue"));
-        this.goetyDelight$setEnterCustomerModeCooldown(nbt.getLong("GoetyDelightCustomerEnterCustomerModeCooldown"));
-        this.readCustomerInventoryFromTag(nbt);
+    } else {
+        this.goetyDelight$setCustomerBrain(CustomerAi.makeBrain(mob));
     }
+
+    this.goetyDelight$setCustomerMode(nbt.getBoolean("GoetyDelightCustomerMode"));
+    this.goetyDelight$setCustomerSatietyValue(nbt.getFloat("GoetyDelightCustomerSatietyValue"));
+    this.goetyDelight$setEnterCustomerModeCooldown(nbt.getLong("GoetyDelightCustomerEnterCustomerModeCooldown"));
+    this.readCustomerInventoryFromTag(nbt);
+}
+
     
     default void goetyDelight$addCustomerData(CompoundTag nbt) {
         DataResult<Tag> dataresult = this.goetyDelight$getCustomerBrain().serializeStart(NbtOps.INSTANCE);
