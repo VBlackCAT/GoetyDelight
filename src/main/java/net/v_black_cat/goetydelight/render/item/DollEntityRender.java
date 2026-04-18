@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.render;
+package net.v_black_cat.goetydelight.render.item;
 
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -18,7 +17,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelData;
 import net.v_black_cat.goetydelight.entities.DollEntity;
-import net.v_black_cat.goetydelight.entities.ModAnimationDefinitions;
 import net.v_black_cat.goetydelight.init.CustomDollLoader;
 import net.v_black_cat.goetydelight.init.CustomDollReloadListener;
 import org.apache.commons.lang3.StringUtils;

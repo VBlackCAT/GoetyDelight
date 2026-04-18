@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.render;
+package net.v_black_cat.goetydelight.render.item;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -23,10 +23,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.concurrent.TimeUnit;
 
-public class DollItemRender extends BlockEntityWithoutLevelRenderer {
+public class DollEntityItemRender extends BlockEntityWithoutLevelRenderer {
     private final Cache<ItemStack, ItemStack> dollCache = CacheBuilder.newBuilder().expireAfterAccess(30, TimeUnit.SECONDS).build();
 
-    public DollItemRender(BlockEntityRenderDispatcher dispatcher, EntityModelSet modelSet) {
+    public DollEntityItemRender(BlockEntityRenderDispatcher dispatcher, EntityModelSet modelSet) {
         super(dispatcher, modelSet);
     }
 
@@ -51,7 +51,7 @@ public class DollItemRender extends BlockEntityWithoutLevelRenderer {
             } else {
                 Block displayBlock = entity.getDisplayBlockState().getBlock();
                 if (displayBlock == Blocks.AIR) {
-                    dollShowItem = new ItemStack(Items.WHITE_WOOL);
+                    dollShowItem = new ItemStack(ModItems.DOLL_ITEM.get());
                 } else {
                     dollShowItem = new ItemStack(displayBlock);
                 }

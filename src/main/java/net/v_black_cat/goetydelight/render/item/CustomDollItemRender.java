@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.render;
+package net.v_black_cat.goetydelight.render.item;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

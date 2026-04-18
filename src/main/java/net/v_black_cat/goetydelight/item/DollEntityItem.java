@@ -24,11 +24,12 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.v_black_cat.goetydelight.entities.DollEntity;
 import net.v_black_cat.goetydelight.entities.ModEntities;
 import net.v_black_cat.goetydelight.event.ModRegisterEvent;
 import net.v_black_cat.goetydelight.init.CustomDollLoader;
-import net.v_black_cat.goetydelight.render.DollItemRender;
+import net.v_black_cat.goetydelight.render.item.DollEntityItemRender;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.function.Consumer;
@@ -143,13 +144,13 @@ public class DollEntityItem extends Item {
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(new IClientItemExtensions() {
-            private DollItemRender render = null;
+            private DollEntityItemRender render = null;
 
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {
                 Minecraft minecraft = Minecraft.getInstance();
                 if (render == null) {
-                    render = new DollItemRender(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
+                    render = new DollEntityItemRender(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
                 }
                 return render;
             }
@@ -194,16 +195,25 @@ public class DollEntityItem extends Item {
         // 从物品获取或创建实体
         DollEntity dollEntity = getDollEntity(level, stack);
 
-        if (StringUtils.isBlank(dollEntity.getCustomDollId()) && dollEntity.getDisplayBlockState().isAir()) {
-            dollEntity.setDisplayBlockState(Blocks.WHITE_WOOL.defaultBlockState());
-        }
-
         if (StringUtils.isBlank(dollEntity.getCustomDollId())) {
             String customDollId = getCustomDollIdFromItemStack(stack);
             if (StringUtils.isNotBlank(customDollId)) {
                 dollEntity.setCustomDollId(customDollId);
             } else {
                 dollEntity.setCustomDollId("doll_5152");
+            }
+        }
+
+        if (dollEntity.getDisplayBlockState().isAir()) {
+            if (StringUtils.isNotBlank(dollEntity.getCustomDollId())) {
+                dollEntity.setDisplayBlockState(ModBlocks.CUSTOM_DOLL.get().defaultBlockState());
+            } else {
+                String customId = getCustomDollIdFromItemStack(stack);
+                if (StringUtils.isNotBlank(customId)) {
+                    dollEntity.setCustomDollId(customId);
+                } else {
+                    dollEntity.setDisplayBlockState(Blocks.WHITE_WOOL.defaultBlockState());
+                }
             }
         }
 
