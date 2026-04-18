@@ -8,10 +8,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlockEntities;
-import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.v_black_cat.goetydelight.entities.ModEntities;
-import net.v_black_cat.goetydelight.render.CustomDollRender;
-import net.v_black_cat.goetydelight.render.DollEntityRender;
+import net.v_black_cat.goetydelight.render.item.CustomDollRender;
+import net.v_black_cat.goetydelight.render.item.DollEntityRender;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, modid = GoetyDelight.MODID, value = Dist.CLIENT)
 public class ModEntitiesRender {

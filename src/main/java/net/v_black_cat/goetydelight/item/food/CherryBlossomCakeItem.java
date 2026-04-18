@@ -110,39 +110,9 @@ public class CherryBlossomCakeItem extends Item {
             }
         }
     }
-    @SubscribeEvent
-    public static void onServerTick(TickEvent.ServerTickEvent event) {
-        if (event.phase != TickEvent.Phase.START) return;
 
-        for (ServerLevel level : event.getServer().getAllLevels()) {
-            for (net.minecraft.world.entity.Entity entity : level.getAllEntities()) {
-                if (entity instanceof LivingEntity livingEntity) {
-                    CompoundTag tag = livingEntity.getPersistentData();
-                    if (tag.contains("CherryBlossomPunishmentTime")) {
-                        long startTime = tag.getLong("CherryBlossomPunishmentTime");
-                        int count = tag.getInt("CherryBlossomPunishmentCount");
-                        long currentTime = level.getGameTime();
 
-                        if (count < 3 && currentTime >= startTime + (count + 1) * 20) {
-                            if (livingEntity instanceof Player player) {
-                                spawnLightningAndDamage(livingEntity, player, level);
-                            } else {
-                                spawnLightningAndDamage(livingEntity, null, level);
-                            }
-                            tag.putInt("CherryBlossomPunishmentCount", count + 1);
-
-                            if (count + 1 >= 3) {
-                                tag.remove("CherryBlossomPunishmentTime");
-                                tag.remove("CherryBlossomPunishmentCount");
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-        private void addAttackDamageBoost(LivingEntity entity, double boostAmount) {
+    private void addAttackDamageBoost(LivingEntity entity, double boostAmount) {
         AttributeInstance attackDamage = entity.getAttribute(Attributes.ATTACK_DAMAGE);
         if (attackDamage != null && boostAmount > 0) {
             AttributeModifier modifier = new AttributeModifier(
@@ -154,6 +124,7 @@ public class CherryBlossomCakeItem extends Item {
             attackDamage.addTransientModifier(modifier);
         }
     }
+
 
     private void removeAttackDamageBoost(LivingEntity entity) {
         AttributeInstance attackDamage = entity.getAttribute(Attributes.ATTACK_DAMAGE);
@@ -287,28 +258,24 @@ public class CherryBlossomCakeItem extends Item {
                         CompoundTag persistentData = fox.getPersistentData();
                         ListTag recordedFoxes = persistentData.getList("recorded_foxes", Tag.TAG_COMPOUND);
 
-                        if (recordedFoxes.isEmpty()) {
-                            continue;
-                        }
-                        boolean hasExpired = false;
-                        for (int i = 0; i < recordedFoxes.size(); i++) {
-                            CompoundTag foxData = recordedFoxes.getCompound(i);
-                            long lastInteractionDay = foxData.getLong("last_interaction_day");
+                        if (!recordedFoxes.isEmpty()) {
+                            boolean hasExpired = false;
+                            for (int i = 0; i < recordedFoxes.size(); i++) {
+                                CompoundTag foxData = recordedFoxes.getCompound(i);
+                                long lastInteractionDay = foxData.getLong("last_interaction_day");
 
-                            if (currentDay > lastInteractionDay) {
-                                hasExpired = true;
-                                break;
+                                if (currentDay > lastInteractionDay) {
+                                    hasExpired = true;
+                                    break;
+                                }
+                            }
+                            if (hasExpired) {
+                                persistentData.putInt("cherry_blossom_interactions", 0);
+                                persistentData.remove("recorded_foxes");
                             }
                         }
-                        if (hasExpired) {
-                            persistentData.putInt("cherry_blossom_interactions", 0);
-                            persistentData.remove("recorded_foxes");
-                        }
-
                     }
-                }
 
-                for (net.minecraft.world.entity.Entity entity : level.getAllEntities()) {
                     if (entity instanceof LivingEntity livingEntity) {
                         CompoundTag tag = livingEntity.getPersistentData();
                         if (tag.contains("CherryBlossomPunishmentTime")) {
@@ -316,7 +283,7 @@ public class CherryBlossomCakeItem extends Item {
                             int count = tag.getInt("CherryBlossomPunishmentCount");
                             long currentTime = level.getGameTime();
 
-                            if (count < 3 && currentTime >= startTime + count * 20) {
+                            if (count < 3 && currentTime >= startTime + (count + 1) * 20) {
                                 if (livingEntity instanceof Player player) {
                                     spawnLightningAndDamage(livingEntity, player, level);
                                 } else {
