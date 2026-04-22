@@ -1,0 +1,35 @@
+{
+  "type": "crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "goetydelight:ectoplasmic_melon"
+    },
+    {
+      "item": "goetydelight:ectoplasmic_melon"
+    },
+    {
+      "item": "goetydelight:ectoplasmic_melon"
+    },
+    {
+      "item": "goetydelight:ectoplasmic_melon"
+    },
+    {
+      "item": "goetydelight:ectoplasmic_melon"
+    },
+    {
+      "item": "goetydelight:ectoplasmic_melon"
+    },
+    {
+      "item": "goetydelight:ectoplasmic_melon"
+    },
+    {
+      "item": "goetydelight:ectoplasmic_melon"
+    },
+    {
+      "item": "goetydelight:ectoplasmic_melon"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:ectoplasmic_melon_block"
+  }
+}

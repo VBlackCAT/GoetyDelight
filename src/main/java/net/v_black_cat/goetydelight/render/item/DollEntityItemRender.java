@@ -38,12 +38,10 @@ public class DollEntityItemRender extends BlockEntityWithoutLevelRenderer {
             return;
         }
 
-        // 从物品获取玩偶实体
         ItemStack dollShowItem = dollCache.getIfPresent(itemStackIn);
         if (dollShowItem == null) {
             DollEntity entity = DollEntityItem.getDollEntity(world, itemStackIn);
 
-            // 先检查是否是自定义玩偶
             String dollId = entity.getCustomDollId();
             if (StringUtils.isNotBlank(dollId)) {
                 dollShowItem = new ItemStack(ModItems.CUSTOM_DOLL.get());

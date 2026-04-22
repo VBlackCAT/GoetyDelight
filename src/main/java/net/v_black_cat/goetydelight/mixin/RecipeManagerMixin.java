@@ -120,38 +120,50 @@ public class RecipeManagerMixin {
         return false;
     }
 
-    
+
     @Nullable
     private static String getItemIdFromJsonElement(JsonElement element) {
         if (element == null || element.isJsonNull()) {
             return null;
         }
 
-        
+
         if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
             return element.getAsString();
         }
 
-        
+
         if (element.isJsonObject()) {
             JsonObject jsonObj = element.getAsJsonObject();
 
-            
-            if (jsonObj.has("item") && jsonObj.get("item").isJsonPrimitive()) {
-                return jsonObj.get("item").getAsString();
-            }
 
-            
-            if (jsonObj.has("item") && jsonObj.get("item").isJsonObject()) {
-                JsonObject nestedItem = jsonObj.getAsJsonObject("item");
-                if (nestedItem.has("item") && nestedItem.get("item").isJsonPrimitive()) {
-                    return nestedItem.get("item").getAsString();
+            if (jsonObj.has("item")) {
+                JsonElement itemElement = jsonObj.get("item");
+                if (itemElement != null && !itemElement.isJsonNull() && itemElement.isJsonPrimitive()) {
+                    return itemElement.getAsString();
                 }
             }
 
-            
-            if (jsonObj.has("name") && jsonObj.get("name").isJsonPrimitive()) {
-                return jsonObj.get("name").getAsString();
+
+            if (jsonObj.has("item")) {
+                JsonElement itemElement = jsonObj.get("item");
+                if (itemElement != null && !itemElement.isJsonNull() && itemElement.isJsonObject()) {
+                    JsonObject nestedItem = itemElement.getAsJsonObject();
+                    if (nestedItem.has("item")) {
+                        JsonElement nestedItemElement = nestedItem.get("item");
+                        if (nestedItemElement != null && !nestedItemElement.isJsonNull() && nestedItemElement.isJsonPrimitive()) {
+                            return nestedItemElement.getAsString();
+                        }
+                    }
+                }
+            }
+
+
+            if (jsonObj.has("name")) {
+                JsonElement nameElement = jsonObj.get("name");
+                if (nameElement != null && !nameElement.isJsonNull() && nameElement.isJsonPrimitive()) {
+                    return nameElement.getAsString();
+                }
             }
         }
 

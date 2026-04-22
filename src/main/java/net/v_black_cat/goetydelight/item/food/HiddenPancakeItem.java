@@ -1,5 +1,6 @@
 package net.v_black_cat.goetydelight.item.food;
 
+import com.Polarice3.Goety.api.entities.IOwned;
 import com.Polarice3.Goety.api.entities.ally.IServant;
 import com.Polarice3.Goety.common.research.ResearchList;
 import com.Polarice3.Goety.utils.SEHelper;
@@ -13,6 +14,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -21,6 +23,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.v_black_cat.goetydelight.item.ModItems;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class HiddenPancakeItem extends Item {
     public HiddenPancakeItem(Properties pProperties) {
@@ -90,6 +93,19 @@ public class HiddenPancakeItem extends Item {
         if (!player.level().isClientSide) {
             player.stopRiding();
             if (isHiddenPancakeCopy) {
+                UUID ownerUUID = null;
+                if (target instanceof OwnableEntity ownableEntity) {
+                    ownerUUID = ownableEntity.getOwnerUUID();
+                } else if (target instanceof IOwned iOwned) {
+                    if (iOwned.getTrueOwner() != null) {
+                        ownerUUID = iOwned.getTrueOwner().getUUID();
+                    }
+                }
+
+                if (ownerUUID != null && !ownerUUID.equals(player.getUUID())) {
+                    return super.onLeftClickEntity(stack, player, target);
+                }
+
                 LivingEntity newEntity = (LivingEntity) target.getType().create(target.level());
                 if (newEntity == null) {
                     System.out.println("Failed to create entity of type: " + target.getType());
@@ -131,7 +147,7 @@ public class HiddenPancakeItem extends Item {
                 // 添加实体到世界
                 target.level().addFreshEntity(newEntity);
                 if(!player.isCreative()){
-                stack.shrink(1);}
+                    stack.shrink(1);}
 
                 return super.onLeftClickEntity(stack, player, target);
             }

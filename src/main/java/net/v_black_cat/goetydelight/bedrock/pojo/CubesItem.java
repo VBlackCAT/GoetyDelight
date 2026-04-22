@@ -87,19 +87,19 @@ public class CubesItem {
                 JsonObject obj = json.getAsJsonObject();
 
                 JsonElement uvElement = obj.get("uv");
-                if (uvElement.isJsonArray()) {
+                if (uvElement != null && !uvElement.isJsonNull() && uvElement.isJsonArray()) {
                     JsonArray array = uvElement.getAsJsonArray();
                     cube.uv = new float[array.size()];
                     for (int i = 0; i < array.size(); i++) {
                         cube.uv[i] = array.get(i).getAsFloat();
                     }
                 }
-                if (uvElement.isJsonObject()) {
+                if (uvElement != null && !uvElement.isJsonNull() && uvElement.isJsonObject()) {
                     cube.faceUv = new Gson().fromJson(uvElement, FaceUVsItem.class);
                 }
 
                 JsonElement mirrorElement = obj.get("mirror");
-                if (mirrorElement != null && mirrorElement.isJsonPrimitive()) {
+                if (mirrorElement != null && !mirrorElement.isJsonNull() && mirrorElement.isJsonPrimitive()) {
                     JsonPrimitive primitive = mirrorElement.getAsJsonPrimitive();
                     if (primitive.isBoolean()) {
                         cube.mirror = primitive.getAsBoolean();
