@@ -18,6 +18,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.v_black_cat.goetydelight.ability.AbilityRegistry;
+import net.v_black_cat.goetydelight.advancements.ModAdvancementsTrigger;
 import net.v_black_cat.goetydelight.block.ModBlockEntities;
 import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.v_black_cat.goetydelight.block.RenderBlockRenderer;
@@ -95,6 +96,10 @@ public class GoetyDelight
         ModStructures.register(modEventBus);
         ModStructurePieceTypes.register(modEventBus);
         ModStructureProcessorTypes.register(modEventBus);
+
+        // 注册自定义成就触发器
+        ModAdvancementsTrigger.init();
+
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }

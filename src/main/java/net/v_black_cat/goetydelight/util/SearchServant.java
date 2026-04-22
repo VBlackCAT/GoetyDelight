@@ -142,7 +142,7 @@ public class SearchServant {
 
             private Map<String, Object> serializeItemStack(ItemStack stack) {
                 if (stack.isEmpty()) {
-                    return null;
+                    return Map.of();
                 }
                 Map<String, Object> itemData = new HashMap<>();
                 itemData.put("item", stack.getItem().toString());

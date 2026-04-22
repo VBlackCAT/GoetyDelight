@@ -575,21 +575,16 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
         this.attackAnimationState.stop();
     }
 
-    
+
     private void executePlayer(Player player) {
         if (!player.isAlive()) return;
+
+        player.addTag("ghost_farmer_attack");
+
         dealMagicDamageToPlayer(player);
         playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
         addParticlesAroundSelf(ParticleTypes.REVERSE_PORTAL);
-        if (player instanceof ServerPlayer) {
-            player.sendSystemMessage(Component.translatable("entity.goetydelight.ghost_farmer.execute_message"));
-        }
     }
-
-
-
-
-
     
     @Override
     public void die(DamageSource cause) {

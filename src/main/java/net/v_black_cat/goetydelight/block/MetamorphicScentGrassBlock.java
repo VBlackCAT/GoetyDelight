@@ -1,6 +1,7 @@
 package net.v_black_cat.goetydelight.block;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -19,6 +20,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.v_black_cat.goetydelight.item.ModItems;
 
 import static vectorwing.farmersdelight.common.registry.ModBlocks.RICH_SOIL_FARMLAND;
@@ -55,9 +57,13 @@ public class MetamorphicScentGrassBlock extends CropBlock {
 
     @Override
     public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+        BlockState belowState = level.getBlockState(pos.below());
+        boolean isRichSoil = belowState.is(RICH_SOIL_FARMLAND.get());
 
+        Block infinisoilFarmland = ForgeRegistries.BLOCKS.getValue(new ResourceLocation("enigmaticdelicacy", "infinisoil_farmland"));
+        boolean isInfinisoil = infinisoilFarmland != null && belowState.is(infinisoilFarmland);
 
-        return super.canSurvive(state, level, pos) && level.getBlockState(pos.below()).is(RICH_SOIL_FARMLAND.get());
+        return super.canSurvive(state, level, pos) && (isRichSoil || isInfinisoil);
     }
 
     @Override

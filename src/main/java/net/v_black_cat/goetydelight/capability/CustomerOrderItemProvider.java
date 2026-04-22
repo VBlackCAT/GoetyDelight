@@ -28,7 +28,9 @@ public class CustomerOrderItemProvider implements ICapabilityProvider, ICapabili
         CompoundTag nbt = new CompoundTag();
         ListTag listTag = new ListTag();
         for (ItemStack stack : instance.getItems()) {
-            listTag.add(stack.save(new CompoundTag()));
+            if (stack != null && !stack.isEmpty()) {
+                listTag.add(stack.save(new CompoundTag()));
+            }
         }
         nbt.put("CustomerOrderItems", listTag);
         return nbt;

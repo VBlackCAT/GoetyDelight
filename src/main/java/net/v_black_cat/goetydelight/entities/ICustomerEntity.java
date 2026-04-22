@@ -130,7 +130,9 @@ public interface ICustomerEntity {
                     CompoundTag tag = new CompoundTag();
                     ListTag listTag = new ListTag();
                     for (ItemStack stack : order) {
-                        listTag.add(stack.save(new CompoundTag()));
+                        if (stack != null && !stack.isEmpty()) {
+                            listTag.add(stack.save(new CompoundTag()));
+                        }
                     }
                     tag.put("CustomerOrderItems", listTag);
                     NetworkHandler.INSTANCE.send(
@@ -183,19 +185,19 @@ public interface ICustomerEntity {
         tag.put(TAG_CUSTOMER_INVENTORY, this.goetyDelight$getCustomerInventory().createTag());
     }
 
-default void goetyDelight$readCustomerData(CompoundTag nbt, PathfinderMob mob) {
-    if (nbt.contains("CustomerBrain", 10)) {
-        Dynamic<Tag> dyn = new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("CustomerBrain"));
-        this.goetyDelight$setCustomerBrain(CustomerAi.makeBrain(mob, dyn));
-    } else {
-        this.goetyDelight$setCustomerBrain(CustomerAi.makeBrain(mob));
-    }
+    default void goetyDelight$readCustomerData(CompoundTag nbt, PathfinderMob mob) {
+        if (nbt.contains("CustomerBrain", 10)) {
+            Dynamic<Tag> dyn = new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("CustomerBrain"));
+            this.goetyDelight$setCustomerBrain(CustomerAi.makeBrain(mob, dyn));
+        } else {
+            this.goetyDelight$setCustomerBrain(CustomerAi.makeBrain(mob));
+        }
 
-    this.goetyDelight$setCustomerMode(nbt.getBoolean("GoetyDelightCustomerMode"));
-    this.goetyDelight$setCustomerSatietyValue(nbt.getFloat("GoetyDelightCustomerSatietyValue"));
-    this.goetyDelight$setEnterCustomerModeCooldown(nbt.getLong("GoetyDelightCustomerEnterCustomerModeCooldown"));
-    this.readCustomerInventoryFromTag(nbt);
-}
+        this.goetyDelight$setCustomerMode(nbt.getBoolean("GoetyDelightCustomerMode"));
+        this.goetyDelight$setCustomerSatietyValue(nbt.getFloat("GoetyDelightCustomerSatietyValue"));
+        this.goetyDelight$setEnterCustomerModeCooldown(nbt.getLong("GoetyDelightCustomerEnterCustomerModeCooldown"));
+        this.readCustomerInventoryFromTag(nbt);
+    }
 
     
     default void goetyDelight$addCustomerData(CompoundTag nbt) {

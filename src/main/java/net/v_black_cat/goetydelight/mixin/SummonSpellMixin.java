@@ -2,21 +2,12 @@ package net.v_black_cat.goetydelight.mixin;
 
 import com.Polarice3.Goety.common.magic.SummonSpell;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.v_black_cat.goetydelight.effect.ModEffects;
+import net.v_black_cat.goetydelight.ability.MinionBoost;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-
-import java.util.Iterator;
-
-import static net.v_black_cat.goetydelight.item.food.NightHeartPeaSoupItem.getSoupBoostCount;
 
 @Mixin(SummonSpell.class)
 public abstract class SummonSpellMixin {
@@ -34,10 +25,10 @@ public abstract class SummonSpellMixin {
 
         int boostCount = 0;
         if (caster instanceof Player player) {
-            boostCount = getSoupBoostCount(player);
+            boostCount = MinionBoost.getSoupBoostCount(player);
         }
 
-        return boostCount>0
+        return boostCount > 0
                 ? originalLimit * 2
                 : originalLimit;
     }
