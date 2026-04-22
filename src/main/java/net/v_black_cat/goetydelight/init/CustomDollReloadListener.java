@@ -28,7 +28,7 @@ public class CustomDollReloadListener implements ResourceManagerReloadListener {
     }
 
     private static void readDefaultModel(ResourceManager manager) {
-        manager.getResource(new ResourceLocation(GoetyDelight.MODID, "models/block/doll/defult_doll.json")).ifPresent(res -> {
+        manager.getResource(new ResourceLocation(GoetyDelight.MODID, "models/block/doll/custom_doll.json")).ifPresent(res -> {
             try (InputStream stream = res.open()) {
                 DFAULT_DOLL_MODEL = new BedrockModel(stream);
             } catch (Exception e) {
