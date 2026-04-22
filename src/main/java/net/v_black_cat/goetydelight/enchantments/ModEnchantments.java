@@ -46,6 +46,12 @@ public class ModEnchantments {
                             EnchantmentCategory.ARMOR,
                             EquipmentSlot.values()
                     ));
-
+    public static final RegistryObject<Enchantment> SOUL_DRAIN =
+            ENCHANTMENTS.register("soul_drain",
+                    () -> new SoulDrainEnchantment(
+                            Enchantment.Rarity.RARE,
+                            EnchantmentCategory.WEAPON,
+                            EquipmentSlot.values()
+                    ));
 
 }
