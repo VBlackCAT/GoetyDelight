@@ -3,7 +3,7 @@
 	"minecraft:geometry": [
 		{
 			"description": {
-				"identifier": "geometry.goetydelight.defult_doll",
+				"identifier": "geometry.goetydelight.custom_doll",
 				"texture_width": 64,
 				"texture_height": 64,
 				"visible_bounds_width": 2,

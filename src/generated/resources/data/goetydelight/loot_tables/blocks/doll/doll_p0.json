@@ -10,7 +10,7 @@
       ],
       "entries": [
         {
-          "type": "minecraft:item",
+          "type": "minecraft:block",
           "name": "goetydelight:doll_p0"
         }
       ],
