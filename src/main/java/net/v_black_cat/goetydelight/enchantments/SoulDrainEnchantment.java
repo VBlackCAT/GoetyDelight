@@ -8,13 +8,21 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.config.Config;
 
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 @Mod.EventBusSubscriber(modid = "goetydelight")
 public class SoulDrainEnchantment extends Enchantment {
+    private static final Map<UUID, Map<UUID, Integer>> playerDrainTracker = new ConcurrentHashMap<>();
+
     public SoulDrainEnchantment(Rarity rarity, EnchantmentCategory category, EquipmentSlot... slots) {
         super(rarity, category, slots);
     }
@@ -75,6 +83,30 @@ public class SoulDrainEnchantment extends Enchantment {
         }
     }
 
+    @SubscribeEvent
+    public static void onLivingAttack(LivingAttackEvent event) {
+        if (event.getSource().getEntity() instanceof Player player) {
+            ItemStack mainHandItem = player.getMainHandItem();
+            int enchantmentLevel = mainHandItem.getEnchantmentLevel(ModEnchantments.SOUL_DRAIN.get());
+
+            if (enchantmentLevel > 0) {
+                UUID playerId = player.getUUID();
+
+                playerDrainTracker.computeIfAbsent(playerId, k -> new ConcurrentHashMap<>());
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingDeath(LivingDeathEvent event) {
+        LivingEntity target = event.getEntity();
+        UUID targetId = target.getUUID();
+
+        playerDrainTracker.forEach((playerId, targetMap) -> {
+            targetMap.remove(targetId);
+        });
+    }
+
     private static void applySoulDrain(LivingHurtEvent event, Player player, LivingEntity target, ItemStack weapon, int enchantmentLevel) {
         float baseDamage = (float) weapon.getAttributeModifiers(EquipmentSlot.MAINHAND)
                 .get(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE)
@@ -87,20 +119,28 @@ public class SoulDrainEnchantment extends Enchantment {
         }
 
         int targetSouls = SEHelper.getSoulGiven(target);
-        float soulBasedBonus = targetSouls * enchantmentLevel;
         float maxBonusDamage = baseDamage * enchantmentLevel;
-        float damageBonus = Math.min(soulBasedBonus, maxBonusDamage);
+        float damageBonus = Math.min((float) targetSouls, maxBonusDamage);
 
         event.setAmount(event.getAmount() + damageBonus);
 
-        double soulDrainPercent = 0.10 + 0.05 * enchantmentLevel;
-        int drainCount = (int) (0.5 + 1.5 * enchantmentLevel);
+        UUID playerId = player.getUUID();
+        UUID targetId = target.getUUID();
 
-        for (int i = 0; i < drainCount; i++) {
-            if (target instanceof Player targetPlayer && SEHelper.getSoulsAmount(targetPlayer, 1)) {
-                SEHelper.decreaseSouls(targetPlayer, 1);
-                SEHelper.increaseSouls(player, (int) Math.ceil(soulDrainPercent * 10));
-            }
+        Map<UUID, Integer> targetMap = playerDrainTracker.get(playerId);
+        if (targetMap == null) {
+            return;
+        }
+
+        int currentDrainCount = targetMap.getOrDefault(targetId, 0);
+        int maxDrainCount = (int) (0.5 + 1.5 * enchantmentLevel);
+
+        if (currentDrainCount < maxDrainCount && targetSouls > 0) {
+            double soulDrainPercent = 0.10 + 0.05 * enchantmentLevel;
+            int drainAmount = (int) Math.ceil(targetSouls * soulDrainPercent);
+            SEHelper.increaseSouls(player, drainAmount);
+
+            targetMap.put(targetId, currentDrainCount + 1);
         }
     }
 }
