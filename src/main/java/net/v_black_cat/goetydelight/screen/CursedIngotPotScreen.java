@@ -28,7 +28,6 @@ import net.minecraft.world.item.ItemStack;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import vectorwing.farmersdelight.client.gui.CookingPotRecipeBookComponent;
 import vectorwing.farmersdelight.common.Configuration;
-import vectorwing.farmersdelight.common.utility.TextUtils;
 
 import static net.v_black_cat.goetydelight.GoetyDelight.MODID;
 
@@ -54,7 +53,7 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
         this.titleLabelX = 28;
         this.recipeBookComponent.init(this.width, this.height, this.minecraft, this.widthTooNarrow, (RecipeBookMenu)this.menu);
         this.leftPos = this.recipeBookComponent.updateScreenPosition(this.width, this.imageWidth);
-        if ((Boolean)Configuration.ENABLE_RECIPE_BOOK_COOKING_POT.get()) {
+        if ((Boolean)Configuration.ENABLE_COOKING_POT_RECIPE_BOOK.get()) {
             this.addRenderableWidget(new ImageButton(this.leftPos + 5, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_LOCATION, (button) -> {
                 this.recipeBookComponent.toggleVisibility();
                 this.leftPos = this.recipeBookComponent.updateScreenPosition(this.width, this.imageWidth);
@@ -95,8 +94,8 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
 
     private void renderHeatIndicatorTooltip(GuiGraphics gui, int mouseX, int mouseY) {
         if (this.isHovering(HEAT_ICON.x, HEAT_ICON.y, HEAT_ICON.width, HEAT_ICON.height, (double)mouseX, (double)mouseY)) {
-            String key = "container.cooking_pot." + (((CursedIngotPotMenu)this.menu).isHeated() ? "heated" : "not_heated");
-            gui.renderTooltip(this.font, TextUtils.getTranslation(key, new Object[]{this.menu}), mouseX, mouseY);
+            String key = "container.cursed_ingot_pot." + (((CursedIngotPotMenu)this.menu).isHeated() ? "heated" : "not_heated");
+            gui.renderTooltip(this.font, net.v_black_cat.goetydelight.util.TextUtils.getTranslation(key, new Object[]{this.menu}), mouseX, mouseY);
         }
     }
 
@@ -125,7 +124,7 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
                 tooltip.add(((MutableComponent)mealStack.getItem().getDescription()).withStyle(mealStack.getRarity().color));
                 ItemStack containerStack = ((CursedIngotPotMenu)this.menu).blockEntity.getContainer();
                 String container = !containerStack.isEmpty() ? containerStack.getItem().getDescription().getString() : "";
-                tooltip.add(TextUtils.getTranslation("container.cooking_pot.served_on", new Object[]{container}).withStyle(ChatFormatting.GRAY));
+                tooltip.add(net.v_black_cat.goetydelight.util.TextUtils.getTranslation("container.cursed_ingot_pot.served_on", new Object[]{container}).withStyle(ChatFormatting.GRAY));
 
                 // 检查是否有灵魂注入
                 if (mealStack.hasTag() && mealStack.getTag().contains("SoulInfused") && mealStack.getTag().getBoolean("SoulInfused")) {

@@ -22,9 +22,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.item.ModItems;
-import vectorwing.farmersdelight.common.block.CookingPotBlock;
-import vectorwing.farmersdelight.common.block.RoastChickenBlock;
-import vectorwing.farmersdelight.common.block.StoveBlock;
 
 import java.util.Arrays;
 import java.util.function.Supplier;

@@ -273,8 +273,7 @@ tasks.withType(JavaCompile).configureEach {
 //}
 
 dependencies {
-    modImplementation "curse.maven:farmers-delight-398521:6917255"
-
+    modImplementation "curse.maven:farmers-delight-398521:8007609"
 //    modImplementation "curse.maven:goety-586095:7170210"//2.5.36.5
 //    modImplementation  "curse.maven:goety-586095:7073504"//2.5.37.3
 //    compileOnly  "curse.maven:goety-586095:7073504"//2.5.37.3

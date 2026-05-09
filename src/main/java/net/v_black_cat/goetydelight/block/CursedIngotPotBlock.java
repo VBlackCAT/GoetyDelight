@@ -123,7 +123,7 @@ public class CursedIngotPotBlock extends Block implements SimpleWaterloggedBlock
     }
 
     private CookingPotSupport getTrayState(LevelAccessor level, BlockPos pos) {
-        return level.getBlockState(pos.below()).is(ModTags.TRAY_HEAT_SOURCES) ? CookingPotSupport.TRAY : CookingPotSupport.NONE;
+        return level.getBlockState(pos.below()).is(ModTags.Blocks.TRAY_HEAT_SOURCES) ? CookingPotSupport.TRAY : CookingPotSupport.NONE;
     }
 
     public ItemStack getCloneItemStack(BlockGetter level, BlockPos pos, BlockState state) {

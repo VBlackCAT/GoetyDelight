@@ -153,7 +153,7 @@ public class CursedIngotPotMenu extends RecipeBookMenu<RecipeWrapper> {
                     return ItemStack.EMPTY;
                 }
             } else {
-                boolean isValidContainer = slotStack.is(ModTags.SERVING_CONTAINERS) || slotStack.is(this.blockEntity.getContainer().getItem());
+                boolean isValidContainer = slotStack.is(ModTags.Items.SERVING_CONTAINERS) || slotStack.is(this.blockEntity.getContainer().getItem());
                 if (isValidContainer && !this.moveItemStackTo(slotStack, indexContainerInput, indexContainerInput + 1, false)) {
                     return ItemStack.EMPTY;
                 }

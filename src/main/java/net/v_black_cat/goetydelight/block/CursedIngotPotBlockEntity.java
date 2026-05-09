@@ -60,7 +60,7 @@ import vectorwing.farmersdelight.common.registry.ModItems;
 import vectorwing.farmersdelight.common.registry.ModParticleTypes;
 import vectorwing.farmersdelight.common.registry.ModRecipeTypes;
 import vectorwing.farmersdelight.common.utility.ItemUtils;
-import vectorwing.farmersdelight.common.utility.TextUtils;
+import net.v_black_cat.goetydelight.util.TextUtils;
 
 import static com.Polarice3.Goety.common.items.ModItems.SOUL_TRANSFER;
 
@@ -652,7 +652,7 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
     }
 
     public Component getName() {
-        return (Component)(this.customName != null ? this.customName : TextUtils.getTranslation("container.cooking_pot", new Object[0]));
+        return (Component)(this.customName != null ? this.customName : TextUtils.getTranslation("container.cursed_ingot_pot", new Object[0]));
     }
 
     public Component getDisplayName() {
