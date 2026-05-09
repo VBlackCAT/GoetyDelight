@@ -26,6 +26,8 @@ import net.minecraft.world.entity.animal.Fox;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionResult;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -134,6 +136,7 @@ public class CherryBlossomCakeItem extends Item {
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, Level world, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
         int foxKillCount = net.v_black_cat.goetydelight.network.ClientHandle.getCachedFoxKillCount();
 

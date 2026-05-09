@@ -161,9 +161,9 @@ public class Config
             .defineInRange("nightPeaSoupMaxCount", 12, 1, 30);
 
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> PLAYER_MODEL_SCALES = BUILDER
-            .comment("Player model scale settings (format: playerName=scale)\n玩家模型缩放设置（格式：玩家名称=缩放比例）")
+            .comment("Player model scale settings (format: playerName=scale)\n玩家模型缩放设置（格式：玩家名称=缩放比例）\n注：请勿在高版本ysm中使用该功能（2.6.2版本可用，2.6.5版本不可用）")
             .defineListAllowEmpty("playerModelScales", List.of(
-                    "Steve=1.0", "Alex=1.0", "wu1wu2=0.5"
+                    "Steve=1.0", "Alex=1.0", "wu1wu2=1.0"
             ), Config::validatePlayerScaleEntry);
 
     public static Set<Item> getSoulMendingBlacklist() {
