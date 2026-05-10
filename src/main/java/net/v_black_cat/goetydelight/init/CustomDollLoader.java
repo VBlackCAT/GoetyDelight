@@ -191,12 +191,26 @@ public class CustomDollLoader {
             String identifier = model.getIdentifier();
             if (identifier != null) {
                 MODELS.put(identifier, model);
+
+                String modelName = extractModelNameFromIdentifier(identifier);
+                ResourceLocation texture = TEXTURES.get(modelName);
+                if (texture == null) {
+                    GoetyDelight.LOGGER.warn("No texture found for model: {}, expected texture name: {}", identifier, modelName);
+                }
             } else {
                 GoetyDelight.LOGGER.error("Model identifier is null");
             }
         } catch (Exception e) {
             GoetyDelight.LOGGER.error("Failed to read model", e);
         }
+    }
+
+    private static String extractModelNameFromIdentifier(String identifier) {
+        if (identifier == null || !identifier.contains(".")) {
+            return identifier;
+        }
+        String[] parts = identifier.split("\\.");
+        return parts[parts.length - 1];
     }
 
     private static void readLanguage(String name, InputStream stream) {

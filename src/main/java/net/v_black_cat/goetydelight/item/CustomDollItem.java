@@ -98,7 +98,7 @@ public class CustomDollItem extends BlockItem {
 
     @Override
     public Component getName(ItemStack stack) {
-        return Component.translatable("block.kaleidoscope_doll.doll");
+        return Component.translatable("block.goetydelight.doll");
     }
 
     @Override
@@ -113,7 +113,7 @@ public class CustomDollItem extends BlockItem {
                 list.add(Component.literal(line).withStyle(ChatFormatting.DARK_GRAY));
             }
         } else {
-            list.add(Component.translatable("tooltip.kaleidoscope_doll.custom.unknown").withStyle(ChatFormatting.DARK_GRAY));
+            list.add(Component.translatable("tooltip.goetydelight.custom.unknown").withStyle(ChatFormatting.DARK_GRAY));
         }
     }
 }

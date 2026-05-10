@@ -288,7 +288,7 @@ dependencies {
 //    modRuntimeOnly "curse.maven:goety-586095:7327887"//2.5.40.1
 //    modImplementation "curse.maven:goety-586095:7586938"// 2.5.46.1
 //      modImplementation "curse.maven:goety-586095:7689315"// 2.5.48.0
-    modImplementation "curse.maven:goety-586095:7728055"// 2.5.49.0
+    modImplementation "curse.maven:goety-586095:7966952"// 2.5.52.4
 
 //    modImplementation "curse.maven:goety-revelation-1236817:6892481"
 
