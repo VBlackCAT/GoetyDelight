@@ -91,16 +91,14 @@ public class SoulMendingEnchantment extends Enchantment {
         if (event.phase == TickEvent.Phase.END && event.player.tickCount % 4 == 0 && !event.player.level().isClientSide()) {
             if (event.player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
                 java.util.Optional<SearchServant.ServantData> servantDataOpt = SearchServant.getServantData(serverPlayer);
+                for (ItemStack stack : serverPlayer.getAllSlots()) {
+                    int enchantmentLevel = stack.getEnchantmentLevel(ModEnchantments.SOUL_MENDING.get());
+                    if (enchantmentLevel > 0) {
+                        repairItemWithSoulEnergy(serverPlayer, stack, enchantmentLevel);
+                    }
+                }
                 if (servantDataOpt.isPresent()) {
                     SearchServant.ServantData servantData = servantDataOpt.get();
-
-                    for (ItemStack stack : serverPlayer.getAllSlots()) {
-                        int enchantmentLevel = stack.getEnchantmentLevel(ModEnchantments.SOUL_MENDING.get());
-                        if (enchantmentLevel > 0) {
-                            repairItemWithSoulEnergy(serverPlayer, stack, enchantmentLevel);
-                        }
-                    }
-
                     net.minecraft.server.level.ServerLevel level = (net.minecraft.server.level.ServerLevel) serverPlayer.level();
                     for (java.util.UUID servantUUID : servantData.servantUUIDs) {
                         Entity entity = level.getEntity(servantUUID);

@@ -38,7 +38,8 @@ public class CustomDollRender implements BlockEntityRenderer<CustomDollBlockEnti
                 model = CustomDollReloadListener.DFAULT_DOLL_MODEL;
                 texture = CustomDollReloadListener.DEFAULT_TEXTURE_ID;
             } else {
-                texture = CustomDollLoader.getTexture(modelId);
+                String textureName = extractTextureNameFromModelId(modelId);
+                texture = CustomDollLoader.getTexture(textureName);
                 if (texture == null) {
                     texture = MissingTextureAtlasSprite.getLocation();
                 }
@@ -57,5 +58,13 @@ public class CustomDollRender implements BlockEntityRenderer<CustomDollBlockEnti
         model.renderToBuffer(poseStack, buffer, packedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
 
         poseStack.popPose();
+    }
+
+    private String extractTextureNameFromModelId(String modelId) {
+        if (modelId == null || !modelId.contains(".")) {
+            return modelId;
+        }
+        String[] parts = modelId.split("\\.");
+        return parts[parts.length - 1];
     }
 }
