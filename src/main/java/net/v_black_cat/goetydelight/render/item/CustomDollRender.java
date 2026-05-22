@@ -8,11 +8,11 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.v_black_cat.goetydelight.block.CustomDollBlockEntity;
 import net.v_black_cat.goetydelight.init.CustomDollLoader;
 import net.v_black_cat.goetydelight.init.CustomDollReloadListener;
@@ -26,27 +26,17 @@ public class CustomDollRender implements BlockEntityRenderer<CustomDollBlockEnti
     public void render(CustomDollBlockEntity doll, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
         String modelId = doll.getModelId();
 
-        Model model;
+        Model model = CustomDollReloadListener.DFAULT_DOLL_MODEL;
         ResourceLocation texture;
 
+        BlockState blockState = doll.getBlockState();
+
         if (StringUtils.isBlank(modelId)) {
-            model = CustomDollReloadListener.DFAULT_DOLL_MODEL;
-            texture = CustomDollReloadListener.DEFAULT_TEXTURE_ID;
+            texture = getTextureByBlockState(blockState);
         } else {
-            model = CustomDollLoader.getModel(modelId);
-            if (model == null) {
-                model = CustomDollReloadListener.DFAULT_DOLL_MODEL;
-                texture = CustomDollReloadListener.DEFAULT_TEXTURE_ID;
-            } else {
-                String textureName = extractTextureNameFromModelId(modelId);
-                texture = CustomDollLoader.getTexture(textureName);
-                if (texture == null) {
-                    texture = MissingTextureAtlasSprite.getLocation();
-                }
-            }
+            texture = getTextureByName(modelId);
         }
 
-        BlockState blockState = doll.getBlockState();
         Direction facing = blockState.getValue(HorizontalDirectionalBlock.FACING);
 
         poseStack.pushPose();
@@ -58,6 +48,19 @@ public class CustomDollRender implements BlockEntityRenderer<CustomDollBlockEnti
         model.renderToBuffer(poseStack, buffer, packedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
 
         poseStack.popPose();
+    }
+
+    private ResourceLocation getTextureByBlockState(BlockState blockState) {
+        ResourceLocation blockId = ForgeRegistries.BLOCKS.getKey(blockState.getBlock());
+        if (blockId == null || "custom_doll".equals(blockId.getPath())) {
+            return CustomDollReloadListener.DEFAULT_TEXTURE_ID;
+        }
+        return getTextureByName(blockId.getPath());
+    }
+
+    private ResourceLocation getTextureByName(String modelId) {
+        ResourceLocation texture = CustomDollLoader.getTexture(extractTextureNameFromModelId(modelId));
+        return texture == null ? CustomDollReloadListener.DEFAULT_TEXTURE_ID : texture;
     }
 
     private String extractTextureNameFromModelId(String modelId) {

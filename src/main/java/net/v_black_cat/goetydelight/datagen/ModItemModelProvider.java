@@ -12,6 +12,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlocks;
+import net.v_black_cat.goetydelight.event.ModRegisterEvent;
 import net.v_black_cat.goetydelight.item.ModItems;
 
 
@@ -107,7 +108,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModBlocks.getBlockItem(ModBlocks.ROYAL_CAKE_BLOCK));
         
         simpleBlockItem(ModBlocks.MARBLE_DOOR);
-        
+        specialDollItems();
+
         evenSimplerBlockItem(ModBlocks.SILT_MARBLE_HEAVY);
         evenSimplerBlockItem(ModBlocks.MARBLE_STAIRS);
         evenSimplerBlockItem(ModBlocks.MARBLE_SLAB);
@@ -115,6 +117,12 @@ public class ModItemModelProvider extends ItemModelProvider {
         evenSimplerBlockItem(ModBlocks.MARBLE_FENCE_GATE);
 
         trapdoorItem(ModBlocks.MARBLE_TRAPDOOR);
+    }
+
+    private void specialDollItems() {
+        for (String dollName : ModRegisterEvent.SPECIAL_DOLL_NAMES) {
+            withExistingParent(dollName, modLoc("item/custom_doll"));
+        }
     }
 
     private ItemModelBuilder simpleHandHoldItem(RegistryObject<Item> item) {
