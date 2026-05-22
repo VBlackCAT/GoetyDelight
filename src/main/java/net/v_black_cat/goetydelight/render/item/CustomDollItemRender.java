@@ -10,11 +10,11 @@ import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
-import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.v_black_cat.goetydelight.init.CustomDollLoader;
 import net.v_black_cat.goetydelight.init.CustomDollReloadListener;
 import net.v_black_cat.goetydelight.item.CustomDollItem;
@@ -33,24 +33,15 @@ public class CustomDollItemRender extends BlockEntityWithoutLevelRenderer {
             return;
         }
 
-        Model model;
+        Model model = CustomDollReloadListener.DFAULT_DOLL_MODEL;
         ResourceLocation texture;
 
         String modelId = CustomDollItem.getModelId(itemStackIn);
         if (StringUtils.isBlank(modelId)) {
-            model = CustomDollReloadListener.DFAULT_DOLL_MODEL;
-            texture = CustomDollReloadListener.DEFAULT_TEXTURE_ID;
+            ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(itemStackIn.getItem());
+            texture = itemId == null ? CustomDollReloadListener.DEFAULT_TEXTURE_ID : getTextureByName(itemId.getPath());
         } else {
-            model = CustomDollLoader.getModel(modelId);
-            if (model == null) {
-                model = CustomDollReloadListener.DFAULT_DOLL_MODEL;
-                texture = CustomDollReloadListener.DEFAULT_TEXTURE_ID;
-            } else {
-                texture = CustomDollLoader.getTexture(modelId);
-                if (texture == null) {
-                    texture = MissingTextureAtlasSprite.getLocation();
-                }
-            }
+            texture = getTextureByName(modelId);
         }
 
         poseStack.pushPose();
@@ -61,5 +52,18 @@ public class CustomDollItemRender extends BlockEntityWithoutLevelRenderer {
         model.renderToBuffer(poseStack, buffer, combinedLight, combinedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
 
         poseStack.popPose();
+    }
+
+    private ResourceLocation getTextureByName(String modelId) {
+        ResourceLocation texture = CustomDollLoader.getTexture(extractTextureNameFromModelId(modelId));
+        return texture == null ? CustomDollReloadListener.DEFAULT_TEXTURE_ID : texture;
+    }
+
+    private String extractTextureNameFromModelId(String modelId) {
+        if (modelId == null || !modelId.contains(".")) {
+            return modelId;
+        }
+        String[] parts = modelId.split("\\.");
+        return parts[parts.length - 1];
     }
 }

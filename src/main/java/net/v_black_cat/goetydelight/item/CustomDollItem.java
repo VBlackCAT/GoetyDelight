@@ -18,7 +18,7 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.v_black_cat.goetydelight.block.CustomDollBlockEntity;
 import net.v_black_cat.goetydelight.init.CustomDollLoader;
 import net.v_black_cat.goetydelight.init.ServerCustomDollLoader;
-import net.v_black_cat.goetydelight.render.item.DollEntityItemRender;
+import net.v_black_cat.goetydelight.render.item.CustomDollItemRender;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -78,13 +78,13 @@ public class CustomDollItem extends BlockItem {
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(new IClientItemExtensions() {
-            private DollEntityItemRender render = null;
+            private CustomDollItemRender render = null;
 
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {
                 Minecraft minecraft = Minecraft.getInstance();
                 if (render == null) {
-                    render = new DollEntityItemRender(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
+                    render = new CustomDollItemRender(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
                 }
                 return render;
             }

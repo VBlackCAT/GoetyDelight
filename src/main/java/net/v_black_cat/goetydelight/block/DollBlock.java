@@ -13,6 +13,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -26,7 +27,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.v_black_cat.goetydelight.util.ModSounds;
 import org.jetbrains.annotations.Nullable;
 
-public class DollBlock extends HorizontalDirectionalBlock implements SimpleWaterloggedBlock {
+public class DollBlock extends HorizontalDirectionalBlock implements SimpleWaterloggedBlock, EntityBlock {
     private static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     private static final VoxelShape DOLL_SHAPE = Block.box(2.0d, 0.0d, 2.0d, 14.0d, 12.0d, 14.0d);
 
@@ -48,6 +49,11 @@ public class DollBlock extends HorizontalDirectionalBlock implements SimpleWater
                 .noOcclusion());
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.SOUTH)
                 .setValue(WATERLOGGED, false));
+    }
+
+    @Override
+    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new CustomDollBlockEntity(pos, state);
     }
 
     @Override
@@ -128,6 +134,11 @@ public class DollBlock extends HorizontalDirectionalBlock implements SimpleWater
     @Override
     public VoxelShape getShape(BlockState blockState, BlockGetter level, BlockPos blockPos, CollisionContext context) {
         return DOLL_SHAPE;
+    }
+
+    @Override
+    public RenderShape getRenderShape(BlockState state) {
+        return RenderShape.INVISIBLE;
     }
 
     @Override

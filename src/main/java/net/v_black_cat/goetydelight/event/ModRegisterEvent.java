@@ -23,7 +23,7 @@ public class ModRegisterEvent {
     public static final Map<ResourceLocation, String> VANILLA_TOOLTIPS = Maps.newHashMap();
     public static final Map<ResourceLocation, String> SPECIAL_TOOLTIPS = Maps.newHashMap();
     public static final Set<Item> DOLL_ITEMS = Sets.newLinkedHashSet();
-    private static final String[] SPECIAL_DOLL_NAMES = {
+    public static final String[] SPECIAL_DOLL_NAMES = {
             "doll_5152", "doll_p0", "doll_p7", "doll_bai", "doll_baka",
             "doll_fox", "doll_kunzhong", "doll_lamiao", "doll_lll252", "doll_m3",
             "doll_maid1", "doll_maid2", "doll_moon", "doll_skillupper", "doll_vblackcat",

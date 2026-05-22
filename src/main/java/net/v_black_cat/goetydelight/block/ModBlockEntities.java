@@ -1,11 +1,15 @@
 package net.v_black_cat.goetydelight.block;
 
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.event.ModRegisterEvent;
+
+import java.util.stream.Stream;
 
 public class ModBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
@@ -34,7 +38,12 @@ public class ModBlockEntities {
             () -> BlockEntityType.Builder.of(RestaurantBlockEntity::new, ModBlocks.RESTAURANT.get()).build(null));
 
     public static RegistryObject<BlockEntityType<CustomDollBlockEntity>> CUSTOM_DOLL_BE = BLOCK_ENTITIES.register("custom_doll", () ->
-            BlockEntityType.Builder.of(CustomDollBlockEntity::new, ModBlocks.CUSTOM_DOLL.get()).build(null));
+            BlockEntityType.Builder.of(CustomDollBlockEntity::new, getDollBlocks()).build(null));
+
+    private static Block[] getDollBlocks() {
+        return Stream.concat(Stream.of(ModBlocks.CUSTOM_DOLL.get()), ModRegisterEvent.DOLL_BLOCKS.values().stream())
+                .toArray(Block[]::new);
+    }
 
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);
