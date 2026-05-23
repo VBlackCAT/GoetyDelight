@@ -1,0 +1,12 @@
+{
+    "name": "烤老王",
+    "icon": "goetydelight:roast_laowang",
+    "category": "goety:goetydelight/food",
+    "advancement": "goetydelight:get_roast_laowang",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "$(b)[隐藏食物]电死猪有概率掉落$(br)$()具体来历：i forgor.总之跟vanilla_haozi,Player_VI没有任何关系就是了~$(br)蛤！泥们才是猪，去死去死去死！$(br)坏耗子，蛤！$(br)邪恶白泽栗，握不湿竹！$(br)大理石咱讨厌你，超级讨厌大理石$(br)我是baka我不知道qwq$(br)尼成功激怒了一头雄虱"
+        }
+    ]
+}
