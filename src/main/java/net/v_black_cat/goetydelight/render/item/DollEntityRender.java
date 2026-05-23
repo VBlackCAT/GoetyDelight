@@ -16,6 +16,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelData;
+import net.v_black_cat.goetydelight.bedrock.model.BedrockPart;
 import net.v_black_cat.goetydelight.entities.DollEntity;
 import net.v_black_cat.goetydelight.init.CustomDollLoader;
 import net.v_black_cat.goetydelight.init.CustomDollReloadListener;
@@ -26,6 +27,7 @@ import javax.annotation.Nullable;
 
 public class DollEntityRender extends EntityRenderer<DollEntity> {
     private static final ResourceLocation EMPTY = new ResourceLocation("minecraft", "textures/misc/empty.png");
+    private static final int TOUCH_ANIMATION_DURATION = 17;
 
     public DollEntityRender(EntityRendererProvider.Context context) {
         super(context);
@@ -41,11 +43,9 @@ public class DollEntityRender extends EntityRenderer<DollEntity> {
         }
         poseStack.pushPose();
 
-        // 应用位移变换
         Vector3f translation = dollEntity.getDisplayTranslation();
         poseStack.translate(translation.x, translation.y, translation.z);
 
-        // 应用 Y 轴旋转（基于实体的 yaw）
         Entity vehicle = dollEntity.getVehicle();
         if (vehicle != null) {
             float vehicleYaw = Mth.lerp(partialTick, vehicle.yRotO, vehicle.getYRot());
@@ -57,14 +57,11 @@ public class DollEntityRender extends EntityRenderer<DollEntity> {
         float pitchRadians = Mth.lerp(partialTick, dollEntity.xRotO, dollEntity.getXRot());
         poseStack.mulPose(Axis.XP.rotationDegrees(pitchRadians));
 
-        // 应用缩放变换
         Vector3f scale = dollEntity.getDisplayScale();
         poseStack.scale(scale.x, scale.y, scale.z);
 
-        // 将方块中心对齐到实体位置
         poseStack.translate(-0.5, 0, -0.5);
 
-        // 渲染逻辑
         if (!StringUtils.isBlank(customDollId)) {
             renderCustom(dollEntity, customDollId, poseStack, bufferSource, packedLight, partialTick);
         } else if (blockState != null && !blockState.isAir()) {
@@ -92,69 +89,52 @@ public class DollEntityRender extends EntityRenderer<DollEntity> {
         poseStack.mulPose(Axis.ZN.rotationDegrees(180));
         poseStack.mulPose(Axis.YN.rotationDegrees(180));
 
-        int touchTick = dollEntity.getTouchAnimationTick();
         boolean hasAnimation = false;
-        if (touchTick > 0) {
-            float animationProgress = 1.0f - ((float)touchTick - partialTick) / 17f;
-            applyTouchAnimation(model, animationProgress);
-            hasAnimation = true;
+        if (model instanceof net.v_black_cat.goetydelight.bedrock.BedrockModel bedrockModel) {
+            BedrockPart dollPart = bedrockModel.getModelMap().get("doll");
+            if (dollPart != null) {
+                int touchTick = dollEntity.getTouchAnimationTick();
+                if (touchTick > 0) {
+                    float animationProgress = 1.0f - ((float)touchTick - partialTick) / (float)TOUCH_ANIMATION_DURATION;
+                    applyTouchAnimation(dollPart, animationProgress);
+                    hasAnimation = true;
+                }
+            }
         }
 
         VertexConsumer buffer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(texture));
         model.renderToBuffer(poseStack, buffer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
 
-        if (hasAnimation) {
-            resetTouchAnimation(model);
+        if (hasAnimation && model instanceof net.v_black_cat.goetydelight.bedrock.BedrockModel bedrockModel) {
+            BedrockPart dollPart = bedrockModel.getModelMap().get("doll");
+            if (dollPart != null) {
+                resetTouchAnimation(dollPart);
+            }
         }
     }
 
-    private static void applyTouchAnimation(Model model, float progress) {
-        if (progress < 0 || progress > 1) {
-            return;
-        }
-        if (!(model instanceof net.v_black_cat.goetydelight.bedrock.BedrockModel bedrockModel)) {
-            return;
-        }
-        var dollBlock = bedrockModel.getModelMap().get("doll");
-        if (dollBlock == null) {
-            return;
-        }
-        float scale;
-        if (progress < 0.1f) {
-            scale = 1.0f + (0.15f * (progress / 0.1f));
-        } else if (progress < 0.25f) {
-            float t = (progress - 0.1f) / 0.15f;
-            scale = 1.15f - (0.14f * t);
-        } else if (progress < 0.4f) {
-            float t = (progress - 0.25f) / 0.15f;
-            scale = 1.01f + (0.02f * t);
-        } else if (progress < 0.55f) {
-            float t = (progress - 0.4f) / 0.15f;
-            scale = 1.03f - (0.03f * t);
-        } else if (progress < 0.7f) {
-            float t = (progress - 0.55f) / 0.15f;
-            scale = 1.0f + (0.01f * t);
-        } else {
-            float t = (progress - 0.7f) / 0.3f;
-            scale = 1.01f - (0.01f * t);
-        }
+    private static void applyTouchAnimation(BedrockPart dollPart, float progress) {
+        if (progress < 0.0f) progress = 0.0f;
+        if (progress > 1.0f) progress = 1.0f;
 
-        dollBlock.xScale = scale;
-        dollBlock.yScale = 2.0f - scale;
-        dollBlock.zScale = scale;
+        float scale = calculateSmoothScale(progress);
+
+        dollPart.xScale = scale;
+        dollPart.yScale = 2.0f - scale;
+        dollPart.zScale = scale;
     }
 
-    private static void resetTouchAnimation(Model model) {
-        if (!(model instanceof net.v_black_cat.goetydelight.bedrock.BedrockModel bedrockModel)) {
-            return;
+    private static float calculateSmoothScale(float t) {
+        float bounce = Mth.sin(t * (float)Math.PI * 3.0f) * 0.15f * (1.0f - t);
+        return 1.0f + bounce;
+    }
+
+    private static void resetTouchAnimation(BedrockPart dollPart) {
+        if (dollPart != null) {
+            dollPart.xScale = 1.0f;
+            dollPart.yScale = 1.0f;
+            dollPart.zScale = 1.0f;
         }
-        var dollBlock = bedrockModel.getModelMap().get("doll");
-        if (dollBlock == null) {
-            return;
-        }
-        dollBlock.xScale = 1.0f;
-        dollBlock.yScale = 1.0f;
-        dollBlock.zScale = 1.0f;
     }
 
     private static void renderBlock(DollEntity dollEntity, PoseStack poseStack, MultiBufferSource bufferSource, BlockState blockState) {
@@ -169,5 +149,3 @@ public class DollEntityRender extends EntityRenderer<DollEntity> {
         return EMPTY;
     }
 }
-
-

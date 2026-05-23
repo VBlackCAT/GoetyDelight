@@ -67,7 +67,8 @@ public class SoulDrainEnchantment extends Enchantment {
                 stack.getItem() instanceof net.minecraft.world.item.ShearsItem ||
                 stack.getItem() instanceof vectorwing.farmersdelight.common.item.KnifeItem ||
                 stack.getItem() instanceof com.Polarice3.Goety.common.items.magic.DarkWand ||
-                stack.getItem() instanceof com.Polarice3.Goety.common.items.magic.DarkStaff;
+                stack.getItem() instanceof com.Polarice3.Goety.common.items.magic.DarkStaff ||
+                stack.getItem() instanceof net.minecraft.world.item.TieredItem;
     }
 
     @SubscribeEvent

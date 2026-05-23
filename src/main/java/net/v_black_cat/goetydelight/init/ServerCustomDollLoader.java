@@ -38,7 +38,7 @@ public class ServerCustomDollLoader {
 
     public static void init() throws IOException {
         if (!Files.isDirectory(ROOT)) {
-            Files.createDirectories(ROOT);
+            return;
         }
 
         MODELS.clear();

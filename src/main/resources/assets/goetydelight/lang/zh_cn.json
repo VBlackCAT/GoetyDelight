@@ -32,6 +32,7 @@
   "block.goetydelight.menemen_block": "盘装炒蛋",
   "block.goetydelight.restaurant": "餐厅(wip)",
   "block.goetydelight.custom_doll": "玩偶",
+  "block.goetydelight.doll": "玩偶",
   "item.goetydelight.royal_cake": "皇家蛋糕切片",
   "item.goetydelight.sweet_berry_pudding": "甜浆果布丁",
   "item.goetydelight.tainted_drink": "不洁之饮",
@@ -115,6 +116,7 @@
   "item.goetydelight.menemen_with_bread": "炒蛋沾面包",
   "item.goetydelight.baklava": "蜜糖果仁千层酥",
   "item.goetydelight.menu": "菜单(wip)",
+  "item.goetydelight.doll_item": "玩偶",
   "effect.goetydelight.spell_duration": "法术长续",
   "effect.goetydelight.spell_mastery": "法术精通",
   "effect.goetydelight.the_pale_messenger": "苍白使者",
@@ -156,6 +158,7 @@
   "entity.goetydelight.ghost_farmer.not_night": "现在...瓜尚未成熟...待夜幕降临...",
   "entity.goetydelight.ghost_farmer.trade": "幽灵瓜农",
   "entity.goetydelight.ghost_farmer.attack_message": "幽灵瓜农:就你劈我瓜是吧！",
+  "entity.goetydelight.doll_entity": "玩偶",
   "info.goety.items.viziers_cookbook": "一份异域佳肴的烹饪手册",
   "info.goetydelight.research.vizier_cookbook": "你已知晓异域菜谱",
   "item.goetydelight.metamorphic_scent_grass.metamorphic_item": "幻化食物",
@@ -226,5 +229,6 @@
   "goetydelight.advancement.get_night_stove.description": "获得暗夜炉灶",
   "goetydelight.advancement.get_night_stove.title": "全年无休",
   "goetydelight.advancement.ghost_farmer_kill_player.description": "郝哥反杀华强(异世界版)",
-  "goetydelight.advancement.ghost_farmer_kill_player.title": "瓜农复仇"
+  "goetydelight.advancement.ghost_farmer_kill_player.title": "瓜农复仇",
+  "config.jade.plugin_goetydelight.doll_entity": "玩偶实体信息"
 }

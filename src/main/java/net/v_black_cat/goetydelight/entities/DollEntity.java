@@ -55,6 +55,9 @@ public class DollEntity extends Entity {
     private long bounceTime = 0;
     private static final int TOUCH_ANIMATION_DURATION = 17;
 
+    public final AnimationState touchAnimationState = new AnimationState();
+    public int touchAnimationTimeout = 0;
+
 
     public DollEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
@@ -151,11 +154,26 @@ public class DollEntity extends Entity {
     @Override
     public void tick() {
         super.tick();
-        if (!this.level().isClientSide) {
+
+        if (this.level().isClientSide()) {
+            setupTouchAnimationState();
+        } else {
             int tick = this.getTouchAnimationTick();
             if (tick > 0) {
                 this.setTouchAnimationTick(tick - 1);
             }
+        }
+    }
+
+    private void setupTouchAnimationState() {
+        int touchTick = this.getTouchAnimationTick();
+
+        if (touchTick > 0 && !touchAnimationState.isStarted()) {
+            touchAnimationState.start(this.tickCount);
+        }
+
+        if (touchTick <= 0 && touchAnimationState.isStarted()) {
+            touchAnimationState.stop();
         }
     }
 
