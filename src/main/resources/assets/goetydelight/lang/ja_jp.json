@@ -123,5 +123,6 @@
   "entity.goetydelight.ghost_farmer.not_night": "まだだ…メロンはまだ熟していない…夜の帳が下りるのを待つのだ…",
   "entity.goetydelight.ghost_farmer.trade": "レイスメロン農家",
   "entity.goetydelight.ghost_farmer.attack_message": "レイスメロン農家: メロン泥棒め、死ね！",
-  "info.goetydelight.research.vizier_cookbook_get": "エキゾチックなレシピを習得した。"
+  "info.goetydelight.research.vizier_cookbook": "エキゾチックなレシピを習得した。",
+  "config.jade.plugin_goetydelight.doll_entity": "人形エンティティ情報"
 }

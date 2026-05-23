@@ -32,6 +32,7 @@
   "block.goetydelight.menemen_block": "Menemen",
   "block.goetydelight.restaurant": "Restaurant(wip)",
   "block.goetydelight.custom_doll": "Doll",
+  "block.goetydelight.doll": "Doll",
   "item.goetydelight.royal_cake": "Royal Cake Slice",
   "item.goetydelight.sweet_berry_pudding": "Sweet Berry Pudding",
   "item.goetydelight.tainted_drink": "Tainted Drink",
@@ -115,6 +116,7 @@
   "item.goetydelight.menemen_with_bread": "Menemen With Bread",
   "item.goetydelight.baklava": "Baklava",
   "item.goetydelight.menu": "Menu(wip)",
+  "item.goetydelight.doll_item": "Doll",
   "effect.goetydelight.spell_duration": "Spell Duration",
   "effect.goetydelight.spell_mastery": "Spell Mastery",
   "effect.goetydelight.the_pale_messenger": "The Pale Messenger",
@@ -156,6 +158,7 @@
   "entity.goetydelight.ghost_farmer.not_night": "Now... the melon is yet to ripen... wait till night falls...",
   "entity.goetydelight.ghost_farmer.trade": "Wraith Melon Farmer",
   "entity.goetydelight.ghost_farmer.attack_message": "Wraith Melon Farmer:Melon thieves, die!",
+  "entity.goetydelight.doll_entity": "Doll",
   "info.goety.items.viziers_cookbook": "A recipe for exotic delicacy",
   "info.goetydelight.research.vizier_cookbook": "You have learned exotic recipes.",
   "item.goetydelight.metamorphic_scent_grass.metamorphic_item": "Metamorphic Item:",
@@ -226,5 +229,6 @@
   "goetydelight.advancement.get_night_stove.description": "Get a Night Stove",
   "goetydelight.advancement.get_night_stove.title": "Open All Year Round",
   "goetydelight.advancement.ghost_farmer_kill_player.description": "The Melon Thief Gets Turned Tables",
-  "goetydelight.advancement.ghost_farmer_kill_player.title": "Ghost Farmer's Revenge"
+  "goetydelight.advancement.ghost_farmer_kill_player.title": "Ghost Farmer's Revenge",
+  "config.jade.plugin_goetydelight.doll_entity": "Doll Entity Info"
 }

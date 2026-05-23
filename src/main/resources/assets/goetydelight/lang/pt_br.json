@@ -124,5 +124,6 @@
   "entity.goetydelight.ghost_farmer.not_night": "Agora... o melão ainda não amadureceu... espere até a noite cair...",
   "entity.goetydelight.ghost_farmer.trade": "Fazendeiro Espectro de Melão",
   "entity.goetydelight.ghost_farmer.attack_message": "Fazendeiro Espectro de Melão: Ladrões de melão, morram!",
-  "info.goetydelight.research.vizier_cookbook_get": "Você aprendeu receitas exóticas."
+  "info.goetydelight.research.vizier_cookbook": "Você aprendeu receitas exóticas.",
+  "config.jade.plugin_goetydelight.doll_entity": "Info da Entidade de Boneca"
 }

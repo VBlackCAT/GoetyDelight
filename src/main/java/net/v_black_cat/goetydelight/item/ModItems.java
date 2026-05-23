@@ -759,7 +759,7 @@ public class ModItems {
 
         MENU = registerWithTab("menu", () -> new MenuItem(new Item.Properties()));
 
-        DOLL_ITEM = registerWithTab("doll_item", () -> new Item(new Item.Properties()));
+        DOLL_ITEM = registerWithTab("doll_item", DollEntityItem::new);
     }
 
 

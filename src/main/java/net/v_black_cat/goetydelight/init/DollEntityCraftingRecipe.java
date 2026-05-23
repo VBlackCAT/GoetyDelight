@@ -4,6 +4,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -23,7 +24,8 @@ public class DollEntityCraftingRecipe extends CustomRecipe {
     @Override
     public boolean matches(CraftingContainer container, Level level) {
         boolean hasDollItem = false;
-        boolean hasBlockToEntityItem = false;
+        boolean hasectoplasm = false;
+        boolean hasSlimeBall = false;
         int itemCount = 0;
 
         for (int i = 0; i < container.getContainerSize(); i++) {
@@ -34,25 +36,38 @@ public class DollEntityCraftingRecipe extends CustomRecipe {
                     hasDollItem = true;
                 } else if (stack.is(ModItems.CUSTOM_DOLL.get())) {
                     String modelId = CustomDollItem.getModelId(stack);
-                    hasDollItem = StringUtils.isNotBlank(modelId);
+                    if (StringUtils.isNotBlank(modelId)) {
+                        hasDollItem = true;
+                    } else {
+                        return false;
+                    }
+                } else if (stack.is(com.Polarice3.Goety.common.items.ModItems.ECTOPLASM.get())) {
+                    hasectoplasm = true;
+                } else if (stack.is(Items.SLIME_BALL)) {
+                    hasSlimeBall = true;
                 } else {
                     return false;
                 }
             }
         }
 
-        return itemCount == 2 && hasDollItem && hasBlockToEntityItem;
+        return itemCount == 3 && hasDollItem && hasectoplasm && hasSlimeBall;
     }
 
     @Override
     public ItemStack assemble(CraftingContainer container, RegistryAccess registryAccess) {
         ItemStack dollItemStack = ItemStack.EMPTY;
         boolean isCustomDoll = false;
+        String extractedId = null;
 
         for (int i = 0; i < container.getContainerSize(); i++) {
             ItemStack stack = container.getItem(i);
-            if (stack.getItem() instanceof DollItem) {
+            if (stack.getItem() instanceof DollItem dollItem) {
                 dollItemStack = stack;
+                ResourceLocation registryName = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(dollItem);
+                if (registryName != null) {
+                    extractedId = registryName.getPath();
+                }
                 break;
             } else if (stack.is(ModItems.CUSTOM_DOLL.get())) {
                 String modelId = CustomDollItem.getModelId(stack);
@@ -67,18 +82,24 @@ public class DollEntityCraftingRecipe extends CustomRecipe {
         if (dollItemStack.isEmpty()) {
             return ItemStack.EMPTY;
         }
+
         if (isCustomDoll) {
             String modelId = CustomDollItem.getModelId(dollItemStack);
             return DollEntityItem.createItemWithCustomDollId(modelId);
         } else {
-            DollItem dollItem = (DollItem) dollItemStack.getItem();
-            return DollEntityItem.createItemWithBlockState(dollItem.getBlock().defaultBlockState());
+            if (extractedId != null) {
+                return DollEntityItem.createItemWithCustomDollId(extractedId);
+            } else {
+                DollItem dollItem = (DollItem) dollItemStack.getItem();
+                return DollEntityItem.createItemWithBlockState(dollItem.getBlock().defaultBlockState());
+            }
         }
     }
 
+
     @Override
     public boolean canCraftInDimensions(int width, int height) {
-        return width >= 2 && height >= 2;
+        return width * height >= 3;
     }
 
     @Override
