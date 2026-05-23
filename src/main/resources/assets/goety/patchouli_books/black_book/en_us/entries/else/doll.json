@@ -1,0 +1,11 @@
+{
+    "name": "Doll",
+    "icon": "goetydelight:doll",
+    "category": "goety:goetydelight/else",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Doll, crafted with wool in a stonecutter (not a patron doll). Thanks to Lll252 for making the model and handling the doll texture!"
+        }
+    ]
+}
