@@ -1,0 +1,11 @@
+{
+    "name": "玩偶",
+    "icon": "goetydelight:doll",
+    "category": "goety:goetydelight/else",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "玩偶，用羊毛在切石机里制作（不是赞助者玩偶）感谢Lll252制作的模型以及处理玩偶贴图！"
+        }
+    ]
+}
