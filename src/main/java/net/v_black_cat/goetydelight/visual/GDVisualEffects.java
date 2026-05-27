@@ -101,7 +101,6 @@ public final class GDVisualEffects {
             EntityVisualEffectType.properties()
                     .infiniteDuration()
                     .renderDistance(80.0D)
-                    .renderInFirstPerson()
     );
 
     private GDVisualEffects() {
