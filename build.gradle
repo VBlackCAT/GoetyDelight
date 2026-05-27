@@ -329,6 +329,9 @@ dependencies {
 
     //摩登ui
     modRuntimeOnly "curse.maven:modern-ui-352491:6956345"
+    //光影
+    modRuntimeOnly "curse.maven:oculus-581495:6020952"
+    modRuntimeOnly "curse.maven:xenon-564239:5752040"
 }
 
 

@@ -8,9 +8,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.compat.OculusCompat;
 import net.v_black_cat.goetydelight.visual.ActiveEntityVisualEffect;
 import net.v_black_cat.goetydelight.visual.EntityVisualEffectType;
 import net.v_black_cat.goetydelight.visual.EntityVisualEffectSystem;
@@ -23,12 +25,31 @@ public final class EntityVisualEffectRenderDispatcher {
     private EntityVisualEffectRenderDispatcher() {
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL && OculusCompat.isShaderPackInUse()) {
+            RenderLevelStageEvent cachedEvent = LateShaderPackRenderContext.afterParticlesEvent();
+            if (cachedEvent != null) {
+                Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
+                render(cachedEvent);
+                LateShaderPackRenderContext.clear();
+            }
+            return;
+        }
+
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
             return;
         }
 
+        if (OculusCompat.isShaderPackInUse()) {
+            LateShaderPackRenderContext.captureAfterParticles(event);
+            return;
+        }
+
+        render(event);
+    }
+
+    private static void render(RenderLevelStageEvent event) {
         Minecraft minecraft = Minecraft.getInstance();
         ClientLevel level = minecraft.level;
         if (level == null || minecraft.player == null) {
