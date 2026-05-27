@@ -47,6 +47,8 @@ public final class ScreenSpaceDepthEffectPostProcessor {
     private static EffectInstance effect;
     @Nullable
     private static TextureTarget scratchTarget;
+    @Nullable
+    private static Matrix4f cachedViewProjection;
     private static Matrix4f orthoMatrix = new Matrix4f();
     private static int scratchWidth = -1;
     private static int scratchHeight = -1;
@@ -61,11 +63,17 @@ public final class ScreenSpaceDepthEffectPostProcessor {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
+            cachedViewProjection = new Matrix4f(event.getProjectionMatrix()).mul(event.getPoseStack().last().pose());
+            return;
+        }
+
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL) {
             return;
         }
 
         process(event);
+        cachedViewProjection = null;
     }
 
     private static void process(RenderLevelStageEvent event) {
@@ -193,6 +201,10 @@ public final class ScreenSpaceDepthEffectPostProcessor {
             return 5;
         }
 
+        if (effect.id().equals(GDVisualEffects.DEPTH_REFRACTION_PRESSURE.getId())) {
+            return 6;
+        }
+
         return -1;
     }
 
@@ -221,6 +233,10 @@ public final class ScreenSpaceDepthEffectPostProcessor {
             return GDVisualEffects.VOLUMETRIC_LIGHT_COLUMN.get().renderDistance();
         }
 
+        if (effect.id().equals(GDVisualEffects.DEPTH_REFRACTION_PRESSURE.getId())) {
+            return GDVisualEffects.DEPTH_REFRACTION_PRESSURE.get().renderDistance();
+        }
+
         return 0.0D;
     }
 
@@ -232,6 +248,9 @@ public final class ScreenSpaceDepthEffectPostProcessor {
 
         Matrix4f oldProjection = new Matrix4f(RenderSystem.getProjectionMatrix());
         VertexSorting oldSorting = RenderSystem.getVertexSorting();
+        Matrix4f viewProjection = cachedViewProjection != null
+                ? new Matrix4f(cachedViewProjection)
+                : new Matrix4f(event.getProjectionMatrix());
 
         mainTarget.unbindWrite();
         RenderSystem.viewport(0, 0, outTarget.width, outTarget.height);
@@ -243,8 +262,8 @@ public final class ScreenSpaceDepthEffectPostProcessor {
         shader.setSampler("DiffuseSampler", mainTarget::getColorTextureId);
         shader.setSampler("DepthSampler", mainTarget::getDepthTextureId);
         shader.safeGetUniform("ProjMat").set(orthoMatrix);
-        shader.safeGetUniform("InvProjMat").set(new Matrix4f(event.getProjectionMatrix()).invert());
-        uploadCameraBasis(shader, event.getCamera());
+        shader.safeGetUniform("ViewProjMat").set(viewProjection);
+        shader.safeGetUniform("InvViewProjMat").set(new Matrix4f(viewProjection).invert());
         shader.safeGetUniform("InSize").set((float) mainTarget.width, (float) mainTarget.height);
         shader.safeGetUniform("OutSize").set((float) outTarget.width, (float) outTarget.height);
         shader.safeGetUniform("Time").set((event.getRenderTick() + event.getPartialTick()) / 20.0F);
@@ -285,12 +304,6 @@ public final class ScreenSpaceDepthEffectPostProcessor {
             shader.safeGetUniform("EffectData" + i).set(packet.data[i * 4], packet.data[i * 4 + 1], packet.data[i * 4 + 2], packet.data[i * 4 + 3]);
             shader.safeGetUniform("EffectColor" + i).set(packet.colors[i * 3], packet.colors[i * 3 + 1], packet.colors[i * 3 + 2]);
         }
-    }
-
-    private static void uploadCameraBasis(EffectInstance shader, Camera camera) {
-        shader.safeGetUniform("CameraLeft").set(camera.getLeftVector());
-        shader.safeGetUniform("CameraUp").set(camera.getUpVector());
-        shader.safeGetUniform("CameraLook").set(camera.getLookVector());
     }
 
     private static final class EffectPacket {
@@ -354,6 +367,7 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                 case 3 -> Math.max(1.1F, entity.getBbWidth() * 1.6F);
                 case 4 -> Math.max(0.85F, entity.getBbWidth() * 1.2F);
                 case 5 -> Math.max(0.72F, entity.getBbWidth() * 0.82F);
+                case 6 -> Math.max(2.1F, Math.max(entity.getBbHeight() * 1.05F, entity.getBbWidth() * 2.35F));
                 default -> DEFAULT_RADIUS;
             };
         }
@@ -363,6 +377,7 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                 case 4 -> Math.max(0.8F, entity.getBbHeight());
                 case 5 -> Math.max(3.6F, entity.getBbHeight() * 2.8F);
                 case 3 -> entity.getBbHeight();
+                case 6 -> Math.max(0.9F, entity.getBbHeight());
                 default -> progress;
             };
         }
@@ -379,6 +394,7 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                 case 3 -> 0.82F;
                 case 4 -> 1.0F;
                 case 5 -> 0.78F;
+                case 6 -> 0.92F;
                 default -> 1.0F;
             };
         }

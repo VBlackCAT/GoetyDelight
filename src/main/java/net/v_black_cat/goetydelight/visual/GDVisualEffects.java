@@ -34,6 +34,16 @@ public final class GDVisualEffects {
     public static final ResourceKey<EntityVisualEffectType> OUTLINE_SCAN_KEY = key("outline_scan");
     public static final ResourceKey<EntityVisualEffectType> BLOCK_CRACK_LIGHT_KEY = key("block_crack_light");
     public static final ResourceKey<EntityVisualEffectType> RED_EYE_FLASH_KEY = key("red_eye_flash");
+    public static final ResourceKey<EntityVisualEffectType> TILTED_HALO_KEY = key("tilted_halo");
+    public static final ResourceKey<EntityVisualEffectType> DOOM_CORONA_KEY = key("doom_corona");
+    public static final ResourceKey<EntityVisualEffectType> ABYSSAL_RIFT_EYE_KEY = key("abyssal_rift_eye");
+    public static final ResourceKey<EntityVisualEffectType> HOLY_JUDGEMENT_HALO_KEY = key("holy_judgement_halo");
+    public static final ResourceKey<EntityVisualEffectType> ASTRAL_CROWN_KEY = key("astral_crown");
+    public static final ResourceKey<EntityVisualEffectType> BLOOD_MOON_BACKWHEEL_KEY = key("blood_moon_backwheel");
+    public static final ResourceKey<EntityVisualEffectType> CAUSAL_CHAINS_KEY = key("causal_chains");
+    public static final ResourceKey<EntityVisualEffectType> INVERTED_CROSS_MARK_KEY = key("inverted_cross_mark");
+    public static final ResourceKey<EntityVisualEffectType> DEPTH_REFRACTION_PRESSURE_KEY = key("depth_refraction_pressure");
+    public static final ResourceKey<EntityVisualEffectType> VOLUMETRIC_FLAME_KEY = key("volumetric_flame");
 
     public static final RegistryObject<EntityVisualEffectType> ORBIT_SPHERE = register(
             ORBIT_SPHERE_KEY,
@@ -98,6 +108,67 @@ public final class GDVisualEffects {
     );
     public static final RegistryObject<EntityVisualEffectType> RED_EYE_FLASH = register(
             RED_EYE_FLASH_KEY,
+            EntityVisualEffectType.properties()
+                    .infiniteDuration()
+                    .renderDistance(80.0D)
+    );
+    public static final RegistryObject<EntityVisualEffectType> TILTED_HALO = register(
+            TILTED_HALO_KEY,
+            EntityVisualEffectType.properties()
+                    .infiniteDuration()
+                    .renderDistance(88.0D)
+    );
+    public static final RegistryObject<EntityVisualEffectType> DOOM_CORONA = register(
+            DOOM_CORONA_KEY,
+            EntityVisualEffectType.properties()
+                    .infiniteDuration()
+                    .renderDistance(96.0D)
+    );
+    public static final RegistryObject<EntityVisualEffectType> ABYSSAL_RIFT_EYE = register(
+            ABYSSAL_RIFT_EYE_KEY,
+            EntityVisualEffectType.properties()
+                    .infiniteDuration()
+                    .renderDistance(96.0D)
+    );
+    public static final RegistryObject<EntityVisualEffectType> HOLY_JUDGEMENT_HALO = register(
+            HOLY_JUDGEMENT_HALO_KEY,
+            EntityVisualEffectType.properties()
+                    .infiniteDuration()
+                    .renderDistance(96.0D)
+    );
+    public static final RegistryObject<EntityVisualEffectType> ASTRAL_CROWN = register(
+            ASTRAL_CROWN_KEY,
+            EntityVisualEffectType.properties()
+                    .infiniteDuration()
+                    .renderDistance(96.0D)
+    );
+    public static final RegistryObject<EntityVisualEffectType> BLOOD_MOON_BACKWHEEL = register(
+            BLOOD_MOON_BACKWHEEL_KEY,
+            EntityVisualEffectType.properties()
+                    .infiniteDuration()
+                    .renderDistance(96.0D)
+    );
+    public static final RegistryObject<EntityVisualEffectType> CAUSAL_CHAINS = register(
+            CAUSAL_CHAINS_KEY,
+            EntityVisualEffectType.properties()
+                    .infiniteDuration()
+                    .renderDistance(96.0D)
+    );
+    public static final RegistryObject<EntityVisualEffectType> INVERTED_CROSS_MARK = register(
+            INVERTED_CROSS_MARK_KEY,
+            EntityVisualEffectType.properties()
+                    .infiniteDuration()
+                    .renderDistance(96.0D)
+    );
+    public static final RegistryObject<EntityVisualEffectType> DEPTH_REFRACTION_PRESSURE = register(
+            DEPTH_REFRACTION_PRESSURE_KEY,
+            EntityVisualEffectType.properties()
+                    .infiniteDuration()
+                    .renderDistance(72.0D)
+                    .renderInFirstPerson()
+    );
+    public static final RegistryObject<EntityVisualEffectType> VOLUMETRIC_FLAME = register(
+            VOLUMETRIC_FLAME_KEY,
             EntityVisualEffectType.properties()
                     .infiniteDuration()
                     .renderDistance(80.0D)

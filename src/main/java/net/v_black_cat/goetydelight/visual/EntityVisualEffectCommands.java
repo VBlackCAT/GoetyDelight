@@ -8,8 +8,10 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.arguments.CompoundTagArgument;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -48,12 +50,26 @@ public final class EntityVisualEffectCommands {
                                         EntityArgument.getEntities(context, "targets"),
                                         ResourceLocationArgument.getId(context, "effect")
                                 ))
+                                .then(Commands.argument("data", CompoundTagArgument.compoundTag())
+                                        .executes(context -> addEffect(
+                                                EntityArgument.getEntities(context, "targets"),
+                                                ResourceLocationArgument.getId(context, "effect"),
+                                                0,
+                                                CompoundTagArgument.getCompoundTag(context, "data")
+                                        )))
                                 .then(Commands.argument("duration", IntegerArgumentType.integer(EntityVisualEffects.INFINITE))
                                         .executes(context -> addEffect(
                                                 EntityArgument.getEntities(context, "targets"),
                                                 ResourceLocationArgument.getId(context, "effect"),
                                                 IntegerArgumentType.getInteger(context, "duration")
-                                        )))));
+                                        ))
+                                        .then(Commands.argument("data", CompoundTagArgument.compoundTag())
+                                                .executes(context -> addEffect(
+                                                        EntityArgument.getEntities(context, "targets"),
+                                                        ResourceLocationArgument.getId(context, "effect"),
+                                                        IntegerArgumentType.getInteger(context, "duration"),
+                                                        CompoundTagArgument.getCompoundTag(context, "data")
+                                                ))))));
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> removeCommand() {
@@ -74,10 +90,14 @@ public final class EntityVisualEffectCommands {
     }
 
     private static int addEffect(Collection<? extends Entity> entities, ResourceLocation effectId, int duration) throws CommandSyntaxException {
+        return addEffect(entities, effectId, duration, new CompoundTag());
+    }
+
+    private static int addEffect(Collection<? extends Entity> entities, ResourceLocation effectId, int duration, CompoundTag data) throws CommandSyntaxException {
         checkRegistered(effectId);
         int changed = 0;
         for (Entity entity : entities) {
-            if (EntityVisualEffectSystem.addEffect(entity, effectId, duration)) {
+            if (EntityVisualEffectSystem.addEffect(entity, effectId, duration, data)) {
                 changed++;
             }
         }
