@@ -42,6 +42,22 @@ public class NetworkHandler {
                 SyncBackModelPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_CLIENT)
         );
+        INSTANCE.registerMessage(
+                id++,
+                CustomDollReloadMessage.class,
+                CustomDollReloadMessage::encode,
+                CustomDollReloadMessage::decode,
+                CustomDollReloadMessage::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT)
+        );
+        INSTANCE.registerMessage(
+                id++,
+                SyncEntityVisualEffectsPacket.class,
+                SyncEntityVisualEffectsPacket::encode,
+                SyncEntityVisualEffectsPacket::decode,
+                SyncEntityVisualEffectsPacket::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT)
+        );
     }
     public static void sendToClient(SyncFoxKillCountPacket packet, ServerPlayer player) {
         INSTANCE.sendTo(packet, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
@@ -56,8 +72,6 @@ public class NetworkHandler {
     }
 
     public static void init() {
-        INSTANCE.registerMessage(2, CustomDollReloadMessage.class, CustomDollReloadMessage::encode, CustomDollReloadMessage::decode, CustomDollReloadMessage::handle,
-                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 
 }

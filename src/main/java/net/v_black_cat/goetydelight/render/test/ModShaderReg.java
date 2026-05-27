@@ -23,12 +23,33 @@ public class ModShaderReg {
     @Nullable
     private static ShaderInstance floridShader;
 
+    @Nullable
+    private static ShaderInstance orbitSphereShader;
+
+    @Nullable
+    private static ShaderInstance playerHelixTrailShader;
+
+    @Nullable
+    private static ShaderInstance entityDepthEffectShader;
+
     public static ShaderInstance getColorfulShader() {
         return Objects.requireNonNull(colorfulShader, "Colorful shader not registered");
     }
 
     public static ShaderInstance getFloridShader() {
         return Objects.requireNonNull(floridShader, "Florid shader not registered");
+    }
+
+    public static ShaderInstance getOrbitSphereShader() {
+        return Objects.requireNonNull(orbitSphereShader, "Orbit sphere shader not registered");
+    }
+
+    public static ShaderInstance getPlayerHelixTrailShader() {
+        return Objects.requireNonNull(playerHelixTrailShader, "Player helix trail shader not registered");
+    }
+
+    public static ShaderInstance getEntityDepthEffectShader() {
+        return Objects.requireNonNull(entityDepthEffectShader, "Entity depth effect shader not registered");
     }
 
     @SubscribeEvent
@@ -50,5 +71,26 @@ public class ModShaderReg {
                 DefaultVertexFormat.POSITION_TEX
         );
         event.registerShader(florid, shaderInstance -> floridShader = shaderInstance);
+
+        ModShaderInstance orbitSphere = new ModShaderInstance(
+                resourceProvider,
+                new ResourceLocation(GoetyDelight.MODID, "orbit_sphere").toString(),
+                DefaultVertexFormat.POSITION_COLOR_NORMAL
+        );
+        event.registerShader(orbitSphere, shaderInstance -> orbitSphereShader = shaderInstance);
+
+        ModShaderInstance playerHelixTrail = new ModShaderInstance(
+                resourceProvider,
+                new ResourceLocation(GoetyDelight.MODID, "player_helix_trail").toString(),
+                DefaultVertexFormat.POSITION_COLOR_TEX
+        );
+        event.registerShader(playerHelixTrail, shaderInstance -> playerHelixTrailShader = shaderInstance);
+
+        ModShaderInstance entityDepthEffect = new ModShaderInstance(
+                resourceProvider,
+                new ResourceLocation(GoetyDelight.MODID, "entity_depth_effect").toString(),
+                DefaultVertexFormat.POSITION_COLOR_TEX
+        );
+        event.registerShader(entityDepthEffect, shaderInstance -> entityDepthEffectShader = shaderInstance);
     }
 }
