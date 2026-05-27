@@ -32,6 +32,12 @@ public class ModShaderReg {
     @Nullable
     private static ShaderInstance entityDepthEffectShader;
 
+    @Nullable
+    private static ShaderInstance blockCrackLightShader;
+
+    @Nullable
+    private static ShaderInstance redEyeFlashShader;
+
     public static ShaderInstance getColorfulShader() {
         return Objects.requireNonNull(colorfulShader, "Colorful shader not registered");
     }
@@ -50,6 +56,14 @@ public class ModShaderReg {
 
     public static ShaderInstance getEntityDepthEffectShader() {
         return Objects.requireNonNull(entityDepthEffectShader, "Entity depth effect shader not registered");
+    }
+
+    public static ShaderInstance getBlockCrackLightShader() {
+        return Objects.requireNonNull(blockCrackLightShader, "Block crack light shader not registered");
+    }
+
+    public static ShaderInstance getRedEyeFlashShader() {
+        return Objects.requireNonNull(redEyeFlashShader, "Red eye flash shader not registered");
     }
 
     @SubscribeEvent
@@ -92,5 +106,19 @@ public class ModShaderReg {
                 DefaultVertexFormat.POSITION_COLOR_TEX
         );
         event.registerShader(entityDepthEffect, shaderInstance -> entityDepthEffectShader = shaderInstance);
+
+        ModShaderInstance blockCrackLight = new ModShaderInstance(
+                resourceProvider,
+                new ResourceLocation(GoetyDelight.MODID, "block_crack_light").toString(),
+                DefaultVertexFormat.POSITION_COLOR_TEX
+        );
+        event.registerShader(blockCrackLight, shaderInstance -> blockCrackLightShader = shaderInstance);
+
+        ModShaderInstance redEyeFlash = new ModShaderInstance(
+                resourceProvider,
+                new ResourceLocation(GoetyDelight.MODID, "red_eye_flash").toString(),
+                DefaultVertexFormat.POSITION_COLOR_TEX
+        );
+        event.registerShader(redEyeFlash, shaderInstance -> redEyeFlashShader = shaderInstance);
     }
 }
