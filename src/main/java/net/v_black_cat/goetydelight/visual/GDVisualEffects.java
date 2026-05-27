@@ -32,6 +32,8 @@ public final class GDVisualEffects {
     public static final ResourceKey<EntityVisualEffectType> DEPTH_REFRACTION_HEATWAVE_KEY = key("depth_refraction_heatwave");
     public static final ResourceKey<EntityVisualEffectType> VOLUMETRIC_LIGHT_COLUMN_KEY = key("volumetric_light_column");
     public static final ResourceKey<EntityVisualEffectType> OUTLINE_SCAN_KEY = key("outline_scan");
+    public static final ResourceKey<EntityVisualEffectType> BLOCK_CRACK_LIGHT_KEY = key("block_crack_light");
+    public static final ResourceKey<EntityVisualEffectType> RED_EYE_FLASH_KEY = key("red_eye_flash");
 
     public static final RegistryObject<EntityVisualEffectType> ORBIT_SPHERE = register(
             ORBIT_SPHERE_KEY,
@@ -86,6 +88,20 @@ public final class GDVisualEffects {
             EntityVisualEffectType.properties()
                     .infiniteDuration()
                     .renderDistance(64.0D)
+    );
+    public static final RegistryObject<EntityVisualEffectType> BLOCK_CRACK_LIGHT = register(
+            BLOCK_CRACK_LIGHT_KEY,
+            EntityVisualEffectType.properties()
+                    .infiniteDuration()
+                    .renderDistance(80.0D)
+                    .renderInFirstPerson()
+    );
+    public static final RegistryObject<EntityVisualEffectType> RED_EYE_FLASH = register(
+            RED_EYE_FLASH_KEY,
+            EntityVisualEffectType.properties()
+                    .infiniteDuration()
+                    .renderDistance(80.0D)
+                    .renderInFirstPerson()
     );
 
     private GDVisualEffects() {
