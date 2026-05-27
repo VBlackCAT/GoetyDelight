@@ -126,9 +126,35 @@ public final class EntityVisualEffectSystem {
     }
 
     @SubscribeEvent
+    public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            sendTrackedEffectsTo(player);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerClone(PlayerEvent.Clone event) {
+        if (event.getEntity().level().isClientSide) {
+            return;
+        }
+
+        event.getOriginal().reviveCaps();
+        event.getOriginal().getCapability(ENTITY_VISUAL_EFFECTS).ifPresent(oldEffects ->
+                event.getEntity().getCapability(ENTITY_VISUAL_EFFECTS).ifPresent(newEffects ->
+                        newEffects.deserializeNBT(oldEffects.serializeNBT())));
+        event.getOriginal().invalidateCaps();
+    }
+
+    @SubscribeEvent
     public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
         if (!event.getLevel().isClientSide && event.getEntity() instanceof ServerPlayer player) {
-            sendToPlayer(player, player);
+            sendTrackedEffectsTo(player);
+        }
+    }
+
+    private static void sendTrackedEffectsTo(ServerPlayer player) {
+        for (Entity entity : player.serverLevel().getAllEntities()) {
+            sendToPlayer(entity, player);
         }
     }
 
