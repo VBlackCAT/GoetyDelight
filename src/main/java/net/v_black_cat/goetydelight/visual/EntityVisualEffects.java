@@ -73,7 +73,7 @@ public class EntityVisualEffects implements INBTSerializable<CompoundTag> {
         CompoundTag effectsTag = new CompoundTag();
         activeEffects.forEach((id, effect) -> {
             EntityVisualEffectType type = GDVisualEffects.get(id);
-            if (type != null && (includeTransient || type.persistent())) {
+            if (type != null && (includeTransient || type.persistent() || effect.initialDuration() == INFINITE)) {
                 effectsTag.put(id.toString(), effect.serializeNBT());
             }
         });
