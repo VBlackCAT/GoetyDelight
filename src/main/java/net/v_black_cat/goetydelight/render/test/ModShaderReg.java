@@ -38,6 +38,15 @@ public class ModShaderReg {
     @Nullable
     private static ShaderInstance redEyeFlashShader;
 
+    @Nullable
+    private static ShaderInstance tiltedHaloShader;
+
+    @Nullable
+    private static ShaderInstance backSigilEffectShader;
+
+    @Nullable
+    private static ShaderInstance volumetricFlameShader;
+
     public static ShaderInstance getColorfulShader() {
         return Objects.requireNonNull(colorfulShader, "Colorful shader not registered");
     }
@@ -64,6 +73,18 @@ public class ModShaderReg {
 
     public static ShaderInstance getRedEyeFlashShader() {
         return Objects.requireNonNull(redEyeFlashShader, "Red eye flash shader not registered");
+    }
+
+    public static ShaderInstance getTiltedHaloShader() {
+        return Objects.requireNonNull(tiltedHaloShader, "Tilted halo shader not registered");
+    }
+
+    public static ShaderInstance getBackSigilEffectShader() {
+        return Objects.requireNonNull(backSigilEffectShader, "Back sigil effect shader not registered");
+    }
+
+    public static ShaderInstance getVolumetricFlameShader() {
+        return Objects.requireNonNull(volumetricFlameShader, "Volumetric flame shader not registered");
     }
 
     @SubscribeEvent
@@ -120,5 +141,27 @@ public class ModShaderReg {
                 DefaultVertexFormat.POSITION_COLOR_TEX
         );
         event.registerShader(redEyeFlash, shaderInstance -> redEyeFlashShader = shaderInstance);
+
+        ModShaderInstance tiltedHalo = new ModShaderInstance(
+                resourceProvider,
+                new ResourceLocation(GoetyDelight.MODID, "tilted_halo").toString(),
+                DefaultVertexFormat.POSITION_COLOR_TEX
+        );
+        event.registerShader(tiltedHalo, shaderInstance -> tiltedHaloShader = shaderInstance);
+
+        ModShaderInstance backSigilEffect = new ModShaderInstance(
+                resourceProvider,
+                new ResourceLocation(GoetyDelight.MODID, "back_sigil_effect").toString(),
+                DefaultVertexFormat.POSITION_COLOR_TEX
+        );
+        event.registerShader(backSigilEffect, shaderInstance -> backSigilEffectShader = shaderInstance);
+
+        ModShaderInstance volumetricFlame = new ModShaderInstance(
+                resourceProvider,
+                new ResourceLocation(GoetyDelight.MODID, "volumetric_flame").toString(),
+                DefaultVertexFormat.POSITION_COLOR_TEX
+        );
+        event.registerShader(volumetricFlame, shaderInstance -> volumetricFlameShader = shaderInstance);
+
     }
 }
