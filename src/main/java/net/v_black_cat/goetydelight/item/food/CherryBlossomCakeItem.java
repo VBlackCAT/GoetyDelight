@@ -28,11 +28,13 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.NetworkDirection;
@@ -43,6 +45,8 @@ import net.v_black_cat.goetydelight.util.EntityUtil;
 import net.v_black_cat.goetydelight.util.GetKillCount;
 
 import javax.annotation.Nullable;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -62,38 +66,67 @@ public class CherryBlossomCakeItem extends Item {
         ItemStack resultStack = super.finishUsingItem(stack, level, entity);
 
         if (!level.isClientSide && entity instanceof Player player) {
-            if(GetKillCount.getKillCount((ServerPlayer) player, EntityType.FOX) ==0){
-            // 移除任何现有的樱桃蛋糕攻击力加成
-            removeAttackDamageBoost(entity);
+            ServerPlayer serverPlayer = (ServerPlayer) player;
+            int foxKillCount = GetKillCount.getKillCount(serverPlayer, EntityType.FOX);
 
-            // 获取实体的幸运值（如果有）
-            AttributeInstance luckAttribute = entity.getAttribute(Attributes.LUCK);
-            AttributeInstance attackAttribute = entity.getAttribute(Attributes.ATTACK_DAMAGE);
-            double luckValue = luckAttribute != null ? luckAttribute.getValue() : 0;
+            if (foxKillCount == 0 || isMorningWindowActive(serverPlayer, level)) {
+                removeAttackDamageBoost(entity);
 
-            // 每点幸运值增加(1点+0.2%攻击力)攻击力
-            double attackBoost = 0;
-            if (attackAttribute != null) {
-                attackBoost = luckValue + attackAttribute.getValue() * 0.002;
-            }
+                AttributeInstance luckAttribute = entity.getAttribute(Attributes.LUCK);
+                AttributeInstance attackAttribute = entity.getAttribute(Attributes.ATTACK_DAMAGE);
+                double luckValue = luckAttribute != null ? luckAttribute.getValue() : 0;
 
-            // 添加攻击力加成
-            addAttackDamageBoost(entity, attackBoost);}
-            else {
-//                LightningBolt lightning = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
-//                lightning.setPos(entity.getX(), entity.getY(), entity.getZ());
-//                level.addFreshEntity(lightning);
-//                EntityUtil.DsSetHealth(entity, -10);
-//                player.displayClientMessage(Component.translatable("message.goetydelight.cherryblossomcake.punishment").withStyle(ChatFormatting.DARK_RED),true);
+                double attackBoost = 0;
+                if (attackAttribute != null) {
+                    attackBoost = luckValue + attackAttribute.getValue() * 0.002;
+                }
+
+                addAttackDamageBoost(entity, attackBoost);
+
+                if (foxKillCount > 0) {
+                    clearLastUsageTimestamp(serverPlayer);
+                }
+            } else {
                 spawnLightningAndDamage(entity, player, level);
 
-                // 设置标记，用于后续雷击
                 CompoundTag tag = entity.getPersistentData();
                 tag.putLong("CherryBlossomPunishmentTime", level.getGameTime());
                 tag.putInt("CherryBlossomPunishmentCount", 0);
             }
         }
         return resultStack;
+    }
+
+    private static boolean isMorningWindowActive(ServerPlayer player, Level level) {
+        CompoundTag tag = player.getPersistentData();
+        if (!tag.contains("LastUsageTime")) {
+            return false;
+        }
+
+        long lastUsageTime = tag.getLong("LastUsageTime");
+        LocalDateTime now = LocalDateTime.now();
+        LocalTime currentTime = now.toLocalTime();
+
+        LocalTime windowStart = LocalTime.of(5, 20);
+        LocalTime windowEnd = LocalTime.of(5, 21);
+
+        boolean isInWindow = !currentTime.isBefore(windowStart) && currentTime.isBefore(windowEnd);
+
+        if (!isInWindow) {
+            return false;
+        }
+
+        LocalDateTime lastUsage = LocalDateTime.ofInstant(
+                java.time.Instant.ofEpochMilli(lastUsageTime),
+                java.time.ZoneId.systemDefault()
+        );
+
+        return !lastUsage.toLocalDate().isEqual(now.toLocalDate());
+    }
+
+    private static void clearLastUsageTimestamp(ServerPlayer player) {
+        CompoundTag tag = player.getPersistentData();
+        tag.remove("LastUsageTime");
     }
 
     private static void spawnLightningAndDamage(LivingEntity entity, Player player, Level level) {
@@ -103,9 +136,11 @@ public class CherryBlossomCakeItem extends Item {
             level.addFreshEntity(lightning);
 
             double maxHealth = Objects.requireNonNull(entity.getAttribute(Attributes.MAX_HEALTH)).getValue();
-            double health = entity.getHealth();
-            double damageAmount = maxHealth * 0.25;
-            EntityUtil.DsSetHealth(entity, (float) (health-damageAmount));
+            double damageAmount = maxHealth * 0.24;
+
+            CompoundTag tag = entity.getPersistentData();
+            tag.putDouble("CherryBlossomPendingDamage", damageAmount);
+            tag.putBoolean("HasCherryBlossomDamage", true);
 
             if (entity instanceof Player p) {
                 p.displayClientMessage(Component.translatable("message.goetydelight.cherryblossomcake.punishment").withStyle(ChatFormatting.DARK_RED), true);
@@ -138,17 +173,66 @@ public class CherryBlossomCakeItem extends Item {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, Level world, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
-        int foxKillCount = net.v_black_cat.goetydelight.network.ClientHandle.getCachedFoxKillCount();
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) {
+            return;
+        }
 
-        if (foxKillCount == 0) {
+        int foxKillCount = net.v_black_cat.goetydelight.network.ClientHandle.getCachedFoxKillCount();
+        boolean windowActive = isClientMorningWindowActive(player);
+
+        if (foxKillCount == 0 || windowActive) {
             tooltipComponents.add(Component.translatable("tooltip.goetydelight.cherry_blossom_cake_good").withStyle(ChatFormatting.GOLD));
-        }else{
+        } else {
             tooltipComponents.add(Component.translatable("tooltip.goetydelight.cherry_blossom_cake_bad").withStyle(ChatFormatting.DARK_RED));
         }
     }
 
+    @OnlyIn(Dist.CLIENT)
+    private boolean isClientMorningWindowActive(LocalPlayer player) {
+        CompoundTag tag = player.getPersistentData();
+        if (!tag.contains("LastUsageTime")) {
+            return false;
+        }
+
+        long lastUsageTime = tag.getLong("LastUsageTime");
+        LocalDateTime now = LocalDateTime.now();
+        LocalTime currentTime = now.toLocalTime();
+
+        LocalTime windowStart = LocalTime.of(5, 20);
+        LocalTime windowEnd = LocalTime.of(5, 21);
+
+        boolean isInWindow = !currentTime.isBefore(windowStart) && currentTime.isBefore(windowEnd);
+
+        if (!isInWindow) {
+            return false;
+        }
+
+        LocalDateTime lastUsage = LocalDateTime.ofInstant(
+                java.time.Instant.ofEpochMilli(lastUsageTime),
+                java.time.ZoneId.systemDefault()
+        );
+
+        return !lastUsage.toLocalDate().isEqual(now.toLocalDate());
+    }
+
     @Mod.EventBusSubscriber
     public static class CherryBlossomCakeEventHandler {
+        @SubscribeEvent(priority = EventPriority.LOWEST)
+        public static void onLivingDamage(LivingDamageEvent event) {
+            LivingEntity entity = event.getEntity();
+            CompoundTag tag = entity.getPersistentData();
+
+            if (tag.getBoolean("HasCherryBlossomDamage")) {
+                double pendingDamage = tag.getDouble("CherryBlossomPendingDamage");
+
+                event.setAmount((float)(event.getAmount() + pendingDamage));
+
+                tag.remove("CherryBlossomPendingDamage");
+                tag.remove("HasCherryBlossomDamage");
+            }
+        }
+
         @SubscribeEvent
         public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
             if (!event.getEntity().level().isClientSide && event.getEntity() instanceof ServerPlayer player) {
@@ -189,13 +273,20 @@ public class CherryBlossomCakeItem extends Item {
         public static void onLivingDeath(LivingDeathEvent event) {
             if (event.getEntity().getType() == EntityType.FOX && event.getSource().getEntity() instanceof Player) {
                 Player player = (Player) event.getSource().getEntity();
-                if (player.level() instanceof ServerLevel && GetKillCount.getKillCount((ServerPlayer) player, EntityType.FOX) ==0) {
-                    player.displayClientMessage(Component.translatable("message.goetydelight.cherryblossomcake.angry").withStyle(ChatFormatting.RED),true);
-                    int foxKillCount = GetKillCount.getKillCount((ServerPlayer) player, EntityType.FOX);
-                    NetworkHandler.sendToClient(
-                            new SyncFoxKillCountPacket(foxKillCount),
-                            (ServerPlayer) player
-                    );
+                if (player.level() instanceof ServerLevel serverLevel) {
+                    ServerPlayer serverPlayer = (ServerPlayer) player;
+                    int foxKillCount = GetKillCount.getKillCount(serverPlayer, EntityType.FOX);
+
+                    CompoundTag tag = player.getPersistentData();
+                    tag.putLong("LastUsageTime", System.currentTimeMillis());
+
+                    if (foxKillCount <= 1) {
+                        player.displayClientMessage(Component.translatable("message.goetydelight.cherryblossomcake.angry").withStyle(ChatFormatting.RED), true);
+                        NetworkHandler.sendToClient(
+                                new SyncFoxKillCountPacket(foxKillCount),
+                                serverPlayer
+                        );
+                    }
                 }
             }
         }
