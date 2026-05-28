@@ -14,6 +14,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.MetamorphicScentGrassBlock;
 import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.minecraft.data.loot.BlockLootSubProvider;
@@ -90,7 +91,6 @@ public class ModBlockLootTables extends BlockLootSubProvider {
                 block -> createSlabItemTable(ModBlocks.MARBLE_SLAB.get()));
         this.add(ModBlocks.MARBLE_DOOR.get(),
                 block -> createDoorTable(ModBlocks.MARBLE_DOOR.get()));
-        this.add(ModBlocks.METAMORPHIC_SCENT_GRASS.get(), this::createMetamorphicScentGrassDrops);
     }
 
     protected LootTable.Builder createCopperLikeOreDrops(Block pBlock, Item item) {
@@ -156,6 +156,9 @@ public class ModBlockLootTables extends BlockLootSubProvider {
     }
     @Override
     protected Iterable<Block> getKnownBlocks() {
-        return ModBlocks.BLOCKS.getEntries().stream().map(RegistryObject::get)::iterator;
+        return () -> java.util.stream.Stream.concat(
+                ModBlocks.BLOCKS.getEntries().stream().map(RegistryObject::get),
+                net.v_black_cat.goetydelight.event.ModRegisterEvent.DOLL_BLOCKS.values().stream()
+        ).iterator();
     }
 }

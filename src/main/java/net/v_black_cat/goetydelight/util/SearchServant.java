@@ -477,6 +477,8 @@ public class SearchServant {
         @SubscribeEvent
         public static void onPlayerLoggedIn(net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent event) {
             if (!event.getEntity().level().isClientSide() && event.getEntity() instanceof ServerPlayer player) {
+                PLAYER_SERVANT_CACHE.computeIfAbsent(player.getUUID(), ServantData::new);
+                ENHANCED_PLAYER_CACHE.computeIfAbsent(player.getUUID(), EnhancedServantData::new);
                 scanAllPlayersOptimized(player.getServer());
             }
         }

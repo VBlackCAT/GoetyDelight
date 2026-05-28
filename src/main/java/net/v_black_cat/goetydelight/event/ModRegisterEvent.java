@@ -28,7 +28,8 @@ public class ModRegisterEvent {
             "doll_fox", "doll_kunzhong", "doll_lamiao", "doll_lll252", "doll_m3",
             "doll_maid1", "doll_maid2", "doll_moon", "doll_skillupper", "doll_vblackcat",
             "doll_windis", "doll_xiaoarin", "doll_zswj", "doll_yushi", "doll_sim", "doll_dwky",
-            "doll_sky", "doll_dimspector","doll_haozi"
+            "doll_sky", "doll_dimspector","doll_haozi","doll_fish","doll_kunkun","doll_djm",
+            "doll_htohtosgoy"
     };
 
     private static void registerAllSpecialTooltips() {
@@ -36,6 +37,7 @@ public class ModRegisterEvent {
         registerVanillaTooltips("doll_p0", "doll_p0");
         registerVanillaTooltips("doll_p7", "doll_p7");
         registerVanillaTooltips("doll_bai", "doll_bai");
+        registerVanillaTooltips("doll_baka", "doll_baka");
         registerVanillaTooltips("doll_fox", "doll_fox");
         registerVanillaTooltips("doll_lamiao", "doll_lamiao");
         registerVanillaTooltips("doll_kunzhong", "doll_kunzhong");
@@ -55,6 +57,10 @@ public class ModRegisterEvent {
         registerVanillaTooltips("doll_sky", "doll_sky");
         registerVanillaTooltips("doll_dimspector", "doll_dimspector");
         registerVanillaTooltips("doll_haozi", "doll_haozi");
+        registerVanillaTooltips("doll_fish", "doll_fish");
+        registerVanillaTooltips("doll_kunkun", "doll_kunkun");
+        registerVanillaTooltips("doll_djm", "doll_djm");
+        registerVanillaTooltips("doll_htohtosgoy", "doll_htohtosgoy");
     }
     @SubscribeEvent
     public static void registerBlocks(RegisterEvent event) {
