@@ -12,10 +12,10 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelData;
+import net.v_black_cat.goetydelight.bedrock.BedrockModel;
 import net.v_black_cat.goetydelight.bedrock.model.BedrockPart;
 import net.v_black_cat.goetydelight.entities.DollEntity;
 import net.v_black_cat.goetydelight.init.CustomDollLoader;
@@ -46,16 +46,16 @@ public class DollEntityRender extends EntityRenderer<DollEntity> {
         Vector3f translation = dollEntity.getDisplayTranslation();
         poseStack.translate(translation.x, translation.y, translation.z);
 
-        Entity vehicle = dollEntity.getVehicle();
+        net.minecraft.world.entity.Entity vehicle = dollEntity.getVehicle();
         if (vehicle != null) {
-            float vehicleYaw = Mth.lerp(partialTick, vehicle.yRotO, vehicle.getYRot());
-            poseStack.mulPose(Axis.YP.rotationDegrees(-vehicleYaw));
+            float vehicleYaw = net.minecraft.util.Mth.lerp(partialTick, vehicle.yRotO, vehicle.getYRot());
+            poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-vehicleYaw));
         } else {
-            entityYaw = Mth.lerp(partialTick, dollEntity.yRotO, dollEntity.getYRot());
-            poseStack.mulPose(Axis.YP.rotationDegrees(-entityYaw));
+            entityYaw = net.minecraft.util.Mth.lerp(partialTick, dollEntity.yRotO, dollEntity.getYRot());
+            poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-entityYaw));
         }
-        float pitchRadians = Mth.lerp(partialTick, dollEntity.xRotO, dollEntity.getXRot());
-        poseStack.mulPose(Axis.XP.rotationDegrees(pitchRadians));
+        float pitchRadians = net.minecraft.util.Mth.lerp(partialTick, dollEntity.xRotO, dollEntity.getXRot());
+        poseStack.mulPose(com.mojang.math.Axis.XP.rotationDegrees(pitchRadians));
 
         Vector3f scale = dollEntity.getDisplayScale();
         poseStack.scale(scale.x, scale.y, scale.z);
@@ -90,7 +90,7 @@ public class DollEntityRender extends EntityRenderer<DollEntity> {
         poseStack.mulPose(Axis.YN.rotationDegrees(180));
 
         boolean hasAnimation = false;
-        if (model instanceof net.v_black_cat.goetydelight.bedrock.BedrockModel bedrockModel) {
+        if (model instanceof BedrockModel bedrockModel) {
             BedrockPart dollPart = bedrockModel.getModelMap().get("doll");
             if (dollPart != null) {
                 int touchTick = dollEntity.getTouchAnimationTick();
@@ -105,7 +105,7 @@ public class DollEntityRender extends EntityRenderer<DollEntity> {
         VertexConsumer buffer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(texture));
         model.renderToBuffer(poseStack, buffer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
 
-        if (hasAnimation && model instanceof net.v_black_cat.goetydelight.bedrock.BedrockModel bedrockModel) {
+        if (hasAnimation && model instanceof BedrockModel bedrockModel) {
             BedrockPart dollPart = bedrockModel.getModelMap().get("doll");
             if (dollPart != null) {
                 resetTouchAnimation(dollPart);

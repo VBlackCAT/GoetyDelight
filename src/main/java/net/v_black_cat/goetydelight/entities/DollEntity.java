@@ -79,9 +79,6 @@ public class DollEntity extends Entity {
 
     @Override
     public InteractionResult interact(Player player, InteractionHand hand) {
-        if (Minecraft.getInstance().player.isShiftKeyDown() && !Minecraft.getInstance().player.getMainHandItem().isEmpty()) {
-            return InteractionResult.PASS;
-        }
         long time = this.bounceTime - System.currentTimeMillis();
         if (time > 0) {
             return InteractionResult.PASS;
@@ -313,9 +310,6 @@ public class DollEntity extends Entity {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
-    public long getBounceTime() {
-        return bounceTime;
-    }
 
     @Override
     public void setRot(float yRot, float xRot) {
@@ -348,5 +342,4 @@ public class DollEntity extends Entity {
         float pitchVariation = 0.75f + randomSource.nextFloat() * 0.5f;
         this.playSound(soundEvent, 1, basePitch * pitchVariation);
     }
-
 }
