@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "minecraft:white_wool"
+  },
+  "result": "goetydelight:doll_djm",
+  "count": 1
+}
