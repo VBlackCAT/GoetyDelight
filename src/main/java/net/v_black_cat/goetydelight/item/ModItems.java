@@ -136,6 +136,8 @@ public class ModItems {
     public static final RegistryObject<Item> MENEMEN_WITH_BREAD;
     public static final RegistryObject<Item> BAKLAVA;
     public static final RegistryObject<Item> CUSTOM_DOLL;
+    public static final RegistryObject<Item> BISCAT;
+    public static final RegistryObject<Item> RUBY_SYRUP;
 
 
 
@@ -741,6 +743,21 @@ public class ModItems {
                                 .effect(() ->new MobEffectInstance(MobEffects.REGENERATION, sToTick(10), 0), 1.0F)
                                 .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(30), 0), 1.0F)
                                 .effect(() ->new MobEffectInstance(COMFORT_EFFECT_SUPPLIER.get(), sToTick(15), 0), 1.0F)
+                                .build())));
+
+        BISCAT = ITEMS.register("biscat",
+                () -> new BiscatItem(basicItem().stacksTo(64).rarity(Rarity.COMMON)
+                        .food(simpleFoodItemProperties(6, 2)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(MobEffects.LUCK, minToTick(1), 0), 1.0F)
+                                .build())));
+
+        RUBY_SYRUP = ITEMS.register("ruby_syrup",
+                () -> new Item(basicItem().stacksTo(16).rarity(Rarity.COMMON)
+                        .food(simpleFoodItemProperties(5, 4)
+                                .effect(() ->new MobEffectInstance(ModEffects.SPELL_MASTERY.get(), minToTick(1), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(ModEffects.SPELL_DURATION.get(), minToTick(1), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(1), 0), 1.0F)
                                 .build())));
 
         // ==================== 种子物品 ====================

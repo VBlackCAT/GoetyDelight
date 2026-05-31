@@ -18,11 +18,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Map;
 
-/**
- * 和 CustomDollResourceManager 类似，但是是读取 Minecraft 的客户端资源包
- */
 public class CustomDollResourceLoader {
     private static final String MODELS_PATH = "models/block/doll";
     private static final String LANGUAGES_PATH = "custom_dolls/lang";
@@ -31,9 +29,6 @@ public class CustomDollResourceLoader {
     private static final String JSON = ".json";
     private static final String PNG = ".png";
 
-    /**
-     * 缓存数据
-     */
     private static final Map<String, Model> MODELS = Maps.newHashMap();
     private static final Map<String, Map<String, String>> LANGUAGES = Maps.newHashMap();
     private static final Map<String, ResourceLocation> TEXTURES = Maps.newHashMap();
@@ -70,14 +65,16 @@ public class CustomDollResourceLoader {
         });
     }
 
-    public static void putAll(Map<String, Model> models, Map<String, Map<String, String>> languages, Map<String, ResourceLocation> textures) {
-        models.putAll(MODELS);
+    public static Map<String, Model> getModels() {
+        return Collections.unmodifiableMap(MODELS);
+    }
 
-        LANGUAGES.forEach((key, value) -> {
-            languages.computeIfAbsent(key, k -> Maps.newHashMap()).putAll(value);
-        });
+    public static Map<String, Map<String, String>> getLanguages() {
+        return Collections.unmodifiableMap(LANGUAGES);
+    }
 
-        textures.putAll(TEXTURES);
+    public static Map<String, ResourceLocation> getTextures() {
+        return Collections.unmodifiableMap(TEXTURES);
     }
 
     private static void readModel(InputStream stream) {

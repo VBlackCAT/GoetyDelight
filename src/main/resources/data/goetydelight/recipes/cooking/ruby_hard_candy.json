@@ -2,20 +2,16 @@
   "type": "farmersdelight:cooking",
   "ingredients": [
     {
-      "item": "goety:soul_ruby"
-    },
-    {
-      "item": "minecraft:sugar"
-    },
-    {
-      "item": "minecraft:sugar"
-    }
-  ,
-    {
       "item": "goety:soul_emerald"
     },
     {
-      "item": "minecraft:honey_bottle"
+      "item": "goetydelight:ruby_syrup"
+    },
+    {
+      "item": "goety:ice_cube"
+    },
+    {
+      "item": "goety:ice_cube"
     }
   ],
   "result": {
