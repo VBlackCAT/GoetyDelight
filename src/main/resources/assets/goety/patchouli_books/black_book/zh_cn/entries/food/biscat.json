@@ -1,0 +1,11 @@
+{
+    "name": "猫猫糕",
+    "icon": "goetydelight:biscat",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "咪咪咪咪？$(br)给予食用者：$(br)$(li)5分钟的滋养$(li)1分钟的生命恢复$(li)食用后5分钟之内苦力怕和幻翼会逃离食用者$(br2)把橙色郁金香给予自己的小猫或许能得到一些意料之外的收获呢？"
+        }
+    ]
+}

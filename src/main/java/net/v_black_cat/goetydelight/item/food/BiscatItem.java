@@ -9,6 +9,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.monster.Phantom;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -82,6 +83,20 @@ public class BiscatItem extends Item {
             affectedPlayers.putLong(player.getStringUUID(), playerData.getLong(BISCUIT_EFFECT_TAG));
             creeperData.put(BISCUIT_AFFECTED_PLAYERS_TAG, affectedPlayers);
         }
+
+        List<Phantom> phantoms = player.level().getEntitiesOfClass(Phantom.class,
+                player.getBoundingBox().inflate(50),
+                entity -> true);
+
+        for (Phantom phantom : phantoms) {
+            CompoundTag phantomData = phantom.getPersistentData();
+            CompoundTag affectedPlayers = phantomData.contains(BISCUIT_AFFECTED_PLAYERS_TAG)
+                    ? phantomData.getCompound(BISCUIT_AFFECTED_PLAYERS_TAG)
+                    : new CompoundTag();
+
+            affectedPlayers.putLong(player.getStringUUID(), playerData.getLong(BISCUIT_EFFECT_TAG));
+            phantomData.put(BISCUIT_AFFECTED_PLAYERS_TAG, affectedPlayers);
+        }
     }
 
     @SubscribeEvent
@@ -132,6 +147,23 @@ public class BiscatItem extends Item {
                             }
                     ));
                 }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPhantomTarget(net.minecraftforge.event.entity.living.LivingChangeTargetEvent event) {
+        if (!(event.getEntity() instanceof Phantom phantom)) {
+            return;
+        }
+
+        if (event.getNewTarget() instanceof Player player) {
+            CompoundTag playerData = player.getPersistentData();
+            long effectEndTime = playerData.getLong(BISCUIT_EFFECT_TAG);
+            long currentTime = player.level().getGameTime();
+
+            if (effectEndTime > 0 && currentTime < effectEndTime) {
+                event.setNewTarget(null);
             }
         }
     }

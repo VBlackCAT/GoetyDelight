@@ -1,0 +1,11 @@
+{
+    "name": "Biscat",
+    "icon": "goetydelight:biscat",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Meow meow meow meow?$(br)For the consumer:$(br)$(li)5 minutes of Nourishment$(li)1 minute of Regeneration$(li)For 5 minutes after consumption, creepers and phantoms will flee from the consumer$(br2)Giving an orange tulip to your own kitten might bring some unexpected gains?"
+        }
+    ]
+}

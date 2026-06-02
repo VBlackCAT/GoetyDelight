@@ -1,12 +1,12 @@
-package net.v_black_cat.goetydelight.entities;
+package net.v_black_cat.goetydelight.entities.ghostfarmer;
 
-import com.Polarice3.Goety.client.render.layer.WraithGlowLayer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.entities.ModModelLayers;
 
 
 public class GhostFarmerRenderer extends MobRenderer<GhostFarmerEntity, GhostFarmerModel<GhostFarmerEntity>> {
