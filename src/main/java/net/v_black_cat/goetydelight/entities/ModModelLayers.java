@@ -8,4 +8,6 @@ public class ModModelLayers {
 
     public static final ModelLayerLocation GHOST_FARMER = new ModelLayerLocation(
             new ResourceLocation("goetydelight", "ghost_farmer"), "main");
+    public static final ModelLayerLocation SOUL_LICH = new ModelLayerLocation(
+            new ResourceLocation("goetydelight", "soul_lich"), "main");
 }

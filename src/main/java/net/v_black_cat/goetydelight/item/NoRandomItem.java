@@ -27,7 +27,6 @@ public class NoRandomItem {
     private static final Set<RegistryObject<?>> BANNED_ITEMS = new HashSet<>();
 
     static {
-        BANNED_ITEMS.add(ModItems.EXAMPLE_ITEM);
         BANNED_ITEMS.add(ModItems.MARBLE_OP_SWORD);
         BANNED_ITEMS.add(ModItems.GOETYDELIGHT_ICON);
         BANNED_ITEMS.add(ModItems.SPIDER_EGG_BUBBLE_TEA_2);
