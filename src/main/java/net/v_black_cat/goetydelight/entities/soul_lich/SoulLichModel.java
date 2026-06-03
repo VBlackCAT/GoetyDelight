@@ -1,18 +1,20 @@
-package net.v_black_cat.goetydelight.entities.soul_lich;// Made with Blockbench 4.12.6
-// Exported for Minecraft version 1.17 or later with Mojang mappings
-// Paste this class into your mod and generate all required imports
+package net.v_black_cat.goetydelight.entities.soul_lich;
+
+
 
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
+import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.Entity;
 
-public class SoulLichModel<T extends Entity> extends EntityModel<T> {
-	// This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
+public class SoulLichModel<T extends Entity> extends HierarchicalModel<T> {
+	
 	private final ModelPart soul_lich;
 	private final ModelPart Body;
 	private final ModelPart Head;
@@ -53,6 +55,7 @@ public class SoulLichModel<T extends Entity> extends EntityModel<T> {
 		this.L_Arm_Robe = this.L_Arm.getChild("L_Arm_Robe");
 		this.L_scapula = this.L_Arm.getChild("L_scapula");
 		this.Legs = this.soul_lich.getChild("Legs");
+		this.tempRoot = root;
 	}
 
 	public static LayerDefinition createBodyLayer() {
@@ -123,11 +126,59 @@ public class SoulLichModel<T extends Entity> extends EntityModel<T> {
 		return LayerDefinition.create(meshdefinition, 64, 64);
 	}
 
-	@Override
-	public void setupAnim(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+	private static final float TRANSITION_DURATION = 0.25F;
+	private AnimationState activeAnimationState = null;
 
+	private AnimationState previousAnimationState = null;
+
+	private net.minecraft.client.animation.AnimationDefinition previousAnimationDefinition = null;
+
+	private float transitionProgress = 1.0F;
+
+	private final ModelPart tempRoot;
+	public ModelPart root() {
+		return this.soul_lich;
 	}
+	@Override
+	public void setupAnim(T entity,
+						  float limbSwing,
+						  float limbSwingAmount,
+						  float ageInTicks,
+						  float netHeadYaw,
+						  float headPitch) {
 
+		this.root().getAllParts().forEach(ModelPart::resetPose);
+
+		
+		this.Head.yRot = netHeadYaw * ((float)Math.PI / 180F);
+		this.Head.xRot = headPitch * ((float)Math.PI / 180F);
+
+		
+		if (entity instanceof SoulLichEntity lich) {
+
+			this.animate(
+					lich.idleAnimationState,
+					SoulLichAnimation.waiting,
+					ageInTicks
+			);
+
+			
+			this.animateWalk(
+					SoulLichAnimation.walk,
+					limbSwing,
+					limbSwingAmount,
+					2.0F,
+					2.0F
+			);
+
+			
+			this.animate(
+					lich.attackAnimationState,
+					SoulLichAnimation.attacking,
+					ageInTicks
+			);
+		}
+	}
 	@Override
 	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
 		soul_lich.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
