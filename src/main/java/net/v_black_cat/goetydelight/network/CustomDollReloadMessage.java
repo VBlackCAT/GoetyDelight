@@ -55,37 +55,32 @@ public class CustomDollReloadMessage {
 
     @OnlyIn(Dist.CLIENT)
     private static void onReload(CustomDollReloadMessage message) {
-        try {
-            CustomDollLoader.init();
+        CustomDollLoader.init();
 
-            // 如自己不是主机，则添加这些模型 ID
-            Minecraft mc = Minecraft.getInstance();
-            if (!mc.isLocalServer()) {
-                ServerCustomDollLoader.getModels().clear();
-                ServerCustomDollLoader.getModels().addAll(message.modelIds);
-            }
+        Minecraft mc = Minecraft.getInstance();
+        if (!mc.isLocalServer()) {
+            ServerCustomDollLoader.getModels().clear();
+            ServerCustomDollLoader.getModels().addAll(message.modelIds);
+        }
 
-            Minecraft minecraft = Minecraft.getInstance();
-            FeatureFlagSet features = Optional.ofNullable(minecraft.player)
-                    .map(p -> p.connection)
-                    .map(ClientPacketListener::enabledFeatures)
-                    .orElse(FeatureFlagSet.of());
+        Minecraft minecraft = Minecraft.getInstance();
+        FeatureFlagSet features = Optional.ofNullable(minecraft.player)
+                .map(p -> p.connection)
+                .map(ClientPacketListener::enabledFeatures)
+                .orElse(FeatureFlagSet.of());
 
-            final boolean hasOperatorItemsTabPermissions =
-                    minecraft.options.operatorItemsTab().get() ||
-                    Optional.of(minecraft)
-                            .map(m -> m.player)
-                            .map(Player::canUseGameMasterBlocks)
-                            .orElse(false);
+        final boolean hasOperatorItemsTabPermissions =
+                minecraft.options.operatorItemsTab().get() ||
+                        Optional.of(minecraft)
+                                .map(m -> m.player)
+                                .map(Player::canUseGameMasterBlocks)
+                                .orElse(false);
 
-            ClientLevel level = minecraft.level;
-            if (level != null) {
-                RegistryAccess registryAccess = level.registryAccess();
-                final CreativeModeTab.ItemDisplayParameters parameters =
-                        new CreativeModeTab.ItemDisplayParameters(features, hasOperatorItemsTabPermissions, registryAccess);
-            }
-        } catch (IOException e) {
-            GoetyDelight.LOGGER.error("Failed to reload custom dolls", e);
+        ClientLevel level = minecraft.level;
+        if (level != null) {
+            RegistryAccess registryAccess = level.registryAccess();
+            final CreativeModeTab.ItemDisplayParameters parameters =
+                    new CreativeModeTab.ItemDisplayParameters(features, hasOperatorItemsTabPermissions, registryAccess);
         }
     }
 }

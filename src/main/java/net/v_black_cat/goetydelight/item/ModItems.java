@@ -36,7 +36,6 @@ public class ModItems {
 
     // ==================== 物品声明区域 ====================
     // 块物品
-    public static final RegistryObject<Item> EXAMPLE_BLOCK_ITEM;
     public static final RegistryObject<Item> METAMORPHIC_SCENT_GRASS;
 
     //刷子
@@ -59,7 +58,6 @@ public class ModItems {
 
     public static final RegistryObject<Item> GHOST_FARMER_SPAWN_EGG;
     // 食物物品
-    public static final RegistryObject<Item> EXAMPLE_ITEM;
     public static final RegistryObject<Item> GOETYDELIGHT_ICON;
     public static final RegistryObject<Item> TAINTED_DRINK;
     public static final RegistryObject<Item> REJECTED_DARK_MEAT_SOUP;
@@ -136,6 +134,8 @@ public class ModItems {
     public static final RegistryObject<Item> MENEMEN_WITH_BREAD;
     public static final RegistryObject<Item> BAKLAVA;
     public static final RegistryObject<Item> CUSTOM_DOLL;
+    public static final RegistryObject<Item> BISCAT;
+    public static final RegistryObject<Item> RUBY_SYRUP;
 
 
 
@@ -167,9 +167,6 @@ public class ModItems {
 
     // ==================== 静态初始化块：物品定义区域 ====================
     static {
-        // 块物品初始化
-        EXAMPLE_BLOCK_ITEM = ITEMS.register("example_block",
-                () -> new BlockItem(EXAMPLE_BLOCK.get(), basicItem().stacksTo(1)));
 
         NOT_ANYTHING = ITEMS.register("not_anything",
                 () -> new Item(basicItem().stacksTo(1)));
@@ -223,9 +220,6 @@ public class ModItems {
         VIZIERS_COOKBOOK = ITEMS.register("viziers_cookbook",
                 () -> new ViziersCookbookItem());
 
-        EXAMPLE_ITEM = ITEMS.register("example_item",
-                () -> new Item(basicItem().stacksTo(1)
-                        .food(simpleFoodItemProperties(1, 2f).build())));
         GOETYDELIGHT_ICON = ITEMS.register("goetydelight_icon",
                 () -> simpleFoodItem(666, 666, true));
 
@@ -741,6 +735,21 @@ public class ModItems {
                                 .effect(() ->new MobEffectInstance(MobEffects.REGENERATION, sToTick(10), 0), 1.0F)
                                 .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(30), 0), 1.0F)
                                 .effect(() ->new MobEffectInstance(COMFORT_EFFECT_SUPPLIER.get(), sToTick(15), 0), 1.0F)
+                                .build())));
+
+        BISCAT = ITEMS.register("biscat",
+                () -> new BiscatItem(basicItem().stacksTo(64).rarity(Rarity.COMMON)
+                        .food(simpleFoodItemProperties(6, 2)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(MobEffects.LUCK, minToTick(1), 0), 1.0F)
+                                .build())));
+
+        RUBY_SYRUP = ITEMS.register("ruby_syrup",
+                () -> new GlassBottleFoodItem(basicItem().stacksTo(16).rarity(Rarity.COMMON)
+                        .food(simpleFoodItemProperties(5, 4)
+                                .effect(() ->new MobEffectInstance(ModEffects.SPELL_MASTERY.get(), minToTick(1), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(ModEffects.SPELL_DURATION.get(), minToTick(1), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(1), 0), 1.0F)
                                 .build())));
 
         // ==================== 种子物品 ====================

@@ -24,7 +24,6 @@ public class ModCreativeModTabs {
     private static final Set<RegistryObject<?>> BLACKLIST = new HashSet<>();
 
     static {
-         BLACKLIST.add(ModItems.EXAMPLE_ITEM);
          BLACKLIST.add(ModItems.MARBLE_OP_SWORD);
          BLACKLIST.add(ModItems.GOETYDELIGHT_ICON);
          BLACKLIST.add(ModItems.SPIDER_EGG_BUBBLE_TEA_2);
@@ -68,7 +67,7 @@ public class ModCreativeModTabs {
 
     public static final RegistryObject<CreativeModeTab> GOETYDELIGHT_TAB = CREATIVE_MODE_TABS.register("goetydelight_tab",
             () -> CreativeModeTab.builder()
-                    .icon(() -> new ItemStack(ModItems.GOETYDELIGHT_ICON.get()))
+                    .icon(() -> new ItemStack(ModBlocks.NIGHT_STOVE.get()))
                     .title(Component.translatable("creativetab.goetydelight_tab"))
                     .displayItems((parameters, output) -> {
                         // 添加所有物品，但排除阻止列表中的物品

@@ -1,17 +1,9 @@
-package net.v_black_cat.goetydelight.entities;
+package net.v_black_cat.goetydelight.entities.ghostfarmer;
 
-import com.Polarice3.Goety.Goety;
-import com.Polarice3.Goety.client.render.ModRenderType;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.EyesLayer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.v_black_cat.goetydelight.entities.GhostFarmerEntity;
-import net.v_black_cat.goetydelight.entities.GhostFarmerModel;
 
 public class GhostFarmerGlowLayer extends EyesLayer<GhostFarmerEntity, GhostFarmerModel<GhostFarmerEntity>> {
     private static final RenderType GLOW_TYPE = RenderType.entityTranslucentEmissive(
