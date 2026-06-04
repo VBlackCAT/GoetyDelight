@@ -1,11 +1,13 @@
 package net.v_black_cat.goetydelight.entities.soul_lich;
 
+import com.Polarice3.Goety.common.entities.ai.SummonTargetGoal;
 import com.Polarice3.Goety.common.entities.ally.Summoned;
 import com.Polarice3.Goety.common.magic.spells.SoulBoltSpell;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -78,93 +80,46 @@ public class SoulLichEntity extends Summoned {
                           Level level) {
         super(entityType, level);
     }
+    public boolean isCasting() {
+        return this.casting;
+    }
 
     @Override
     protected void registerGoals() {
         super.registerGoals();
-
-        this.goalSelector.addGoal(
-                0,
-                new FloatGoal(this)
-        );
-
-        this.goalSelector.addGoal(
-                2,
-                new SoulBoltGoal()
-        );
-
-        this.goalSelector.addGoal(
-                8,
-                new WaterAvoidingRandomStrollGoal(
-                        this,
-                        1.0D
-                )
-        );
+        this.goalSelector.removeAllGoals(g -> g instanceof FollowOwnerGoal);
+        this.goalSelector.addGoal(2, new SoulBoltGoal());
         this.goalSelector.addGoal(3, new FollowOwnerGoal(this, 1.0D, 5.0F, 2.0F));
-        this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
-        this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
-//        this.targetSelector.addGoal(
-//                2,
-//                new NearestAttackableTargetGoal<>(
-//                        this,
-//                        Monster.class,
-//                        true
-//                )
-//        );
+        this.goalSelector.addGoal(8, new WaterAvoidingRandomStrollGoal(this, 1.0D));
+        this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this)); // 受伤反击
+        this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));   // 攻击主人的目标
     }
     private void setupAnimationStates() {
+        boolean moving = this.getDeltaMovement().horizontalDistanceSqr() > 0.0001D;
 
-        boolean moving =
-                this.getDeltaMovement()
-                        .horizontalDistanceSqr() > 0.0001D;
-
-        
         if (isAttacking()) {
-
-            idleAnimationState.stop();
-            walkAnimationState.stop();
-
             if (attackAnimationTimeout <= 0) {
-
-                attackAnimationTimeout = 999999;
-
-                attackAnimationState.start(
-                        this.tickCount
-                );
+                attackAnimationState.start(this.tickCount);
+            }
+            attackAnimationTimeout =30;
+        } else {
+            if (attackAnimationTimeout > 0) {
+                --attackAnimationTimeout;
+                if (attackAnimationTimeout <= 0) {
+                    this.attackAnimationState.stop();
+                }
             }
 
-        } else {
-
-            attackAnimationTimeout = 0;
-            attackAnimationState.stop();
-
-            
             if (moving) {
-
-                idleAnimationState.stop();
-
                 if (walkAnimationTimeout <= 0) {
-
                     walkAnimationTimeout = 999999;
-
-                    walkAnimationState.start(
-                            this.tickCount
-                    );
+                    walkAnimationState.start(this.tickCount);
                 }
-
             } else {
-
                 walkAnimationTimeout = 0;
-                walkAnimationState.stop();
-
-                
                 if (idleAnimationTimeout <= 0) {
-
                     idleAnimationTimeout = 60;
-
-                    idleAnimationState.start(
-                            this.tickCount
-                    );
+                    idleAnimationState.start(this.tickCount);
                 } else {
                     --idleAnimationTimeout;
                 }
@@ -199,9 +154,8 @@ public class SoulLichEntity extends Summoned {
             if (casting) {
                 desiredY = hoverY;
             } else {
-                desiredY = target.getY() + 3.0D;
+                desiredY = target.getY() + target.getBbHeight() + 0.5D;
             }
-
             double motionY =
                     (desiredY - this.getY()) * 0.15D;
 
@@ -281,6 +235,11 @@ public class SoulLichEntity extends Summoned {
                 .build();
     }
 
+    @Override
+    public boolean causeFallDamage(float fallDistance, float multiplier, DamageSource source) {
+        return false;
+    }
+
     private class SoulBoltGoal extends Goal {
 
         private static final double ATTACK_DISTANCE = 8.0D;
@@ -337,24 +296,20 @@ public class SoulLichEntity extends Summoned {
             if (casting) {
                 return;
             }
-
-            double distanceSqr =
-                    SoulLichEntity.this.distanceToSqr(
-                            target
-                    );
-
-            double distance =
-                    Math.sqrt(distanceSqr);
-
+            double distanceX = SoulLichEntity.this.getX() - target.getX();
+            double distanceZ = SoulLichEntity.this.getZ() - target.getZ();
+            double distance = Math.sqrt(distanceX * distanceX + distanceZ * distanceZ);
+//            double distanceSqr = SoulLichEntity.this.distanceToSqr(target);
+//            double realDistance = Math.sqrt(distanceSqr);
+//            double distance = realDistance - target.getBbHeight();
             if (distance > ATTACK_DISTANCE) {
 
-                Vec3 targetPos =
-                        target.position()
-                                .add(
-                                        0.0D,
-                                        3.0D,
-                                        0.0D
-                                );
+
+                Vec3 targetPos = target.position().add(
+                        0.0D,
+                        target.getBbHeight() + 0.5D,
+                        0.0D
+                );
 
                 Vec3 direction =
                         targetPos.subtract(
@@ -396,8 +351,7 @@ public class SoulLichEntity extends Summoned {
 
                 if (spellCooldown <= 0) {
 
-                    hoverY =
-                            target.getY() + 3.0D;
+                    hoverY = target.getY() + target.getBbHeight() + 0.5D;
 
                     casting = true;
                     spellFired = false;
