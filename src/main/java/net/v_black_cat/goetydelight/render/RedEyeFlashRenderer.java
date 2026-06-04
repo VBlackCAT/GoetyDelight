@@ -40,13 +40,29 @@ public final class RedEyeFlashRenderer {
 
         PlacementProfile placement = placement(entity);
         Vec3 faceForward = faceLook(entity, partialTick);
-        Vec3 horizontalForward = horizontalLook(entity, partialTick);
-        Vec3 right = new Vec3(horizontalForward.z, 0.0D, -horizontalForward.x);
-        Vec3 eyeCenter = placement.anchor(entity, effect, partialTick)
+
+        Vec3 WORLD_UP = new Vec3(0.0D, 1.0D, 0.0D);
+        Vec3 right = WORLD_UP.cross(faceForward);
+        if (right.lengthSqr() < 1.0E-5D) {
+            Vec3 horizontalForward = horizontalLook(entity, partialTick);
+            right = new Vec3(horizontalForward.z, 0.0D, -horizontalForward.x);
+        }
+        right = right.normalize();
+
+        Vec3 localUp = faceForward.cross(right).normalize();
+
+
+        Vec3 baseAnchor = placement.anchor(entity, effect, partialTick);
+
+        double neckDist = 0.15D;
+
+        Vec3 neckPos = baseAnchor.subtract(0.0D, neckDist, 0.0D);
+
+        Vec3 eyeCenter = neckPos
+                .add(localUp.scale(neckDist))
                 .add(faceForward.scale(placement.forwardOffset(entity, effect)))
                 .add(right.scale(placement.sideOffset(entity, effect)));
 
-        Vec3 localUp = faceForward.cross(right);
         if (localUp.lengthSqr() < 1.0E-5D) {
             localUp = new Vec3(0.0D, 1.0D, 0.0D);
         } else {
@@ -58,7 +74,7 @@ public final class RedEyeFlashRenderer {
         float scale = placement.scale(entity, effect);
         float intensity = intensity(effect);
         float distanceFade = distanceFade(Math.sqrt(distanceSqr));
-        float frontFade = frontFade(faceForward, eyeCenter, cameraPos);
+        float frontFade = 1.0F;
         int alpha = (int) (distanceFade * frontFade * maxAlpha());
         if (alpha <= 0) {
             return;
@@ -91,7 +107,6 @@ public final class RedEyeFlashRenderer {
 
         shader.safeGetUniform("EffectMode").set(0);
         drawBillboard(matrix, cameraPos, right, localUp, eyeCenter, coreHalfWidth(scale), coreHalfHeight(scale), 0xFF1C00, Math.min(255, alpha + 20));
-
         shader.safeGetUniform("EffectMode").set(3);
         drawGlints(matrix, cameraPos, streakAxis, streakUp, eyeCenter, renderTime, scale, alpha);
 
@@ -186,6 +201,7 @@ public final class RedEyeFlashRenderer {
         Vec3 relative = center.subtract(cameraPos);
         Vec3 dx = xAxis.scale(halfWidth);
         Vec3 dy = yAxis.scale(halfHeight);
+
         BufferBuilder buffer = Tesselator.getInstance().getBuilder();
         buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
 
@@ -196,7 +212,6 @@ public final class RedEyeFlashRenderer {
 
         BufferUploader.drawWithShader(buffer.end());
     }
-
     private static void putVertex(BufferBuilder buffer, Matrix4f matrix, Vec3 pos, int color, int alpha, float u, float v) {
         buffer.vertex(matrix, (float) pos.x, (float) pos.y, (float) pos.z)
                 .color((color >> 16) & 255, (color >> 8) & 255, color & 255, Mth.clamp(alpha, 0, 255))
@@ -230,8 +245,8 @@ public final class RedEyeFlashRenderer {
     private static PlacementProfile defaultProfile() {
         return profile(
                 "",
-                0.12D, 0.58D, 0.34D, 1.25D,
-                -0.10D,
+                0.07D, 1D, 0.27D, 0.275D,
+                -0.12D,
                 -0.005D,
                 0.30D, 0.36D, 0.34D, 1.40D,
                 false
@@ -242,7 +257,7 @@ public final class RedEyeFlashRenderer {
         return profile(
                 "Doll",
                 -0.45D, 1D, -0.1D, 0.82D,
-                -0.09D,
+                -0.1D,
                 -0.25D,
                 0.26D, 0.5D, 0.30D, 1.18D,
                 true
