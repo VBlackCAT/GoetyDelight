@@ -22,6 +22,11 @@ public class CustomDollReloadListener implements ResourceManagerReloadListener {
             }
             CustomDollResourceLoader.init(manager);
             CustomDollLoader.init();
+            CustomDollLoader.putAll(
+                    CustomDollResourceLoader.getModels(),
+                    CustomDollResourceLoader.getLanguages(),
+                    CustomDollResourceLoader.getTextures()
+            );
         } catch (IOException e) {
             GoetyDelight.LOGGER.error("Failed to reload custom dolls", e);
         }

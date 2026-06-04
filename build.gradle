@@ -273,27 +273,13 @@ tasks.withType(JavaCompile).configureEach {
 //}
 
 dependencies {
-    modImplementation "curse.maven:farmers-delight-398521:8007609"
-//    modImplementation "curse.maven:goety-586095:7170210"//2.5.36.5
-//    modImplementation  "curse.maven:goety-586095:7073504"//2.5.37.3
-//    compileOnly  "curse.maven:goety-586095:7073504"//2.5.37.3
-//
-
-
-//    modRuntimeOnly "curse.maven:goety-586095:6778940"//2.5.36.1
-//    modRuntimeOnly "curse.maven:goety-586095:7170210"//2.5.36.5
-
-//    modImplementation "curse.maven:goety-586095:7415009" // 2.5.43.1
-//    modImplementation "curse.maven:goety-586095:7436226"// 2.5.43.4
-//    modRuntimeOnly "curse.maven:goety-586095:7327887"//2.5.40.1
-//    modImplementation "curse.maven:goety-586095:7586938"// 2.5.46.1
-//      modImplementation "curse.maven:goety-586095:7689315"// 2.5.48.0
+    modImplementation "curse.maven:farmers-delight-398521:8007609"//1.3.1
     modImplementation "curse.maven:goety-586095:7966952"// 2.5.52.4
 
 //    modImplementation "curse.maven:goety-revelation-1236817:6892481"
 
      compileOnly "blank:[Forge]RevelationFix-1.20.1-4.0"
-    modImplementation "curse.maven:curios-309927:6418456"
+    modImplementation "curse.maven:curios-309927:6418456"//5.14.1
 
     //帕秋莉
     modCompileOnly "vazkii.patchouli:Patchouli:1.20.1-84.1-FORGE:api"
@@ -314,19 +300,13 @@ dependencies {
     modCompileOnly  "blank:Jade-1.20.1-Forge-11.13.1"
     modRuntimeOnly  "blank:Jade-1.20.1-Forge-11.13.1"
     modRuntimeOnly  "blank:l2library-2.5.3"
-//    modRuntimeOnly  "blank:modulargolems-2.6.12"
-//    modRuntimeOnly  "curse.maven:jerotes-warehouse-1249728:7633801"
-//    modRuntimeOnly  "curse.maven:jerotes-village-1004844:7633938"
-//    modRuntimeOnly  "blank:EndingLibrary-1.20.1-2.1.1-all"
-//    modRuntimeOnly  "curse.maven:goety-revelation-1236817:7638178"
-//    modRuntimeOnly  "curse.maven:goety-awaken-1412569:7629061" //1.3.3
+
     //nbt编辑器
     modRuntimeOnly  "curse.maven:ibe-editor-256822:4994072"
     //性能检测spark
     modRuntimeOnly  "curse.maven:spark-361579:4738952"
     modRuntimeOnly  "curse.maven:enchantment-descriptions-250419:7336071"
     modRuntimeOnly  "curse.maven:bookshelf-228525:5423987"
-
     //摩登ui
     modRuntimeOnly "curse.maven:modern-ui-352491:6956345"
     //光影

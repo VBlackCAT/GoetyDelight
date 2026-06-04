@@ -1,0 +1,15 @@
+{
+    "name": "Ruby Syrup",
+    "icon": "goetydelight:ruby_syrup",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Throw rubies, sugar, and some ectoplasm into a cauldron and heat it up. Somehow, they turn into a pot of... syrup?$(br)For the consumer:$(br)$(li)1 minute of Spell Mastery, Spell Longevity, and Nourishment"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/ruby_syrup"
+        }
+    ]
+}
