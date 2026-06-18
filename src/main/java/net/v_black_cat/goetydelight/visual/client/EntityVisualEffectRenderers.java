@@ -5,8 +5,10 @@ import net.v_black_cat.goetydelight.render.BackSigilEffectRenderer;
 import net.v_black_cat.goetydelight.render.BlockCrackLightRenderer;
 import net.v_black_cat.goetydelight.render.DepthVisualEffectRenderer;
 import net.v_black_cat.goetydelight.render.OrbitingSphereRenderer;
+import net.v_black_cat.goetydelight.render.PhantomRiftShardsRenderer;
 import net.v_black_cat.goetydelight.render.PlayerHelixTrailRenderer;
 import net.v_black_cat.goetydelight.render.RedEyeFlashRenderer;
+import net.v_black_cat.goetydelight.render.SupremeChaosCosmosRenderer;
 import net.v_black_cat.goetydelight.render.TiltedHaloRenderer;
 import net.v_black_cat.goetydelight.render.VolumetricFlameRenderer;
 import net.v_black_cat.goetydelight.visual.GDVisualEffects;
@@ -35,6 +37,8 @@ public final class EntityVisualEffectRenderers {
         register(GDVisualEffects.CAUSAL_CHAINS.getId(), BackSigilEffectRenderer::renderCausalChains);
         register(GDVisualEffects.INVERTED_CROSS_MARK.getId(), BackSigilEffectRenderer::renderInvertedCrossMark);
         register(GDVisualEffects.VOLUMETRIC_FLAME.getId(), VolumetricFlameRenderer::render);
+        register(GDVisualEffects.PHANTOM_RIFT_SHARDS.getId(), PhantomRiftShardsRenderer::render);
+        register(GDVisualEffects.SUPREME_CHAOS_COSMOS.getId(), SupremeChaosCosmosRenderer::render);
     }
 
     public static void register(ResourceLocation id, EntityVisualEffectRenderer renderer) {
