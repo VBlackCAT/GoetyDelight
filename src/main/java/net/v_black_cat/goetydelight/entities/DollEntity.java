@@ -333,6 +333,15 @@ public class DollEntity extends Entity {
             switch (customDollId) {
                 case "doll_lll252", "doll_maid2" -> soundEvent = SoundEvents.WITHER_AMBIENT;
                 case "doll_dwky" -> soundEvent = SoundEvents.ENDER_DRAGON_AMBIENT;
+                case "doll_m3" -> soundEvent = SoundEvents.BEACON_ACTIVATE;
+                case "doll_baka" -> soundEvent = SoundEvents.PIG_AMBIENT;
+                case "doll_bai" -> soundEvent = SoundEvents.PIG_DEATH;
+                case "doll_windis" -> soundEvent = SoundEvents.DROWNED_AMBIENT;
+                case "doll_fox", "doll_xiaoarin" -> soundEvent = SoundEvents.FOX_AMBIENT;
+                case "doll_skillupper" -> soundEvent = SoundEvents.AXOLOTL_SPLASH;
+                case "doll_vblackcat", "doll_lamiao", "doll_sim" -> soundEvent = SoundEvents.CAT_AMBIENT;
+                case "doll_maid1" -> soundEvent = SoundEvents.PLAYER_SWIM;
+                case "doll_kunkun" -> soundEvent = SoundEvents.CHICKEN_AMBIENT;
                 default -> soundEvent = ModSounds.TOUCH_DOLL.get();
             }
         } else {
@@ -340,6 +349,7 @@ public class DollEntity extends Entity {
         }
 
         float pitchVariation = 0.75f + randomSource.nextFloat() * 0.5f;
-        this.playSound(soundEvent, 1, basePitch * pitchVariation);
+        float volume = soundEvent == SoundEvents.FOX_AMBIENT ? 1.5f : 1.0f;
+        this.playSound(soundEvent, volume, basePitch * pitchVariation);
     }
 }

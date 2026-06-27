@@ -161,6 +161,7 @@
   "entity.goetydelight.ghost_farmer.trade": "幽灵瓜农",
   "entity.goetydelight.ghost_farmer.attack_message": "幽灵瓜农:就你劈我瓜是吧！",
   "entity.goetydelight.doll_entity": "玩偶",
+  "entity.goetydelight.soul_lich": "灵魂巫师",
   "info.goety.items.viziers_cookbook": "一份异域佳肴的烹饪手册",
   "info.goetydelight.research.vizier_cookbook": "你已知晓异域菜谱",
   "item.goetydelight.metamorphic_scent_grass.metamorphic_item": "幻化食物",
@@ -191,7 +192,7 @@
   "tooltip.goetydelight.doll.doll_dwky": "都瓦克因",
   "tooltip.goetydelight.doll.doll_sky": "天空玩偶",
   "tooltip.goetydelight.doll.doll_dimspector": "暗夜幻想家",
-  "tooltip.goetydelight.doll.doll_haozi": "吱吱吱？吱吱吱吱吱！",
+  "tooltip.goetydelight.doll.doll_haozi": "ae2eco子系统批量生产的便宜的可投掷的生的不可烹饪的vanilla_haozi/Player_VI§m（炸弹）§r玩偶",
   "tooltip.goetydelight.doll.doll_fish": "鱼鱼鱼鱼鱼",
   "tooltip.goetydelight.doll.doll_kunkun": "坤坤",
   "tooltip.goetydelight.doll.doll_djm": "堕落的RoLeaFy玩偶",
@@ -236,5 +237,6 @@
   "goetydelight.advancement.get_night_stove.title": "全年无休",
   "goetydelight.advancement.ghost_farmer_kill_player.description": "郝哥反杀华强(异世界版)",
   "goetydelight.advancement.ghost_farmer_kill_player.title": "瓜农复仇",
-  "config.jade.plugin_goetydelight.doll_entity": "玩偶实体信息"
+  "config.jade.plugin_goetydelight.doll_entity": "玩偶实体信息",
+  "subtitle.goetydelight.block.touch_doll": "摸摸玩偶"
 }

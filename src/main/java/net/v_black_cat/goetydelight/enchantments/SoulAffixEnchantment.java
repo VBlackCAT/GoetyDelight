@@ -98,10 +98,6 @@ public class SoulAffixEnchantment extends Enchantment {
             ItemStack chest_armorItem = player.getItemBySlot(EquipmentSlot.CHEST);
             ItemStack legs_armorItem = player.getItemBySlot(EquipmentSlot.LEGS);
             ItemStack feet_armorItem = player.getItemBySlot(EquipmentSlot.FEET);
-//            Float damage;
-//            if(mainHandItem.getAttributeModifiers( EquipmentSlot.MAINHAND).get(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE).stream().findFirst().isPresent()){
-//             damage = (float) mainHandItem.getAttributeModifiers( EquipmentSlot.MAINHAND).get(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE).stream().findFirst().get().getAmount();
-//            }else {damage = 1.0f;}
             if (!mainHandItem.isEmpty() || !offhandItem.isEmpty()  || !head_armorItem.isEmpty() || !chest_armorItem.isEmpty() || !legs_armorItem.isEmpty() || !feet_armorItem.isEmpty()) {
                 int enchantmentLevel = mainHandItem.getEnchantmentLevel(ModEnchantments.SOUL_AFFIX.get()) +
                         offhandItem.getEnchantmentLevel(ModEnchantments.SOUL_AFFIX.get()) +
