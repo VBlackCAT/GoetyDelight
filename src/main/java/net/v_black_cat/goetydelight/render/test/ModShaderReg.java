@@ -47,6 +47,12 @@ public class ModShaderReg {
     @Nullable
     private static ShaderInstance volumetricFlameShader;
 
+    @Nullable
+    private static ShaderInstance phantomRiftShardsShader;
+
+    @Nullable
+    private static ShaderInstance supremeChaosCosmosShader;
+
     public static ShaderInstance getColorfulShader() {
         return Objects.requireNonNull(colorfulShader, "Colorful shader not registered");
     }
@@ -85,6 +91,14 @@ public class ModShaderReg {
 
     public static ShaderInstance getVolumetricFlameShader() {
         return Objects.requireNonNull(volumetricFlameShader, "Volumetric flame shader not registered");
+    }
+
+    public static ShaderInstance getPhantomRiftShardsShader() {
+        return Objects.requireNonNull(phantomRiftShardsShader, "Phantom rift shards shader not registered");
+    }
+
+    public static ShaderInstance getSupremeChaosCosmosShader() {
+        return Objects.requireNonNull(supremeChaosCosmosShader, "Supreme chaos cosmos shader not registered");
     }
 
     @SubscribeEvent
@@ -162,6 +176,20 @@ public class ModShaderReg {
                 DefaultVertexFormat.POSITION_COLOR_TEX
         );
         event.registerShader(volumetricFlame, shaderInstance -> volumetricFlameShader = shaderInstance);
+
+        ModShaderInstance phantomRiftShards = new ModShaderInstance(
+                resourceProvider,
+                new ResourceLocation(GoetyDelight.MODID, "phantom_rift_shards").toString(),
+                DefaultVertexFormat.POSITION_COLOR_TEX
+        );
+        event.registerShader(phantomRiftShards, shaderInstance -> phantomRiftShardsShader = shaderInstance);
+
+        ModShaderInstance supremeChaosCosmos = new ModShaderInstance(
+                resourceProvider,
+                new ResourceLocation(GoetyDelight.MODID, "supreme_chaos_cosmos").toString(),
+                DefaultVertexFormat.POSITION_COLOR_TEX
+        );
+        event.registerShader(supremeChaosCosmos, shaderInstance -> supremeChaosCosmosShader = shaderInstance);
 
     }
 }
