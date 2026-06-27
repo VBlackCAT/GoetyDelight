@@ -44,6 +44,8 @@ public final class GDVisualEffects {
     public static final ResourceKey<EntityVisualEffectType> INVERTED_CROSS_MARK_KEY = key("inverted_cross_mark");
     public static final ResourceKey<EntityVisualEffectType> DEPTH_REFRACTION_PRESSURE_KEY = key("depth_refraction_pressure");
     public static final ResourceKey<EntityVisualEffectType> VOLUMETRIC_FLAME_KEY = key("volumetric_flame");
+    public static final ResourceKey<EntityVisualEffectType> PHANTOM_RIFT_SHARDS_KEY = key("phantom_rift_shards");
+    public static final ResourceKey<EntityVisualEffectType> SUPREME_CHAOS_COSMOS_KEY = key("supreme_chaos_cosmos");
 
     public static final RegistryObject<EntityVisualEffectType> ORBIT_SPHERE = register(
             ORBIT_SPHERE_KEY,
@@ -172,6 +174,18 @@ public final class GDVisualEffects {
             EntityVisualEffectType.properties()
                     .infiniteDuration()
                     .renderDistance(80.0D)
+    );
+    public static final RegistryObject<EntityVisualEffectType> PHANTOM_RIFT_SHARDS = register(
+            PHANTOM_RIFT_SHARDS_KEY,
+            EntityVisualEffectType.properties()
+                    .infiniteDuration()
+                    .renderDistance(88.0D)
+    );
+    public static final RegistryObject<EntityVisualEffectType> SUPREME_CHAOS_COSMOS = register(
+            SUPREME_CHAOS_COSMOS_KEY,
+            EntityVisualEffectType.properties()
+                    .infiniteDuration()
+                    .renderDistance(96.0D)
     );
 
     private GDVisualEffects() {
