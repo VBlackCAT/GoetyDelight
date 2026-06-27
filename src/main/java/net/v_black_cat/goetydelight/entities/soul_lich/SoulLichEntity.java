@@ -1,6 +1,5 @@
 package net.v_black_cat.goetydelight.entities.soul_lich;
 
-import com.Polarice3.Goety.common.entities.ai.SummonTargetGoal;
 import com.Polarice3.Goety.common.entities.ally.Summoned;
 import com.Polarice3.Goety.common.magic.spells.SoulBoltSpell;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -13,12 +12,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
-import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -98,16 +93,12 @@ public class SoulLichEntity extends Summoned {
         boolean moving = this.getDeltaMovement().horizontalDistanceSqr() > 0.0001D;
 
         if (isAttacking()) {
-            if (attackAnimationTimeout <= 0) {
+            if (!attackAnimationState.isStarted()) {
                 attackAnimationState.start(this.tickCount);
             }
-            attackAnimationTimeout =30;
         } else {
-            if (attackAnimationTimeout > 0) {
-                --attackAnimationTimeout;
-                if (attackAnimationTimeout <= 0) {
-                    this.attackAnimationState.stop();
-                }
+            if (attackAnimationState.isStarted()) {
+                attackAnimationState.stop();
             }
 
             if (moving) {
@@ -226,7 +217,7 @@ public class SoulLichEntity extends Summoned {
                 )
                 .add(
                         Attributes.ARMOR,
-                        2.0D
+                        6.0D
                 )
                 .add(
                         GetSpellAttributeFactory.createGetSpellAttributeImplementation().getCooldownDiscountAttributeModifier(),
@@ -307,7 +298,7 @@ public class SoulLichEntity extends Summoned {
 
                 Vec3 targetPos = target.position().add(
                         0.0D,
-                        target.getBbHeight() + 0.5D,
+                        target.getBbHeight() + 2.5D,
                         0.0D
                 );
 
@@ -328,18 +319,23 @@ public class SoulLichEntity extends Summoned {
                             direction.z
                     );
 
-                    float yaw = (float)(
+                    float raw = (float)(
                             Mth.atan2(
                                     direction.z,
                                     direction.x
                             ) * (180F / Math.PI)
                     ) - 90.0F;
 
-                    SoulLichEntity.this.setYRot(yaw);
-                    SoulLichEntity.this.setYHeadRot(yaw);
-                    SoulLichEntity.this.setYBodyRot(yaw);
-                    SoulLichEntity.this.yRotO = yaw;
-                }
+                    double dy = targetPos.y - SoulLichEntity.this.getEyeY();
+                    double horizontalDist = Math.sqrt(direction.x * direction.x + direction.z * direction.z);
+                    float pitch = (float)(Mth.atan2(dy, horizontalDist) * (180F / Math.PI));
+                    pitch = Mth.clamp(pitch, -45.0F, 45.0F);
+
+                    SoulLichEntity.this.setYRot(pitch);
+                    SoulLichEntity.this.setYHeadRot(pitch);
+                    SoulLichEntity.this.setYBodyRot(pitch);
+                    SoulLichEntity.this.yRotO = pitch;
+            }
 
             } else {
 
@@ -359,15 +355,15 @@ public class SoulLichEntity extends Summoned {
                     setAttacking(true);
 
                     
-                    castingTicks = 35;
+                    castingTicks = 45;
 
                     SoulLichEntity.this.lookAt(
                             target,
-                            30.0F,
-                            30.0F
+                            50.0F,
+                            50.0F
                     );
 
-                    spellCooldown = 40;
+                    spellCooldown = 50;
                 }
             }
         }

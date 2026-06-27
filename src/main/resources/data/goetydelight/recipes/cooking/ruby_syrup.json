@@ -17,6 +17,9 @@
   "result": {
     "item": "goetydelight:ruby_syrup"
   },
+  "container": {
+    "item": "minecraft:glass_bottle"
+  },
   "experience": 1.2,
   "cookingtime": 200
 }

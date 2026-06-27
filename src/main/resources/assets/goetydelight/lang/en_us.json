@@ -161,6 +161,7 @@
   "entity.goetydelight.ghost_farmer.trade": "Wraith Melon Farmer",
   "entity.goetydelight.ghost_farmer.attack_message": "Wraith Melon Farmer:Melon thieves, die!",
   "entity.goetydelight.doll_entity": "Doll",
+  "entity.goetydelight.soul_lich": "Soul Lich",
   "info.goety.items.viziers_cookbook": "A recipe for exotic delicacy",
   "info.goetydelight.research.vizier_cookbook": "You have learned exotic recipes.",
   "item.goetydelight.metamorphic_scent_grass.metamorphic_item": "Metamorphic Item:",
@@ -236,5 +237,6 @@
   "goetydelight.advancement.get_night_stove.title": "Open All Year Round",
   "goetydelight.advancement.ghost_farmer_kill_player.description": "The Melon Thief Gets Turned Tables",
   "goetydelight.advancement.ghost_farmer_kill_player.title": "Ghost Farmer's Revenge",
-  "config.jade.plugin_goetydelight.doll_entity": "Doll Entity Info"
+  "config.jade.plugin_goetydelight.doll_entity": "Doll Entity Info",
+  "subtitle.goetydelight.block.touch_doll": "Touch Doll"
 }

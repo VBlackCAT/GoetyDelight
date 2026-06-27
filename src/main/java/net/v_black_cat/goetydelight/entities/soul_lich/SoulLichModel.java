@@ -162,7 +162,7 @@ public class SoulLichModel<T extends SoulLichEntity> extends HierarchicalModel<T
 			animate(targetState, targetDefinition, ageInTicks, 1.0F);
 		}
 
-		this.head.yRot = netHeadYaw * ((float) Math.PI / 180F);
+		this.head.yRot = -(netHeadYaw * ((float) Math.PI / 180F));
 		this.head.xRot = headPitch * ((float) Math.PI / 180F);
 	}
 
