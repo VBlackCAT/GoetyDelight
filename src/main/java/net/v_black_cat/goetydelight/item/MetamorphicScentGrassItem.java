@@ -258,25 +258,27 @@ public class MetamorphicScentGrassItem extends Item {
 
         // 创建仪式配方
         RitualRecipe ritualRecipew = new RitualRecipe(
-                recipeId,           // 配方ID
-                group,              // 组名
-                craftType,          // 合成类型
-                ritualType,         // 仪式类型
-                resultItem,         // 结果物品
-                null,               // 召唤实体（不需要）
-                null,               // 转换实体（不需要）
-                activitem,          // 激活物品
-                ingredients,        // 成分列表
-                duration,           // 持续时间
-                summonLife,         // 召唤生命
-                soulCost,           // 灵魂消耗
-                null,               // 牺牲实体（不需要）
-                "",                 // 牺牲实体显示名
-                null,               // 转换实体标签
-                "",                 // 转换实体显示名
-                null,               // 附魔（不需要）
-                0,                  // 经验等级消耗
-                research            // 研究要求
+                recipeId,
+                group,
+                craftType,
+                ritualType,
+                resultItem,
+                null,
+                null,
+                activitem,
+                ingredients,
+                duration,
+                summonLife,
+                soulCost,
+                null,
+                "",
+                null,
+                "",
+                null,
+                "",
+                null,
+                0,
+                research
         );
         return ritualRecipew;
 
