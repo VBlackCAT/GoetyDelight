@@ -6,6 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -81,7 +82,8 @@ public class SoulAffixEnchantment extends Enchantment {
                 stack.getItem() instanceof net.minecraft.world.item.ShearsItem ||
                 stack.getItem() instanceof vectorwing.farmersdelight.common.item.KnifeItem ||
                 stack.getItem() instanceof com.Polarice3.Goety.common.items.magic.DarkWand ||
-                stack.getItem() instanceof com.Polarice3.Goety.common.items.magic.DarkStaff;
+                stack.getItem() instanceof com.Polarice3.Goety.common.items.magic.DarkStaff ||
+                stack.getItem() instanceof net.minecraft.world.item.ArmorItem; // ← 添加这一行
     }
 
     @SubscribeEvent
