@@ -3,7 +3,6 @@ package net.v_black_cat.goetydelight.enchantments;
 import com.Polarice3.Goety.utils.SEHelper;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -16,7 +15,8 @@ import net.v_black_cat.goetydelight.config.Config;
 
 @Mod.EventBusSubscriber(modid = "goetydelight")
 public class SoulAffixEnchantment extends Enchantment {
-    public SoulAffixEnchantment(Rarity rarity, EnchantmentCategory category, EquipmentSlot... slots) {
+    public SoulAffixEnchantment(Rarity rarity, EnchantmentCategory category, EquipmentSlot
+                    ... slots) {
         super(rarity, category, slots);
     }
 
@@ -37,43 +37,38 @@ public class SoulAffixEnchantment extends Enchantment {
 
     @Override
     public boolean isTreasureOnly() {
-        if(Config.isSoulAffixDisabled()){
-            return false;
-        }
-
-        return true;
+        return !Config.isSoulAffixDisabled();
     }
 
     @Override
     public boolean isTradeable() {
-        if(Config.isSoulAffixDisabled()){
-            return false;
-        }
-        return true;
+        return !Config.isSoulAffixDisabled();
     }
 
     @Override
     public boolean isDiscoverable() {
-        if(Config.isSoulAffixDisabled()){
-            return false;
-        }
-        return true;
+        return !Config.isSoulAffixDisabled();
     }
 
     @Override
     public boolean isAllowedOnBooks() {
-        if(Config.isSoulAffixDisabled()){
-            return false;
-        }
-        return true;
+        return !Config.isSoulAffixDisabled();
     }
 
     @Override
     public boolean canApplyAtEnchantingTable(ItemStack stack) {
-        if(Config.isSoulAffixDisabled()){
-            return false;
-        }
-        return  stack.getItem() instanceof SwordItem ||
+        if (Config.isSoulAffixDisabled()) return false;
+        return isApplicableTo(stack);
+    }
+
+    @Override
+    public boolean canEnchant(ItemStack stack) {
+        if (Config.isSoulAffixDisabled()) return false;
+        return isApplicableTo(stack) && !Config.getSoulAffixBlacklist().contains(stack.getItem());
+    }
+
+    private static boolean isApplicableTo(ItemStack stack) {
+        return stack.getItem() instanceof SwordItem ||
                 stack.getItem() instanceof net.minecraft.world.item.BowItem ||
                 stack.getItem() instanceof net.minecraft.world.item.PickaxeItem ||
                 stack.getItem() instanceof net.minecraft.world.item.ShieldItem ||
@@ -98,7 +93,7 @@ public class SoulAffixEnchantment extends Enchantment {
             ItemStack chest_armorItem = player.getItemBySlot(EquipmentSlot.CHEST);
             ItemStack legs_armorItem = player.getItemBySlot(EquipmentSlot.LEGS);
             ItemStack feet_armorItem = player.getItemBySlot(EquipmentSlot.FEET);
-            if (!mainHandItem.isEmpty() || !offhandItem.isEmpty()  || !head_armorItem.isEmpty() || !chest_armorItem.isEmpty() || !legs_armorItem.isEmpty() || !feet_armorItem.isEmpty()) {
+            if (!mainHandItem.isEmpty() || !offhandItem.isEmpty() || !head_armorItem.isEmpty() || !chest_armorItem.isEmpty() || !legs_armorItem.isEmpty() || !feet_armorItem.isEmpty()) {
                 int enchantmentLevel = mainHandItem.getEnchantmentLevel(ModEnchantments.SOUL_AFFIX.get()) +
                         offhandItem.getEnchantmentLevel(ModEnchantments.SOUL_AFFIX.get()) +
                         head_armorItem.getEnchantmentLevel(ModEnchantments.SOUL_AFFIX.get()) +
@@ -119,12 +114,5 @@ public class SoulAffixEnchantment extends Enchantment {
             event.setAmount((float) (event.getAmount() + (enchantmentLevel * damagePerLevel)));
             SEHelper.decreaseSouls(player, soulEnergyCost);
         }
-    }
-    @Override
-    public boolean canEnchant(ItemStack stack) {
-        if(Config.isSoulAffixDisabled()){
-            return false;
-        }
-        return !Config.getSoulAffixBlacklist().contains(stack.getItem());
     }
 }
