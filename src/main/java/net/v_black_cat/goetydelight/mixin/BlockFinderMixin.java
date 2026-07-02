@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(BlockFinder.class)
 public class BlockFinderMixin {
 
-    @Inject(method = "findIllagerWard", at = @At("HEAD"), cancellable = true, remap = false)
+    @Inject(method = "findIllagerWard(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/player/Player;I)Z", at = @At("HEAD"), cancellable = true, remap = false)
     private static void onFindIllagerWard(ServerLevel level, Player player, int soulEnergy, CallbackInfoReturnable<Boolean> cir) {
         if (player.hasEffect(ModEffects.HUNTING_DENIAL.get())) {
             cir.setReturnValue(true);
