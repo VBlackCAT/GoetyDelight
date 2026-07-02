@@ -520,7 +520,7 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
      /**
       * 将Direction转换为索引
       */
-     private int getFacingIndex(Direction facing) {
+     public int getFacingIndex(Direction facing) {
           switch (facing) {
                case NORTH: return 0;
                case EAST: return 1;

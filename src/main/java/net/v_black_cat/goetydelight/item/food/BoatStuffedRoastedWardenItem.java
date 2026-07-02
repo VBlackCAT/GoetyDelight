@@ -55,9 +55,6 @@ public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity enti
         player.playSound(getEatingSound(), 0.5F, 1.0F);
     }
 
-    // Apply food effects for each serving consumed
-
-
     ItemStack resultStack = stack.copy();
     int servings = getServings(resultStack);
     if (servings > 1) {

@@ -2,12 +2,10 @@ package net.v_black_cat.goetydelight.block;
 
 
 
-import com.Polarice3.Goety.utils.SoundUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -26,8 +24,6 @@ import net.v_black_cat.goetydelight.item.ModItems;
 import java.util.Arrays;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
-
-import static vectorwing.farmersdelight.common.registry.ModBlocks.STOVE;
 
 public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS =
@@ -130,6 +126,26 @@ public class ModBlocks {
                             ModItems.BOAT_STUFFED_ROASTED_WARDEN_MEET,
                             ModItems.BOAT_STUFFED_ROASTED_WARDEN_FLANK,
                             ModItems.BOAT_STUFFED_ROASTED_WARDEN_FLANK
+                    ),
+                    true
+            ),1
+    );
+    public static final RegistryObject<Block>  ROAST_LAOWANG_BLOCK= registerBlock("roast_laowang_block",
+            () -> new RoastLaowangBlock(
+                    BlockBehaviour.Properties.copy(Blocks.CAKE),
+                    Arrays.asList(
+                            ModItems.ROAST_LAOWANG_EAR,
+                            ModItems.ROAST_LAOWANG_EAR,
+                            ModItems.ROAST_LAOWANG_HEAD,
+                            ModItems.ROAST_LAOWANG_FEET,
+                            ModItems.ROAST_LAOWANG_FEET,
+                            ModItems.ROAST_LAOWANG_LEG,
+                            ModItems.ROAST_LAOWANG_LEG,
+                            ModItems.ONION_PORK_CHOP_RICE,
+                            ModItems.ONION_PORK_CHOP_RICE,
+                            ModItems.ONION_PORK_CHOP_RICE,
+                            ModItems.ONION_PORK_CHOP_RICE,
+                            ModItems.ONION_PORK_CHOP_RICE
                     ),
                     true
             ),1

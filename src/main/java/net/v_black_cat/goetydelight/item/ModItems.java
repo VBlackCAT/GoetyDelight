@@ -136,6 +136,11 @@ public class ModItems {
     public static final RegistryObject<Item> CUSTOM_DOLL;
     public static final RegistryObject<Item> BISCAT;
     public static final RegistryObject<Item> RUBY_SYRUP;
+    public static final RegistryObject<Item> ROAST_LAOWANG_EAR;
+    public static final RegistryObject<Item> ROAST_LAOWANG_FEET;
+    public static final RegistryObject<Item> ROAST_LAOWANG_HEAD;
+    public static final RegistryObject<Item> ROAST_LAOWANG_LEG;
+    public static final RegistryObject<Item> ONION_PORK_CHOP_RICE;
 
 
 
@@ -285,9 +290,10 @@ public class ModItems {
                 () -> simpleFastFoodItem(4, 4, false));
         FROG_LEG_SANDWICH = ITEMS.register("frog_leg_sandwich",
                 () -> simpleFoodItem(10, 8, false));
-
         SPIDER_EGG_BUBBLE_TEA_2 = ITEMS.register("spider_egg_bubble_tea_2",
                 () -> simpleFoodItem(1, 1, true));
+        ROAST_LAOWANG_EAR = ITEMS.register("roast_laowang_ear",
+                () -> simpleFoodItem(4, 3, false));
 
 
         // 特殊效果食物物品初始化
@@ -311,7 +317,7 @@ public class ModItems {
                 () -> new CustomDrinkItem(basicItem().stacksTo(16).food(
                         simpleFoodItemProperties(6, 4)
                                 .effect(() -> new MobEffectInstance(FIERY_AURA_SUPPLIER.get(), minToTick(5), 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(COMFORT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .build())));
 
         NETHER_STYLE_FRIED_EGG_SANDWICH = ITEMS.register("nether_style_fried_egg_sandwich",
@@ -345,9 +351,8 @@ public class ModItems {
                 () -> new Item(basicItem().stacksTo(16).food(
                         simpleFoodItemProperties(8, 5)
                                 .effect(() -> new MobEffectInstance(MobEffects.SATURATION, 100, 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(COMFORT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(PHOTOSYNTHESIS_SUPPLIER.get(), minToTick(5), 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(15), 0), 1.0F)
                                 .build())));
 
 
@@ -473,8 +478,7 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(5), 2), 1.0F)
                                 .effect(() -> new MobEffectInstance(SHADOW_WALK.get(), sToTick(60), 2), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 6000, 2), 1.0F)
-                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), 12000, 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(COMFORT_EFFECT_SUPPLIER.get(), 12000, 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), 18000, 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(ModEffects.SERVANT_REINFORCEMENT.get(), minToTick(5), 0), 1.0F)
                                 .build())));
         POACHED_SPIDER_EGG = ITEMS.register("poached_spider_egg",
@@ -708,9 +712,8 @@ public class ModItems {
         SHAWARMA = ITEMS.register("shawarma",
                 () -> new Item(basicItem().stacksTo(64).rarity(Rarity.COMMON)
                         .food(simpleFoodItemProperties(16, 12.5f)
-                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(15), 0), 1.0F)
                                 .effect(() ->new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(2), 0), 1.0F)
-                                .effect(() ->new MobEffectInstance(COMFORT_EFFECT_SUPPLIER.get(), minToTick(2.5f), 0), 1.0F)
                                 .build())));
 
         RAKI = ITEMS.register("raki",
@@ -723,8 +726,7 @@ public class ModItems {
         MENEMEN_WITH_BREAD = ITEMS.register("menemen_with_bread",
                 () -> new Item(basicItem().stacksTo(64).rarity(Rarity.COMMON).craftRemainder(Items.BREAD)
                         .food(simpleFoodItemProperties(10, 6)
-                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(3), 0), 1.0F)
-                                .effect(() ->new MobEffectInstance(COMFORT_EFFECT_SUPPLIER.get(), minToTick(3), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .effect(() ->new MobEffectInstance(PHOTOSYNTHESIS_SUPPLIER.get(), 600, 0), 1.0F)
                                 .effect(() ->new MobEffectInstance(ModEffects.WIGHT_DENIAL.get(), minToTick(30), 0), 1.0F)
                                 .build())));
@@ -733,8 +735,7 @@ public class ModItems {
                 () -> new BaklavaItem(basicItem().stacksTo(64).rarity(Rarity.EPIC)
                         .food(simpleFoodItemProperties(6, 3)
                                 .effect(() ->new MobEffectInstance(MobEffects.REGENERATION, sToTick(10), 0), 1.0F)
-                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(30), 0), 1.0F)
-                                .effect(() ->new MobEffectInstance(COMFORT_EFFECT_SUPPLIER.get(), sToTick(15), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(45), 0), 1.0F)
                                 .build())));
 
         BISCAT = ITEMS.register("biscat",
@@ -750,6 +751,30 @@ public class ModItems {
                                 .effect(() ->new MobEffectInstance(ModEffects.SPELL_MASTERY.get(), minToTick(1), 0), 1.0F)
                                 .effect(() ->new MobEffectInstance(ModEffects.SPELL_DURATION.get(), minToTick(1), 0), 1.0F)
                                 .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(1), 0), 1.0F)
+                                .build())));
+
+        ROAST_LAOWANG_HEAD = ITEMS.register("roast_laowang_head",
+                () -> new Item(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
+                        .food(simpleFoodItemProperties(20, 13)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .build())));
+
+        ROAST_LAOWANG_FEET = ITEMS.register("roast_laowang_feet",
+                () -> new Item(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
+                        .food(simpleFoodItemProperties(10, 6)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .build())));
+
+        ROAST_LAOWANG_LEG = ITEMS.register("roast_laowang_leg",
+                () -> new Item(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
+                        .food(simpleFoodItemProperties(10, 6)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .build())));
+
+        ONION_PORK_CHOP_RICE = ITEMS.register("onion_pork_chop_rice",
+                () -> new BowlFoodItem(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
+                        .food(simpleFoodItemProperties(12, 8)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
                                 .build())));
 
         // ==================== 种子物品 ====================
