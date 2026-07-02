@@ -143,7 +143,7 @@ public class ModItems {
     public static final RegistryObject<Item> ECTOPLASMIC_MELON_SEEDS;
     public static final RegistryObject<Item> METAMORPHIC_SCENT_GRASS_SEEDS;
 
-    public static final RegistryObject<Item> MENU;
+//    public static final RegistryObject<Item> MENU;
     public static final RegistryObject<Item> DOLL_ITEM;
     // ==================== 效果供应商常量 ====================
     public static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
@@ -766,7 +766,7 @@ public class ModItems {
         GHOST_FARMER_SPAWN_EGG = ITEMS.register("ghost_farmer_spawn_egg",
                 () -> new ForgeSpawnEggItem(ModEntities.GHOST_FARMER, 0xFFFFFF,0xFFFFFF, new Item.Properties()));
 
-        MENU = registerWithTab("menu", () -> new MenuItem(new Item.Properties()));
+//        MENU = registerWithTab("menu", () -> new MenuItem(new Item.Properties()));
 
         DOLL_ITEM = registerWithTab("doll_item", DollEntityItem::new);
     }

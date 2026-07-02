@@ -33,9 +33,9 @@ public class ModBlockEntities {
 
     public static final RegistryObject<BlockEntityType<NightStoveBlockEntity>> NIGHT_STOVE_BE = BLOCK_ENTITIES.register("night_stove",
             () -> BlockEntityType.Builder.of(NightStoveBlockEntity::new, ModBlocks.NIGHT_STOVE.get()).build(null));
-
-    public static final RegistryObject<BlockEntityType<RestaurantBlockEntity>> RESTAURANT_BE = BLOCK_ENTITIES.register("restaurant",
-            () -> BlockEntityType.Builder.of(RestaurantBlockEntity::new, ModBlocks.RESTAURANT.get()).build(null));
+//
+//    public static final RegistryObject<BlockEntityType<RestaurantBlockEntity>> RESTAURANT_BE = BLOCK_ENTITIES.register("restaurant",
+//            () -> BlockEntityType.Builder.of(RestaurantBlockEntity::new, ModBlocks.RESTAURANT.get()).build(null));
 
     public static RegistryObject<BlockEntityType<CustomDollBlockEntity>> CUSTOM_DOLL_BE = BLOCK_ENTITIES.register("custom_doll", () ->
             BlockEntityType.Builder.of(CustomDollBlockEntity::new, getDollBlocks()).build(null));

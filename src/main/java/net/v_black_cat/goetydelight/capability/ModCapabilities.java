@@ -3,7 +3,6 @@ package net.v_black_cat.goetydelight.capability;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.v_black_cat.goetydelight.capability.ICustomerOrderItemList;
 
 import static net.v_black_cat.goetydelight.GoetyDelight.MODID;
 
@@ -11,6 +10,6 @@ import static net.v_black_cat.goetydelight.GoetyDelight.MODID;
 public class ModCapabilities {
     @SubscribeEvent
     public static void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
-        event.register(ICustomerOrderItemList.class);
+
     }
 }

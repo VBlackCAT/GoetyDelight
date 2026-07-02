@@ -18,14 +18,7 @@ public class NetworkHandler {
                 id++, ThrowSoupPacket.class, ThrowSoupPacket::encode, ThrowSoupPacket::decode, ThrowSoupPacket::handle);
         INSTANCE.registerMessage(
                 id++, SyncAbilityPacket.class, SyncAbilityPacket::encode, SyncAbilityPacket::decode, SyncAbilityPacket::handle);
-        INSTANCE.registerMessage(
-                id++,
-                CustomerItemListUpdatePacket.class,
-                CustomerItemListUpdatePacket::encode,
-                CustomerItemListUpdatePacket::decode,
-                CustomerItemListUpdatePacket::consume,
-                Optional.of(NetworkDirection.PLAY_TO_CLIENT)
-        );
+
         INSTANCE.registerMessage(
                 id++,
                 SyncFoxKillCountPacket.class,

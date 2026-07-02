@@ -14,9 +14,7 @@
     "MobMixin",
     "RecipeManagerMixin",
     "SummonSpellMixin",
-    "WightSpawnerMixin",
-    "customer.LivingEntityToCustomerMixin",
-    "customer.PathFinderMobToCustomerMixin"
+    "WightSpawnerMixin"
   ],
   "client": [
     "BookContentResourceListenerLoaderMixin",
