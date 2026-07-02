@@ -200,7 +200,7 @@
   "tooltip.goetydelight.cherry_blossom_cake_good": "Blessings from XiaoArin",
   "tooltip.goetydelight.cherry_blossom_cake_bad": "This sacred relic belongs to the blessed, not to you",
   "message.goety.crisp_biscuit": "eaten person",
-  "message.goetydelight.baklava.cooldown": "Cooling down, remaining time (seconds):",
+  "message.goetydelight.baklava.cooldown": "Cooling down, remaining time (seconds): %s",
   "message.goetydelight.baklava.vizierspoken": "Being able to enjoy this taste makes it all worth it shedding tears of joy",
   "message.goetydelight.baklava.successs": "Fed baklava to the target",
   "message.goetydelight.cherryblossomcake.punishment": "You have made XiaoArin feel sad. You are no longer one who can receive blessings.",

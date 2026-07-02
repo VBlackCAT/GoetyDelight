@@ -48,7 +48,7 @@ public class BaklavaItem extends Item {
 
             if (currentTime - lastUseTime < VIZIER_COOLDOWN) {
                 long remainingTime = (VIZIER_COOLDOWN - (currentTime - lastUseTime)) / 20;
-                player.displayClientMessage(Component.translatable("message.goetydelight.baklava.cooldown" + remainingTime), true);
+                player.displayClientMessage(Component.translatable("message.goetydelight.baklava.cooldown", remainingTime), true);
                 return InteractionResult.FAIL;
             }
             if (target instanceof Vizier && currentTime - lastUseTime > VIZIER_COOLDOWN) {
@@ -73,8 +73,7 @@ public class BaklavaItem extends Item {
             } else {
                 // 对非 Vizier 目标添加常规效果
                 target.addEffect(new MobEffectInstance(MobEffects.REGENERATION, sToTick(10), 1));
-                target.addEffect(new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(30), 0));
-                target.addEffect(new MobEffectInstance(COMFORT_EFFECT_SUPPLIER.get(), sToTick(15), 0));
+                target.addEffect(new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(45), 0));
 
                 if (!player.isCreative()) {
                     stack.shrink(1);

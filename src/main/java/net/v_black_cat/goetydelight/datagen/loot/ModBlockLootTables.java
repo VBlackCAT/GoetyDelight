@@ -80,6 +80,7 @@ public class ModBlockLootTables extends BlockLootSubProvider {
         this.dropOther(ModBlocks.ECTOPLASMIC_MELON_STEM.get(), ModItems.ECTOPLASMIC_MELON_SEEDS.get());
         this.dropOther(ModBlocks.ROTTEN_CORPSE_MAGGOT_FEAST_BLOCK.get(), Items.BOWL);
         this.dropOther(ModBlocks.BOAT_STUFFED_ROASTED_WARDEN_BlOCK.get(), Items.DARK_OAK_BOAT);
+        this.dropOther(ModBlocks.ROAST_LAOWANG_BLOCK.get(), Items.BOWL);
         this.dropOther(ModBlocks.VOID_GEL_JELLY_BLOCK.get(), Items.BOWL);
         this.dropOther(ModBlocks.STUFFED_TALL_SKULL_RICE_BLOCK.get(), com.Polarice3.Goety.common.blocks.ModBlocks.TALL_SKULL_ITEM.get());
 //        this.dropOther(ModBlocks.LICHS_CHAOS_STEW_BLOCK.get(), vectorwing.farmersdelight.common.registry.ModItems.COOKING_POT.get());
