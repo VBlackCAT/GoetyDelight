@@ -15,6 +15,7 @@ public class FoodSoulEnergyConfig {
     static {
 
         FOOD_ENERGY_MAP.put("goetydelight:ectoplasmic_melon", 50);
+        FOOD_ENERGY_MAP.put("goetydelight:ectoplasmic_melon_salad", 250);
         FOOD_ENERGY_MAP.put("goetydelight:blue_ectoplasmic_sundae", 300);
         FOOD_ENERGY_MAP.put("goetydelight:ectoplasm_jelly", 100);
         FOOD_ENERGY_MAP.put("goetydelight:gathering_soul_embryos", 10000);

@@ -2,46 +2,64 @@ package net.v_black_cat.goetydelight.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BedPart;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import vectorwing.farmersdelight.common.block.FeastBlock;
+import vectorwing.farmersdelight.common.tag.ModTags;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class RoastLaowangBlock extends FeastBlock {
+public class RoastLaowangBlock extends HorizontalDirectionalBlock {
 
     public static final IntegerProperty SERVINGS = IntegerProperty.create("servings", 0, 13);
-    public static final EnumProperty<Part> PART = EnumProperty.create("part", Part.class);
+    public static final EnumProperty<BedPart> PART = BlockStateProperties.BED_PART;
+
+    // 小刀切耳朵的常量
+    public static final int EAR_CUT_SERVINGS_1 = 13;
+    public static final int EAR_CUT_SERVINGS_2 = 12;
+    public static final int BONEMEAL_DROP_MIN = 3;
+    public static final int BONEMEAL_DROP_MAX = 8;
+
+    private final List<Supplier<Item>> servingItems;
 
     // 预先计算所有朝向的碰撞箱 [servings][facing]
     private static final VoxelShape[][][] ROTATED_SHAPES = new VoxelShape[14][4][];
-    private final List<Supplier<Item>> servingItems;
 
-    // 定义7个不同的形状，对应不同的阶段 - 从JSON文件转换
+    // 定义7个不同的形状，对应不同的阶段
     private static final VoxelShape[] SHAPES = new VoxelShape[] {
             makeShape0(),  // stage 0 (servings=13)
             makeShape3(),  // stage 3 (servings=10-12)
@@ -52,40 +70,13 @@ public class RoastLaowangBlock extends FeastBlock {
             makeShape13()  // stage 13 (servings=0)
     };
 
-    public enum Part implements StringRepresentable {
-        CENTER("center", 0, 0),
-        NORTH_WEST("north_west", -1, -1),
-        NORTH("north", -1, 0),
-        NORTH_EAST("north_east", -1, 1),
-        WEST("west", 0, -1),
-        EAST("east", 0, 1),
-        SOUTH_WEST("south_west", 1, -1),
-        SOUTH("south", 1, 0),
-        SOUTH_EAST("south_east", 1, 1);
-
-        private final String name;
-        public final int dx;
-        public final int dz;
-
-        Part(String name, int dx, int dz) {
-            this.name = name;
-            this.dx = dx;
-            this.dz = dz;
-        }
-
-        @Override
-        public String getSerializedName() {
-            return name;
-        }
-    }
-
     public RoastLaowangBlock(Properties properties, List<Supplier<Item>> servingItems, boolean hasLeftovers) {
-        super(properties, () -> servingItems.get(0).get(), hasLeftovers);
+        super(properties);
         this.servingItems = servingItems;
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(SERVINGS, getMaxServings())
-                .setValue(PART, Part.CENTER));
+                .setValue(PART, BedPart.HEAD));
     }
 
     // 静态初始化块，预计算所有旋转
@@ -102,193 +93,320 @@ public class RoastLaowangBlock extends FeastBlock {
     }
 
     private static VoxelShape getShapeForServings(int servings) {
-        if (servings == 13) {  // stage 0
+        if (servings >= 11 &&servings <= 13) {
             return SHAPES[0];
-        } else if (servings == 10) {  // stage 3
+        } else if (servings == 10) {
             return SHAPES[1];
-        } else if (servings == 9) {  // stage 4
+        } else if (servings == 9) {
             return SHAPES[2];
-        } else if (servings == 8) {  // stage 5
+        } else if (servings == 8) {
             return SHAPES[3];
-        } else if (servings == 7) {  // stage 6
+        } else if (servings == 7) {
             return SHAPES[4];
-        } else if (servings >= 1 && servings <= 6) {  // stage 7
+        } else if (servings >= 1 && servings <= 6) {
             return SHAPES[5];
-        } else if (servings == 0) {  // stage 13
+        } else if (servings == 0) {
             return SHAPES[6];
         }
-        // 默认返回空形状
         return Shapes.empty();
     }
 
-    private Part getPartFromOffset(int dx, int dz) {
-        if (dx == -1 && dz == -1) return Part.NORTH_WEST;
-        if (dx == -1 && dz == 0) return Part.NORTH;
-        if (dx == -1 && dz == 1) return Part.NORTH_EAST;
-        if (dx == 0 && dz == -1) return Part.WEST;
-        if (dx == 0 && dz == 1) return Part.EAST;
-        if (dx == 1 && dz == -1) return Part.SOUTH_WEST;
-        if (dx == 1 && dz == 0) return Part.SOUTH;
-        if (dx == 1 && dz == 1) return Part.SOUTH_EAST;
-        return Part.CENTER;
-    }
-
-    @Override
     public ItemStack getServingItem(BlockState state) {
         int servings = state.getValue(SERVINGS);
         int takenCount = getMaxServings() - servings;
         int itemIndex = takenCount;
-        // 确保索引在范围内
         if (itemIndex >= servingItems.size()) {
             itemIndex = servingItems.size() - 1;
         }
+        if (itemIndex < 0) {
+            itemIndex = 0;
+        }
         return new ItemStack(servingItems.get(itemIndex).get());
+    }
+
+    public int getMaxServings() {
+        return 13;
+    }
+
+    // ================ 工具方法 ================
+
+    private boolean requiresKnife(int servings) {
+        return servings == EAR_CUT_SERVINGS_1 || servings == EAR_CUT_SERVINGS_2;
+    }
+
+    private Component getUseKnifeMessage() {
+        return Component.translatable("block.goetydelight.roast_laowang_block.use_knife");
+    }
+
+    private Component getUseBowlMessage(ItemStack bowl) {
+        return Component.translatable("block.goetydelight.feast.use_container", bowl.getHoverName());
+    }
+
+    private Direction getDirectionToOther(BedPart part, Direction direction) {
+        return part == BedPart.HEAD ? direction : direction.getOpposite();
+    }
+
+    private void giveOrDropItem(Player player, ItemStack stack, Level level, BlockPos pos) {
+        if (stack.isEmpty()) {
+            return;
+        }
+
+        if (!player.isCreative()) {
+            if (!player.getInventory().add(stack.copy())) {
+                Containers.dropItemStack(level, pos.getX(), pos.getY() + 1, pos.getZ(), stack);
+            }
+        } else {
+            Containers.dropItemStack(level, pos.getX(), pos.getY() + 1, pos.getZ(), stack);
+        }
+    }
+
+    // ================ 放置和结构管理 ================
+
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        Direction direction = context.getHorizontalDirection();
+        BlockPos pos = context.getClickedPos();
+        BlockPos footPos = pos.relative(direction);
+        Level level = context.getLevel();
+
+        if (!level.getBlockState(footPos).canBeReplaced(context) ||
+                !level.getWorldBorder().isWithinBounds(footPos)) {
+            return null;
+        }
+
+        return this.defaultBlockState()
+                .setValue(FACING, direction)
+                .setValue(PART, BedPart.HEAD);
     }
 
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, placer, stack);
-
         if (!level.isClientSide) {
-            for (int dx = -1; dx <= 1; dx++) {
-                for (int dz = -1; dz <= 1; dz++) {
-                    if (dx == 0 && dz == 0) continue;
+            Direction direction = state.getValue(FACING);
+            BlockPos footPos = pos.relative(direction);
 
-                    BlockPos partPos = pos.offset(dx, 0, dz);
-                    Part part = getPartFromOffset(dx, dz);
+            BlockState footState = this.defaultBlockState()
+                    .setValue(PART, BedPart.FOOT)
+                    .setValue(FACING, direction)
+                    .setValue(SERVINGS, state.getValue(SERVINGS));
 
-                    BlockState partState = this.defaultBlockState()
-                            .setValue(PART, part)
-                            .setValue(FACING, state.getValue(FACING))
-                            .setValue(SERVINGS, state.getValue(SERVINGS));
-
-                    level.setBlock(partPos, partState, 3);
-                }
-            }
+            level.setBlock(footPos, footState, 3);
+            level.blockUpdated(pos, Blocks.AIR);
+            state.updateNeighbourShapes(level, pos, 3);
         }
-    }
-
-    private BlockPos getCenterPos(BlockPos pos, Part part) {
-        return pos.offset(-part.dx, 0, -part.dz);
-    }
-
-    @Override
-    public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
-        if (state.getValue(PART) == Part.CENTER) {
-            super.playerDestroy(level, player, pos, state, blockEntity, tool);
-        }
-    }
-
-    @Override
-    public IntegerProperty getServingsProperty() {
-        return SERVINGS;
-    }
-
-    @Override
-    public int getMaxServings() {
-        return 13;
-    }
-
-    @Nullable
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        BlockPos pos = context.getClickedPos();
-        Level level = context.getLevel();
-
-        // 检查3x3区域是否都可放置
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                if (dx == 0 && dz == 0) continue;
-
-                BlockPos partPos = pos.offset(dx, 0, dz);
-                if (!level.getBlockState(partPos).canBeReplaced(context)) {
-                    return null;
-                }
-            }
-        }
-
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection());
     }
 
     @Override
     public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
-        if (!level.isClientSide() && shouldBreakStructure(level, currentPos, state)) {
-            level.scheduleTick(currentPos, this, 1);
+        BedPart part = state.getValue(PART);
+        Direction direction = state.getValue(FACING);
+
+        if (facing == getDirectionToOther(part, direction)) {
+            return state.canSurvive(level, currentPos) &&
+                    facingState.is(this) &&
+                    facingState.getValue(PART) != part ?
+                    state : Blocks.AIR.defaultBlockState();
         }
-        return state;
+        return !state.canSurvive(level, currentPos) ? Blocks.AIR.defaultBlockState() :
+                super.updateShape(state, facing, facingState, level, currentPos, facingPos);
     }
 
-    @Override
-    public VoxelShape getInteractionShape(BlockState state, BlockGetter level, BlockPos pos) {
-        return state.getValue(PART) == Part.CENTER ? getShape(state, level, pos, CollisionContext.empty()) : Shapes.empty();
+    private BlockPos getOtherPartPos(BlockPos pos, BedPart part, Direction facing) {
+        if (part == BedPart.HEAD) {
+            return pos.relative(facing);
+        } else {
+            return pos.relative(facing.getOpposite());
+        }
     }
 
     @Override
     public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-        if (!level.isClientSide) {
-            if (player.isCreative()) {
-                breakEntireStructure(level, pos, state, player);
+        if (!level.isClientSide && player.isCreative()) {
+            BedPart part = state.getValue(PART);
+            if (part == BedPart.FOOT) {
+                BlockPos headPos = pos.relative(getDirectionToOther(part, state.getValue(FACING)));
+                BlockState headState = level.getBlockState(headPos);
+                if (headState.is(this) && headState.getValue(PART) == BedPart.HEAD) {
+                    level.setBlock(headPos, Blocks.AIR.defaultBlockState(), 35);
+                    level.levelEvent(player, 2001, headPos, Block.getId(headState));
+                }
             }
         }
         super.playerWillDestroy(level, pos, state, player);
     }
 
-    @Override
-    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        if (shouldBreakStructure(level, pos, state)) {
-            breakEntireStructure(level, pos, state, null);
-        }
-    }
-
-    private boolean shouldBreakStructure(LevelAccessor level, BlockPos pos, BlockState state) {
-        Part part = state.getValue(PART);
-        BlockPos centerPos = getCenterPos(pos, part);
-
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                BlockPos checkPos = centerPos.offset(dx, 0, dz);
-                BlockState checkState = level.getBlockState(checkPos);
-
-                if (!(checkState.getBlock() instanceof RoastLaowangBlock)) {
-                    return true;
-                }
-
-                Part expectedPart = getPartFromOffset(dx, dz);
-                if (checkState.getValue(PART) != expectedPart) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     private void breakEntireStructure(Level level, BlockPos pos, BlockState state, @Nullable Player player) {
-        Part part = state.getValue(PART);
-        BlockPos centerPos = getCenterPos(pos, part);
+        BedPart part = state.getValue(PART);
+        Direction facing = state.getValue(FACING);
+        BlockPos headPos = part == BedPart.HEAD ? pos : pos.relative(facing.getOpposite());
+        BlockPos footPos = headPos.relative(facing);
 
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                BlockPos partPos = centerPos.offset(dx, 0, dz);
-                BlockState partState = level.getBlockState(partPos);
+        // 破坏 HEAD
+        if (level.getBlockState(headPos).getBlock() instanceof RoastLaowangBlock) {
+            BlockState oldState = level.getBlockState(headPos);
+            level.setBlock(headPos, Blocks.AIR.defaultBlockState(), 3);
+            if (player != null) {
+                level.levelEvent(player, 2001, headPos, Block.getId(oldState));
+            }
+        }
 
-                if (partState.getBlock() instanceof RoastLaowangBlock) {
-                    level.setBlock(partPos, Blocks.AIR.defaultBlockState(), 3);
-                    if (player != null) {
-                        level.levelEvent(player, 2001, partPos, Block.getId(partState));
-                    }
-                }
+        // 破坏 FOOT
+        if (level.getBlockState(footPos).getBlock() instanceof RoastLaowangBlock) {
+            BlockState oldState = level.getBlockState(footPos);
+            level.setBlock(footPos, Blocks.AIR.defaultBlockState(), 3);
+            if (player != null) {
+                level.levelEvent(player, 2001, footPos, Block.getId(oldState));
             }
         }
     }
+
+    @Override
+    public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
+        if (state.getValue(PART) == BedPart.HEAD) {
+            super.playerDestroy(level, player, pos, state, blockEntity, tool);
+        }
+    }
+
+    // ================ 交互方法 ================
+
+    @Override
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        // 只有 HEAD 部分可以交互
+        if (state.getValue(PART) != BedPart.HEAD) {
+            return InteractionResult.PASS;
+        }
+
+        int servings = state.getValue(SERVINGS);
+        ItemStack heldItem = player.getItemInHand(hand);
+
+        // 检查是否持有小刀 (使用 FarmersDelight 的刀具标签)
+        boolean isKnife = heldItem.is(ModTags.Items.KNIVES);
+        boolean isBowl = heldItem.is(Items.BOWL);
+
+        // 情况1: servings 为 13 或 12，需要使用小刀
+        if (requiresKnife(servings)) {
+            if (isKnife) {
+                return cutEar(level, pos, state, player, hand);
+            } else {
+                player.displayClientMessage(getUseKnifeMessage(), true);
+                return InteractionResult.SUCCESS;
+            }
+        }
+
+        // 情况2: servings 为 0，破坏方块并掉落骨粉
+        if (servings == 0) {
+            RandomSource random = level.getRandom();
+            int boneMealCount = BONEMEAL_DROP_MIN + random.nextInt(BONEMEAL_DROP_MAX - BONEMEAL_DROP_MIN + 1);
+            Containers.dropItemStack(level, pos.getX(), pos.getY() + 0.5, pos.getZ(),
+                    new ItemStack(Items.BONE_MEAL, boneMealCount));
+            level.playSound(null, pos, SoundEvents.BONE_MEAL_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
+            level.playSound(null, pos, SoundEvents.WOOD_BREAK, SoundSource.PLAYERS, 1.0F, 1.0F);
+            breakEntireStructure(level, pos, state, player);
+            return InteractionResult.SUCCESS;
+        }
+
+        // 情况3: 使用碗获取食物
+        if (isBowl) {
+            return takeServing(level, pos, state, player, hand);
+        }
+
+        // 情况4: 持有其他物品，提示使用碗
+        if (!isBowl) {
+            player.displayClientMessage(getUseBowlMessage(new ItemStack(Items.BOWL)), true);
+            return InteractionResult.SUCCESS;
+        }
+
+        return InteractionResult.SUCCESS;
+    }
+
+    protected InteractionResult cutEar(Level level, BlockPos pos, BlockState state, Player player, InteractionHand hand) {
+        int servings = state.getValue(SERVINGS);
+
+        // 检查是否处于需要小刀的阶段
+        if (!requiresKnife(servings)) {
+            return InteractionResult.PASS;
+        }
+
+        // 减少份数
+        int newServings = servings - 1;
+        Direction facing = state.getValue(FACING);
+        BlockPos headPos = state.getValue(PART) == BedPart.HEAD ? pos : pos.relative(facing.getOpposite());
+        BlockPos footPos = headPos.relative(facing);
+
+        // 更新两个方块
+        BlockState headState = level.getBlockState(headPos);
+        BlockState footState = level.getBlockState(footPos);
+
+        if (headState.getBlock() instanceof RoastLaowangBlock) {
+            level.setBlock(headPos, headState.setValue(SERVINGS, newServings), 3);
+        }
+        if (footState.getBlock() instanceof RoastLaowangBlock) {
+            level.setBlock(footPos, footState.setValue(SERVINGS, newServings), 3);
+        }
+
+        // 创建猪耳物品栈
+        ItemStack earStack = servings == EAR_CUT_SERVINGS_1
+                ? new ItemStack(servingItems.get(0).get(), 1)
+                : new ItemStack(servingItems.get(0).get());
+
+        // 优先放入玩家背包，满了才掉落
+        giveOrDropItem(player, earStack, level, pos);
+
+        // 播放切的声音
+        level.playSound(null, pos, SoundEvents.SHEEP_SHEAR, SoundSource.PLAYERS, 0.5F, 0.8F);
+
+        return InteractionResult.SUCCESS;
+    }
+
+    protected InteractionResult takeServing(Level level, BlockPos pos, BlockState state, Player player, InteractionHand hand) {
+        int servings = state.getValue(SERVINGS);
+        Direction facing = state.getValue(FACING);
+        BlockPos headPos = state.getValue(PART) == BedPart.HEAD ? pos : pos.relative(facing.getOpposite());
+        BlockPos footPos = headPos.relative(facing);
+
+        // 获取食物
+        ItemStack servingItem = getServingItem(state);
+
+        // 减少份数
+        int newServings = servings - 1;
+        BlockState headState = level.getBlockState(headPos);
+        BlockState footState = level.getBlockState(footPos);
+
+        if (headState.getBlock() instanceof RoastLaowangBlock) {
+            level.setBlock(headPos, headState.setValue(SERVINGS, newServings), 3);
+        }
+        if (footState.getBlock() instanceof RoastLaowangBlock) {
+            level.setBlock(footPos, footState.setValue(SERVINGS, newServings), 3);
+        }
+
+        // 消耗碗
+        ItemStack heldItem = player.getItemInHand(hand);
+        if (!player.isCreative()) {
+            heldItem.shrink(1);
+        }
+
+        // 优先放入玩家背包，满了才掉落
+        if (!player.getInventory().add(servingItem.copy())) {
+            player.drop(servingItem.copy(), false);
+        }
+
+        level.playSound(null, pos, SoundEvents.ARMOR_EQUIP_GENERIC, SoundSource.PLAYERS, 0.7F, 1.0F);
+        return InteractionResult.SUCCESS;
+    }
+
+    // ================ 渲染和碰撞箱 ================
 
     @Override
     public RenderShape getRenderShape(BlockState state) {
-        return state.getValue(PART) == Part.CENTER ? RenderShape.MODEL : RenderShape.INVISIBLE;
+        return state.getValue(PART) == BedPart.HEAD ? RenderShape.MODEL : RenderShape.INVISIBLE;
     }
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        if (state.getValue(PART) != Part.CENTER) {
+        // 只有 HEAD 部分显示模型
+        if (state.getValue(PART) != BedPart.HEAD) {
             return Shapes.empty();
         }
 
@@ -305,12 +423,17 @@ public class RoastLaowangBlock extends FeastBlock {
 
     @Override
     public VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
-        return state.getValue(PART) == Part.CENTER ? super.getOcclusionShape(state, level, pos) : Shapes.empty();
+        return state.getValue(PART) == BedPart.HEAD ? super.getOcclusionShape(state, level, pos) : Shapes.empty();
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, SERVINGS, PART);
+    public VoxelShape getInteractionShape(BlockState state, BlockGetter level, BlockPos pos) {
+        return state.getValue(PART) == BedPart.HEAD ? getShape(state, level, pos, CollisionContext.empty()) : Shapes.empty();
+    }
+
+    @Override
+    public VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return getShape(state, level, pos, context);
     }
 
     public int getFacingIndex(Direction facing) {
@@ -322,6 +445,20 @@ public class RoastLaowangBlock extends FeastBlock {
             default: return 0;
         }
     }
+
+    // ================ 方块状态定义 ================
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(FACING, SERVINGS, PART);
+    }
+
+    @Override
+    public boolean canBeReplaced(BlockState state, BlockPlaceContext context) {
+        return false;
+    }
+
+    // ================ 形状旋转工具 ================
 
     private static VoxelShape rotateVoxelShapeStatic(VoxelShape shape, Direction facing) {
         if (facing == Direction.NORTH) {
@@ -359,210 +496,136 @@ public class RoastLaowangBlock extends FeastBlock {
     // stage 0 - 完整形状
     static VoxelShape makeShape0() {
         VoxelShape shape = Shapes.empty();
-        // 从 roast_laowang_block_stage0.json 转换
-        // body (3,2,10) to (13,10,16)
         shape = Shapes.join(shape, Shapes.box(0.1875, 0.125, 0.625, 0.8125, 0.625, 1.0), BooleanOp.OR);
-        // body (3,2,16) to (13,10,26)
         shape = Shapes.join(shape, Shapes.box(0.1875, 0.125, 1.0, 0.8125, 0.625, 1.625), BooleanOp.OR);
-        // tail (8,6,26) to (8,10,30)
         shape = Shapes.join(shape, Shapes.box(0.5, 0.375, 1.625, 0.5, 0.625, 1.875), BooleanOp.OR);
-        // head (4,5,4) to (12,12,12)
         shape = Shapes.join(shape, Shapes.box(0.25, 0.3125, 0.25, 0.75, 0.75, 0.75), BooleanOp.OR);
-        // head horn right (10,4,4) to (12,5,8)
         shape = Shapes.join(shape, Shapes.box(0.625, 0.25, 0.25, 0.75, 0.3125, 0.5), BooleanOp.OR);
-        // head horn left (4,4,4) to (6,5,8)
         shape = Shapes.join(shape, Shapes.box(0.25, 0.25, 0.25, 0.375, 0.3125, 0.5), BooleanOp.OR);
-        // honghong (6,5,3) to (10,8,4)
         shape = Shapes.join(shape, Shapes.box(0.375, 0.3125, 0.1875, 0.625, 0.5, 0.25), BooleanOp.OR);
-        // ear right (12,6,5) to (13,12,10)
         shape = Shapes.join(shape, Shapes.box(0.75, 0.375, 0.3125, 0.8125, 0.75, 0.625), BooleanOp.OR);
-        // ear left (3,6,5) to (4,12,10)
         shape = Shapes.join(shape, Shapes.box(0.1875, 0.375, 0.3125, 0.25, 0.75, 0.625), BooleanOp.OR);
-        // jaw (6,4,4.5) to (10,5,10.5)
         shape = Shapes.join(shape, Shapes.box(0.375, 0.25, 0.28125, 0.625, 0.3125, 0.65625), BooleanOp.OR);
-        // leg back left (2,1,21) to (6,5,27)
         shape = Shapes.join(shape, Shapes.box(0.125, 0.0625, 1.3125, 0.375, 0.3125, 1.6875), BooleanOp.OR);
-        // leg front left (2,1,8) to (6,5,14)
         shape = Shapes.join(shape, Shapes.box(0.125, 0.0625, 0.5, 0.375, 0.3125, 0.875), BooleanOp.OR);
-        // leg front right (10,1,8) to (14,5,14)
         shape = Shapes.join(shape, Shapes.box(0.625, 0.0625, 0.5, 0.875, 0.3125, 0.875), BooleanOp.OR);
-        // leg back right (10,1,21) to (14,5,27)
         shape = Shapes.join(shape, Shapes.box(0.625, 0.0625, 1.3125, 0.875, 0.3125, 1.6875), BooleanOp.OR);
-        // nose (7,4,4) to (9,6,6)
         shape = Shapes.join(shape, Shapes.box(0.4375, 0.25, 0.25, 0.5625, 0.375, 0.375), BooleanOp.OR);
-        // horn (7.5,2.1,1) to (7.5,5.1,4)
         shape = Shapes.join(shape, Shapes.box(0.46875, 0.13125, 0.0625, 0.46875, 0.31875, 0.25), BooleanOp.OR);
-        // base plate 1 (6.5,1,6) to (9.5,4,9)
         shape = Shapes.join(shape, Shapes.box(0.40625, 0.0625, 0.375, 0.59375, 0.25, 0.5625), BooleanOp.OR);
-        // horn 2 (7.3,0.4,3) to (7.3,3.4,6)
         shape = Shapes.join(shape, Shapes.box(0.45625, 0.025, 0.1875, 0.45625, 0.2125, 0.375), BooleanOp.OR);
-        // right arm (11.2,1,7.4) to (14.2,5,15.4)
         shape = Shapes.join(shape, Shapes.box(0.7, 0.0625, 0.4625, 0.8875, 0.3125, 0.9625), BooleanOp.OR);
-        // left arm (1.8,1,7.5) to (4.8,5,16.5)
         shape = Shapes.join(shape, Shapes.box(0.1125, 0.0625, 0.46875, 0.3, 0.3125, 1.03125), BooleanOp.OR);
-        // left arm back (1.8,1,19.5) to (4.8,5,27.5)
         shape = Shapes.join(shape, Shapes.box(0.1125, 0.0625, 1.21875, 0.3, 0.3125, 1.71875), BooleanOp.OR);
-        // right arm back (11.2,1,19.5) to (14.2,5,27.5)
         shape = Shapes.join(shape, Shapes.box(0.7, 0.0625, 1.21875, 0.8875, 0.3125, 1.71875), BooleanOp.OR);
-        // plate 1 (0,0,2) to (16,1,16)
         shape = Shapes.join(shape, Shapes.box(0, 0, 0.125, 1, 0.0625, 1.0), BooleanOp.OR);
-        // plate 2 (0,0,16) to (16,1,30)
         shape = Shapes.join(shape, Shapes.box(0, 0, 1.0, 1, 0.0625, 1.875), BooleanOp.OR);
         return shape;
     }
 
-    // stage 3 - 从 roast_laowang_block_stage3.json 转换
+    // stage 3 - servings 10-12
     static VoxelShape makeShape3() {
         VoxelShape shape = Shapes.empty();
-        // 主体部分
         shape = Shapes.join(shape, Shapes.box(0.1875, 0.125, 0.625, 0.8125, 0.625, 1.0), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.1875, 0.125, 1.0, 0.8125, 0.625, 1.625), BooleanOp.OR);
-        // 尾巴
         shape = Shapes.join(shape, Shapes.box(0.5, 0.375, 1.625, 0.5, 0.625, 1.875), BooleanOp.OR);
-        // 头部残留 (stage 3 只有骨架头部)
         shape = Shapes.join(shape, Shapes.box(0.375, 0.25, 0.5625, 0.625, 0.4375, 0.625), BooleanOp.OR);
-        // 四条腿
         shape = Shapes.join(shape, Shapes.box(0.125, 0.0625, 1.3125, 0.375, 0.3125, 1.6875), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.125, 0.0625, 0.5, 0.375, 0.3125, 0.875), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.625, 0.0625, 0.5, 0.875, 0.3125, 0.875), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.625, 0.0625, 1.3125, 0.875, 0.3125, 1.6875), BooleanOp.OR);
-        // 右臂
         shape = Shapes.join(shape, Shapes.box(0.625, 0.0625, 0.3125, 0.75, 0.1875, 0.4375), BooleanOp.OR);
-        // 左臂前
         shape = Shapes.join(shape, Shapes.box(0.5, 0.125, 0.125, 0.6875, 0.125, 0.3125), BooleanOp.OR);
-        // 左臂前
         shape = Shapes.join(shape, Shapes.box(0.40625, 0.0625, 0.375, 0.59375, 0.25, 0.5625), BooleanOp.OR);
-        // 角
         shape = Shapes.join(shape, Shapes.box(0.45625, 0.025, 0.1875, 0.45625, 0.2125, 0.375), BooleanOp.OR);
-        // 右臂前
         shape = Shapes.join(shape, Shapes.box(0.7, 0.0625, 0.4625, 0.8875, 0.3125, 0.9625), BooleanOp.OR);
-        // 左臂后
         shape = Shapes.join(shape, Shapes.box(0.1125, 0.0625, 0.46875, 0.3, 0.3125, 1.03125), BooleanOp.OR);
-        // 左臂后
         shape = Shapes.join(shape, Shapes.box(0.1125, 0.0625, 1.21875, 0.3, 0.3125, 1.71875), BooleanOp.OR);
-        // 右臂后
         shape = Shapes.join(shape, Shapes.box(0.7, 0.0625, 1.21875, 0.8875, 0.3125, 1.71875), BooleanOp.OR);
-        // 盘子
         shape = Shapes.join(shape, Shapes.box(0, 0, 0.125, 1, 0.0625, 1.0), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0, 0, 1.0, 1, 0.0625, 1.875), BooleanOp.OR);
         return shape;
     }
 
-    // stage 4 - 从 roast_laowang_block_stage4.json 转换
+    // stage 4 - servings 9
     static VoxelShape makeShape4() {
         VoxelShape shape = Shapes.empty();
-        // 身体
         shape = Shapes.join(shape, Shapes.box(0.1875, 0.0625, 0.625, 0.8125, 0.5625, 1.0), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.1875, 0.0625, 1.0, 0.8125, 0.5625, 1.625), BooleanOp.OR);
-        // 尾巴
         shape = Shapes.join(shape, Shapes.box(0.5, 0.3125, 1.625, 0.5, 0.5625, 1.875), BooleanOp.OR);
-        // 头部
         shape = Shapes.join(shape, Shapes.box(0.375, 0.1875, 0.5625, 0.625, 0.375, 0.625), BooleanOp.OR);
-        // 腿
         shape = Shapes.join(shape, Shapes.box(0.125, 0.0625, 1.3125, 0.375, 0.3125, 1.6875), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.125, 0.0625, 0.5, 0.375, 0.3125, 0.875), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.625, 0.0625, 1.3125, 0.875, 0.3125, 1.6875), BooleanOp.OR);
-        // 右臂
         shape = Shapes.join(shape, Shapes.box(0.625, 0.0625, 0.3125, 0.75, 0.1875, 0.4375), BooleanOp.OR);
-        // 左臂
         shape = Shapes.join(shape, Shapes.box(0.5, 0.125, 0.125, 0.6875, 0.125, 0.3125), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.40625, 0.0625, 0.375, 0.59375, 0.25, 0.5625), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.45625, 0.025, 0.1875, 0.45625, 0.2125, 0.375), BooleanOp.OR);
-        // 左臂
         shape = Shapes.join(shape, Shapes.box(0.1125, 0.0625, 0.46875, 0.3, 0.3125, 1.03125), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.1125, 0.0625, 1.21875, 0.3, 0.3125, 1.71875), BooleanOp.OR);
-        // 右臂
         shape = Shapes.join(shape, Shapes.box(0.7, 0.0625, 1.21875, 0.8875, 0.3125, 1.71875), BooleanOp.OR);
-        // 盘子
         shape = Shapes.join(shape, Shapes.box(0, 0, 0.125, 1, 0.0625, 1.0), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0, 0, 1.0, 1, 0.0625, 1.875), BooleanOp.OR);
-        // 骨头 (从stage4开始出现)
         shape = Shapes.join(shape, Shapes.box(0.8125, 0.0625, 0.375, 0.9375, 0.1875, 0.75), BooleanOp.OR);
         return shape;
     }
 
-    // stage 5 - 从 roast_laowang_block_stage5.json 转换
+    // stage 5 - servings 8
     static VoxelShape makeShape5() {
         VoxelShape shape = Shapes.empty();
-        // 身体
         shape = Shapes.join(shape, Shapes.box(0.1875, 0.0625, 0.625, 0.8125, 0.5625, 1.0), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.1875, 0.0625, 1.0, 0.8125, 0.5625, 1.625), BooleanOp.OR);
-        // 尾巴
         shape = Shapes.join(shape, Shapes.box(0.5, 0.3125, 1.625, 0.5, 0.5625, 1.875), BooleanOp.OR);
-        // 头部
         shape = Shapes.join(shape, Shapes.box(0.375, 0.1875, 0.5625, 0.625, 0.375, 0.625), BooleanOp.OR);
-        // 腿
         shape = Shapes.join(shape, Shapes.box(0.125, 0.0625, 1.3125, 0.375, 0.3125, 1.6875), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.625, 0.0625, 1.3125, 0.875, 0.3125, 1.6875), BooleanOp.OR);
-        // 右臂
         shape = Shapes.join(shape, Shapes.box(0.625, 0.0625, 0.3125, 0.75, 0.1875, 0.4375), BooleanOp.OR);
-        // 左臂
         shape = Shapes.join(shape, Shapes.box(0.5, 0.125, 0.125, 0.6875, 0.125, 0.3125), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.40625, 0.0625, 0.375, 0.59375, 0.25, 0.5625), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.45625, 0.025, 0.1875, 0.45625, 0.2125, 0.375), BooleanOp.OR);
-        // 左臂
         shape = Shapes.join(shape, Shapes.box(0.1125, 0.0625, 1.21875, 0.3, 0.3125, 1.71875), BooleanOp.OR);
-        // 右臂
         shape = Shapes.join(shape, Shapes.box(0.7, 0.0625, 1.21875, 0.8875, 0.3125, 1.71875), BooleanOp.OR);
-        // 盘子
         shape = Shapes.join(shape, Shapes.box(0, 0, 0.125, 1, 0.0625, 1.0), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0, 0, 1.0, 1, 0.0625, 1.875), BooleanOp.OR);
-        // 骨头 (更多骨头)
         shape = Shapes.join(shape, Shapes.box(0.0625, 0.0625, 0.1875, 0.1875, 0.1875, 0.5625), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.0625, 0.125, 0.19375, 0.4375, 0.25, 0.31875), BooleanOp.OR);
         return shape;
     }
 
-    // stage 6 - 从 roast_laowang_block_stage6.json 转换
+    // stage 6 - servings 7
     static VoxelShape makeShape6() {
         VoxelShape shape = Shapes.empty();
-        // 身体
         shape = Shapes.join(shape, Shapes.box(0.1875, 0.0625, 0.625, 0.8125, 0.5625, 1.0), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.1875, 0.0625, 1.0, 0.8125, 0.5625, 1.625), BooleanOp.OR);
-        // 尾巴
         shape = Shapes.join(shape, Shapes.box(0.5, 0.3125, 1.625, 0.5, 0.5625, 1.875), BooleanOp.OR);
-        // 头部
         shape = Shapes.join(shape, Shapes.box(0.375, 0.1875, 0.5625, 0.625, 0.375, 0.625), BooleanOp.OR);
-        // 腿
         shape = Shapes.join(shape, Shapes.box(0.125, 0.0625, 1.3125, 0.375, 0.3125, 1.6875), BooleanOp.OR);
-        // 右臂
         shape = Shapes.join(shape, Shapes.box(0.625, 0.0625, 0.3125, 0.75, 0.1875, 0.4375), BooleanOp.OR);
-        // 左臂
         shape = Shapes.join(shape, Shapes.box(0.5, 0.125, 0.125, 0.6875, 0.125, 0.3125), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.40625, 0.0625, 0.375, 0.59375, 0.25, 0.5625), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.45625, 0.025, 0.1875, 0.45625, 0.2125, 0.375), BooleanOp.OR);
-        // 左臂
         shape = Shapes.join(shape, Shapes.box(0.1125, 0.0625, 1.21875, 0.3, 0.3125, 1.71875), BooleanOp.OR);
-        // 盘子
         shape = Shapes.join(shape, Shapes.box(0, 0, 0.125, 1, 0.0625, 1.0), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0, 0, 1.0, 1, 0.0625, 1.875), BooleanOp.OR);
-        // 骨头 (更多)
         shape = Shapes.join(shape, Shapes.box(0.0625, 0.0625, 0.1875, 0.1875, 0.1875, 0.5625), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.0625, 0.125, 0.19375, 0.4375, 0.25, 0.31875), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.0625, 0.125, 0.38125, 0.4375, 0.25, 0.50625), BooleanOp.OR);
         return shape;
     }
 
-    // stage 7 - 从 roast_laowang_block_stage7.json 转换
+    // stage 7 - servings 1-6
     static VoxelShape makeShape7() {
         VoxelShape shape = Shapes.empty();
-        // 身体
         shape = Shapes.join(shape, Shapes.box(0.1875, 0.0625, 0.625, 0.8125, 0.5625, 1.0), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.1875, 0.0625, 1.0, 0.8125, 0.5625, 1.625), BooleanOp.OR);
-        // 尾巴
         shape = Shapes.join(shape, Shapes.box(0.5, 0.3125, 1.625, 0.5, 0.5625, 1.875), BooleanOp.OR);
-        // 头部
         shape = Shapes.join(shape, Shapes.box(0.375, 0.1875, 0.5625, 0.625, 0.375, 0.625), BooleanOp.OR);
-        // 右臂
         shape = Shapes.join(shape, Shapes.box(0.75, 0.0625, 0.3125, 0.875, 0.1875, 0.4375), BooleanOp.OR);
-        // 左臂
         shape = Shapes.join(shape, Shapes.box(0.625, 0.125, 0.125, 0.8125, 0.125, 0.3125), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.46875, 0.0625, 0.375, 0.65625, 0.25, 0.5625), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.51875, 0.025, 0.1875, 0.51875, 0.2125, 0.375), BooleanOp.OR);
-        // 盘子
         shape = Shapes.join(shape, Shapes.box(0, 0, 0.125, 1, 0.0625, 1.0), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0, 0, 1.0, 1, 0.0625, 1.875), BooleanOp.OR);
-        // 骨头 (更多骨头)
         shape = Shapes.join(shape, Shapes.box(0.0625, 0.0625, 0.1625, 0.1875, 0.1875, 0.5375), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.25, 0.0625, 0.13125, 0.375, 0.1875, 0.50625), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.0375, 0.125, 0.19375, 0.4125, 0.25, 0.31875), BooleanOp.OR);
@@ -570,21 +633,17 @@ public class RoastLaowangBlock extends FeastBlock {
         return shape;
     }
 
-    // stage 13 - 从 roast_laowang_block_stage13.json 转换 (只剩骨架)
+    // stage 13 - servings 0 (只剩骨架)
     static VoxelShape makeShape13() {
         VoxelShape shape = Shapes.empty();
-        // 骨架身体部分
         shape = Shapes.join(shape, Shapes.box(0.4375, 0.4375, 0.6875, 0.5625, 0.5, 1.0), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.4375, 0.4375, 1.0, 0.5625, 0.5, 1.5625), BooleanOp.OR);
-        // 身体骨架
         shape = Shapes.join(shape, Shapes.box(0.25, 0.0625, 0.6875, 0.75, 0.5, 1.0), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.25, 0.0625, 1.0, 0.75, 0.5, 1.5625), BooleanOp.OR);
-        // 骨头装饰
         shape = Shapes.join(shape, Shapes.box(0.0375, 0.125, 0.19375, 0.4125, 0.25, 0.31875), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.0375, 0.125, 0.35, 0.4125, 0.25, 0.475), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.25, 0.0625, 0.13125, 0.375, 0.1875, 0.50625), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0.0625, 0.0625, 0.1625, 0.1875, 0.1875, 0.5375), BooleanOp.OR);
-        // 盘子
         shape = Shapes.join(shape, Shapes.box(0, 0, 0.125, 1, 0.0625, 1.0), BooleanOp.OR);
         shape = Shapes.join(shape, Shapes.box(0, 0, 1.0, 1, 0.0625, 1.875), BooleanOp.OR);
         return shape;
