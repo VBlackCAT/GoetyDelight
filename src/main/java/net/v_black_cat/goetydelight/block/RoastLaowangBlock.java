@@ -153,10 +153,10 @@ public class RoastLaowangBlock extends HorizontalDirectionalBlock {
 
         if (!player.isCreative()) {
             if (!player.getInventory().add(stack.copy())) {
-                Containers.dropItemStack(level, pos.getX(), pos.getY() + 1, pos.getZ(), stack);
+                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), stack);
             }
         } else {
-            Containers.dropItemStack(level, pos.getX(), pos.getY() + 1, pos.getZ(), stack);
+            Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), stack);
         }
     }
 
@@ -165,7 +165,7 @@ public class RoastLaowangBlock extends HorizontalDirectionalBlock {
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        Direction direction = context.getHorizontalDirection();
+        Direction direction = context.getHorizontalDirection().getOpposite();
         BlockPos pos = context.getClickedPos();
         BlockPos footPos = pos.relative(direction);
         Level level = context.getLevel();
