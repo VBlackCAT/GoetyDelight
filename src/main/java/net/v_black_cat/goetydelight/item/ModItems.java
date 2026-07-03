@@ -141,6 +141,7 @@ public class ModItems {
     public static final RegistryObject<Item> ROAST_LAOWANG_HEAD;
     public static final RegistryObject<Item> ROAST_LAOWANG_LEG;
     public static final RegistryObject<Item> ONION_PORK_CHOP_RICE;
+    public static final RegistryObject<Item> ECTOPLASMIC_MELON_SALAD;
 
 
 
@@ -775,6 +776,13 @@ public class ModItems {
                 () -> new BowlFoodItem(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
                         .food(simpleFoodItemProperties(12, 8)
                                 .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .build())));
+
+        ECTOPLASMIC_MELON_SALAD = ITEMS.register("ectoplasmic_melon_salad",
+                () -> new BowlFoodItem(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
+                        .food(simpleFoodItemProperties(6, 5)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(CHILL_HIDE_EFFECT_SUPPLIER.get(), minToTick(1), 2), 1.0F)
                                 .build())));
 
         // ==================== 种子物品 ====================

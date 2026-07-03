@@ -1,7 +1,10 @@
 package net.v_black_cat.goetydelight.item.food;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -14,6 +17,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.v_black_cat.goetydelight.item.ModItems;
 
 import java.util.Random;
@@ -53,8 +57,13 @@ public class RoastLaowangItem extends Item{
         if(event.getEntity() instanceof Player){
             Player player = (Player) event.getEntity();
             if(player.getName().getString().equals("laowang237")){
+                if (!event.getSource().is(DamageTypeTags.IS_FIRE)) {
                 ItemStack roastLaowang = new ItemStack(ModItems.ROAST_LAOWANG.get());
-                player.spawnAtLocation(roastLaowang);
+                player.spawnAtLocation(roastLaowang);}
+                else {
+                    ItemStack roastLaowangblock = new ItemStack(ModBlocks.ROAST_LAOWANG_BLOCK.get());
+                    player.spawnAtLocation(roastLaowangblock);
+                }
             }
         }
     }

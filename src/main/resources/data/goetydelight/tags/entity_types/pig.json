@@ -1,0 +1,41 @@
+{
+  "values": [
+    "minecraft:pig",
+    {
+      "id": "twilightforest:wild_boar",
+      "required": false
+    },
+    {
+      "id": "twilightforest:boar",
+      "required": false
+    },
+    {
+      "id": "aether_legacy:phyg",
+      "required": false
+    },
+    {
+      "id": "divinerpg:hell_pig",
+      "required": false
+    },
+    {
+      "id": "toges:sigma_pig",
+      "required": false
+    },
+    {
+      "id": "allthemodium:piglich",
+      "required": false
+    },
+    {
+      "id": "pigzilla:pigzilla",
+      "required": false
+    },
+    {
+      "id": "pigzilla:biting_pig",
+      "required": false
+    },
+    {
+      "id": "youkaishomecoming:boar",
+      "required": false
+    }
+  ]
+}

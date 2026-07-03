@@ -1,73 +1,37 @@
 {
-
   "type": "goety:ritual",
-
   "ritual_type": "goety:craft",
-
   "activation_item": {
-
     "item": "farmersdelight:cooking_pot"
-
   },
-
   "craftType": "culinary",
-
   "entity_to_sacrifice": {
-
     "tag": "goetydelight:cow",
-
     "display_name": "entity.minecraft.cow"
-
   },
-
   "soulCost": 10,
-
   "duration": 25,
-
   "ingredients": [
-
     {
-
       "item": "goety:snap_warts"
-
     },
-
     {
-
       "item": "goety:snap_warts"
-
     },
-
     {
-
       "item": "goety:unholy_blood"
-
     },
-
     {
-
       "item": "farmersdelight:tomato"
-
     },
-
     {
-
       "tag": "forge:crops/cabbage"
-
     },
-
     {
-
       "item": "minecraft:sugar"
-
     }
-
   ],
-
   "result": {
-
     "item": "goetydelight:snap_unholy_tripe"
-
   }
-
 }

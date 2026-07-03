@@ -145,7 +145,8 @@ public class ModBlocks {
                             ModItems.ONION_PORK_CHOP_RICE,
                             ModItems.ONION_PORK_CHOP_RICE,
                             ModItems.ONION_PORK_CHOP_RICE,
-                            ModItems.ONION_PORK_CHOP_RICE
+                            ModItems.ONION_PORK_CHOP_RICE,
+                            ModItems.ECTOPLASMIC_MELON_SALAD
                     ),
                     true
             ),1
