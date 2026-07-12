@@ -125,6 +125,9 @@ dependencies {
     implementation "curse.maven:farmers-delight-398521:8083481"
     implementation "curse.maven:jade-324717:7545219"
 
+    runtimeOnly "curse.maven:nbt-editor-552423:5921451" //nbt编辑器
+
+
 
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
