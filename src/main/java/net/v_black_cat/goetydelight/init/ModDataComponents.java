@@ -6,6 +6,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -22,6 +23,32 @@ public class ModDataComponents {
     // 使用专门的 DataComponents 注册器
     public static final DeferredRegister.DataComponents DATA_COMPONENTS =
             DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, GoetyDelight.MODID);
+
+
+    public record BuffData(ResourceLocation buffTypeId, int duration, int amplifier) {
+        public static final Codec<BuffData> CODEC = RecordCodecBuilder.create(instance ->
+                instance.group(
+                        ResourceLocation.CODEC.fieldOf("buff_type").forGetter(BuffData::buffTypeId),
+                        Codec.INT.fieldOf("duration").forGetter(BuffData::duration),
+                        Codec.INT.fieldOf("amplifier").forGetter(BuffData::amplifier)
+                ).apply(instance, BuffData::new)
+        );
+
+        public static final StreamCodec<ByteBuf, BuffData> STREAM_CODEC = StreamCodec.composite(
+                ResourceLocation.STREAM_CODEC, BuffData::buffTypeId,
+                ByteBufCodecs.INT, BuffData::duration,
+                ByteBufCodecs.INT, BuffData::amplifier,
+                BuffData::new
+        );
+    }
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BuffData>> ITEM_BUFF =
+            DATA_COMPONENTS.registerComponentType(
+                    "item_buff",
+                    builder -> builder
+                            .persistent(BuffData.CODEC)
+                            .networkSynchronized(BuffData.STREAM_CODEC)
+            );
 /*
     // ============ 示例组件：魔力值 ============
     // 组件值的记录类（必须实现 hashCode 和 equals，推荐使用 record）

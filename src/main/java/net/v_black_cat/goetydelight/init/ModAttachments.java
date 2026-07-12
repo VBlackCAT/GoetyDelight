@@ -7,6 +7,7 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.buff.ActiveBuffs;
 
 import java.util.function.Supplier;
 
@@ -14,6 +15,15 @@ public class ModAttachments {
     // 创建 DeferredRegister，注册到 NeoForge 的 ATTACHMENT_TYPES 注册表
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
             DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, GoetyDelight.MODID);
+
+    public static final Supplier<AttachmentType<ActiveBuffs>> ACTIVE_BUFFS =
+            ATTACHMENT_TYPES.register("active_buffs",
+                    () -> AttachmentType.serializable(ActiveBuffs::new)
+                            .copyOnDeath()   // 死亡后保留
+                            .build()
+            );
+
+
 /*
     // 示例1：持久化的整数附件（使用 Codec 序列化）
     public static final Supplier<AttachmentType<Integer>> PLAYER_MANA =

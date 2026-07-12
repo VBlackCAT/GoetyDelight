@@ -1,10 +1,21 @@
 package net.v_black_cat.goetydelight.init;
 
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.bus.api.IEventBus;
 import net.v_black_cat.goetydelight.GoetyDelight;
+
+import java.util.function.Supplier;
+
+import static vectorwing.farmersdelight.common.registry.ModItems.basicItem;
 
 public class ModItems {
     // 创建专属于物品的 DeferredRegister，使用模组主类的 MODID
@@ -739,6 +750,76 @@ public class ModItems {
 //
 //        DOLL_ITEM = registerWithTab("doll_item", DollEntityItem::new);
 //    }
+
+
+    // ==================== 辅助方法 ====================
+
+
+    private static Supplier<Holder<MobEffect>> farmersDelightBuff(String effectId) {
+        return () -> BuiltInRegistries.MOB_EFFECT.getHolder(
+                ResourceLocation.fromNamespaceAndPath("farmersdelight", effectId)).orElseThrow();
+    }
+
+    private static Supplier<Holder<MobEffect>> goetyBuff(String effectId) {
+        return () -> BuiltInRegistries.MOB_EFFECT.getHolder(
+                ResourceLocation.fromNamespaceAndPath("goety", effectId)).orElseThrow();
+    }
+    private static FoodProperties.Builder simpleFoodItemProperties(int nutrition, float saturationMod) {
+        return new FoodProperties
+                .Builder()
+                .alwaysEdible()
+                .nutrition(nutrition)
+                .saturationModifier(saturationMod / nutrition);
+    }
+
+    private static Item simpleFoodItem(int nutrition, float saturationMod, boolean unstackable) {
+        Item.Properties properties = basicItem();
+        if (unstackable) {
+            properties = properties.stacksTo(1);
+        }
+        return new Item(properties.food(
+                simpleFoodItemProperties(nutrition, saturationMod).build()));
+    }
+
+    private static Item simpleFastFoodItem(int nutrition, float saturationMod, boolean unstackable) {
+        Item.Properties properties = basicItem();
+        if (unstackable) {
+            properties = properties.stacksTo(1);
+        }
+        return new Item(properties.food(
+                simpleFoodItemProperties(nutrition, saturationMod).fast().build()));
+    }
+
+    private static Item simpleFoodItem(FoodProperties.Builder builder, boolean unstackable) {
+        Item.Properties properties = basicItem();
+        if (unstackable) {
+            properties = properties.stacksTo(1);
+        }
+        return new Item(properties.food(builder.build()));
+    }
+
+    private static Item simpleFoodItem(int nutrition, float saturationMod,
+                                       Supplier<Holder<MobEffect>> effectSupplier,
+                                       int duration, int amplifier, boolean unstackable) {
+        Item.Properties properties = basicItem();
+        if (unstackable) {
+            properties = properties.stacksTo(1);
+        }
+        FoodProperties.Builder builder = simpleFoodItemProperties(nutrition, saturationMod)
+                .effect(() -> new MobEffectInstance(effectSupplier.get(), duration, amplifier), 1.0F);
+        return new Item(properties.food(builder.build()));
+    }
+
+    private static Item simpleFoodItem(int nutrition, float saturationMod,
+                                       MobEffect mobEffect, int duration, int amplifier, boolean unstackable) {
+        Item.Properties properties = basicItem();
+        if (unstackable) {
+            properties = properties.stacksTo(1);
+        }
+        FoodProperties.Builder builder = simpleFoodItemProperties(nutrition, saturationMod)
+                .effect(() -> new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(mobEffect), duration, amplifier), 1.0F);
+        return new Item(properties.food(builder.build()));
+    }
 
 
 

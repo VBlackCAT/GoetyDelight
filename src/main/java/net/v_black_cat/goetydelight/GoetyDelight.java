@@ -4,9 +4,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
-import net.v_black_cat.goetydelight.events.AddCreativeHandler;
-import net.v_black_cat.goetydelight.events.CommonSetupHandler;
-import net.v_black_cat.goetydelight.events.ServerStartingHandler;
+import net.v_black_cat.goetydelight.events.*;
 import net.v_black_cat.goetydelight.init.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +54,7 @@ public class GoetyDelight {
         ModStructures.register(modEventBus);
         ModLootModifiers.register(modEventBus);
         ModAttachments.register(modEventBus);
+        ModBuffTypes.register(modEventBus);
     }
 
     /**
@@ -68,5 +67,10 @@ public class GoetyDelight {
 
         // 游戏总线事件
         NeoForge.EVENT_BUS.addListener(ServerStartingHandler::onServerStarting);
+        NeoForge.EVENT_BUS.addListener(ServerTickEventHandler::onServerTick);
+        NeoForge.EVENT_BUS.addListener(LivingEntityUseItemEventHandler::onItemUseFinish);
+        NeoForge.EVENT_BUS.addListener(EntityTickEventHandler::onEntityTick);
+        NeoForge.EVENT_BUS.addListener(RegisterCommandsEventHandler::onRegisterCommands);
+
     }
 }
