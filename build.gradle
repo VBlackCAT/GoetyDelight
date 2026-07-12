@@ -119,8 +119,8 @@ configurations {
 }
 
 dependencies {
-    implementation "curse.maven:goety-586095:8404558"
-    implementation "curse.maven:curios-309927:6528893"
+    implementation "curse.maven:goety-586095:8404558" //3.0.1
+    implementation "curse.maven:curios-309927:6529130" //curios-neoforge-9.5.1+1.21.1.jar
     implementation "curse.maven:patchouli-306770:7730942"
     implementation "curse.maven:farmers-delight-398521:8083481"
     implementation "curse.maven:jade-324717:7545219"
