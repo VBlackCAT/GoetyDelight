@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "goetydelight:item/poached_nether_wart_egg"
+  }
+}

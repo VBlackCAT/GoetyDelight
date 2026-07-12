@@ -1,0 +1,9 @@
+{
+  "block.touch_doll": {
+    "category": "neutral",
+    "subtitle": "subtitle.goetydelight.block.touch_doll",
+    "sounds": [
+      "goetydelight:block/touch_doll"
+    ]
+  }
+}

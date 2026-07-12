@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "goety:tall_skull"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "goetydelight:blocks/void_gel_jelly_block"
+}

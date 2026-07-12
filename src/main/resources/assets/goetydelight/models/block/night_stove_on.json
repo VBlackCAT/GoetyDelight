@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "bottom": "goetydelight:block/night_stove_bottom",
+    "front": "goetydelight:block/night_stove_front_on",
+    "side": "goetydelight:block/night_stove_side",
+    "top": "goetydelight:block/night_stove_top_on"
+  }
+}

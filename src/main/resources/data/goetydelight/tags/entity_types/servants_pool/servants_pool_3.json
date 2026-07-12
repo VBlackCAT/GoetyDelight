@@ -1,0 +1,64 @@
+{
+  "values": [
+    "goety:black_beast",
+    "goety:wildfire",
+    "goety:squall_golem",
+    "goety:zombie_ravager",
+    "goety:ravager",
+    "goety:necromancer_servant",
+    "goety:cairn_necromancer_servant",
+    "goety:leapleaf",
+    {
+      "id": "goety_cataclysm:hippocamtus",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:ignited_berserker",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:coral_golem",
+      "required": false
+    },
+    {
+      "id": "goety_spillage:bound_engineer",
+      "required": false
+    },
+    {
+      "id": "goety_iron:pyromancer_servant",
+      "required": false
+    },
+    {
+      "id": "goety_iron:necromancer_servant",
+      "required": false
+    },
+    {
+      "id": "goety_iron:priest_servant",
+      "required": false
+    },
+    {
+      "id": "goety_iron:cryomancer_servant",
+      "required": false
+    },
+    {
+      "id": "goety_iron:archevoker_servant",
+      "required": false
+    },
+    {
+      "id": "goety_iron:ancient_knight_servant",
+      "required": false
+    },
+    {
+      "id": "goety_iron:alchemist_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:pale_golem_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:sorcerer_servant",
+      "required": false
+    }
+  ]
+}

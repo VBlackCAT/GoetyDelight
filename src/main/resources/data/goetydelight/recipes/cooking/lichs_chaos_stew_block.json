@@ -1,0 +1,32 @@
+{
+  "type": "farmersdelight:cooking",
+  "cookingtime": 800,
+  "experience": 1.5,
+  "ingredients": [
+    {
+      "item": "goety:undeath_potion"
+    },
+    {
+      "item": "goety:chorus_sapling"
+    },
+    {
+      "item": "goety:forbidden_scroll"
+    },
+    {
+      "item": "goety:heart_of_the_night"
+    },
+    {
+      "item": "goety:void_bottle"
+    },
+    {
+      "item": "goety:hunger_core"
+    }
+  ],
+  "recipe_book_tab": "meals",
+  "result": {
+    "item": "goetydelight:lichs_chaos_stew_block"
+  },
+  "container": {
+    "item": "goetydelight:cursed_ingot_pot"
+  }
+}

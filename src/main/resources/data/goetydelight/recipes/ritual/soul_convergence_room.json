@@ -1,0 +1,82 @@
+{
+
+  "type": "goety:ritual",
+
+  "ritual_type": "goety:craft",
+
+  "activation_item": {
+
+    "item": "goety:hunger_core"
+
+  },
+
+  "craftType": "culinary",
+
+  "soulCost": 100,
+
+  "duration": 10,
+
+  "ingredients": [
+
+    {
+
+      "item": "goetydelight:gathering_soul_embryos"
+
+    },
+
+    {
+
+      "item": "goetydelight:gathering_soul_embryos"
+
+    },
+
+    {
+
+      "item": "goetydelight:gathering_soul_embryos"
+
+    },
+
+    {
+
+      "item": "goety:ectoplasm"
+
+    },
+
+    {
+
+      "item": "goety:ectoplasm"
+
+    },
+
+    {
+
+      "tag": "forge:slimeballs"
+
+    },
+
+    {
+
+      "tag": "forge:slimeballs"
+
+    },
+
+    {
+
+      "item":"golden_apple"
+
+    },
+    {
+
+      "item": "goety:tall_skull"
+
+    }
+
+  ],
+
+  "result": {
+
+    "item": "goetydelight:soul_convergence_room"
+
+  }
+
+}

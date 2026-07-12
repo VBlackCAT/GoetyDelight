@@ -1,0 +1,26 @@
+{
+  "type": "farmersdelight:cooking",
+  "ingredients": [
+    {
+      "item": "goety:ice_cube"
+    },
+    {
+      "item": "minecraft:allium"
+    },
+    {
+      "item": "goety:ice_cube"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "goety:mystic_core"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:grape_slush",
+    "count": 1
+  },
+  "experience": 1.5,
+  "cookingtime": 200
+}

@@ -1,0 +1,25 @@
+{
+  "type": "farmersdelight:cooking",
+  "ingredients": [
+    {
+      "item": "minecraft:crimson_roots"
+    },
+    {
+      "item": "minecraft:warped_roots"
+    },
+    {
+      "item": "minecraft:bread"
+    },
+    {
+      "item": "minecraft:bread"
+    },
+    {
+      "tag": "forge:eggs"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:nether_style_fried_egg_sandwich"
+  },
+  "experience": 1.5,
+  "cookingtime": 200
+}

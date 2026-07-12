@@ -1,0 +1,25 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "goety:cursed_ingot"
+  },
+  "craftType": "forge",
+  "soulCost": 5,
+  "duration": 10,
+  "ingredients": [
+    {
+      "item": "minecraft:iron_ingot"
+    },
+    {
+      "item": "minecraft:leather"
+    },
+    {
+      "item": "minecraft:stick"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:cursed_ingot_knife"
+  }
+
+}

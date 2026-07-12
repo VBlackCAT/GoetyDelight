@@ -1,0 +1,25 @@
+{
+  "type": "farmersdelight:cooking",
+  "ingredients": [
+    {
+      "tag": "minecraft:fox_food"
+    },
+    {
+      "tag": "minecraft:fox_food"
+    },
+    {
+      "item": "minecraft:slime_ball"
+    },
+    {
+      "item": "goety:ectoplasm"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:sweet_berry_pudding"
+  },
+  "container": {
+    "item": "minecraft:bowl"
+  },
+  "experience": 1.5,
+  "cookingtime": 200
+}

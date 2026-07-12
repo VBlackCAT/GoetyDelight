@@ -1,0 +1,57 @@
+{
+
+  "type": "farmersdelight:cooking",
+
+  "cookingtime": 200,
+
+  "experience": 0.8,
+
+  "ingredients": [
+
+    {
+
+      "item": "goety:venomous_fang"
+
+    },
+
+    {
+
+      "item": "minecraft:poisonous_potato"
+
+    },
+
+    {
+
+      "item": "minecraft:spider_eye"
+
+    },
+
+    {
+
+      "item": "minecraft:pufferfish"
+
+    },
+
+    {
+
+      "tag": "forge:crops/rice"
+
+    }
+
+  ],
+
+  "recipe_book_tab": "misc",
+
+  "result": {
+
+    "item": "goetydelight:toxic_meal"
+
+  },
+
+  "container": {
+
+    "item": "minecraft:bowl"
+
+  }
+
+}

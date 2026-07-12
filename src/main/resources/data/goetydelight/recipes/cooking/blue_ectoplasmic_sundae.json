@@ -1,0 +1,57 @@
+{
+
+  "type": "farmersdelight:cooking",
+
+  "cookingtime": 120,
+
+  "experience": 1.2,
+
+  "ingredients": [
+
+    {
+
+      "item": "goety:ice_cube"
+
+    },
+
+    {
+
+      "tag": "minecraft:fox_food"
+
+    },
+
+    {
+
+      "item": "minecraft:sweet_berries"
+
+    },
+
+    {
+
+      "item": "goety:ectoplasm"
+
+    },
+
+    {
+
+      "item": "minecraft:sugar"
+
+    },
+
+    {
+
+      "tag": "forge:milk"
+
+    }
+
+  ],
+
+  "recipe_book_tab": "misc",
+
+  "result": {
+
+    "item": "goetydelight:blue_ectoplasmic_sundae"
+
+  }
+
+}

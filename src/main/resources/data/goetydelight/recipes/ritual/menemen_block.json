@@ -1,0 +1,40 @@
+{
+    "type": "goety:ritual",
+    "ritual_type": "goety:craft",
+    "activation_item": {
+        "item": "farmersdelight:cooking_pot"
+    },
+    "craftType": "culinary",
+    "research": "vizier_cookbook",
+    "soulCost": 24,
+    "duration": 7,
+    "ingredients": [
+        {
+         "tag": "forge:eggs"
+        },
+        {
+          "tag": "forge:eggs"
+        },
+        {
+          "tag": "forge:eggs"
+        },
+        {
+            "tag": "forge:crops/tomato"
+        },
+        {
+            "tag": "forge:crops/tomato"
+        },
+        {
+            "tag": "forge:crops/tomato"
+        },
+        {
+            "tag": "forge:crops/onion"
+        },
+        {
+            "item": "minecraft:blaze_powder"
+        }
+    ],
+    "result": {
+        "item": "goetydelight:menemen_block"
+    }
+}

@@ -1,0 +1,69 @@
+{
+  "values": [
+    "minecraft:spider",
+    "minecraft:cave_spider",
+    "goety:bone_spider",
+    "goety:web_spider",
+    "goety:icy_spider",
+    "goety:brood_mother",
+    "goety:brood_mother_servant",
+    "goety:spider_servant",
+    "goety:cave_spider_servant",
+    "goety:bone_spider_servant",
+    "goety:web_spider_servant",
+    "goety:icy_spider_servant",
+    "goety:wartling",
+    {
+      "id": "iceandfire:dread_scuttler",
+      "required": false
+    },
+    {
+      "id": "jerotesvillage:downy_spider",
+      "required": false
+    },
+    {
+      "id": "jerotesvillage:virtual_cave_spider",
+      "required": false
+    },
+    {
+      "id": "jerotesvillage:second_rounder_spider",
+      "required": false
+    },
+    {
+      "id": "twilightforest:swarm_spider",
+      "required": false
+    },
+    {
+      "id": "twilightforest:hedge_spider",
+      "required": false
+    },
+    {
+      "id": "twilightforest:king_spider",
+      "required": false
+    },
+    {
+      "id": "twilightforest:tower_broodling",
+      "required": false
+    },
+    {
+      "id": "born_in_chaos_v1:spiders_mother",
+      "required": false
+    },
+    {
+      "id": "born_in_chaos_v1:baby_spider",
+      "required": false
+    },
+    {
+      "id": "blue_skies:venom_spider",
+      "required": false
+    },
+    {
+      "id": "blue_skies:nested_spider",
+      "required": false
+    },
+    {
+      "id": "blue_skies:arachnarch",
+      "required": false
+    }
+  ]
+}

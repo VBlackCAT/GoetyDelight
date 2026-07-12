@@ -1,0 +1,72 @@
+{
+  "values": [
+    "goety:wither_necromancer_servant",
+    "goety:grave_golem",
+    "goety:redstone_golem",
+    "goety:drowned_necromancer_servant",
+    {
+      "id": "goety_cataclysm:ender_golem",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:the_prowler",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:ignited_revenant",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:coralssus",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:aptrgangr",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:wadjet",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:clawdian",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:kobolediator",
+      "required": false
+    },
+    {
+      "id": "goety_spillage:ragno_servant",
+      "required": false
+    },
+    {
+      "id": "goety_spillage:zombie_absorber",
+      "required": false
+    },
+    {
+      "id": "goety_spillage:bound_freakager",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:crone_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:endersent_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:wraith_necromancer_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:wight_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:minister_servant",
+      "required": false
+    }
+  ]
+}

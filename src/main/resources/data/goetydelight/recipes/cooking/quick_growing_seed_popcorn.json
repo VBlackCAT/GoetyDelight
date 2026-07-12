@@ -1,0 +1,28 @@
+{
+  "type": "farmersdelight:cooking",
+  "ingredients": [
+    {
+      "item": "goety:quick_growing_seed"
+    },
+    {
+      "item": "goety:quick_growing_seed"
+    },
+    {
+      "item": "farmersdelight:bacon"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:bone_meal"
+    },
+    {
+      "item": "minecraft:bone_meal"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:quick_growing_seed_popcorn"
+  },
+  "experience": 1.5,
+  "cookingtime": 200
+}

@@ -1,0 +1,7 @@
+{
+  "name": "烹饪设备",
+  "description": "高端的黑暗料理往往只需要用最黑暗的方式来烹饪……",
+  "icon": "goetydelight:cursed_ingot_pot",
+  "parent": "goety:goetydelight",
+  "sortnum": 2
+}

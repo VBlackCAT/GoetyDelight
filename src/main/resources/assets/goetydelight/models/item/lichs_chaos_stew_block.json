@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "goetydelight:item/lichs_chaos_stew_block"
+  }
+}

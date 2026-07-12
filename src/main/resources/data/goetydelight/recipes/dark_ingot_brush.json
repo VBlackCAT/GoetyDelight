@@ -1,0 +1,33 @@
+{
+
+  "type": "crafting_shapeless",
+
+  "ingredients": [
+
+    {
+
+      "item": "goety:dark_ingot"
+
+    },
+
+    {
+
+      "item": "minecraft:feather"
+
+    },
+
+    {
+
+      "tag": "minecraft:logs"
+
+    }
+
+  ],
+
+  "result": {
+
+    "item": "goetydelight:dark_brush"
+
+  }
+
+}

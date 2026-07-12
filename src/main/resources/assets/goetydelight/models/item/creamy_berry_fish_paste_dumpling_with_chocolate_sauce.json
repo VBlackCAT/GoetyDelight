@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "goetydelight:item/creamy_berry_fish_paste_dumpling_with_chocolate_sauce"
+  }
+}

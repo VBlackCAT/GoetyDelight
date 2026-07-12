@@ -1,0 +1,26 @@
+{
+  "type": "farmersdelight:cooking",
+  "ingredients": [
+    {
+      "tag": "forge:marble"
+    },
+    {
+      "item": "minecraft:bread"
+    },
+    {
+      "item": "goety:forbidden_piece"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "goety:mystic_core"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:crisp_biscuit",
+    "count": 2
+  },
+  "experience": 1.5,
+  "cookingtime": 200
+}

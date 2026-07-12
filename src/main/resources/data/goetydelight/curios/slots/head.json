@@ -1,0 +1,5 @@
+{
+  "size": 1,
+  "add_cosmetic": true,
+  "validators": ["goetydelight:doll_item"]
+}

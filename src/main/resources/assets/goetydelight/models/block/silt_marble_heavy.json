@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "goetydelight:block/silt_marble_heavy"
+  }
+}

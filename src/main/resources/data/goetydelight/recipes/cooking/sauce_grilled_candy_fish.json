@@ -1,0 +1,25 @@
+{
+  "type": "farmersdelight:cooking",
+  "ingredients": [
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:cod"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "goety:brew"
+    },
+    {
+      "item": "minecraft:blaze_powder"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:sauce_grilled_candy_fish"
+  },
+  "experience": 1.5,
+  "cookingtime": 600
+}

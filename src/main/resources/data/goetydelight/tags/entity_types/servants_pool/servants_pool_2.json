@@ -1,0 +1,128 @@
+{
+  "values": [
+    {
+      "id": "goety:haunted_armor_servant",
+      "required": false
+    },
+    {
+      "id": "goety:bound_evoker",
+      "required": false
+    },
+    {
+      "id": "goety:malghast",
+      "required": false
+    },
+    {
+      "id": "goety:inferno",
+      "required": false
+    },
+    {
+      "id": "goety:blackguard_servant",
+      "required": false
+    },
+    {
+      "id": "goety:vanguard_servant",
+      "required": false
+    },
+    {
+      "id": "goety:zpiglin_brute_servant",
+      "required": false
+    },
+    {
+      "id": "goety:evoker_servant",
+      "required": false
+    },
+    {
+      "id": "goety:geomance_servant",
+      "required": false
+    },
+    {
+      "id": "goety:bound_iceologer",
+      "required": false
+    },
+    {
+      "id": "goety:brood_mother_servant",
+      "required": false
+    },
+    {
+      "id": "goety:ice_golem",
+      "required": false
+    },
+    {
+      "id": "goety:zombie_vindicator",
+      "required": false
+    },
+    {
+      "id": "goety:vindicator_servant",
+      "required": false
+    },
+    {
+      "id": "goety:vindicator_chef_servant",
+      "required": false
+    },
+    {
+      "id": "goety:mountaineer_servant",
+      "required": false
+    },
+    {
+      "id": "goety:cryologer_servant",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:royal_draugr_servant",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:deepling_brute_servant",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:cindaria_servant",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:deepling_priest_servant",
+      "required": false
+    },
+    {
+      "id": "goety_cataclysm:deepling_warlock_servant",
+      "required": false
+    },
+    {
+      "id": "goety_spillage:crocofang_servant",
+      "required": false
+    },
+    {
+      "id": "goety_spillage:factory",
+      "required": false
+    },
+    {
+      "id": "goety_spillage:hinder",
+      "required": false
+    },
+    {
+      "id": "goety_spillage:chagrin_sentry",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:ice_creeper_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:enderman_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:shulker_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:royalguard_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:envioker_servant",
+      "required": false
+    }
+  ]
+}

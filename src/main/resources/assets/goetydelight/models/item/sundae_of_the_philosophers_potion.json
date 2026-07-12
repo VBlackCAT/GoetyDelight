@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "goetydelight:item/sundae_of_the_philosophers_potion"
+  }
+}

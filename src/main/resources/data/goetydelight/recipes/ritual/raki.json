@@ -1,0 +1,31 @@
+{
+    "type": "goety:ritual",
+    "ritual_type": "goety:craft",
+    "activation_item": {
+        "item": "minecraft:glass_bottle"
+    },
+    "craftType": "culinary",
+    "research": "vizier_cookbook",
+    "soulCost": 24,
+    "duration": 7,
+    "ingredients": [
+        {
+            "item": "minecraft:nether_wart"
+        },
+        {
+            "tag": "minecraft:fox_food"
+        },
+        {
+            "tag": "forge:ice_cube"
+        },
+        {
+            "item": "goety:ectoplasm"
+        },
+        {
+            "item": "goety:quick_growing_seed"
+        }
+    ],
+    "result": {
+        "item": "goetydelight:raki"
+    }
+}

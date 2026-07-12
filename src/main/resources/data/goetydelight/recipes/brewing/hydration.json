@@ -1,0 +1,10 @@
+{
+  "type": "goety:brewing",
+  "ingredient": {
+    "item": "goety:ice_cube"
+  },
+  "effect": "goetydelight:hydration",
+  "soulCost": 25,
+  "capacityExtra": 0,
+  "duration": 36000
+}
