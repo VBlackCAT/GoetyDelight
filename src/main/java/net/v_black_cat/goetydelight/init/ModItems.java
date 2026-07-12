@@ -60,7 +60,7 @@ public class ModItems {
 //
 //    public static final DeferredItem<Item> GHOST_FARMER_SPAWN_EGG;
 //    // 食物物品
-//    public static final DeferredItem<Item> GOETYDELIGHT_ICON;
+    public static final DeferredItem<Item> GOETYDELIGHT_ICON;
 //    public static final DeferredItem<Item> TAINTED_DRINK;
 //    public static final DeferredItem<Item> REJECTED_DARK_MEAT_SOUP;
 //    public static final DeferredItem<Item> SIBLING_SUNDAE;
@@ -154,7 +154,7 @@ public class ModItems {
 
 
 //    // ==================== 静态初始化块：物品定义区域 ====================
-//    static {
+    static {
 //        NOT_ANYTHING = ITEMS.register("not_anything",
 //                () -> new Item(basicItem().stacksTo(1)));
 //
@@ -205,8 +205,8 @@ public class ModItems {
 //        VIZIERS_COOKBOOK = ITEMS.register("viziers_cookbook",
 //                () -> new ViziersCookbookItem());
 //
-//        GOETYDELIGHT_ICON = ITEMS.register("goetydelight_icon",
-//                () -> simpleFoodItem(666, 666, true));
+        GOETYDELIGHT_ICON = ITEMS.register("goetydelight_icon",
+                () -> simpleFoodItem(666, 666, true));
 //
 //        TAINTED_DRINK = ITEMS.register("tainted_drink",
 //                () -> new CustomDrinkItem(basicItem().stacksTo(1).rarity(Rarity.RARE).rarity(Rarity.RARE).food(
@@ -749,7 +749,7 @@ public class ModItems {
 //                () -> new SpawnEggItem(ModEntities.GHOST_FARMER.get(), 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
 //
 //        DOLL_ITEM = registerWithTab("doll_item", DollEntityItem::new);
-//    }
+    }
 
 
     // ==================== 辅助方法 ====================

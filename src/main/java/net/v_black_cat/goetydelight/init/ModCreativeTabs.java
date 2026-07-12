@@ -14,13 +14,15 @@ public class ModCreativeTabs {
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, GoetyDelight.MODID);
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB =
-            CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
-                    .title(Component.translatable("itemGroup.goetydelight"))
+            CREATIVE_MODE_TABS.register("goetydelight_tab", () -> CreativeModeTab.builder()
+                    .title(Component.translatable("creativetab.goetydelight_tab"))
                     .withTabsBefore(CreativeModeTabs.COMBAT)
-                    .icon(() -> ModItems.EXAMPLE_ITEM.get().getDefaultInstance())
+                    .icon(() -> ModItems.GOETYDELIGHT_ICON.get().getDefaultInstance())
                     .displayItems((parameters, output) -> {
                         output.accept(ModItems.EXAMPLE_ITEM.get());
+                        output.accept(ModItems.GOETYDELIGHT_ICON.get());
                     })
+                    .withSearchBar()
                     .build());
 
     public static void register(IEventBus modEventBus) {
