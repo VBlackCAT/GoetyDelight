@@ -1,0 +1,13 @@
+{
+  "itemGroup.goetydelight": "Example Mod Tab",
+  "block.goetydelight.example_block": "Example Block",
+  "item.goetydelight.example_item": "Example Item",
+
+  "goetydelight.configuration.title": "Goety Delight Configs",
+  "goetydelight.configuration.section.goetydelight.common.toml": "Goety Delight Configs",
+  "goetydelight.configuration.section.goetydelight.common.toml.title": "Goety Delight Configs",
+  "goetydelight.configuration.items": "Item List",
+  "goetydelight.configuration.logDirtBlock": "Log Dirt Block",
+  "goetydelight.configuration.magicNumberIntroduction": "Magic Number Text",
+  "goetydelight.configuration.magicNumber": "Magic Number"
+}
