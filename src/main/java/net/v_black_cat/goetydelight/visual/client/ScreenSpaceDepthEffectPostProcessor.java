@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.function.IntSupplier;
 
 @Mod.EventBusSubscriber(modid = GoetyDelight.MODID, value = Dist.CLIENT)
 public final class ScreenSpaceDepthEffectPostProcessor {
@@ -53,6 +54,29 @@ public final class ScreenSpaceDepthEffectPostProcessor {
     private static int scratchWidth = -1;
     private static int scratchHeight = -1;
     private static boolean warnedLoadFailure;
+
+    // ── 可复用矩阵（渲染线程单线程，静态安全） ──
+    private static final Matrix4f TEMP_OLD_PROJECTION = new Matrix4f();
+    private static final Matrix4f TEMP_VIEW_PROJECTION = new Matrix4f();
+    private static final Matrix4f TEMP_INV_VIEW = new Matrix4f();
+
+    // ── 采样器缓存 ──
+    private static RenderTarget samplerTarget;
+    private static final IntSupplier COLOR_SAMPLER = () -> samplerTarget.getColorTextureId();
+    private static final IntSupplier DEPTH_SAMPLER = () -> samplerTarget.getDepthTextureId();
+
+    // ── Uniform 名称缓存 ──
+    private static final String[] CENTER_NAMES = new String[MAX_EFFECTS];
+    private static final String[] DATA_NAMES = new String[MAX_EFFECTS];
+    private static final String[] COLOR_NAMES = new String[MAX_EFFECTS];
+
+    static {
+        for (int i = 0; i < MAX_EFFECTS; i++) {
+            CENTER_NAMES[i] = "EffectCenter" + i;
+            DATA_NAMES[i] = "EffectData" + i;
+            COLOR_NAMES[i] = "EffectColor" + i;
+        }
+    }
 
     private ScreenSpaceDepthEffectPostProcessor() {
     }
@@ -143,6 +167,7 @@ public final class ScreenSpaceDepthEffectPostProcessor {
         orthoMatrix = new Matrix4f().setOrtho(0.0F, (float) width, 0.0F, (float) height, 0.1F, 1000.0F);
     }
 
+    // ── 修改：移除 ifPresent lambda ──
     private static EffectPacket collectEffects(ClientLevel level, RenderLevelStageEvent event) {
         EffectPacket packet = new EffectPacket();
         Vec3 cameraPosition = event.getCamera().getPosition();
@@ -152,25 +177,33 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                 continue;
             }
 
-            entity.getCapability(EntityVisualEffectSystem.ENTITY_VISUAL_EFFECTS).ifPresent(effects -> {
-                for (ActiveEntityVisualEffect activeEffect : effects.effects()) {
-                    if (packet.count >= MAX_EFFECTS) {
-                        break;
-                    }
+            var capability = entity.getCapability(EntityVisualEffectSystem.ENTITY_VISUAL_EFFECTS);
+            if (!capability.isPresent()) {
+                continue;
+            }
 
-                    int mode = mode(activeEffect);
-                    if (mode < 0) {
-                        continue;
-                    }
+            var effects = capability.orElse(null);
+            if (effects == null) {
+                continue;
+            }
 
-                    double renderDistance = renderDistance(activeEffect);
-                    if (renderDistance > 0.0D && entity.distanceToSqr(cameraPosition) > renderDistance * renderDistance) {
-                        continue;
-                    }
-
-                    packet.add(entity, activeEffect, event, mode);
+            for (ActiveEntityVisualEffect activeEffect : effects.effects()) {
+                if (packet.count >= MAX_EFFECTS) {
+                    break;
                 }
-            });
+
+                int mode = mode(activeEffect);
+                if (mode < 0) {
+                    continue;
+                }
+
+                double renderDistance = renderDistance(activeEffect);
+                if (renderDistance > 0.0D && entity.distanceToSqr(cameraPosition) > renderDistance * renderDistance) {
+                    continue;
+                }
+
+                packet.add(entity, activeEffect, event, mode);
+            }
         }
 
         return packet;
@@ -246,11 +279,15 @@ public final class ScreenSpaceDepthEffectPostProcessor {
             return;
         }
 
-        Matrix4f oldProjection = new Matrix4f(RenderSystem.getProjectionMatrix());
+        // 复用矩阵
+        TEMP_OLD_PROJECTION.set(RenderSystem.getProjectionMatrix());
         VertexSorting oldSorting = RenderSystem.getVertexSorting();
-        Matrix4f viewProjection = cachedViewProjection != null
-                ? new Matrix4f(cachedViewProjection)
-                : new Matrix4f(event.getProjectionMatrix());
+
+        if (cachedViewProjection != null) {
+            TEMP_VIEW_PROJECTION.set(cachedViewProjection);
+        } else {
+            TEMP_VIEW_PROJECTION.set(event.getProjectionMatrix());
+        }
 
         mainTarget.unbindWrite();
         RenderSystem.viewport(0, 0, outTarget.width, outTarget.height);
@@ -259,11 +296,18 @@ public final class ScreenSpaceDepthEffectPostProcessor {
         RenderSystem.disableBlend();
         RenderSystem.resetTextureMatrix();
 
-        shader.setSampler("DiffuseSampler", mainTarget::getColorTextureId);
-        shader.setSampler("DepthSampler", mainTarget::getDepthTextureId);
+        // 设置采样器（使用静态 supplier，避免每帧 lambda）
+        samplerTarget = mainTarget;
+        shader.setSampler("DiffuseSampler", COLOR_SAMPLER);
+        shader.setSampler("DepthSampler", DEPTH_SAMPLER);
+
         shader.safeGetUniform("ProjMat").set(orthoMatrix);
-        shader.safeGetUniform("ViewProjMat").set(viewProjection);
-        shader.safeGetUniform("InvViewProjMat").set(new Matrix4f(viewProjection).invert());
+        shader.safeGetUniform("ViewProjMat").set(TEMP_VIEW_PROJECTION);
+
+        // 逆矩阵：复用 TEMP_INV_VIEW
+        TEMP_INV_VIEW.set(TEMP_VIEW_PROJECTION).invert();
+        shader.safeGetUniform("InvViewProjMat").set(TEMP_INV_VIEW);
+
         shader.safeGetUniform("InSize").set((float) mainTarget.width, (float) mainTarget.height);
         shader.safeGetUniform("OutSize").set((float) outTarget.width, (float) outTarget.height);
         shader.safeGetUniform("Time").set((event.getRenderTick() + event.getPartialTick()) / 20.0F);
@@ -294,15 +338,29 @@ public final class ScreenSpaceDepthEffectPostProcessor {
         GlStateManager._glBindFramebuffer(36160, 0);
 
         RenderSystem.depthMask(true);
-        RenderSystem.setProjectionMatrix(oldProjection, oldSorting);
+        RenderSystem.setProjectionMatrix(TEMP_OLD_PROJECTION, oldSorting);
         mainTarget.bindWrite(false);
     }
 
+    // ── 使用预定义 uniform 名称数组 ──
     private static void uploadPacket(EffectInstance shader, EffectPacket packet) {
         for (int i = 0; i < MAX_EFFECTS; i++) {
-            shader.safeGetUniform("EffectCenter" + i).set(packet.centers[i * 3], packet.centers[i * 3 + 1], packet.centers[i * 3 + 2]);
-            shader.safeGetUniform("EffectData" + i).set(packet.data[i * 4], packet.data[i * 4 + 1], packet.data[i * 4 + 2], packet.data[i * 4 + 3]);
-            shader.safeGetUniform("EffectColor" + i).set(packet.colors[i * 3], packet.colors[i * 3 + 1], packet.colors[i * 3 + 2]);
+            shader.safeGetUniform(CENTER_NAMES[i]).set(
+                    packet.centers[i * 3],
+                    packet.centers[i * 3 + 1],
+                    packet.centers[i * 3 + 2]
+            );
+            shader.safeGetUniform(DATA_NAMES[i]).set(
+                    packet.data[i * 4],
+                    packet.data[i * 4 + 1],
+                    packet.data[i * 4 + 2],
+                    packet.data[i * 4 + 3]
+            );
+            shader.safeGetUniform(COLOR_NAMES[i]).set(
+                    packet.colors[i * 3],
+                    packet.colors[i * 3 + 1],
+                    packet.colors[i * 3 + 2]
+            );
         }
     }
 

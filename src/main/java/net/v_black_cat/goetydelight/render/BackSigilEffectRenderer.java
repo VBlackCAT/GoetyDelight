@@ -21,6 +21,14 @@ public final class BackSigilEffectRenderer {
     private static final double TRACK_DISTANCE = 96.0D;
     private static final Vec3 WORLD_UP = new Vec3(0.0D, 1.0D, 0.0D);
 
+    // ── 缓存对象（线程安全） ──
+    private static final ThreadLocal<RenderBasis> BASIS_CACHE =
+            ThreadLocal.withInitial(RenderBasis::new);
+    private static final ThreadLocal<ChainSample> CHAIN_SAMPLE_A =
+            ThreadLocal.withInitial(ChainSample::new);
+    private static final ThreadLocal<ChainSample> CHAIN_SAMPLE_B =
+            ThreadLocal.withInitial(ChainSample::new);
+
     private BackSigilEffectRenderer() {
     }
 
@@ -149,8 +157,12 @@ public final class BackSigilEffectRenderer {
     }
 
     private static void addChainSegment(BufferBuilder buffer, Matrix4f matrix, Vec3 cameraPos, RenderBasis basis, float phase, double bandHeight, float t0, float t1, int alpha) {
-        ChainSample a = sampleChain(basis, phase, bandHeight, t0);
-        ChainSample b = sampleChain(basis, phase, bandHeight, t1);
+        ChainSample a = CHAIN_SAMPLE_A.get();
+        ChainSample b = CHAIN_SAMPLE_B.get();
+
+        sampleChain(basis, phase, bandHeight, t0, a);
+        sampleChain(basis, phase, bandHeight, t1, b);
+
         Vec3 sideA = a.radial.scale(basis.scale * 0.030D);
         Vec3 sideB = b.radial.scale(basis.scale * 0.030D);
         int color = 0xBA6DFF;
@@ -163,12 +175,12 @@ public final class BackSigilEffectRenderer {
         putVertex(buffer, matrix, b.position.add(sideB).subtract(cameraPos), color, alphaB, t1, 0.0F);
     }
 
-    private static ChainSample sampleChain(RenderBasis basis, float phase, double bandHeight, float t) {
+    private static void sampleChain(RenderBasis basis, float phase, double bandHeight, float t, ChainSample out) {
         float angle = t * Mth.TWO_PI + phase;
         Vec3 radial = basis.x.scale(Mth.cos(angle)).add(basis.forward.scale(Mth.sin(angle))).normalize();
         Vec3 lift = basis.y.scale(bandHeight + Math.sin(angle * 2.0D + phase) * basis.scale * 0.08D);
         Vec3 position = basis.center.add(radial.scale(basis.scale * 0.82D)).add(lift);
-        return new ChainSample(position, radial);
+        out.set(position, radial);
     }
 
     private static void drawOrbitingShards(RenderLevelStageEvent event, RenderBasis basis, int color, int alpha, int count) {
@@ -227,7 +239,10 @@ public final class BackSigilEffectRenderer {
         Vec3 center = entity.getEyePosition(partialTick)
                 .add(up.scale(yOffset(entity, effect) * yMul))
                 .subtract(forward.scale(behindOffset(entity, effect) * behindMul));
-        return new RenderBasis(center, right, up, forward, scale);
+
+        RenderBasis basis = BASIS_CACHE.get();
+        basis.set(center, right, up, forward, scale);
+        return basis;
     }
 
     private static Vec3 faceLook(Entity entity, float partialTick) {
@@ -274,9 +289,31 @@ public final class BackSigilEffectRenderer {
         return x * x * (3.0F - 2.0F * x);
     }
 
-    private record RenderBasis(Vec3 center, Vec3 x, Vec3 y, Vec3 forward, float scale) {
+    // ── 可复用数据结构 ──
+
+    private static final class RenderBasis {
+        Vec3 center;
+        Vec3 x;
+        Vec3 y;
+        Vec3 forward;
+        float scale;
+
+        void set(Vec3 center, Vec3 x, Vec3 y, Vec3 forward, float scale) {
+            this.center = center;
+            this.x = x;
+            this.y = y;
+            this.forward = forward;
+            this.scale = scale;
+        }
     }
 
-    private record ChainSample(Vec3 position, Vec3 radial) {
+    private static final class ChainSample {
+        Vec3 position;
+        Vec3 radial;
+
+        void set(Vec3 position, Vec3 radial) {
+            this.position = position;
+            this.radial = radial;
+        }
     }
 }
