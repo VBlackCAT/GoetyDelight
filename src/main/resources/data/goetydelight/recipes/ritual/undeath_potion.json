@@ -4,7 +4,7 @@
   "activation_item": {
     "item": "goety:undeath_potion"
   },
-  "craftType": "necroturgy",
+  "craftType": "culinary",
   "research": "forbidden",
   "soulCost": 1000,
   "duration": 10,
