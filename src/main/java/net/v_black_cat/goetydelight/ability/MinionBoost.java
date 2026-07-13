@@ -1,5 +1,6 @@
 package net.v_black_cat.goetydelight.ability;
 
+import com.Polarice3.Goety.Goety;
 import com.Polarice3.Goety.api.entities.IOwned;
 import com.Polarice3.Goety.utils.LichdomHelper;
 import net.minecraft.world.entity.LivingEntity;
@@ -120,9 +121,9 @@ public class MinionBoost {
         }
 
         AttributeInstance movementSpeed = minion.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (movementSpeed != null) {
+        if (movementSpeed != null && !(minion instanceof com.Polarice3.Goety.common.entities.ally.golem.RedstoneMonstrosity)) {
             double baseValue = movementSpeed.getBaseValue();
-            double boostValue = baseValue * boostMultiplier;
+            double boostValue = baseValue * soupBoost;
             movementSpeed.addPermanentModifier(new AttributeModifier(
                     MOVEMENT_SPEED_BOOST_UUID,
                     "Minion Speed Boost",

@@ -76,7 +76,6 @@ public class CakeItem extends Item {
         }
         
         return entityId.equals(new ResourceLocation("minecraft:vex")) ||
-                entityId.equals(new ResourceLocation("minecraft:allay")) ||
                 entityId.equals(new ResourceLocation("goety:ally_irk")) ||
                 entityId.equals(new ResourceLocation("goety:irk_servant")) ||
                 entityId.equals(new ResourceLocation("goety:ally_vex")) ||
@@ -84,6 +83,7 @@ public class CakeItem extends Item {
                 entityId.equals(new ResourceLocation("goety:tormentor"))||
                 entityId.equals(new ResourceLocation("goety:irk")) ||
                 entityId.equals(new ResourceLocation("iceandfire:if_pixie")) ||
+                entityId.equals(new ResourceLocation("irons_spellbooks:summoned_vex")) ||
                 entityId.equals(new ResourceLocation("alexsmobs:crimson_mosquito")) ||
                 entityId.equals(new ResourceLocation("alexsmobs:skreecher")) ||
                 entityId.equals(new ResourceLocation("alexsmobs:murmur_head")) ||
