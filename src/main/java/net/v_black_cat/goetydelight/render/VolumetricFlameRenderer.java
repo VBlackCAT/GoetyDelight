@@ -24,6 +24,12 @@ import org.joml.Matrix4f;
 public final class VolumetricFlameRenderer {
     private static final double TRACK_DISTANCE = 80.0D;
 
+    // ── 颜色缓存（线程安全） ──
+    private static final ThreadLocal<Color> COLOR_BASE = ThreadLocal.withInitial(Color::new);
+    private static final ThreadLocal<Color> COLOR_CORE = ThreadLocal.withInitial(Color::new);
+    private static final ThreadLocal<Color> COLOR_TIP  = ThreadLocal.withInitial(Color::new);
+    private static final ThreadLocal<Color> COLOR_SMOKE= ThreadLocal.withInitial(Color::new);
+
     private VolumetricFlameRenderer() {
     }
 
@@ -42,16 +48,16 @@ public final class VolumetricFlameRenderer {
         double halfY = height(entity, effect) * scale * 0.5D;
         double halfZ = depth(entity, effect) * scale;
         Vec3 center = entityPos.add(0.0D, halfY - 0.04D * scale, 0.0D);
-        Vec3 cameraLocal = new Vec3(
-                (cameraPos.x - center.x) / halfX,
-                (cameraPos.y - center.y) / halfY,
-                (cameraPos.z - center.z) / halfZ
-        );
+
+        // cameraLocal 拆分为三个 double，避免创建 Vec3
+        double cameraLocalX = (cameraPos.x - center.x) / halfX;
+        double cameraLocalY = (cameraPos.y - center.y) / halfY;
+        double cameraLocalZ = (cameraPos.z - center.z) / halfZ;
 
         ShaderInstance shader = ModShaderReg.getVolumetricFlameShader();
         shader.safeGetUniform("iTime").set((entity.level().getGameTime() + partialTick) / 20.0F);
         shader.safeGetUniform("intensity").set(intensity(effect));
-        shader.safeGetUniform("CameraLocal").set((float) cameraLocal.x, (float) cameraLocal.y, (float) cameraLocal.z);
+        shader.safeGetUniform("CameraLocal").set((float) cameraLocalX, (float) cameraLocalY, (float) cameraLocalZ);
         uploadColors(shader, effect.data());
 
         Matrix4f oldProjection = new Matrix4f(RenderSystem.getProjectionMatrix());
@@ -119,10 +125,14 @@ public final class VolumetricFlameRenderer {
         putVertex(buffer, matrix, cameraPos, center, halfX, halfY, halfZ, dx, dy, dz, 0.0F, 0.0F, alpha);
     }
 
+    // ── 优化：直接计算坐标，避免创建 Vec3 ──
     private static void putVertex(BufferBuilder buffer, Matrix4f matrix, Vec3 cameraPos, Vec3 center, double halfX, double halfY, double halfZ,
                                   float localX, float localY, float localZ, float u, float v, int alpha) {
-        Vec3 pos = center.add(localX * halfX, localY * halfY, localZ * halfZ).subtract(cameraPos);
-        buffer.vertex(matrix, (float) pos.x, (float) pos.y, (float) pos.z)
+        double px = center.x + localX * halfX - cameraPos.x;
+        double py = center.y + localY * halfY - cameraPos.y;
+        double pz = center.z + localZ * halfZ - cameraPos.z;
+
+        buffer.vertex(matrix, (float) px, (float) py, (float) pz)
                 .color(encodeLocal(localX), encodeLocal(localY), encodeLocal(localZ), Mth.clamp(alpha, 0, 255))
                 .uv(u, v)
                 .endVertex();
@@ -161,11 +171,25 @@ public final class VolumetricFlameRenderer {
         return effect.data().contains("Intensity") ? Mth.clamp(effect.data().getFloat("Intensity"), 0.05F, 8.0F) : 1.16F;
     }
 
+    // ── 颜色上传（使用缓存，无 new Color） ──
     private static void uploadColors(ShaderInstance shader, CompoundTag data) {
-        Color base = color(data, "Color", new Color(1.0F, 0.26F, 0.035F));
-        Color core = color(data, "CoreColor", deriveCore(base));
-        Color tip = color(data, "TipColor", deriveTip(base));
-        Color smoke = color(data, "SmokeColor", deriveSmoke(base));
+        Color base  = COLOR_BASE.get();
+        Color core  = COLOR_CORE.get();
+        Color tip   = COLOR_TIP.get();
+        Color smoke = COLOR_SMOKE.get();
+
+        // 读取基础颜色，若 NBT 中无则使用默认火焰色
+        readColor(data, "Color", base, 1.0F, 0.26F, 0.035F);
+
+        // 派生核心、尖端、烟雾颜色
+        deriveCore(base, core);
+        tryOverrideFromData(data, "CoreColor", core);
+
+        deriveTip(base, tip);
+        tryOverrideFromData(data, "TipColor", tip);
+
+        deriveSmoke(base, smoke);
+        tryOverrideFromData(data, "SmokeColor", smoke);
 
         shader.safeGetUniform("FlameColor").set(base.red, base.green, base.blue);
         shader.safeGetUniform("CoreColor").set(core.red, core.green, core.blue);
@@ -173,25 +197,61 @@ public final class VolumetricFlameRenderer {
         shader.safeGetUniform("SmokeColor").set(smoke.red, smoke.green, smoke.blue);
     }
 
-    private static Color color(CompoundTag data, String key, Color fallback) {
+    /**
+     * 从 NBT 中读取颜色并填充到目标 Color 对象。
+     * 若不存在指定键，则使用默认值。
+     */
+    private static void readColor(CompoundTag data, String key, Color out, float defaultR, float defaultG, float defaultB) {
         if (!data.contains(key)) {
-            return fallback;
+            out.set(defaultR, defaultG, defaultB);
+            return;
         }
 
         Tag tag = data.get(key);
         if (tag instanceof NumericTag) {
-            return fromRgbInt(data.getInt(key));
+            int rgb = data.getInt(key);
+            out.set(
+                    ((rgb >> 16) & 255) / 255.0F,
+                    ((rgb >> 8) & 255) / 255.0F,
+                    (rgb & 255) / 255.0F
+            );
+            return;
         }
 
         if (tag instanceof ListTag list && list.size() >= 3) {
-            return new Color(
+            out.set(
+                    channel(list.get(0)),
+                    channel(list.get(1)),
+                    channel(list.get(2))
+            );
+            return;
+        }
+
+        // 格式异常，使用默认值
+        out.set(defaultR, defaultG, defaultB);
+    }
+
+    /**
+     * 如果 NBT 中存在指定键，则覆盖目标颜色。
+     */
+    private static void tryOverrideFromData(CompoundTag data, String key, Color target) {
+        if (!data.contains(key)) return;
+
+        Tag tag = data.get(key);
+        if (tag instanceof NumericTag) {
+            int rgb = data.getInt(key);
+            target.set(
+                    ((rgb >> 16) & 255) / 255.0F,
+                    ((rgb >> 8) & 255) / 255.0F,
+                    (rgb & 255) / 255.0F
+            );
+        } else if (tag instanceof ListTag list && list.size() >= 3) {
+            target.set(
                     channel(list.get(0)),
                     channel(list.get(1)),
                     channel(list.get(2))
             );
         }
-
-        return fallback;
     }
 
     private static float channel(Tag tag) {
@@ -199,36 +259,28 @@ public final class VolumetricFlameRenderer {
             float value = numericTag.getAsFloat();
             return Mth.clamp(value > 1.0F ? value / 255.0F : value, 0.0F, 1.0F);
         }
-
         return 1.0F;
     }
 
-    private static Color fromRgbInt(int rgb) {
-        return new Color(
-                ((rgb >> 16) & 255) / 255.0F,
-                ((rgb >> 8) & 255) / 255.0F,
-                (rgb & 255) / 255.0F
-        );
-    }
-
-    private static Color deriveCore(Color base) {
-        return new Color(
+    // ── 派生颜色（写入输出对象，不创建新对象） ──
+    private static void deriveCore(Color base, Color out) {
+        out.set(
                 Mth.clamp(base.red * 0.55F + 0.45F, 0.0F, 1.0F),
                 Mth.clamp(base.green * 0.55F + 0.45F, 0.0F, 1.0F),
                 Mth.clamp(base.blue * 0.55F + 0.30F, 0.0F, 1.0F)
         );
     }
 
-    private static Color deriveTip(Color base) {
-        return new Color(
+    private static void deriveTip(Color base, Color out) {
+        out.set(
                 Mth.clamp(base.blue * 0.78F + 0.04F, 0.0F, 1.0F),
                 Mth.clamp(base.green * 0.52F + base.blue * 0.22F, 0.0F, 1.0F),
                 Mth.clamp(base.red * 0.28F + base.blue * 0.82F, 0.0F, 1.0F)
         );
     }
 
-    private static Color deriveSmoke(Color base) {
-        return new Color(
+    private static void deriveSmoke(Color base, Color out) {
+        out.set(
                 Mth.clamp(base.red * 0.08F, 0.0F, 1.0F),
                 Mth.clamp(base.green * 0.12F, 0.0F, 1.0F),
                 Mth.clamp(base.blue * 0.18F + 0.10F, 0.0F, 1.0F)
@@ -246,6 +298,16 @@ public final class VolumetricFlameRenderer {
         return x * x * (3.0F - 2.0F * x);
     }
 
-    private record Color(float red, float green, float blue) {
+    // ── 可复用颜色结构（非 record，带 set 方法） ──
+    private static final class Color {
+        float red;
+        float green;
+        float blue;
+
+        void set(float r, float g, float b) {
+            this.red = r;
+            this.green = g;
+            this.blue = b;
+        }
     }
 }
