@@ -107,15 +107,15 @@ public class DelightRitualType implements IRitualType {
 
         RitualRecipe recipe = tileEntity.getCurrentRitualRecipe();
 
-        if (recipe.getId().toString().equals("goetydelight:ominous_ramune")) {
+        if (recipe.getId().toString().equals("goetydelight:ritual/ominous_ramune")) {
             returnSpecialItems(world, darkAltarPos, castingPlayer,new ItemStack(OMINOUS_ORB.get()));
             returnSpecialItems(world, darkAltarPos, castingPlayer,new ItemStack(BOUNCY_BUBBLE_FOCUS.get()));
-        }else if (recipe.getId().toString().equals("goetydelight:ominous_ramune_2")) {
+        }else if (recipe.getId().toString().equals("goetydelight:ritual/ominous_ramune_2")) {
             returnSpecialItems(world, darkAltarPos, castingPlayer,new ItemStack(OMINOUS_SHARD.get()));
             returnSpecialItems(world, darkAltarPos, castingPlayer,new ItemStack(BOUNCY_BUBBLE_FOCUS.get()));
         } else if (recipe.getId().toString().equals("goetydelight:metamorphic_scent_grass_ritual")) {
             returnSpecialItems(world, darkAltarPos, castingPlayer,activationItem.copyWithCount(1));
-        } else if (recipe.getId().toString().equals("goetydelight:undeath_potion")) {
+        } else if (recipe.getId().toString().equals("goetydelight:ritual/undeath_potion")) {
             returnSpecialItems(world, darkAltarPos, castingPlayer,new ItemStack(UNDEATH_POTION.get()));
         }
 
