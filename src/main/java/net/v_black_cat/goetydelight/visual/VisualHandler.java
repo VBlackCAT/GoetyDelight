@@ -65,10 +65,6 @@ public final class VisualHandler {
                 target.saveWithoutId(entityNbt);
 
                 if (entityNbt.contains("custom_doll_id") && "doll_p7".equals(entityNbt.getString("custom_doll_id"))) {
-
-                    
-                    
-
                     try {
                         
                         CompoundTag data = TagParser.parseTag(
@@ -90,6 +86,60 @@ public final class VisualHandler {
                     } catch (CommandSyntaxException e) {
                         e.printStackTrace();
                     }
+                }else if (entityNbt.contains("custom_doll_id") && "doll_vblackcat".equals(entityNbt.getString("custom_doll_id"))) {
+
+                    if (target.level().random.nextBoolean()) {
+                        int duration = 36000;
+
+                        ResourceLocation[] effectIds = {
+                                new ResourceLocation("goetydelight", "doom_corona"),
+                                new ResourceLocation("goetydelight", "abyssal_rift_eye"),
+                                new ResourceLocation("goetydelight", "holy_judgement_halo"),
+                                new ResourceLocation("goetydelight", "astral_crown"),
+                                new ResourceLocation("goetydelight", "blood_moon_backwheel"),
+                                new ResourceLocation("goetydelight", "causal_chains"),
+                                new ResourceLocation("goetydelight", "inverted_cross_mark"),
+                                new ResourceLocation("goetydelight", "depth_refraction_pressure"),
+                                new ResourceLocation("goetydelight", "red_eye_flash"),
+                                new ResourceLocation("goetydelight", "volumetric_flame")
+                        };
+
+                        CompoundTag flameData;
+                        try {
+                            flameData = TagParser.parseTag(
+                                    "{Color:[0.0f,0.28f,0.68f],CoreColor:[0.06f,0.47f,0.91f],TipColor:[0.23f,0.62f,1.0f],SmokeColor:[0.003f,0.012f,0.024f],Intensity:0.70f}"
+                            );
+                        } catch (CommandSyntaxException e) {
+                            flameData = new CompoundTag();
+                        }
+
+                        for (Entity nearby : target.level().getEntities(target, target.getBoundingBox().inflate(1.5, 1.5, 1.5))) {
+                            for (ResourceLocation effectId : effectIds) {
+                                CompoundTag data;
+                                if (effectId.equals(new ResourceLocation("goetydelight", "volumetric_flame"))) {
+                                    data = flameData.copy();
+                                } else {
+                                    data = new CompoundTag();
+                                }
+                                EntityVisualEffectSystem.addEffect(nearby, effectId, duration, data);
+                            }
+                        }
+                    } else {
+
+                        for (Entity nearby : target.level().getEntities(target, target.getBoundingBox().inflate(1.5, 1.5, 1.5))) {
+                            nearby.getCapability(EntityVisualEffectSystem.ENTITY_VISUAL_EFFECTS).ifPresent(effects -> {
+                                effects.clear();
+                                EntityVisualEffectSystem.sync(nearby);
+                            });
+                        }
+                    }
+
+                    if (!event.getEntity().isCreative()) {
+                        event.getItemStack().hurtAndBreak(1, event.getEntity(),
+                                (player) -> player.broadcastBreakEvent(event.getHand()));
+                    }
+                    event.setCancellationResult(InteractionResult.SUCCESS);
+                    event.setCanceled(true);
                 }
             }
         }
