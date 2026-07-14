@@ -55,6 +55,7 @@ public class GoetyDelight {
         ModLootModifiers.register(modEventBus);
         ModAttachments.register(modEventBus);
         ModBuffTypes.register(modEventBus);
+        ModRituals.register(modEventBus);
     }
 
     /**
@@ -71,6 +72,11 @@ public class GoetyDelight {
         NeoForge.EVENT_BUS.addListener(LivingEntityUseItemEventHandler::onItemUseFinish);
         NeoForge.EVENT_BUS.addListener(EntityTickEventHandler::onEntityTick);
         NeoForge.EVENT_BUS.addListener(RegisterCommandsEventHandler::onRegisterCommands);
+        NeoForge.EVENT_BUS.addListener(AttackEntityEventHandler::onAttackEntity);
+        NeoForge.EVENT_BUS.addListener(LivingDamageEventHandler::onLivingHurtPre);
+        NeoForge.EVENT_BUS.addListener(LivingDamageEventHandler::onLivingHurtPost);
+        NeoForge.EVENT_BUS.addListener(MobEffectEventHandler::onEffectApplicable);
+        NeoForge.EVENT_BUS.addListener(MobEffectEventHandler::onEffectAdded);
 
     }
 }

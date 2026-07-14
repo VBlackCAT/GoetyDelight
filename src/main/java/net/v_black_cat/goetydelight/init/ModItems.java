@@ -5,16 +5,21 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.bus.api.IEventBus;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.item.CustomDrinkItem;
+import net.v_black_cat.goetydelight.item.food.ModFoods;
 
 import java.util.function.Supplier;
 
+import static net.v_black_cat.goetydelight.util.TickConverterUtil.minToTick;
 import static vectorwing.farmersdelight.common.registry.ModItems.basicItem;
 
 public class ModItems {
@@ -61,7 +66,7 @@ public class ModItems {
 //    public static final DeferredItem<Item> GHOST_FARMER_SPAWN_EGG;
 //    // 食物物品
     public static final DeferredItem<Item> GOETYDELIGHT_ICON;
-//    public static final DeferredItem<Item> TAINTED_DRINK;
+    public static final DeferredItem<Item> TAINTED_DRINK;
 //    public static final DeferredItem<Item> REJECTED_DARK_MEAT_SOUP;
 //    public static final DeferredItem<Item> SIBLING_SUNDAE;
 //    public static final DeferredItem<Item> PROMOTION_HARD_CANDY;
@@ -206,16 +211,17 @@ public class ModItems {
 //                () -> new ViziersCookbookItem());
 //
         GOETYDELIGHT_ICON = ITEMS.register("goetydelight_icon",
-                () -> simpleFoodItem(666, 666, true));
+                () -> simpleFoodItem(666, 666,true));
 //
-//        TAINTED_DRINK = ITEMS.register("tainted_drink",
-//                () -> new CustomDrinkItem(basicItem().stacksTo(1).rarity(Rarity.RARE).rarity(Rarity.RARE).food(
-//                        simpleFoodItemProperties(4, 4)
-//                                .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 150, 1), 1.0F)
-//                                .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 300, 1), 1.0F)
-//                                .effect(() -> new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(ModEffects.THE_PALE_MESSRNGER.get()), minToTick(3), 0), 1.0F)
-//                                .effect(() -> new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(ModEffects.ZOMBIFIED_PIGLIN_BRUTE_SERVANT_SUPPORT.get()), minToTick(6), 0), 1.0F)
-//                                .build())));
+        TAINTED_DRINK = ITEMS.register("tainted_drink",
+                () -> new CustomDrinkItem(basicItem()
+                        .stacksTo(1)
+                        .rarity(Rarity.RARE)
+                        .food(
+                                ModFoods.TAINTED_DRINK
+                        )
+                )
+        );
 //
 //        PURE_DRINK = ITEMS.register("pure_drink",
 //                () -> {
@@ -764,13 +770,6 @@ public class ModItems {
         return () -> BuiltInRegistries.MOB_EFFECT.getHolder(
                 ResourceLocation.fromNamespaceAndPath("goety", effectId)).orElseThrow();
     }
-    private static FoodProperties.Builder simpleFoodItemProperties(int nutrition, float saturationMod) {
-        return new FoodProperties
-                .Builder()
-                .alwaysEdible()
-                .nutrition(nutrition)
-                .saturationModifier(saturationMod / nutrition);
-    }
 
     private static Item simpleFoodItem(int nutrition, float saturationMod, boolean unstackable) {
         Item.Properties properties = basicItem();
@@ -780,45 +779,12 @@ public class ModItems {
         return new Item(properties.food(
                 simpleFoodItemProperties(nutrition, saturationMod).build()));
     }
-
-    private static Item simpleFastFoodItem(int nutrition, float saturationMod, boolean unstackable) {
-        Item.Properties properties = basicItem();
-        if (unstackable) {
-            properties = properties.stacksTo(1);
-        }
-        return new Item(properties.food(
-                simpleFoodItemProperties(nutrition, saturationMod).fast().build()));
-    }
-
-    private static Item simpleFoodItem(FoodProperties.Builder builder, boolean unstackable) {
-        Item.Properties properties = basicItem();
-        if (unstackable) {
-            properties = properties.stacksTo(1);
-        }
-        return new Item(properties.food(builder.build()));
-    }
-
-    private static Item simpleFoodItem(int nutrition, float saturationMod,
-                                       Supplier<Holder<MobEffect>> effectSupplier,
-                                       int duration, int amplifier, boolean unstackable) {
-        Item.Properties properties = basicItem();
-        if (unstackable) {
-            properties = properties.stacksTo(1);
-        }
-        FoodProperties.Builder builder = simpleFoodItemProperties(nutrition, saturationMod)
-                .effect(() -> new MobEffectInstance(effectSupplier.get(), duration, amplifier), 1.0F);
-        return new Item(properties.food(builder.build()));
-    }
-
-    private static Item simpleFoodItem(int nutrition, float saturationMod,
-                                       MobEffect mobEffect, int duration, int amplifier, boolean unstackable) {
-        Item.Properties properties = basicItem();
-        if (unstackable) {
-            properties = properties.stacksTo(1);
-        }
-        FoodProperties.Builder builder = simpleFoodItemProperties(nutrition, saturationMod)
-                .effect(() -> new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(mobEffect), duration, amplifier), 1.0F);
-        return new Item(properties.food(builder.build()));
+    private static FoodProperties.Builder simpleFoodItemProperties(int nutrition, float saturationMod) {
+        return new FoodProperties
+                .Builder()
+                .alwaysEdible()
+                .nutrition(nutrition)
+                .saturationModifier(saturationMod / nutrition);
     }
 
 

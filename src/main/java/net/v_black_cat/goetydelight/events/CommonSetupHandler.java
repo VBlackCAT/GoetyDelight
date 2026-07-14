@@ -5,6 +5,9 @@ import net.minecraft.world.level.block.Blocks;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.v_black_cat.goetydelight.init.ModConfig;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.ritual.DelightRitualType;
+
+
 
 public class CommonSetupHandler {
     public static void onCommonSetup(FMLCommonSetupEvent event) {
@@ -17,5 +20,9 @@ public class CommonSetupHandler {
         GoetyDelight.LOGGER.info("{}{}", ModConfig.MAGIC_NUMBER_INTRODUCTION.get(), ModConfig.MAGIC_NUMBER.getAsInt());
 
         ModConfig.ITEM_STRINGS.get().forEach(item -> GoetyDelight.LOGGER.info("ITEM >> {}", item));
+
+        DelightRitualType.onCommonSetup(event);
+
+
     }
 }

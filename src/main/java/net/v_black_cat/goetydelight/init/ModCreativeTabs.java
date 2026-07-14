@@ -21,6 +21,7 @@ public class ModCreativeTabs {
                     .displayItems((parameters, output) -> {
                         output.accept(ModItems.EXAMPLE_ITEM.get());
                         output.accept(ModItems.GOETYDELIGHT_ICON.get());
+                        output.accept(ModItems.TAINTED_DRINK.get());
                     })
                     .withSearchBar()
                     .build());
