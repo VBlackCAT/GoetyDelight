@@ -10,6 +10,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 public class ModCommands {
     public static void register(RegisterCommandsEvent event) {
-        BuffCommand.register(event.getDispatcher());
+        CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
+        BuffCommand.register(dispatcher);
     }
 }

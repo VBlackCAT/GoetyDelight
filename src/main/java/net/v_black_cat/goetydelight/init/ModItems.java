@@ -14,6 +14,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.item.CustomDrinkItem;
 import net.v_black_cat.goetydelight.item.food.ModFoods;
+import net.v_black_cat.goetydelight.item.food.RejectedDarkMeatSoupItem;
 import vectorwing.farmersdelight.common.registry.ModEffects;
 
 import static net.v_black_cat.goetydelight.util.TickConverterUtil.minToTick;
@@ -65,7 +66,7 @@ public class ModItems {
     public static final DeferredItem<Item> GOETYDELIGHT_ICON;
     public static final DeferredItem<Item> TAINTED_DRINK;
     public static final DeferredItem<Item> PURE_DRINK;
-    //    public static final DeferredItem<Item> REJECTED_DARK_MEAT_SOUP;
+    public static final DeferredItem<Item> REJECTED_DARK_MEAT_SOUP;
 //    public static final DeferredItem<Item> SIBLING_SUNDAE;
     public static final DeferredItem<Item> PROMOTION_HARD_CANDY;
     //    public static final DeferredItem<Item> CUP;
@@ -237,10 +238,10 @@ public class ModItems {
 //                        ModFoods.CUP
 //                )));
 //
-//        REJECTED_DARK_MEAT_SOUP = ITEMS.register("rejected_dark_meat_soup",
-//                () -> new RejectedDarkMeatSoupItem(basicItem().stacksTo(16).food(
-//                        ModFoods.REJECTED_DARK_MEAT_SOUP
-//                )));
+        REJECTED_DARK_MEAT_SOUP = ITEMS.register("rejected_dark_meat_soup",
+                () -> new RejectedDarkMeatSoupItem(basicItem().stacksTo(16).food(
+                        ModFoods.REJECTED_DARK_MEAT_SOUP
+                )));
 //
         PROMOTION_HARD_CANDY = ITEMS.register("promotion_hard_candy",
                 () -> new Item(basicItem().stacksTo(1).food(ModFoods.PROMOTION_HARD_CANDY)));

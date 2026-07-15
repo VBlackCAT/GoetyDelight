@@ -20,8 +20,8 @@ public class ModCreativeTabs {
                     .icon(() -> ModItems.GOETYDELIGHT_ICON.get().getDefaultInstance())
                     .displayItems((parameters, output) -> {
                         // 示例物品
-                        output.accept(ModItems.EXAMPLE_ITEM.get());
-                        output.accept(ModItems.EXAMPLE_FOOD.get());
+//                        output.accept(ModItems.EXAMPLE_ITEM.get());
+//                        output.accept(ModItems.EXAMPLE_FOOD.get());
 
                         // 图标
                         output.accept(ModItems.GOETYDELIGHT_ICON.get());
@@ -30,14 +30,14 @@ public class ModCreativeTabs {
                         output.accept(ModItems.TAINTED_DRINK.get());
                         output.accept(ModItems.PURE_DRINK.get());
 
-                        // 普通食物（按声明顺序）
+                        // 普通食物
                         output.accept(ModItems.PROMOTION_HARD_CANDY.get());
                         output.accept(ModItems.ECTOPLASM_JELLY.get());
                         output.accept(ModItems.WHITE_SHARK_SUGAR_PACK.get());
                         output.accept(ModItems.SUNSHINE_SUGAR_BUN.get());
                         output.accept(ModItems.CANDY_FISH.get());
                         output.accept(ModItems.FROG_LEG_SANDWICH.get());
-                        output.accept(ModItems.SPIDER_EGG_BUBBLE_TEA_2.get());
+//                        output.accept(ModItems.SPIDER_EGG_BUBBLE_TEA_2.get());
                         output.accept(ModItems.CRYING_SHARK_SUGAR_PACK.get());
                         output.accept(ModItems.BEAR_PAW.get());
                         output.accept(ModItems.ECTOPLASMIC_MELON.get());
@@ -55,6 +55,9 @@ public class ModCreativeTabs {
                         output.accept(ModItems.METAMORPHIC_SCENT_FRUIT.get());
                         output.accept(ModItems.SHAWARMA.get());
                         output.accept(ModItems.MENEMEN_WITH_BREAD.get());
+
+                        //特殊食物
+                        output.accept(ModItems.REJECTED_DARK_MEAT_SOUP.get());
                     })
                     .withSearchBar()
                     .build());
