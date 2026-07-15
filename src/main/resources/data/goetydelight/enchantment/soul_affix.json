@@ -1,0 +1,20 @@
+{
+  "description": {
+    "translate": "enchantment.goetydelight.soul_affix"
+  },
+  "supported_items": "#minecraft:enchantable/armor",
+  "primary_items": "#minecraft:enchantable/armor",
+  "weight": 2,
+  "max_level": 5,
+  "min_cost": {
+    "base": 30,
+    "per_level_above_first": 9
+  },
+  "max_cost": {
+    "base": 60,
+    "per_level_above_first": 30
+  },
+  "anvil_cost": 6,
+  "slots": ["any"],
+  "effects": {}
+}
