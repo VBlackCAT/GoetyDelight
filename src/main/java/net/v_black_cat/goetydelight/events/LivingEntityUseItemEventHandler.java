@@ -5,7 +5,6 @@ import net.v_black_cat.goetydelight.buff.BuffEventHandler;
 
 public class LivingEntityUseItemEventHandler {
     public static void onItemUseFinish(LivingEntityUseItemEvent.Finish event) {
-        BuffEventHandler.onItemUseFinish(event);
     }
 
 }
