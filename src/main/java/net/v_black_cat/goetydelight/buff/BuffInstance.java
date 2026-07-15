@@ -15,11 +15,13 @@ public class BuffInstance {
     private final ResourceLocation typeId;  // 指向注册表中的 BuffType
     private int duration;
     private int amplifier;
+    private boolean infinite;
 
     public BuffInstance(ResourceLocation typeId, int duration, int amplifier) {
         this.typeId = typeId;
         this.duration = duration;
         this.amplifier = amplifier;
+        this.infinite = (duration == -1);
     }
 
     public ResourceLocation getTypeId() { return typeId; }
@@ -27,10 +29,12 @@ public class BuffInstance {
     public int getAmplifier() { return amplifier; }
 
     public void tick() {
-        if (duration > 0) duration--;
+        if (!infinite && duration > 0) duration--;
     }
 
-    public boolean isExpired() { return duration <= 0; }
+    public boolean isExpired() {
+        return !infinite && duration <= 0;
+    }
 
     // 通过注册表获取 BuffType（需要注入注册表）
     public BuffType getType() {

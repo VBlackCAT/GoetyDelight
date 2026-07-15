@@ -1,6 +1,7 @@
-package net.v_black_cat.goetydelight.buff.effect;
+package net.v_black_cat.goetydelight.buff.effect.impl;
 
 import net.minecraft.world.entity.LivingEntity;
+import net.v_black_cat.goetydelight.buff.effect.BuffEffect;
 
 public class BurningEffect implements BuffEffect {
     @Override
