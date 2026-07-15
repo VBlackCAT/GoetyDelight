@@ -6,7 +6,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.v_black_cat.goetydelight.buff.effect.BuffEffect;
 import net.v_black_cat.goetydelight.init.ModBuffTypes;
 
 import java.util.*;
@@ -30,22 +32,30 @@ public class ActiveBuffs implements INBTSerializable<CompoundTag> {
     /**
      * 执行所有 Buff 的 tick，并返回本次被完全移除的 Buff 类型列表
      */
-    public Set<ResourceLocation> tickAllAndGetRemoved() {
-        Set<ResourceLocation> removed = new HashSet<>();
+    public void tickAllAndRemove(LivingEntity entity) {
         Iterator<Map.Entry<ResourceLocation, List<BuffInstance>>> it = buffs.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<ResourceLocation, List<BuffInstance>> entry = it.next();
+            ResourceLocation typeId = entry.getKey();
             List<BuffInstance> list = entry.getValue();
-            list.removeIf(inst -> {
+
+            Iterator<BuffInstance> listIt = list.iterator();
+            while (listIt.hasNext()) {
+                BuffInstance inst = listIt.next();
                 inst.tick();
-                return inst.isExpired();
-            });
+                if (inst.isExpired()) {
+                    listIt.remove();
+                    // 触发 onRemove，传入正确的 amplifier
+                    BuffEffect effect = ModBuffTypes.getEffect(typeId);
+                    if (effect != null) {
+                        effect.onRemove(entity, inst.getAmplifier());
+                    }
+                }
+            }
             if (list.isEmpty()) {
-                removed.add(entry.getKey());
                 it.remove();
             }
         }
-        return removed;
     }
 
     public void removeBuff(ResourceLocation typeId) {
