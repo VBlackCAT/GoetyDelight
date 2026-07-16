@@ -2,13 +2,32 @@ package net.v_black_cat.goetydelight.util;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.v_black_cat.goetydelight.buff.ActiveBuffs;
+import net.v_black_cat.goetydelight.buff.BuffInstance;
+import net.v_black_cat.goetydelight.buff.BuffType;
 import net.v_black_cat.goetydelight.buff.effect.BuffEffect;
 import net.v_black_cat.goetydelight.init.ModAttachments;
 import net.v_black_cat.goetydelight.init.ModBuffTypes;
 
+import java.util.List;
+
 public class BuffUtil {
 
+    public static void applyBuff(LivingEntity entity, DeferredHolder <BuffType,BuffType> deferredHolder, int duration, int amplifier) {
+        applyBuff(entity,deferredHolder.getId(),duration,amplifier);
+    }
+    public static void removeBuff(LivingEntity entity, DeferredHolder<BuffType, BuffType> deferredHolder) {
+        removeBuff(entity, deferredHolder.getId());
+    }
+
+    public static boolean hasBuff(LivingEntity entity, DeferredHolder<BuffType, BuffType> deferredHolder) {
+        return hasBuff(entity, deferredHolder.getId());
+    }
+
+    public static int getTotalAmplifier(LivingEntity entity, DeferredHolder<BuffType, BuffType> deferredHolder) {
+        return getTotalAmplifier(entity, deferredHolder.getId());
+    }
     /**
      * 为实体添加一个 Buff，并触发 onApply / onRemove 回调。
      */
@@ -64,4 +83,22 @@ public class BuffUtil {
         ActiveBuffs buffs = entity.getData(ModAttachments.ACTIVE_BUFFS);
         return buffs == null ? 0 : buffs.getTotalAmplifier(typeId);
     }
+
+    /**
+     * 获取指定 Buff 的 amplifier 值
+     * @param entity 实体
+     * @param buffId Buff 类型的 ResourceLocation
+     * @return amplifier 值，如果没有该 Buff 则返回 0
+     */
+    public static int getBuffAmplifier(LivingEntity entity, ResourceLocation buffId) {
+        ActiveBuffs activeBuffs = entity.getData(ModAttachments.ACTIVE_BUFFS);
+        if (activeBuffs == null) return 0;
+
+        List<BuffInstance> instances = activeBuffs.getInstances(buffId);
+        if (instances.isEmpty()) return 0;
+
+        // 取最后一个实例的 amplifier（通常只有一个）
+        return instances.get(instances.size() - 1).getAmplifier();
+    }
+
 }

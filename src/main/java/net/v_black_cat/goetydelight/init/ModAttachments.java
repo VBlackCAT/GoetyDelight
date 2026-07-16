@@ -23,7 +23,13 @@ public class ModAttachments {
                             .build()
             );
 
-
+    public static final Supplier<AttachmentType<Long>> CHERRY_BLOSSOM_LAST_USAGE_DAY =
+            ATTACHMENT_TYPES.register("cherry_blossom_last_usage_day",
+                    () -> AttachmentType.builder(() -> 0L)
+                            .serialize(Codec.LONG)
+                            .copyOnDeath()
+                            .build()
+            );
 /*
     // 示例1：持久化的整数附件（使用 Codec 序列化）
     public static final Supplier<AttachmentType<Integer>> PLAYER_MANA =

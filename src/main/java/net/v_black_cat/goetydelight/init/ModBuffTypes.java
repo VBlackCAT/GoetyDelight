@@ -38,7 +38,12 @@ public class ModBuffTypes {
         return EFFECTS.get(typeId);
     }
 
-    // ========== 原有 Buff ==========
+    public static Set<ResourceLocation> getRegisteredIds() {
+        if (BUFF_REGISTRY == null) return Collections.emptySet();
+        return BUFF_REGISTRY.keySet();
+    }
+
+    // 占位符
     public static final DeferredHolder<BuffType, BuffType> EMPTY =
             registerWithEffect("empty", new BuffType(0, 0, false), (entity, amp) -> {});
     public static final DeferredHolder<BuffType, BuffType> BURNING =
@@ -65,8 +70,28 @@ public class ModBuffTypes {
     public static final DeferredHolder<BuffType, BuffType> FOR_WARDEN_EFFECT =
             registerWithEffect("for_warden_effect", new BuffType(-1, 0, false), new ForWardenEffectBuffEffect());
     public static final DeferredHolder<BuffType, BuffType> WARDEN_DETECTED =
-            registerWithEffect("warden_detected", new BuffType(-1, 0, false), new WardenDetectedBuffEffect());
+            registerWithEffect("warden_detected", new BuffType(-1, 0, false), (entity, amp) -> {});
+    public static final DeferredHolder<BuffType, BuffType> ANCIENT_ENCHANTED_GOLDEN_APPLE =
+            registerWithEffect("ancient_enchanted_golden_apple", new BuffType(-1, 0, false), (entity, amp) -> {});
+    public static final DeferredHolder<BuffType, BuffType> BAKLAVA_VIZIER_COOLDOWN =
+            registerWithEffect("baklava_vizier_cooldown",
+                    new BuffType(36000, 0, false),
+                    (entity, amp) -> {});
+    public static final DeferredHolder<BuffType, BuffType> BONE_LORD_ASH_RICE =
+            registerWithEffect("bone_lord_ash_rice",
+                    new BuffType(6000, 0, false),
+                    new BoneLordAshRiceEffect());
+    // 樱花蛋糕攻击力加成（持续 1200 ticks = 1 分钟）
+    public static final DeferredHolder<BuffType, BuffType> CHERRY_BLOSSOM_ATTACK_BOOST =
+            registerWithEffect("cherry_blossom_attack_boost",
+                    new BuffType(1200, 0, false),
+                    new CherryBlossomAttackBoostEffect());
 
+    // 樱花蛋糕惩罚标记（持续 80 ticks = 4 秒，足够完成 3 次闪电）
+    public static final DeferredHolder<BuffType, BuffType> CHERRY_BLOSSOM_PUNISHMENT =
+            registerWithEffect("cherry_blossom_punishment",
+                    new BuffType(80, 0, false),
+                    new CherryBlossomPunishmentEffect());
     // MinionBoost 比较特殊，使用 stackable = true，amplifier 代表累计层数
     public static final DeferredHolder<BuffType, BuffType> MINION_BOOST =
             registerWithEffect("minion_boost", new BuffType(-1, 1, true), new MinionBoostBuffEffect());

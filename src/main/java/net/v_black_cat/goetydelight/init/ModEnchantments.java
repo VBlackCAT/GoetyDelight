@@ -16,6 +16,7 @@ import net.minecraft.world.item.enchantment.EnchantmentTarget;
 import net.minecraft.world.item.enchantment.LevelBasedValue;
 import net.minecraft.world.item.enchantment.effects.AddValue;
 import net.minecraft.world.item.enchantment.effects.EnchantmentAttributeEffect;
+import net.neoforged.bus.api.IEventBus;
 import net.v_black_cat.goetydelight.GoetyDelight;
 
 public class ModEnchantments {
