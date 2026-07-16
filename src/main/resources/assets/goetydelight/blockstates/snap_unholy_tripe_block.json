@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=east,servings=3": {"model": "goetydelight:block/snap_unholy_tripe_block_stage_0", "y": 90},
+    "facing=east,servings=2": {"model": "goetydelight:block/snap_unholy_tripe_block_stage_1", "y": 90},
+    "facing=east,servings=1": {"model": "goetydelight:block/snap_unholy_tripe_block_stage_2", "y": 90},
+    "facing=east,servings=0": {"model": "goetydelight:block/snap_unholy_tripe_block_stage_3", "y": 90},
+    "facing=north,servings=3": {"model": "goetydelight:block/snap_unholy_tripe_block_stage_0"},
+    "facing=north,servings=2": {"model": "goetydelight:block/snap_unholy_tripe_block_stage_1"},
+    "facing=north,servings=1": {"model": "goetydelight:block/snap_unholy_tripe_block_stage_2"},
+    "facing=north,servings=0": {"model": "goetydelight:block/snap_unholy_tripe_block_stage_3"},
+    "facing=south,servings=3": {"model": "goetydelight:block/snap_unholy_tripe_block_stage_0", "y": 180},
+    "facing=south,servings=2": {"model": "goetydelight:block/snap_unholy_tripe_block_stage_1", "y": 180},
+    "facing=south,servings=1": {"model": "goetydelight:block/snap_unholy_tripe_block_stage_2", "y": 180},
+    "facing=south,servings=0": {"model": "goetydelight:block/snap_unholy_tripe_block_stage_3", "y": 180},
+    "facing=west,servings=3": {"model": "goetydelight:block/snap_unholy_tripe_block_stage_0", "y": 270},
+    "facing=west,servings=2": {"model": "goetydelight:block/snap_unholy_tripe_block_stage_1", "y": 270},
+    "facing=west,servings=1": {"model": "goetydelight:block/snap_unholy_tripe_block_stage_2", "y": 270},
+    "facing=west,servings=0": {"model": "goetydelight:block/snap_unholy_tripe_block_stage_3", "y": 270}
+  }
+}

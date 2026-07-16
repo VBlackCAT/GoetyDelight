@@ -1,6 +1,6 @@
 {
     "name": "砰砰不洁旺",
-    "icon": "goetydelight:snap_unholy_tripe",
+    "icon": "goetydelight:bowl_of_snap_unholy_tripe",
     "category": "goety:goetydelight/food",
     "pages": [
         {
@@ -9,7 +9,7 @@
         },
         {
             "type": "goety:ritual",
-            "recipe": "goetydelight:ritual/snap_unholy_tripe"
+            "recipe": "goetydelight:ritual/bowl_of_snap_unholy_tripe"
         }
     ]
 }

@@ -25,7 +25,6 @@ import java.util.Random;
 import java.util.function.Supplier;
 
 import static com.Polarice3.Goety.common.effects.GoetyEffects.*;
-import static net.v_black_cat.goetydelight.block.ModBlocks.EXAMPLE_BLOCK;
 import static net.v_black_cat.goetydelight.util.TimeConverter.minToTick;
 import static net.v_black_cat.goetydelight.util.TimeConverter.sToTick;
 import static vectorwing.farmersdelight.common.registry.ModItems.basicItem;
@@ -111,15 +110,17 @@ public class ModItems {
     public static final RegistryObject<Item> PURE_DRINK;
     public static final RegistryObject<Item> LICHS_CHAOS_STEW;
     public static final RegistryObject<Item> MAGIC_QUARTZ_COOKIE;
-    public static final RegistryObject<Item> SNAP_UNHOLY_TRIPE;
+    public static final RegistryObject<Item> BOWL_OF_SNAP_UNHOLY_TRIPE;
     public static final RegistryObject<Item> SUNDAE_OF_THE_PHILOSOPHERS_POTION;
     public static final RegistryObject<Item> THE_BOX_OF_THE_DEAD;
     public static final RegistryObject<Item> RING_PACKED_VOID_GEL_JELLY;
     public static final RegistryObject<Item> STUFFED_TALL_SKULL_RICE;
     public static final RegistryObject<Item> OMINOUS_RAMUNE;
     public static final RegistryObject<Item> BOAT_STUFFED_ROASTED_WARDEN_HEAD;
-    public static final RegistryObject<Item> BOAT_STUFFED_ROASTED_WARDEN_MEET;
-    public static final RegistryObject<Item> BOAT_STUFFED_ROASTED_WARDEN_FLANK;
+    public static final RegistryObject<Item> BOAT_STUFFED_ROASTED_WARDEN_HAND;
+    public static final RegistryObject<Item> BOAT_STUFFED_ROASTED_WARDEN_BODY;
+    public static final RegistryObject<Item> BOAT_STUFFED_ROASTED_WARDEN_LEG;
+    public static final RegistryObject<Item> BOAT_STUFFED_ROASTED_WARDEN_SOUP;
     public static final RegistryObject<Item> ANCIENT_ENCHANTED_GOLDEN_APPLE;
     public static final RegistryObject<Item> NOT_ANYTHING;
     public static final RegistryObject<Item> ROAST_LAOWANG;
@@ -142,6 +143,8 @@ public class ModItems {
     public static final RegistryObject<Item> ROAST_LAOWANG_LEG;
     public static final RegistryObject<Item> ONION_PORK_CHOP_RICE;
     public static final RegistryObject<Item> ECTOPLASMIC_MELON_SALAD;
+    public static final RegistryObject<Item> ROAST_SPIDER_EGG;
+    public static final RegistryObject<Item> BOAT_PLATE;
 
 
 
@@ -170,12 +173,16 @@ public class ModItems {
     private static final Supplier<MobEffect> FROSTY_AURA_SUPPLIER = goetyBuff("frosty_aura");
     private static final Supplier<MobEffect> FIERY_AURA_SUPPLIER = goetyBuff("fiery_aura");
     private static final Supplier<MobEffect> ILLAGUE = goetyBuff("illague");
+    private static final Supplier<MobEffect> VENOMOUS_HANDS = goetyBuff("venomous_hands");
 
     // ==================== 静态初始化块：物品定义区域 ====================
     static {
 
         NOT_ANYTHING = ITEMS.register("not_anything",
                 () -> new Item(basicItem().stacksTo(1)));
+
+        BOAT_PLATE = ITEMS.register("boat_plate",
+                () -> new Item(basicItem().stacksTo(64)));
 
         CUSTOM_DOLL = ITEMS.register("custom_doll", () -> new CustomDollItem(ModBlocks.CUSTOM_DOLL.get()));
 
@@ -577,14 +584,14 @@ public class ModItems {
                 () -> new MagicQuartzCookieItem(basicItem().stacksTo(64).food(
                         simpleFoodItemProperties(8, 4)
                                .build())));
-        SNAP_UNHOLY_TRIPE = ITEMS.register("snap_unholy_tripe",
-                () -> new SnapUnholyTripeItem(basicItem().stacksTo(16).rarity(Rarity.RARE).food(
+        BOWL_OF_SNAP_UNHOLY_TRIPE = ITEMS.register("bowl_of_snap_unholy_tripe",
+                () -> new SnapUnholyTripeItem(basicItem().stacksTo(16).rarity(Rarity.RARE).craftRemainder(Items.BOWL).food(
                         simpleFoodItemProperties(18, 20)
-                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(30), 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(MobEffects.SATURATION, sToTick(10), 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(30), 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), minToTick(5), 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE,  minToTick(30), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.SATURATION, sToTick(5), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), minToTick(2), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE,  minToTick(10), 0), 1.0F)
                                 .build())));
         SUNDAE_OF_THE_PHILOSOPHERS_POTION = ITEMS.register("sundae_of_the_philosophers_potion",
                 () -> new SundaeOfThePhilosophersPotionItem(basicItem().stacksTo(16).rarity(Rarity.EPIC).food(
@@ -622,7 +629,7 @@ public class ModItems {
                                         .build())));
 
         BOAT_STUFFED_ROASTED_WARDEN_HEAD = ITEMS.register("boat_stuffed_roasted_warden_head",
-                    () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).craftRemainder(Items.DARK_OAK_BOAT)
+                    () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).craftRemainder(ModItems.BOAT_PLATE.get())
                         .food(simpleFoodItemProperties(25, 20)
                                         .effect(() ->new MobEffectInstance(SOUL_ARMOR.get(), minToTick(5), 3), 1.0F)
                                         .effect(() ->new MobEffectInstance(ModEffects.HUNTING_DENIAL.get(), minToTick(10), 0), 1.0F)
@@ -631,8 +638,8 @@ public class ModItems {
                                         .effect(() ->new MobEffectInstance(ModEffects.WARDEN.get(), minToTick(10), 0), 1.0F)
                                         .build())));
 
-        BOAT_STUFFED_ROASTED_WARDEN_MEET = ITEMS.register("boat_stuffed_roasted_warden_meet",
-                    () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).craftRemainder(Items.DARK_OAK_BOAT)
+        BOAT_STUFFED_ROASTED_WARDEN_HAND = ITEMS.register("boat_stuffed_roasted_warden_hand",
+                    () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).craftRemainder(ModItems.BOAT_PLATE.get())
                         .food(simpleFoodItemProperties(30, 25)
                                         .effect(() ->new MobEffectInstance(SOUL_ARMOR.get(), minToTick(5), 3), 1.0F)
                                         .effect(() ->new MobEffectInstance(ModEffects.HUNTING_DENIAL.get(), minToTick(10), 0), 1.0F)
@@ -641,8 +648,8 @@ public class ModItems {
                                         .effect(() ->new MobEffectInstance(ModEffects.WARDEN.get(), minToTick(10), 0), 1.0F)
                                         .build())));
 
-        BOAT_STUFFED_ROASTED_WARDEN_FLANK = ITEMS.register("boat_stuffed_roasted_warden_flank",
-                    () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).craftRemainder(Items.DARK_OAK_BOAT)
+        BOAT_STUFFED_ROASTED_WARDEN_BODY = ITEMS.register("boat_stuffed_roasted_warden_body",
+                    () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).craftRemainder(ModItems.BOAT_PLATE.get())
                         .food(simpleFoodItemProperties(40, 30)
                                         .effect(() ->new MobEffectInstance(SOUL_ARMOR.get(), minToTick(5), 3), 1.0F)
                                         .effect(() ->new MobEffectInstance(ModEffects.HUNTING_DENIAL.get(), minToTick(15), 0), 1.0F)
@@ -650,6 +657,26 @@ public class ModItems {
                                         .effect(() ->new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(7.5f), 1), 1.0F)
                                         .effect(() ->new MobEffectInstance(ModEffects.WARDEN.get(), minToTick(15), 0), 1.0F)
                                         .build())));
+
+        BOAT_STUFFED_ROASTED_WARDEN_LEG = ITEMS.register("boat_stuffed_roasted_warden_leg",
+                () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).craftRemainder(ModItems.BOAT_PLATE.get())
+                        .food(simpleFoodItemProperties(30, 25)
+                                .effect(() ->new MobEffectInstance(SOUL_ARMOR.get(), minToTick(5), 3), 1.0F)
+                                .effect(() ->new MobEffectInstance(ModEffects.HUNTING_DENIAL.get(), minToTick(10), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(MobEffects.REGENERATION, minToTick(5), 1), 1.0F)
+                                .effect(() ->new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(5), 1), 1.0F)
+                                .effect(() ->new MobEffectInstance(ModEffects.WARDEN.get(), minToTick(10), 0), 1.0F)
+                                .build())));
+
+        BOAT_STUFFED_ROASTED_WARDEN_SOUP = ITEMS.register("boat_stuffed_roasted_warden_soup",
+                () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).craftRemainder(ModItems.BOAT_PLATE.get())
+                        .food(simpleFoodItemProperties(40, 30)
+                                .effect(() ->new MobEffectInstance(SOUL_ARMOR.get(), minToTick(5), 3), 1.0F)
+                                .effect(() ->new MobEffectInstance(ModEffects.HUNTING_DENIAL.get(), minToTick(15), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(MobEffects.REGENERATION, minToTick(7.5f), 1), 1.0F)
+                                .effect(() ->new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(7.5f), 1), 1.0F)
+                                .effect(() ->new MobEffectInstance(ModEffects.WARDEN.get(), minToTick(15), 0), 1.0F)
+                                .build())));
 
         ANCIENT_ENCHANTED_GOLDEN_APPLE = ITEMS.register("ancient_enchanted_golden_apple",
                 () -> new AncientEnchantedGoldenAppleItem(basicItem().stacksTo(64).rarity(Rarity.EPIC)
@@ -783,6 +810,14 @@ public class ModItems {
                         .food(simpleFoodItemProperties(6, 5)
                                 .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(CHILL_HIDE_EFFECT_SUPPLIER.get(), minToTick(1), 2), 1.0F)
+                                .build())));
+
+        ROAST_SPIDER_EGG = ITEMS.register("roast_spider_egg",
+                () -> new Item(basicItem().stacksTo(16).rarity(Rarity.COMMON)
+                        .food(simpleFoodItemProperties(10, 6)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(CLIMBING_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(VENOMOUS_HANDS.get(), minToTick(5), 0), 1.0F)
                                 .build())));
 
         // ==================== 种子物品 ====================

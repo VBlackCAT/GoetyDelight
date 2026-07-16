@@ -31,7 +31,7 @@
             "type": "spotlight",
             "title": "船装烤监守者肢",
             "link_recipe": true,
-            "item": "goetydelight:boat_stuffed_roasted_warden_meet",
+            "item": "goetydelight:boat_stuffed_roasted_warden_hand",
             "scale": 1.2,
             "text": "总计可食用4次$(br)每次食用后给予食用者：$(br)$(li)5分钟的灵魂护甲IV、生命提升II、力量II、巡声者$(li)10分钟的猎杀拒止$(li)增加5000点灵魂能量。$(br)注意：主手持有该物品时副手物品会失效"
         },
@@ -39,7 +39,7 @@
             "type": "spotlight",
             "title": "船装烤监守者身",
             "link_recipe": true,
-            "item": "goetydelight:boat_stuffed_roasted_warden_flank",
+            "item": "goetydelight:boat_stuffed_roasted_warden_body",
             "scale": 1.2,
             "text": "总计可食用4次$(br)每次食用后给予食用者：$(br)$(li)7.5分钟的灵魂护甲IV、生命提升II、力量II、巡声者(li)15分钟的猎杀拒止$(li)增加5000点灵魂能量。$(br)注意：主手持有该物品时副手物品会失效"
         }
