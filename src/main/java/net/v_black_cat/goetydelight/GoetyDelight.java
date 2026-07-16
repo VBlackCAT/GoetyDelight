@@ -33,7 +33,7 @@ public class GoetyDelight {
         ModAttributes.register(modEventBus);
         ModBlockEntities.register(modEventBus);
         ModEffects.register(modEventBus);
-        ModEnchantments.register(modEventBus);
+//        ModEnchantments.register(modEventBus);
         ModEntities.register(modEventBus);
         ModGameEvents.register(modEventBus);
         ModMenuTypes.register(modEventBus);

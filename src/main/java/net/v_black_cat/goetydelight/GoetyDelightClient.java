@@ -7,6 +7,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.v_black_cat.goetydelight.events.ClientSetupHandler;
+import net.v_black_cat.goetydelight.events.RegisterClientExtensionsEventHandler;
 
 @Mod(value = GoetyDelight.MODID, dist = Dist.CLIENT)
 public class GoetyDelightClient {
@@ -17,5 +18,6 @@ public class GoetyDelightClient {
 
         // 手动注册客户端设置事件监听器
         modEventBus.addListener(ClientSetupHandler::onClientSetup);
+        modEventBus.addListener(RegisterClientExtensionsEventHandler::onRegisterClientExtensions);
     }
 }

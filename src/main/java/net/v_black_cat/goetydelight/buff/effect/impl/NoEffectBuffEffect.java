@@ -3,7 +3,7 @@ package net.v_black_cat.goetydelight.buff.effect.impl;
 import net.minecraft.world.entity.LivingEntity;
 import net.v_black_cat.goetydelight.buff.effect.BuffEffect;
 
-public class WardenDetectedBuffEffect implements BuffEffect {
+public class NoEffectBuffEffect implements BuffEffect {
     @Override
     public void apply(LivingEntity entity, int amplifier) {}
     @Override

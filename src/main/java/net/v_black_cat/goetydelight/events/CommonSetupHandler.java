@@ -13,14 +13,6 @@ public class CommonSetupHandler {
     public static void onCommonSetup(FMLCommonSetupEvent event) {
         GoetyDelight.LOGGER.info("HELLO FROM COMMON SETUP");
 
-        if (ModConfig.LOG_DIRT_BLOCK.getAsBoolean()) {
-            GoetyDelight.LOGGER.info("DIRT BLOCK >> {}", BuiltInRegistries.BLOCK.getKey(Blocks.DIRT));
-        }
-
-        GoetyDelight.LOGGER.info("{}{}", ModConfig.MAGIC_NUMBER_INTRODUCTION.get(), ModConfig.MAGIC_NUMBER.getAsInt());
-
-        ModConfig.ITEM_STRINGS.get().forEach(item -> GoetyDelight.LOGGER.info("ITEM >> {}", item));
-
         DelightRitualType.onCommonSetup(event);
 
 
