@@ -114,18 +114,25 @@ public class ModBlocks {
             new MenemenBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
                     ModItems.MENEMEN_WITH_BREAD, true),1);
 
+    public static final RegistryObject<Block> SNAP_UNHOLY_TRIPE_BLOCK = registerBlock("snap_unholy_tripe_block",() ->
+            new SnapUnholyTripeBlock(BlockBehaviour.Properties.copy(Blocks.CAKE),
+                    ModItems.BOWL_OF_SNAP_UNHOLY_TRIPE, true),1);
+
     //坚守者
     public static final RegistryObject<Block>  BOAT_STUFFED_ROASTED_WARDEN_BlOCK= registerBlock("boat_stuffed_roasted_warden_block",
             () -> new BoatStuffedRoastedWardenBlock(
                     BlockBehaviour.Properties.copy(Blocks.CAKE),
                     Arrays.asList(
+                            ModItems.ROAST_SPIDER_EGG,
                             ModItems.BOAT_STUFFED_ROASTED_WARDEN_HEAD,
-                            ModItems.BOAT_STUFFED_ROASTED_WARDEN_MEET,
-                            ModItems.BOAT_STUFFED_ROASTED_WARDEN_MEET,
-                            ModItems.BOAT_STUFFED_ROASTED_WARDEN_MEET,
-                            ModItems.BOAT_STUFFED_ROASTED_WARDEN_MEET,
-                            ModItems.BOAT_STUFFED_ROASTED_WARDEN_FLANK,
-                            ModItems.BOAT_STUFFED_ROASTED_WARDEN_FLANK
+                            ModItems.BOAT_STUFFED_ROASTED_WARDEN_HAND,
+                            ModItems.BOAT_STUFFED_ROASTED_WARDEN_LEG,
+                            ModItems.BOAT_STUFFED_ROASTED_WARDEN_HAND,
+                            ModItems.BOAT_STUFFED_ROASTED_WARDEN_LEG,
+                            ModItems.BOAT_STUFFED_ROASTED_WARDEN_SOUP,
+                            ModItems.BOAT_STUFFED_ROASTED_WARDEN_SOUP,
+                            ModItems.BOAT_STUFFED_ROASTED_WARDEN_SOUP,
+                            ModItems.BOAT_STUFFED_ROASTED_WARDEN_BODY
                     ),
                     true
             ),1

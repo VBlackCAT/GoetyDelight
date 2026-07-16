@@ -29,17 +29,17 @@
         },
         {
             "type": "spotlight",
-            "title": "Boat Stuffed Roasted Warden Meet",
+            "title": "Boat Stuffed Roasted Warden Hand",
             "link_recipe": true,
-            "item": "goetydelight:boat_stuffed_roasted_warden_meet",
+            "item": "goetydelight:boat_stuffed_roasted_warden_hand",
             "scale": 1.2,
             "text": "Total Edible Uses: 4$(br)Effects granted per consumption:$(br)$(li)5 minutes of Soul Armor IV,Health Boost II, Strength II, and Sound Tracker$(li)10 minutes of Hunt Immunity$(li)+5000 Soul Energy$(br)Note:Off-hand item becomes inactive while this item is held in the main hand."
         },
         {
             "type": "spotlight",
-            "title": "Boat Stuffed Roasted Warden Flank",
+            "title": "Boat Stuffed Roasted Warden Body",
             "link_recipe": true,
-            "item": "goetydelight:boat_stuffed_roasted_warden_flank",
+            "item": "goetydelight:boat_stuffed_roasted_warden_body",
             "scale": 1.2,
             "text": "Total Edible Uses: 4$(br)Effects granted per consumption:$(br)$(li)7.5 minutes of Soul Armor IV, Health Boost II, Strength II, and Acoustic Observer$(li)15 minutes of Hunt Denial$(li)+5000 Soul Energy$(br)Note: Off-hand item becomes inactive while this item is held in the main hand."
         }

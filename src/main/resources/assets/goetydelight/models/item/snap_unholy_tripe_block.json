@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "goetydelight:item/snap_unholy_tripe"
+    "layer0": "goetydelight:item/snap_unholy_tripe_block"
   }
 }

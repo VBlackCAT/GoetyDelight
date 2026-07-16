@@ -31,7 +31,7 @@
             "type": "spotlight",
             "title": "Membro do Defensor Assado na Tigela",
             "link_recipe": true,
-            "item": "goetydelight:boat_stuffed_roasted_warden_meet",
+            "item": "goetydelight:boat_stuffed_roasted_warden_hand",
             "scale": 1.2,
             "text": "Pode ser consumido 4 vezes no total.$(br)Cada consumo concede a quem consome:$(br)$(li)5 minutos de Armadura de Alma IV, Vida Extra II, Força II, Defensor$(li)10 minutos de Negação da Caça$(li)Aumenta 5000 pontos de Energia das Almas.$(br>Atenção: Itens na mão secundária não funcionam enquanto este item estiver na mão principal."
         },
@@ -39,7 +39,7 @@
             "type": "spotlight",
             "title": "Lombo do Defensor Assado na Tigela",
             "link_recipe": true,
-            "item": "goetydelight:boat_stuffed_roasted_warden_flank",
+            "item": "goetydelight:boat_stuffed_roasted_warden_body",
             "scale": 1.2,
             "text": "Pode ser consumido 4 vezes no total.$(br)Cada consumo concede a quem consome:$(br)$(li)7.5 minutos de Armadura de Alma IV, Vida Extra II, Força II, Defensor$(li)15 minutos de Negação da Caça$(li)Aumenta 5000 pontos de Energia das Almas.$(br>Atenção: Itens na mão secundária não funcionam enquanto este item estiver na mão principal."
         }

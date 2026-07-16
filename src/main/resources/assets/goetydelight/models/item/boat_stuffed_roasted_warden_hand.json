@@ -3,7 +3,7 @@
 	"credit": "Made with Blockbench",
 	"parent": "minecraft:item/generated",
 	"textures": {
-		"layer0": "goetydelight:item/boat_stuffed_roasted_warden_meet"
+		"layer0": "goetydelight:item/boat_stuffed_roasted_warden_hand"
 	},
 	"display": {
 		"thirdperson_righthand": {

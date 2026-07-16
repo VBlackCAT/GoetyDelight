@@ -15,6 +15,9 @@ public class ModRecipeSerializers {
     public static final RegistryObject<RecipeSerializer<?>> POTION_AMPLIFIER =
             SERIALIZERS.register("potion_amplifier", () -> new PotionAmplifierRecipe.Serializer());
 
+    public static final RegistryObject<RecipeSerializer<?>> RECRAFT_BOAT_PLATE =
+            SERIALIZERS.register("recraft_boat_plate", () -> new RecraftBoatPlate.Serializer());
+
     public static final RegistryObject<RecipeSerializer<DollEntityCraftingRecipe>> DOLL_ENTITY_CRAFTING = SERIALIZERS.register("doll_entity_crafting",
             () -> new SimpleCraftingRecipeSerializer<>(DollEntityCraftingRecipe::new));
 }
