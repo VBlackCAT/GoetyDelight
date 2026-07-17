@@ -18,9 +18,13 @@ import com.Polarice3.Goety.common.network.ModNetwork;
 import com.Polarice3.Goety.common.network.server.SPlayPlayerSoundPacket;
 import com.Polarice3.Goety.init.ModSounds;
 import net.v_black_cat.goetydelight.ability.MinionBoost;
+import net.v_black_cat.goetydelight.init.ModBuffTypes;
+import net.v_black_cat.goetydelight.util.BuffUtil;
 import vectorwing.farmersdelight.common.item.DrinkableItem;
 
 public class NightHeartPeaSoupItem extends DrinkableItem implements IWand {
+
+    private static final int SOUP_BOOST_DURATION = -1;
 
     public NightHeartPeaSoupItem(Properties pProperties) {
         super(pProperties);
@@ -63,8 +67,9 @@ public class NightHeartPeaSoupItem extends DrinkableItem implements IWand {
                 SEHelper.setEndWalk(player, player.blockPosition(), player.level().dimension());
                 ModNetwork.sendTo(player, new SPlayPlayerSoundPacket((SoundEvent)ModSounds.END_WALK.get(), 1.0F, 1.0F));
 
-                MinionBoost.increaseSoupBoostCount(player);
-                MinionBoost.applyMinionBoosts(player);
+                // 使用 Buff 系统增加仆从增益层数
+                int currentAmplifier = BuffUtil.getBuffAmplifier(player, ModBuffTypes.MINION_BOOST.getId());
+                BuffUtil.applyBuff(player, ModBuffTypes.MINION_BOOST.getId(), SOUP_BOOST_DURATION, currentAmplifier + 1);
             }
         }
 

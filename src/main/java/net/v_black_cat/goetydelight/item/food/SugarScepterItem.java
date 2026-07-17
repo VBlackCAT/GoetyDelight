@@ -15,8 +15,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.v_black_cat.goetydelight.ability.AbilityRegistry;
-import net.v_black_cat.goetydelight.ability.TimedAbilitySystem;
+import net.v_black_cat.goetydelight.init.ModBuffTypes;
+import net.v_black_cat.goetydelight.util.BuffUtil;
 
 public class SugarScepterItem extends Item {
     // 冷却时间（20秒，以tick为单位）
@@ -35,16 +35,8 @@ public class SugarScepterItem extends Item {
             }
 
             // 添加免疫能力（持续20秒）
-            boolean success = TimedAbilitySystem.addAbilityToEntity(
-                    entity,
-                    AbilityRegistry.SUGAR_SCEPTER_IMMUNITY,
-                    COOLDOWN_TICKS
-            );
-
-            if (success) {
-                // 设置物品冷却时间（20秒）
-                player.getCooldowns().addCooldown(this, COOLDOWN_TICKS);
-            }
+            BuffUtil.applyBuff(entity, ModBuffTypes.SUGAR_SCEPTER_IMMUNITY.getId(), COOLDOWN_TICKS, 0);
+            player.getCooldowns().addCooldown(this, COOLDOWN_TICKS);
         }
 
         return super.finishUsingItem(stack, level, entity);
@@ -61,9 +53,9 @@ public class SugarScepterItem extends Item {
             if (entity.level().isClientSide) return;
 
             // 检查实体是否有免疫能力
-            boolean hasImmunity = TimedAbilitySystem.hasAbility(
+            boolean hasImmunity = BuffUtil.hasBuff(
                     entity,
-                    AbilityRegistry.SUGAR_SCEPTER_IMMUNITY
+                    ModBuffTypes.SUGAR_SCEPTER_IMMUNITY.getId()
             );
 
             // 如果有免疫能力，取消伤害并移除能力
@@ -90,7 +82,7 @@ public class SugarScepterItem extends Item {
                 event.setCanceled(true);
 
                 // 移除免疫能力（一次性使用）
-                TimedAbilitySystem.removeAbilityFromEntity(entity, AbilityRegistry.SUGAR_SCEPTER_IMMUNITY);
+                BuffUtil.removeBuff(entity, ModBuffTypes.SUGAR_SCEPTER_IMMUNITY.getId());
                 Vec3 pos = entity.position();
                 entity.level().playSound(
                         null, // 无特定播放者

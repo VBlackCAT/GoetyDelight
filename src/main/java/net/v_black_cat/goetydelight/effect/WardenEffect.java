@@ -16,8 +16,8 @@ import net.minecraft.world.level.gameevent.EntityPositionSource;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.PositionSource;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
-import net.v_black_cat.goetydelight.ability.AbilityRegistry;
-import net.v_black_cat.goetydelight.ability.TimedAbilitySystem;
+import net.v_black_cat.goetydelight.init.ModBuffTypes;
+import net.v_black_cat.goetydelight.util.BuffUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -119,7 +119,7 @@ public class WardenEffect extends MobEffect {
         
         if (attacker.hasEffect(ModEffects.WARDEN.get())) {
             
-            if (TimedAbilitySystem.hasAbility(target, AbilityRegistry.WARDEN_DETECTED)) {
+            if (BuffUtil.hasBuff(target, ModBuffTypes.WARDEN_DETECTED.getId())) {
                 return true;
             }
             
@@ -211,7 +211,7 @@ public class WardenEffect extends MobEffect {
                     effect.vibrationTargets.put(ownerId, targetData);
                     
                     
-                    TimedAbilitySystem.addAbilityToEntity(target, AbilityRegistry.WARDEN_DETECTED, 100); 
+                    BuffUtil.applyBuff(target, ModBuffTypes.WARDEN_DETECTED.getId(), 100, 0); 
 
                     LOGGER.debug("[WardenEffect] {} gained damage boost against {} for 5 seconds",
                             owner.getName().getString(), target.getName().getString());

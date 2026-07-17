@@ -8,8 +8,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.v_black_cat.goetydelight.ability.AbilityRegistry;
-import net.v_black_cat.goetydelight.ability.TimedAbilitySystem;
+import net.v_black_cat.goetydelight.init.ModBuffTypes;
+import net.v_black_cat.goetydelight.util.BuffUtil;
 
 @Mod.EventBusSubscriber(modid = "goetydelight")
 public class CrimsonMemoriesEffect extends MobEffect {
@@ -27,7 +27,7 @@ public class CrimsonMemoriesEffect extends MobEffect {
         MobEffectInstance effectInstance = event.getEffectInstance();
         if (effectInstance.getEffect() instanceof CrimsonMemoriesEffect && !entity.level().isClientSide()) {
             int duration = effectInstance.getDuration();
-            TimedAbilitySystem.addAbilityToEntity(entity, AbilityRegistry.CRIMSON_MEMORIES, duration);
+            BuffUtil.applyBuff(entity, ModBuffTypes.CRIMSON_MEMORIES.getId(), duration, 0);
         }
     }
 }

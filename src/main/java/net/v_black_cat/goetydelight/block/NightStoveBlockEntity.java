@@ -27,8 +27,8 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.v_black_cat.goetydelight.ability.AbilityRegistry;
-import net.v_black_cat.goetydelight.ability.TimedAbilitySystem;
+import net.v_black_cat.goetydelight.init.ModBuffTypes;
+import net.v_black_cat.goetydelight.util.BuffUtil;
 import net.v_black_cat.goetydelight.screen.NightStoveMenu;
 
 import javax.annotation.Nullable;
@@ -310,10 +310,11 @@ public class NightStoveBlockEntity extends BaseContainerBlockEntity implements W
             ));
 
             // 给予 NightStove 能力（10 秒）
-            TimedAbilitySystem.addAbilityToEntity(
+            BuffUtil.applyBuff(
                     player,
-                    AbilityRegistry.NIGHT_STOVE,
-                    200
+                    ModBuffTypes.NIGHT_STOVE.getId(),
+                    200,
+                    0
             );
 
             List<LivingEntity> alliedEntities = level.getEntitiesOfClass(LivingEntity.class, area,
@@ -336,10 +337,11 @@ public class NightStoveBlockEntity extends BaseContainerBlockEntity implements W
                         false
                 ));
 
-                TimedAbilitySystem.addAbilityToEntity(
+                BuffUtil.applyBuff(
                         ally,
-                        AbilityRegistry.NIGHT_STOVE,
-                        200
+                        ModBuffTypes.NIGHT_STOVE.getId(),
+                        200,
+                        0
                 );
             }
         }
