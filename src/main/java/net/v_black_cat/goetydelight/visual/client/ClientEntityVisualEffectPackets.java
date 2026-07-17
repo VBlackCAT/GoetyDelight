@@ -8,7 +8,10 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.mixin.EntityVisualEffectMixin;
 import net.v_black_cat.goetydelight.visual.EntityVisualEffectSystem;
+import net.v_black_cat.goetydelight.visual.EntityVisualEffects;
+import net.v_black_cat.goetydelight.visual.IVisualEffectHolder;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -61,6 +64,11 @@ public final class ClientEntityVisualEffectPackets {
     }
 
     private static void apply(Entity entity, CompoundTag effectsTag) {
-        entity.getCapability(EntityVisualEffectSystem.ENTITY_VISUAL_EFFECTS).ifPresent(effects -> effects.deserializeNBT(effectsTag));
+        if (entity instanceof IVisualEffectHolder holder) {
+            EntityVisualEffects effects = holder.goetydelight$getVisualEffects();
+            if (effects != null) {
+                effects.deserializeNBT(effectsTag);
+            }
+        }
     }
 }

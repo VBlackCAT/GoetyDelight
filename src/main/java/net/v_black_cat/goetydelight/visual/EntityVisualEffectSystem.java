@@ -232,41 +232,21 @@ public final class EntityVisualEffectSystem {
 
 
     public static void sync(Entity entity) {
+        if (entity.level().isClientSide) return;
 
+        if (entity instanceof IVisualEffectHolder holder) {
+            EntityVisualEffects effects = holder.goetydelight$getVisualEffects();
+            if (effects == null) return;
 
-        if (entity.level().isClientSide) {
-            return;
+            SyncEntityVisualEffectsPacket packet = new SyncEntityVisualEffectsPacket(
+                    entity.getId(),
+                    effects.serializeNBTForSync()
+            );
+            NetworkHandler.INSTANCE.send(
+                    PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity),
+                    packet
+            );
         }
-
-
-
-        EntityVisualEffects effects =
-                entity.getCapability(
-                        ENTITY_VISUAL_EFFECTS
-                ).resolve().orElse(null);
-
-
-
-        if (effects == null) {
-            return;
-        }
-
-
-
-        SyncEntityVisualEffectsPacket packet =
-                new SyncEntityVisualEffectsPacket(
-                        entity.getId(),
-                        effects.serializeNBTForSync()
-                );
-
-
-
-        NetworkHandler.INSTANCE.send(
-                PacketDistributor.TRACKING_ENTITY_AND_SELF.with(
-                        () -> entity
-                ),
-                packet
-        );
     }
 
 
@@ -274,26 +254,11 @@ public final class EntityVisualEffectSystem {
 
 
 
-
     @SubscribeEvent
-    public static void onAttachCapabilities(
-            AttachCapabilitiesEvent<Entity> event
-    ) {
-
-
-        EntityVisualEffectsProvider provider =
-                new EntityVisualEffectsProvider();
-
-
-        event.addCapability(
-                CAPABILITY_ID,
-                provider
-        );
-
-
-        event.addListener(
-                provider::invalidate
-        );
+    public static void onAttachCapabilities(AttachCapabilitiesEvent<Entity> event) {
+        EntityVisualEffectsProvider provider = new EntityVisualEffectsProvider(event.getObject());
+        event.addCapability(CAPABILITY_ID, provider);
+        event.addListener(provider::invalidate);
     }
 
 
@@ -301,43 +266,20 @@ public final class EntityVisualEffectSystem {
 
 
 
-
     @SubscribeEvent
-    public static void onLevelTick(
-            TickEvent.LevelTickEvent event
-    ) {
-
-
-        if (
-                event.phase != TickEvent.Phase.END
-                        || event.level.isClientSide
-                        || !(event.level instanceof ServerLevel serverLevel)
-        ) {
+    public static void onLevelTick(TickEvent.LevelTickEvent event) {
+        if (event.phase != TickEvent.Phase.END
+                || event.level.isClientSide
+                || !(event.level instanceof ServerLevel serverLevel)) {
             return;
         }
-
-
 
         for (Entity entity : serverLevel.getAllEntities()) {
-
-
-            EntityVisualEffects effects =
-                    entity.getCapability(
-                            ENTITY_VISUAL_EFFECTS
-                    ).resolve().orElse(null);
-
-
-
-            if (effects == null) {
-                continue;
-            }
-
-
-
-            if (effects.tick()) {
-
-                sync(entity);
-
+            if (entity instanceof IVisualEffectHolder holder) {
+                EntityVisualEffects effects = holder.goetydelight$getVisualEffects();
+                if (effects != null && effects.tick()) {
+                    sync(entity);
+                }
             }
         }
     }
@@ -388,52 +330,20 @@ public final class EntityVisualEffectSystem {
 
 
     @SubscribeEvent
-    public static void onPlayerClone(
-            PlayerEvent.Clone event
-    ) {
+    public static void onPlayerClone(PlayerEvent.Clone event) {
+        if (event.getEntity().level().isClientSide) return;
 
+        if (event.getOriginal() instanceof IVisualEffectHolder oldHolder
+                && event.getEntity() instanceof IVisualEffectHolder newHolder) {
 
-        if (event.getEntity().level().isClientSide) {
-            return;
+            EntityVisualEffects oldEffects = oldHolder.goetydelight$getVisualEffects();
+            EntityVisualEffects newEffects = newHolder.goetydelight$getVisualEffects();
+
+            if (oldEffects != null && newEffects != null) {
+                newEffects.deserializeNBT(oldEffects.serializeNBT());
+            }
         }
-
-
-        event.getOriginal().reviveCaps();
-
-
-
-        EntityVisualEffects oldEffects =
-                event.getOriginal()
-                        .getCapability(
-                                ENTITY_VISUAL_EFFECTS
-                        )
-                        .resolve()
-                        .orElse(null);
-
-
-
-        EntityVisualEffects newEffects =
-                event.getEntity()
-                        .getCapability(
-                                ENTITY_VISUAL_EFFECTS
-                        )
-                        .resolve()
-                        .orElse(null);
-
-
-
-        if (oldEffects != null && newEffects != null) {
-
-            newEffects.deserializeNBT(
-                    oldEffects.serializeNBT()
-            );
-        }
-
-
-
-        event.getOriginal().invalidateCaps();
     }
-
 
 
 

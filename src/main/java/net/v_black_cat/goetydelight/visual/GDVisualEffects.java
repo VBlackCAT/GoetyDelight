@@ -21,7 +21,8 @@ public final class GDVisualEffects {
             VISUAL_EFFECTS.makeRegistry(() -> new RegistryBuilder<EntityVisualEffectType>()
                     .disableSaving()
                     .disableSync()
-                    .disableOverrides());
+                    .disableOverrides()
+            );
 
     public static final ResourceKey<EntityVisualEffectType> ORBIT_SPHERE_KEY = key("orbit_sphere");
     public static final ResourceKey<EntityVisualEffectType> HELIX_TRAIL_KEY = key("helix_trail");
@@ -52,140 +53,143 @@ public final class GDVisualEffects {
             EntityVisualEffectType.properties()
                     .infiniteDuration()
                     .renderDistance(80.0D)
+                    .persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> HELIX_TRAIL = register(
             HELIX_TRAIL_KEY,
             EntityVisualEffectType.properties()
                     .infiniteDuration()
                     .renderDistance(48.0D)
+                    .persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> DEPTH_OCCLUDED_HALO = register(
             DEPTH_OCCLUDED_HALO_KEY,
             EntityVisualEffectType.properties()
                     .infiniteDuration()
                     .renderDistance(72.0D)
+                    .persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> CONTACT_EDGE_GLOW = register(
             CONTACT_EDGE_GLOW_KEY,
             EntityVisualEffectType.properties()
                     .infiniteDuration()
-                    .renderDistance(48.0D)
+                    .renderDistance(48.0D).persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> SOFT_TRAIL = register(
             SOFT_TRAIL_KEY,
             EntityVisualEffectType.properties()
                     .infiniteDuration()
-                    .renderDistance(48.0D)
+                    .renderDistance(48.0D).persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> SCREEN_SPACE_SHOCKWAVE = register(
             SCREEN_SPACE_SHOCKWAVE_KEY,
             EntityVisualEffectType.properties()
                     .defaultDuration(36)
-                    .renderDistance(96.0D)
+                    .renderDistance(96.0D).persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> DEPTH_REFRACTION_HEATWAVE = register(
             DEPTH_REFRACTION_HEATWAVE_KEY,
             EntityVisualEffectType.properties()
                     .infiniteDuration()
-                    .renderDistance(48.0D)
+                    .renderDistance(48.0D).persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> VOLUMETRIC_LIGHT_COLUMN = register(
             VOLUMETRIC_LIGHT_COLUMN_KEY,
             EntityVisualEffectType.properties()
                     .infiniteDuration()
-                    .renderDistance(96.0D)
+                    .renderDistance(96.0D).persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> OUTLINE_SCAN = register(
             OUTLINE_SCAN_KEY,
             EntityVisualEffectType.properties()
                     .infiniteDuration()
-                    .renderDistance(64.0D)
+                    .renderDistance(64.0D).persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> BLOCK_CRACK_LIGHT = register(
             BLOCK_CRACK_LIGHT_KEY,
             EntityVisualEffectType.properties()
                     .infiniteDuration()
                     .renderDistance(80.0D)
-                    .renderInFirstPerson()
+                    .renderInFirstPerson().persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> RED_EYE_FLASH = register(
             RED_EYE_FLASH_KEY,
             EntityVisualEffectType.properties()
                     .infiniteDuration()
-                    .renderDistance(80.0D)
+                    .renderDistance(80.0D).persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> TILTED_HALO = register(
             TILTED_HALO_KEY,
             EntityVisualEffectType.properties()
                     .infiniteDuration()
-                    .renderDistance(88.0D)
+                    .renderDistance(88.0D).persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> DOOM_CORONA = register(
             DOOM_CORONA_KEY,
             EntityVisualEffectType.properties()
                     .infiniteDuration()
-                    .renderDistance(96.0D)
+                    .renderDistance(96.0D).persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> ABYSSAL_RIFT_EYE = register(
             ABYSSAL_RIFT_EYE_KEY,
             EntityVisualEffectType.properties()
                     .infiniteDuration()
-                    .renderDistance(96.0D)
+                    .renderDistance(96.0D).persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> HOLY_JUDGEMENT_HALO = register(
             HOLY_JUDGEMENT_HALO_KEY,
             EntityVisualEffectType.properties()
                     .infiniteDuration()
-                    .renderDistance(96.0D)
+                    .renderDistance(96.0D).persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> ASTRAL_CROWN = register(
             ASTRAL_CROWN_KEY,
             EntityVisualEffectType.properties()
                     .infiniteDuration()
-                    .renderDistance(96.0D)
+                    .renderDistance(96.0D).persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> BLOOD_MOON_BACKWHEEL = register(
             BLOOD_MOON_BACKWHEEL_KEY,
             EntityVisualEffectType.properties()
                     .infiniteDuration()
-                    .renderDistance(96.0D)
+                    .renderDistance(96.0D).persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> CAUSAL_CHAINS = register(
             CAUSAL_CHAINS_KEY,
             EntityVisualEffectType.properties()
                     .infiniteDuration()
-                    .renderDistance(96.0D)
+                    .renderDistance(96.0D).persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> INVERTED_CROSS_MARK = register(
             INVERTED_CROSS_MARK_KEY,
             EntityVisualEffectType.properties()
                     .infiniteDuration()
-                    .renderDistance(96.0D)
+                    .renderDistance(96.0D).persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> DEPTH_REFRACTION_PRESSURE = register(
             DEPTH_REFRACTION_PRESSURE_KEY,
             EntityVisualEffectType.properties()
                     .infiniteDuration()
                     .renderDistance(72.0D)
-                    .renderInFirstPerson()
+                    .renderInFirstPerson().persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> VOLUMETRIC_FLAME = register(
             VOLUMETRIC_FLAME_KEY,
             EntityVisualEffectType.properties()
                     .infiniteDuration()
-                    .renderDistance(80.0D)
+                    .renderDistance(80.0D).persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> PHANTOM_RIFT_SHARDS = register(
             PHANTOM_RIFT_SHARDS_KEY,
             EntityVisualEffectType.properties()
                     .infiniteDuration()
-                    .renderDistance(88.0D)
+                    .renderDistance(88.0D).persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> SUPREME_CHAOS_COSMOS = register(
             SUPREME_CHAOS_COSMOS_KEY,
             EntityVisualEffectType.properties()
                     .infiniteDuration()
-                    .renderDistance(96.0D)
+                    .renderDistance(96.0D).persistent()
     );
 
     private GDVisualEffects() {

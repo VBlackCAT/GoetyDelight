@@ -29,6 +29,7 @@ import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.visual.ActiveEntityVisualEffect;
 import net.v_black_cat.goetydelight.visual.EntityVisualEffectSystem;
 import net.v_black_cat.goetydelight.visual.GDVisualEffects;
+import net.v_black_cat.goetydelight.visual.IVisualEffectHolder;
 import org.joml.Matrix4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -167,7 +168,6 @@ public final class ScreenSpaceDepthEffectPostProcessor {
         orthoMatrix = new Matrix4f().setOrtho(0.0F, (float) width, 0.0F, (float) height, 0.1F, 1000.0F);
     }
 
-    // ── 修改：移除 ifPresent lambda ──
     private static EffectPacket collectEffects(ClientLevel level, RenderLevelStageEvent event) {
         EffectPacket packet = new EffectPacket();
         Vec3 cameraPosition = event.getCamera().getPosition();
@@ -182,10 +182,10 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                 continue;
             }
 
-            var effects = capability.orElse(null);
-            if (effects == null) {
-                continue;
-            }
+            var effects = entity instanceof IVisualEffectHolder holder
+                    ? holder.goetydelight$getVisualEffects()
+                    : null;
+            if (effects == null || effects.isEmpty()) continue;
 
             for (ActiveEntityVisualEffect activeEffect : effects.effects()) {
                 if (packet.count >= MAX_EFFECTS) {
