@@ -12,8 +12,8 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.v_black_cat.goetydelight.ability.AbilityRegistry;
-import net.v_black_cat.goetydelight.ability.TimedAbilitySystem;
+import net.v_black_cat.goetydelight.init.ModBuffTypes;
+import net.v_black_cat.goetydelight.util.BuffUtil;
 import net.v_black_cat.goetydelight.api.GetSpellAttributeFactory;
 
 import java.util.HashMap;
@@ -85,17 +85,19 @@ public class RubyHardCandyItem extends Item {
                 increasePotencyLevel(player);
 
                 
-                TimedAbilitySystem.addAbilityToEntity(
+                BuffUtil.applyBuff(
                         entity,
-                        AbilityRegistry.RUBY_HARD_CANDY_DAMAGE_REDUCTION,
-                        DAMAGE_REDUCTION_DURATION
+                        ModBuffTypes.RUBY_HARD_CANDY_DAMAGE_REDUCTION.getId(),
+                        DAMAGE_REDUCTION_DURATION,
+                        0
                 );
             } else {
                 
-                TimedAbilitySystem.addAbilityToEntity(
+                BuffUtil.applyBuff(
                         entity,
-                        AbilityRegistry.RUBY_HARD_CANDY_DAMAGE_REDUCTION,
-                        DAMAGE_REDUCTION_DURATION
+                        ModBuffTypes.RUBY_HARD_CANDY_DAMAGE_REDUCTION.getId(),
+                        DAMAGE_REDUCTION_DURATION,
+                        0
                 );
             }
 
@@ -221,9 +223,9 @@ public class RubyHardCandyItem extends Item {
             if (entity.level().isClientSide) return;
 
             // 检查实体是否有免伤能力
-            boolean hasDamageReduction = TimedAbilitySystem.hasAbility(
+            boolean hasDamageReduction = BuffUtil.hasBuff(
                     entity,
-                    AbilityRegistry.RUBY_HARD_CANDY_DAMAGE_REDUCTION
+                    ModBuffTypes.RUBY_HARD_CANDY_DAMAGE_REDUCTION.getId()
             );
 
             // 如果有免伤能力，减少50%伤害

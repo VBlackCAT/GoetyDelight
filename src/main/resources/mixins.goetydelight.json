@@ -11,6 +11,7 @@
     "EntityAccessor",
     "EntityVisualEffectMixin",
     "LivingEntityAccessor",
+    "LivingEntityBuffMixin",
     "MobMixin",
     "RecipeManagerMixin",
     "SummonSpellMixin",

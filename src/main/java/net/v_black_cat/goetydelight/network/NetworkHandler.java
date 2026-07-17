@@ -17,7 +17,7 @@ public class NetworkHandler {
         INSTANCE.registerMessage(
                 id++, ThrowSoupPacket.class, ThrowSoupPacket::encode, ThrowSoupPacket::decode, ThrowSoupPacket::handle);
         INSTANCE.registerMessage(
-                id++, SyncAbilityPacket.class, SyncAbilityPacket::encode, SyncAbilityPacket::decode, SyncAbilityPacket::handle);
+                id++, SyncBuffPacket.class, SyncBuffPacket::encode, SyncBuffPacket::decode, SyncBuffPacket::handle);
 
         INSTANCE.registerMessage(
                 id++,

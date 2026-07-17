@@ -15,8 +15,8 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.v_black_cat.goetydelight.item.ModItems;
-import net.v_black_cat.goetydelight.ability.TimedAbilitySystem;
-import net.v_black_cat.goetydelight.ability.AbilityRegistry;
+import net.v_black_cat.goetydelight.init.ModBuffTypes;
+import net.v_black_cat.goetydelight.util.BuffUtil;
 import org.joml.Quaternionf;
 
 public class RotationEffectHandler {
@@ -47,13 +47,8 @@ public class RotationEffectHandler {
 
 
         boolean hasImmunity;
-        if (event.getEntity().level().isClientSide) {
-            // 在客户端，检查我们通过网络包设置的标记
-            hasImmunity = event.getEntity().getPersistentData().getBoolean("ClientSide_" + AbilityRegistry.SUGAR_SCEPTER_IMMUNITY);
-        } else {
-            // 在服务端，使用原来的能力系统检查
-            hasImmunity = TimedAbilitySystem.hasAbility(event.getEntity(), AbilityRegistry.SUGAR_SCEPTER_IMMUNITY);
-        }
+        // 客户端直接通过 Capability 检查（由网络同步包维护）
+        hasImmunity = BuffUtil.hasBuff(event.getEntity(), ModBuffTypes.SUGAR_SCEPTER_IMMUNITY.getId());
 
 //        hasImmunity =true;
         // 只对拥有免疫能力的实体显示特效

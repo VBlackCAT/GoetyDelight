@@ -17,8 +17,8 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.v_black_cat.goetydelight.ability.AbilityRegistry;
 import net.v_black_cat.goetydelight.advancements.ModAdvancementsTrigger;
+import net.v_black_cat.goetydelight.init.ModBuffTypes;
 import net.v_black_cat.goetydelight.block.ModBlockEntities;
 import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.v_black_cat.goetydelight.block.RenderBlockRenderer;
@@ -86,7 +86,7 @@ public class GoetyDelight
         ModEffects.register(modEventBus);
         ModRecipeSerializers.SERIALIZERS.register(modEventBus);
         ModEntities.register(modEventBus);
-        AbilityRegistry.registerAbilities();
+        ModBuffTypes.register(modEventBus);
         ModBlockEntities.register(modEventBus);
         ModMenuTypes.register(modEventBus);
         ModActivity.register(modEventBus);
