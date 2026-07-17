@@ -9,6 +9,7 @@
     "CookingPotBlockEntityMixin",
     "DarkAltarBlockEntityMixin",
     "EntityAccessor",
+    "EntityVisualEffectMixin",
     "LivingEntityAccessor",
     "MobMixin",
     "RecipeManagerMixin",
