@@ -97,20 +97,20 @@ public class Config
             .comment("Movement speed multiplier when Shift key is pressed\n按下Shift键时的移动速度倍率")
             .defineInRange("shiftSpeedMultiplier", 2.0, 0.0, Double.MAX_VALUE);
 
-    // LivingHurtEvent 伤害倍数
+    // 正常的伤害增幅倍率
     private static final ForgeConfigSpec.DoubleValue LIVING_HURT_DAMAGE_MULTIPLIER = BUILDER
-            .comment("Damage multiplier in LivingHurtEvent\nLivingHurtEvent中的伤害倍率")
-            .defineInRange("livingHurtDamageMultiplier", 1.5, 0.0, Double.MAX_VALUE);
+            .comment("Normal damage multiplier (when not sneaking)\n正常的伤害增幅倍率（非潜行状态）")
+            .defineInRange("livingHurtDamageMultiplier", 1.5, 0.0, Float.MAX_VALUE);
 
-    // LivingDamageEvent 一般伤害倍数
+    // 潜行非背刺的伤害增幅倍率
     private static final ForgeConfigSpec.DoubleValue LIVING_DAMAGE_GENERAL_MULTIPLIER = BUILDER
-            .comment("General damage multiplier in LivingDamageEvent\nLivingDamageEvent中的一般伤害倍率")
-            .defineInRange("livingDamageGeneralMultiplier", 1.5, 0.0, Double.MAX_VALUE);
+            .comment("Damage multiplier when sneaking but not backstabbing\n潜行非背刺的伤害增幅倍率")
+            .defineInRange("livingDamageGeneralMultiplier", 1.5, 0.0, Float.MAX_VALUE);
 
-    // LivingDamageEvent 背刺伤害倍数
+    // 潜行背刺的伤害增幅倍率
     private static final ForgeConfigSpec.DoubleValue LIVING_DAMAGE_BACKSTAB_MULTIPLIER = BUILDER
-            .comment("Backstab damage multiplier in LivingDamageEvent\nLivingDamageEvent中的背刺伤害倍率")
-            .defineInRange("livingDamageBackstabMultiplier", 2.5, 0.0, Double.MAX_VALUE);
+            .comment("Damage multiplier when sneaking and backstabbing\n潜行背刺的伤害增幅倍率")
+            .defineInRange("livingDamageBackstabMultiplier", 2.5, 0.0, Float.MAX_VALUE);
 
     private static final ForgeConfigSpec.DoubleValue SOUL_AFFIX_DAMAGE_PER_LEVEL = BUILDER
             .comment("Damage increase per level of Soul Affix enchantment\n灵魂附加附魔每级增加的伤害值")
