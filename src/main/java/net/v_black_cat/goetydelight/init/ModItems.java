@@ -8,6 +8,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
+<<<<<<< HEAD
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.bus.api.IEventBus;
@@ -15,14 +16,31 @@ import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.item.CustomDrinkItem;
 import net.v_black_cat.goetydelight.item.food.*;
 import vectorwing.farmersdelight.common.registry.ModEffects;
+=======
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.neoforged.neoforge.registries.DeferredItem;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.bus.api.IEventBus;
+import net.v_black_cat.goetydelight.init.ModTiers;
+import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.item.CustomDrinkItem;
+import net.v_black_cat.goetydelight.item.food.*;
+import net.v_black_cat.goetydelight.item.FalseProverbsItem;
+import vectorwing.farmersdelight.common.registry.ModEffects;
+import vectorwing.farmersdelight.common.item.KnifeItem;
+>>>>>>> 7998848 (炉灶、锅、以及没写完的FalseProverbs)
 
 import static net.v_black_cat.goetydelight.util.TickConverterUtil.minToTick;
 import static vectorwing.farmersdelight.common.registry.ModItems.basicItem;
 
 public class ModItems {
     // 创建专属于物品的 DeferredRegister，使用模组主类的 MODID
+<<<<<<< HEAD
     public static final DeferredRegister.Items ITEMS =
             DeferredRegister.createItems(GoetyDelight.MODID);
+=======
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(GoetyDelight.MODID);
+>>>>>>> 7998848 (炉灶、锅、以及没写完的FalseProverbs)
 
     // 示例物品：一个普通的物品（无特殊属性）
     public static final DeferredItem<Item> EXAMPLE_ITEM = ITEMS.registerSimpleItem(
@@ -34,10 +52,16 @@ public class ModItems {
     public static final DeferredItem<Item> EXAMPLE_FOOD = ITEMS.registerSimpleItem(
             "example_food",
             new Item.Properties().food(new net.minecraft.world.food.FoodProperties.Builder()
+<<<<<<< HEAD
                     .nutrition(4).saturationModifier(0.5f).build())
     );
 
 
+=======
+                            .nutrition(4).saturationModifier(0.5f).build())
+    );
+
+>>>>>>> 7998848 (炉灶、锅、以及没写完的FalseProverbs)
     //    // ==================== 物品声明区域 ====================
 //    // 块物品
 //    public static final DeferredItem<Item> METAMORPHIC_SCENT_GRASS;
@@ -49,15 +73,26 @@ public class ModItems {
 //    public static final DeferredItem<Item> APOCALYPTIUM_KNIFE;
 //    public static final DeferredItem<Item> VENOMOUS_SPIDER_KNIFE;
 //    public static final DeferredItem<Item> SPECTRE_KNIFE;
+<<<<<<< HEAD
 //    public static final DeferredItem<Item> CURSED_INGOT_KNIFE;
 //    public static final DeferredItem<Item> DARK_KNIFE;
+=======
+    //   public static final DeferredItem<Item> CURSED_INGOT_KNIFE;
+    //  public static final DeferredItem<Item> DARK_KNIFE;
+>>>>>>> 7998848 (炉灶、锅、以及没写完的FalseProverbs)
 //    public static final DeferredItem<Item> APOCALYPTIUM_INGOT_BRUSH;
 //
 //    // 武器物品
 //    public static final DeferredItem<Item> MARBLE_OP_SWORD;
+<<<<<<< HEAD
 //    public static final DeferredItem<Item> FALSE_PROVERBS;
 //    public static final DeferredItem<Item> PARASITIZED_WARDEN;
 //    public static final DeferredItem<Item> VIZIERS_COOKBOOK;
+=======
+    public static final DeferredItem<Item> FALSE_PROVERBS;
+//    public static final DeferredItem<Item> PARASITIZED_WARDEN;
+   // public static final DeferredItem<Item> VIZIERS_COOKBOOK;
+>>>>>>> 7998848 (炉灶、锅、以及没写完的FalseProverbs)
 //    //刷怪蛋
 //
 //    public static final DeferredItem<Item> GHOST_FARMER_SPAWN_EGG;
@@ -141,6 +176,10 @@ public class ModItems {
 //    public static final DeferredItem<Item> CUSTOM_DOLL;
     public static final DeferredItem<Item> BISCAT;
     public static final DeferredItem<Item> RUBY_SYRUP;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7998848 (炉灶、锅、以及没写完的FalseProverbs)
 //    public static final DeferredItem<Item> ROAST_LAOWANG_EAR;
 //    public static final DeferredItem<Item> ROAST_LAOWANG_FEET;
 //    public static final DeferredItem<Item> ROAST_LAOWANG_HEAD;
@@ -155,16 +194,29 @@ public class ModItems {
 //    //    public static final DeferredItem<Item> MENU;
 //    public static final DeferredItem<Item> DOLL_ITEM;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7998848 (炉灶、锅、以及没写完的FalseProverbs)
     //    // ==================== 静态初始化块：物品定义区域 ====================
     static {
 //        NOT_ANYTHING = ITEMS.register("not_anything",
 //                () -> new Item(basicItem().stacksTo(1)));
 //
+<<<<<<< HEAD
 //        CUSTOM_DOLL = ITEMS.register("custom_doll", () -> new CustomDollItem(ModBlocks.CUSTOM_DOLL.get()));
 //
 //        METAMORPHIC_SCENT_GRASS = ITEMS.register("metamorphic_scent_grass",
 //                () -> new MetamorphicScentGrassItem(basicItem().stacksTo(64).food(simpleFoodItemProperties(2, 3).build())));
+=======
+//        CUSTOM_DOLL = ITEMS.register("custom_doll", () -> new
+// CustomDollItem(ModBlocks.CUSTOM_DOLL.get()));
+//
+//        METAMORPHIC_SCENT_GRASS = ITEMS.register("metamorphic_scent_grass",
+//                () -> new
+// MetamorphicScentGrassItem(basicItem().stacksTo(64).food(simpleFoodItemProperties(2,
+// 3).build())));
+>>>>>>> 7998848 (炉灶、锅、以及没写完的FalseProverbs)
 //
 //        // 神金刀
 //        APOCALYPTIUM_KNIFE = registerWithTab("apocalyptium_knife",
@@ -175,6 +227,7 @@ public class ModItems {
 //        SPECTRE_KNIFE = registerWithTab("spectre_knife",
 //                () -> new KnifeItem(Tiers.IRON, basicItem()));
 //
+<<<<<<< HEAD
 //        // 诅咒金属刀
 //        CURSED_INGOT_KNIFE = registerWithTab("cursed_ingot_knife",
 //                () -> new KnifeItem(ModTiers.SPECIAL, basicItem().durability(256)));
@@ -185,6 +238,27 @@ public class ModItems {
 //
 //        FALSE_PROVERBS = ITEMS.register("false_proverbs",
 //                () -> new FalseProverbsItem(ModTiers.VOID, 9, -2, basicItem().rarity(Rarity.EPIC)));
+=======
+        // 诅咒金属刀
+        //   CURSED_INGOT_KNIFE = ITEMS.register("cursed_ingot_knife",
+        // () -> new KnifeItem(ModTiers.SPECIAL, basicItem().durability(256)));
+//
+        // 黑暗金属刀
+        /*      DARK_KNIFE = ITEMS.register("dark_knife",
+        () -> new DarkKnifeItem(ModTiers.DARK, 1F, -2.0F, basicItem().durability(512)
+                .attributes(EquipmentSlot.MAINHAND,
+                        new AttributeModifier(ResourceLocation.withDefaultNamespace("dark_knife_boost"),
+                        added, AttributeModifier.Operation.ADD_VALUE)
+                )
+                .attributes(EquipmentSlot.OFFHAND,
+                        new AttributeModifier(ResourceLocation.withDefaultNamespace("dark_knife_boost_offhand"),
+                        added, AttributeModifier.Operation.ADD_VALUE)
+                )));*/
+//
+        FALSE_PROVERBS = ITEMS.register("false_proverbs",
+                () -> new FalseProverbsItem(ModTiers.VOID,
+                basicItem().rarity(Rarity.EPIC)));
+>>>>>>> 7998848 (炉灶、锅、以及没写完的FalseProverbs)
 //
 //        // 诅咒金属刷子
 //        CURSED_METAL_BRUSH = ITEMS.register("cursed_metal_brush",
@@ -209,7 +283,11 @@ public class ModItems {
 //                () -> new ViziersCookbookItem());
 //
         GOETYDELIGHT_ICON = ITEMS.register("goetydelight_icon",
+<<<<<<< HEAD
                 () -> simpleFoodItem(666, 666,true));
+=======
+                () -> simpleFoodItem(666, 666, true));
+>>>>>>> 7998848 (炉灶、锅、以及没写完的FalseProverbs)
 //
         TAINTED_DRINK = ITEMS.register("tainted_drink",
                 () -> new CustomDrinkItem(basicItem()
@@ -233,7 +311,12 @@ public class ModItems {
                 });
 //
 //        CUP = ITEMS.register("eternal_refusal_of_black_meat_soup",
+<<<<<<< HEAD
 //                () -> new EternalRefusalOfBlackMeatSoupItem(basicItem().stacksTo(1).rarity(Rarity.RARE).food(
+=======
+//                () -> new
+// EternalRefusalOfBlackMeatSoupItem(basicItem().stacksTo(1).rarity(Rarity.RARE).food(
+>>>>>>> 7998848 (炉灶、锅、以及没写完的FalseProverbs)
 //                        ModFoods.CUP
 //                )));
 //
@@ -332,7 +415,12 @@ public class ModItems {
 //                )));
 //
 //        ROASTED_CORPSE_MAGGOTS = ITEMS.register("roasted_corpse_maggots",
+<<<<<<< HEAD
 //                () -> new RoastedCorpseMaggotsitem(basicItem().craftRemainder(Items.BOWL).stacksTo(16).food(
+=======
+//                () -> new
+// RoastedCorpseMaggotsitem(basicItem().craftRemainder(Items.BOWL).stacksTo(16).food(
+>>>>>>> 7998848 (炉灶、锅、以及没写完的FalseProverbs)
 //                        ModFoods.ROASTED_CORPSE_MAGGOTS
 //                )));
 //
@@ -357,7 +445,12 @@ public class ModItems {
                 )));
 //
 //        SEVEN_LEAF_PUDDING = ITEMS.register("sweet_berry_pudding",
+<<<<<<< HEAD
 //                () -> new SevenLeafPuddingItem(basicItem().stacksTo(64).craftRemainder(Items.BOWL).food(
+=======
+//                () -> new
+// SevenLeafPuddingItem(basicItem().stacksTo(64).craftRemainder(Items.BOWL).food(
+>>>>>>> 7998848 (炉灶、锅、以及没写完的FalseProverbs)
 //                        ModFoods.SEVEN_LEAF_PUDDING
 //                )));
 //
@@ -370,7 +463,12 @@ public class ModItems {
                         ModFoods.CAKE
                 )));
 //        OMINOUS_ICE_CREAM = ITEMS.register("ominous_ice_cream",
+<<<<<<< HEAD
 //                () -> new OminousIceCreamItem(basicItem().stacksTo(64).rarity(Rarity.UNCOMMON).food(
+=======
+//                () -> new
+// OminousIceCreamItem(basicItem().stacksTo(64).rarity(Rarity.UNCOMMON).food(
+>>>>>>> 7998848 (炉灶、锅、以及没写完的FalseProverbs)
 //                        ModFoods.OMINOUS_ICE_CREAM
 //                )));
         ECTOPLASMIC_MELON = ITEMS.register("ectoplasmic_melon",
@@ -460,7 +558,12 @@ public class ModItems {
                         ModFoods.SNAP_UNHOLY_TRIPE
                 )));
 //        SUNDAE_OF_THE_PHILOSOPHERS_POTION = ITEMS.register("sundae_of_the_philosophers_potion",
+<<<<<<< HEAD
 //                () -> new SundaeOfThePhilosophersPotionItem(basicItem().stacksTo(16).rarity(Rarity.EPIC).food(
+=======
+//                () -> new
+// SundaeOfThePhilosophersPotionItem(basicItem().stacksTo(16).rarity(Rarity.EPIC).food(
+>>>>>>> 7998848 (炉灶、锅、以及没写完的FalseProverbs)
 //                        ModFoods.SUNDAE_OF_THE_PHILOSOPHERS_POTION
 //                )));
         THE_BOX_OF_THE_DEAD = ITEMS.register("the_box_of_the_dead",
@@ -491,7 +594,12 @@ public class ModItems {
                         .food(ModFoods.BOAT_STUFFED_ROASTED_WARDEN_FLANK)));
 //
 //        ANCIENT_ENCHANTED_GOLDEN_APPLE = ITEMS.register("ancient_enchanted_golden_apple",
+<<<<<<< HEAD
 //                () -> new AncientEnchantedGoldenAppleItem(basicItem().stacksTo(64).rarity(Rarity.EPIC)
+=======
+//                () -> new
+// AncientEnchantedGoldenAppleItem(basicItem().stacksTo(64).rarity(Rarity.EPIC)
+>>>>>>> 7998848 (炉灶、锅、以及没写完的FalseProverbs)
 //                        .food(ModFoods.ANCIENT_ENCHANTED_GOLDEN_APPLE)));
 //
 //        ROAST_LAOWANG = ITEMS.register("roast_laowang",
@@ -512,10 +620,19 @@ public class ModItems {
 //                () -> new HiddenPancakeItem(basicItem().stacksTo(64).rarity(Rarity.RARE)
 //                        .food(ModFoods.HIDDEN_PANCAKE)));
 //
+<<<<<<< HEAD
 //        CREAMY_BERRY_FISH_PASTE_DUMPLING_WITH_CHOCOLATE_SAUCE = ITEMS.register("creamy_berry_fish_paste_dumpling_with_chocolate_sauce",
 //                () -> new Item(
 //                        basicItem().stacksTo(64)
 //                                .food(ModFoods.CREAMY_BERRY_FISH_PASTE_DUMPLING_WITH_CHOCOLATE_SAUCE)
+=======
+//        CREAMY_BERRY_FISH_PASTE_DUMPLING_WITH_CHOCOLATE_SAUCE =
+// ITEMS.register("creamy_berry_fish_paste_dumpling_with_chocolate_sauce",
+//                () -> new Item(
+//                        basicItem().stacksTo(64)
+//
+// .food(ModFoods.CREAMY_BERRY_FISH_PASTE_DUMPLING_WITH_CHOCOLATE_SAUCE)
+>>>>>>> 7998848 (炉灶、锅、以及没写完的FalseProverbs)
 //                ) {
 //                    @Override
 //                    public int getUseDuration(ItemStack stack, LivingEntity entity) {
@@ -562,15 +679,25 @@ public class ModItems {
 //                ));
 //        // ==================== 杂项物品 ====================
 //        GHOST_FARMER_SPAWN_EGG = ITEMS.register("ghost_farmer_spawn_egg",
+<<<<<<< HEAD
 //                () -> new SpawnEggItem(ModEntities.GHOST_FARMER.get(), 0xFFFFFF, 0xFFFFFF, new Item.Properties()));
+=======
+//                () -> new SpawnEggItem(ModEntities.GHOST_FARMER.get(), 0xFFFFFF, 0xFFFFFF, new
+// Item.Properties()));
+>>>>>>> 7998848 (炉灶、锅、以及没写完的FalseProverbs)
 //
 //        DOLL_ITEM = registerWithTab("doll_item", DollEntityItem::new);
     }
 
+<<<<<<< HEAD
 
     // ==================== 辅助方法 ====================
 
 
+=======
+    // ==================== 辅助方法 ====================
+
+>>>>>>> 7998848 (炉灶、锅、以及没写完的FalseProverbs)
     private static Item simpleFoodItem(int nutrition, float saturationMod, boolean unstackable) {
         Item.Properties properties = basicItem();
         if (unstackable) {
@@ -579,6 +706,10 @@ public class ModItems {
         return new Item(properties.food(
                 simpleFoodItemProperties(nutrition, saturationMod).build()));
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7998848 (炉灶、锅、以及没写完的FalseProverbs)
     public static FoodProperties.Builder simpleFoodItemProperties(int nutrition, float saturationMod) {
         return new FoodProperties
                 .Builder()
@@ -587,8 +718,11 @@ public class ModItems {
                 .saturationModifier(saturationMod / nutrition);
     }
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 7998848 (炉灶、锅、以及没写完的FalseProverbs)
     // 注册方法：供主类调用，将 DeferredRegister 绑定到 mod 事件总线
     public static void register(IEventBus modEventBus) {
         ITEMS.register(modEventBus);
