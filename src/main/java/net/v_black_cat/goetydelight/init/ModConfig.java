@@ -99,20 +99,18 @@ public class ModConfig {
             .comment("Movement speed multiplier when Shift key is pressed\n按下Shift键时的移动速度倍率")
             .defineInRange("shiftSpeedMultiplier", 2.0, 0.0, Double.MAX_VALUE);
 
-    // ==================== LivingHurtEvent 伤害倍数 ====================
-    private static final ModConfigSpec.DoubleValue LIVING_HURT_DAMAGE_MULTIPLIER = BUILDER
-            .comment("Damage multiplier in LivingHurtEvent\nLivingHurtEvent中的伤害倍率")
-            .defineInRange("livingHurtDamageMultiplier", 1.5, 0.0, Double.MAX_VALUE);
+    // ★ 重命名三个伤害配置项（更清晰的名称）
+    private static final ModConfigSpec.DoubleValue FALSE_PROVERBS_NORMAL_DAMAGE_MULTIPLIER = BUILDER
+            .comment("Damage multiplier when holding False Proverbs without Shift and not using item\n虚妄箴言普通攻击伤害倍率")
+            .defineInRange("falseProverbsNormalDamageMultiplier", 1.5, 0.0, Double.MAX_VALUE);
 
-    // ==================== LivingDamageEvent 一般伤害倍数 ====================
-    private static final ModConfigSpec.DoubleValue LIVING_DAMAGE_GENERAL_MULTIPLIER = BUILDER
-            .comment("General damage multiplier in LivingDamageEvent\nLivingDamageEvent中的一般伤害倍率")
-            .defineInRange("livingDamageGeneralMultiplier", 1.5, 0.0, Double.MAX_VALUE);
+    private static final ModConfigSpec.DoubleValue FALSE_PROVERBS_SHIFT_DAMAGE_MULTIPLIER = BUILDER
+            .comment("Damage multiplier when holding False Proverbs while Shift is pressed (non-backstab)\n虚妄箴言按Shift时的伤害倍率（非背刺）")
+            .defineInRange("falseProverbsShiftDamageMultiplier", 1.5, 0.0, Double.MAX_VALUE);
 
-    // ==================== LivingDamageEvent 背刺伤害倍数 ====================
-    private static final ModConfigSpec.DoubleValue LIVING_DAMAGE_BACKSTAB_MULTIPLIER = BUILDER
-            .comment("Backstab damage multiplier in LivingDamageEvent\nLivingDamageEvent中的背刺伤害倍率")
-            .defineInRange("livingDamageBackstabMultiplier", 2.5, 0.0, Double.MAX_VALUE);
+    private static final ModConfigSpec.DoubleValue FALSE_PROVERBS_BACKSTAB_DAMAGE_MULTIPLIER = BUILDER
+            .comment("Damage multiplier when performing backstab with False Proverbs while Shift is pressed\n虚妄箴言按Shift且背刺时的伤害倍率")
+            .defineInRange("falseProverbsBackstabDamageMultiplier", 2.5, 0.0, Double.MAX_VALUE);
 
     // ==================== 灵魂附魔相关 ====================
     private static final ModConfigSpec.DoubleValue SOUL_AFFIX_DAMAGE_PER_LEVEL = BUILDER
@@ -169,7 +167,7 @@ public class ModConfig {
     private static final ModConfigSpec.ConfigValue<List<? extends String>> PLAYER_MODEL_SCALES = BUILDER
             .comment("Player model scale settings (format: playerName=scale)\n玩家模型缩放设置（格式：玩家名称=缩放比例）\n注：请勿在高版本ysm中使用该功能（2.6.2版本可用，2.6.5版本不可用）")
             .defineListAllowEmpty("playerModelScales", List.of(
-                    "Steve=1.0", "Alex=1.0", "wu1wu2=1.0"
+                    "Steve=1.0", "Alex=1.0", "bakawu1wu2=1.0"
             ), ModConfig::validatePlayerScaleEntry);
 
     // ==================== Goety Revelation 兼容性 ====================
@@ -306,16 +304,17 @@ public class ModConfig {
         return SHIFT_SPEED_MULTIPLIER.get();
     }
 
-    public static double getLivingHurtDamageMultiplier() {
-        return LIVING_HURT_DAMAGE_MULTIPLIER.get();
+    // ★ 新 getter（返回 float，便于事件类直接使用）
+    public static float getFalseProverbsNormalDamageMultiplier() {
+        return FALSE_PROVERBS_NORMAL_DAMAGE_MULTIPLIER.get().floatValue();
     }
 
-    public static double getLivingDamageGeneralMultiplier() {
-        return LIVING_DAMAGE_GENERAL_MULTIPLIER.get();
+    public static float getFalseProverbsShiftDamageMultiplier() {
+        return FALSE_PROVERBS_SHIFT_DAMAGE_MULTIPLIER.get().floatValue();
     }
 
-    public static double getLivingDamageBackstabMultiplier() {
-        return LIVING_DAMAGE_BACKSTAB_MULTIPLIER.get();
+    public static float getFalseProverbsBackstabDamageMultiplier() {
+        return FALSE_PROVERBS_BACKSTAB_DAMAGE_MULTIPLIER.get().floatValue();
     }
 
     // ==================== 验证方法 ====================
