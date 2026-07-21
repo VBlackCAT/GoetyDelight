@@ -1,0 +1,26 @@
+{
+	"format_version": "1.21.6",
+	"credit": "Made with Blockbench",
+	"parent": "minecraft:item/generated",
+	"textures": {
+		"layer0": "goetydelight:item/boat_stuffed_roasted_warden_body"
+	},
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [-0.68, -5.69, -13.89],
+			"translation": [-5.75, 4.25, 0]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [-0.68, -5.69, -13.89],
+			"translation": [-5.75, 4.25, 0]
+		},
+		"firstperson_righthand": {
+			"rotation": [-176.17, 0.47, 179.78],
+			"translation": [-9.25, 5.5, -2]
+		},
+		"firstperson_lefthand": {
+			"rotation": [-176.17, 0.47, 179.78],
+			"translation": [-9.25, 5.5, -2]
+		}
+	}
+}
