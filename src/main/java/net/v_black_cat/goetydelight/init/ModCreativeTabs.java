@@ -4,10 +4,13 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.item.CustomDollItem;
+import net.v_black_cat.goetydelight.init.ModBlocks;
 
 public class ModCreativeTabs {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
@@ -19,6 +22,10 @@ public class ModCreativeTabs {
                     .withTabsBefore(CreativeModeTabs.COMBAT)
                     .icon(() -> ModItems.GOETYDELIGHT_ICON.get().getDefaultInstance())
                     .displayItems((parameters, output) -> {
+                        // ==================== 物品 ====================
+                        // 武器
+                        output.accept(ModItems.FALSE_PROVERBS.get());
+
                         // 图标
                         output.accept(ModItems.GOETYDELIGHT_ICON.get());
 
@@ -84,6 +91,64 @@ public class ModCreativeTabs {
                         output.accept(ModItems.BOAT_STUFFED_ROASTED_WARDEN_MEET.get());
                         output.accept(ModItems.BOAT_STUFFED_ROASTED_WARDEN_FLANK.get());
                         output.accept(ModItems.FORBIDDDEN_SOUP_BUN.get());
+
+                        // 盛宴食物（烤肉相关）
+                        output.accept(ModItems.RING_PACKED_VOID_GEL_JELLY.get());
+                        output.accept(ModItems.ROAST_SPIDER_EGG.get());
+                        output.accept(ModItems.ROAST_LAOWANG_EAR.get());
+                        output.accept(ModItems.ROAST_LAOWANG_FEET.get());
+                        output.accept(ModItems.ROAST_LAOWANG_HEAD.get());
+                        output.accept(ModItems.ROAST_LAOWANG_LEG.get());
+                        output.accept(ModItems.ONION_PORK_CHOP_RICE.get());
+                        output.accept(ModItems.ECTOPLASMIC_MELON_SALAD.get());
+
+                        // 种子
+                        output.accept(ModItems.ECTOPLASMIC_MELON_SEEDS.get());
+                        output.accept(ModItems.METAMORPHIC_SCENT_GRASS_SEEDS.get());
+
+                        // 人偶
+                        CustomDollItem.addCreativeTab(output);
+
+                        // ==================== 方块 ====================
+                        // 建筑方块 - 大理石系列
+                        output.accept(ModBlocks.MARBLE.get());
+                        output.accept(ModBlocks.SILT_MARBLE_HEAVY.get());
+                        output.accept(ModBlocks.BLUE_MARBLE.get());
+                        output.accept(ModBlocks.JUNGLE_MARBLE.get());
+                        output.accept(ModBlocks.NETHER_MARBLE.get());
+                        output.accept(ModBlocks.DRIPMARBLE_BLOCK.get());
+                        output.accept(ModBlocks.POINTED_DRIPMARBLE.get());
+                        output.accept(ModBlocks.MARBLE_STAIRS.get());
+                        output.accept(ModBlocks.MARBLE_SLAB.get());
+                        output.accept(ModBlocks.MARBLE_BUTTON.get());
+                        output.accept(ModBlocks.MARBLE_PRESSURE_PLATE.get());
+                        output.accept(ModBlocks.MARBLE_FENCE.get());
+                        output.accept(ModBlocks.MARBLE_FENCE_GATE.get());
+                        output.accept(ModBlocks.MARBLE_WALL.get());
+                        output.accept(ModBlocks.MARBLE_DOOR.get());
+                        output.accept(ModBlocks.MARBLE_TRAPDOOR.get());
+
+                        // 功能方块 - 炉灶与设备
+                        output.accept(ModBlocks.NIGHT_STOVE.get());
+                        output.accept(ModBlocks.SHADE_STOVE.get());
+                        output.accept(ModBlocks.CURSED_INGOT_POT.get());
+                        output.accept(ModBlocks.APOCALYPTIUM_POT.get());
+
+                        // 作物
+                        output.accept(ModBlocks.ECTOPLASMIC_MELON_BLOCK.get());
+
+                        // 食物方块 - Feast 类
+                        output.accept(ModBlocks.ROTTEN_CORPSE_MAGGOT_FEAST_BLOCK.get());
+                        output.accept(ModBlocks.VOID_GEL_JELLY_BLOCK.get());
+                        output.accept(ModBlocks.STUFFED_TALL_SKULL_RICE_BLOCK.get());
+                        output.accept(ModBlocks.LICHS_CHAOS_STEW_BLOCK.get());
+                        output.accept(ModBlocks.NIGHT_HEART_PEA_SOUP_BLOCK.get());
+                        output.accept(ModBlocks.BONE_LORD_ASH_RICE_BLOCK.get());
+                        output.accept(ModBlocks.MENEMEN_BLOCK.get());
+                        output.accept(ModBlocks.BOAT_STUFFED_ROASTED_WARDEN_BlOCK.get());
+                        output.accept(ModBlocks.SNAP_UNHOLY_TRIPE_BLOCK.get());
+                        output.accept(ModBlocks.ROAST_LAOWANG_BLOCK.get());
+                        output.accept(ModBlocks.ROYAL_CAKE_BLOCK.get());
                     })
                     .withSearchBar()
                     .build());
