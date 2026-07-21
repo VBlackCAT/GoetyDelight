@@ -16,6 +16,10 @@ public class ModSounds {
             SOUNDS.register("example_sound", () -> SoundEvent.createVariableRangeEvent(
                     ResourceLocation.fromNamespaceAndPath(GoetyDelight.MODID, "example_sound")));
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> TOUCH_DOLL =
+            SOUNDS.register("block.touch_doll", () -> SoundEvent.createFixedRangeEvent(
+                    ResourceLocation.fromNamespaceAndPath(GoetyDelight.MODID, "block.touch_doll"), 16));
+
     public static void register(IEventBus modEventBus) {
         SOUNDS.register(modEventBus);
     }
