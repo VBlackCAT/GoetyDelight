@@ -80,6 +80,11 @@ public class GoetyDelight {
         NeoForge.EVENT_BUS.addListener(MobEffectEventHandler::onEffectApplicable);
         NeoForge.EVENT_BUS.addListener(MobEffectEventHandler::onEffectAdded);
         NeoForge.EVENT_BUS.addListener(PlayerInteractEventHandler::onLeftClickEmpty);
+        NeoForge.EVENT_BUS.addListener(LivingIncomingDamageEventHandler::onLivingIncomingDamage);
+        NeoForge.EVENT_BUS.addListener(PlayerTickEventHandler::onPlayerTick);
+        NeoForge.EVENT_BUS.addListener(PlayerTickEventHandler::onBreakSpeed);
+        NeoForge.EVENT_BUS.addListener(PlayerTickEventHandler::onPlayerDeath);
+        NeoForge.EVENT_BUS.addListener(PlayerTickEventHandler::onPlayerRespawn);
 
     }
 }
