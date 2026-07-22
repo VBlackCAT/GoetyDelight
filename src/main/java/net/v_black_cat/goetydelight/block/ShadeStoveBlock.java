@@ -35,7 +35,7 @@ import javax.annotation.Nullable;
 public class ShadeStoveBlock extends AbstractFurnaceBlock {
     public ShadeStoveBlock(BlockBehaviour.Properties pProperties) {
         super(pProperties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(LIT, true));
+        this.registerDefaultState(this.stateDefinition.any().setValue(LIT, false));
     }
 
     @Override
