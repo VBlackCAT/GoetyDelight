@@ -40,8 +40,9 @@ import static com.Polarice3.Goety.common.items.ModItems.SOUL_TRANSFER;
 public class ShadeStoveBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
     private static final int SOUL_ENERGY_COST = 50;
     private static final int BURN_TIME_GAIN = 100;
-    private static final int COOKING_SPEED_MULTIPLIER = 1;
     private static final float FUEL_CONSUMPTION_MULTIPLIER = 1.5f;
+    private static final int COOKING_SPEED_MULTIPLIER = 1;
+    private static final int SOUL_CHECK_COOLDOWN = 20;
 
     private static final int SLOT_INPUT = 0;
     private static final int SLOT_FUEL = 1;
@@ -54,11 +55,13 @@ public class ShadeStoveBlockEntity extends BaseContainerBlockEntity implements W
     private int litDuration;
     private int cookingProgress;
     private int cookingTotalTime;
+    private int soulCheckCooldown;
 
     protected NonNullList<ItemStack> items = NonNullList.withSize(3, ItemStack.EMPTY);
 
     private final ContainerData dataAccess = new ContainerData() {
-        @Override public int get(int index) {
+        @Override
+        public int get(int index) {
             return switch (index) {
                 case 0 -> litTime;
                 case 1 -> litDuration;
@@ -67,7 +70,9 @@ public class ShadeStoveBlockEntity extends BaseContainerBlockEntity implements W
                 default -> 0;
             };
         }
-        @Override public void set(int index, int value) {
+
+        @Override
+        public void set(int index, int value) {
             switch (index) {
                 case 0 -> litTime = value;
                 case 1 -> litDuration = value;
@@ -75,10 +80,15 @@ public class ShadeStoveBlockEntity extends BaseContainerBlockEntity implements W
                 case 3 -> cookingTotalTime = value;
             }
         }
-        @Override public int getCount() { return 4; }
+
+        @Override
+        public int getCount() {
+            return 4;
+        }
     };
 
-    private final RecipeManager.CachedCheck<SingleRecipeInput, ? extends AbstractCookingRecipe> quickCheck;
+    private final RecipeManager.CachedCheck<
+            SingleRecipeInput, ? extends AbstractCookingRecipe> quickCheck;
     private final RecipeType<? extends AbstractCookingRecipe> recipeType;
 
     public ShadeStoveBlockEntity(BlockPos pPos, BlockState pBlockState) {
@@ -87,34 +97,49 @@ public class ShadeStoveBlockEntity extends BaseContainerBlockEntity implements W
         this.quickCheck = RecipeManager.createCheck(this.recipeType);
     }
 
-    @Override protected Component getDefaultName() {
-        return Component.translatable("container.smoker");
+    @Override
+    protected Component getDefaultName() {
+        return Component.translatable("container.goetydelight.shade_stove");
     }
 
-    @Override protected AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory) {
+    @Override
+    protected AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory) {
         return new ShadeStoveMenu(pContainerId, pPlayerInventory, this, this.dataAccess);
     }
 
-    @Override public int getContainerSize() { return items.size(); }
+    @Override
+    public int getContainerSize() {
+        return items.size();
+    }
 
-    @Override public boolean isEmpty() {
+    @Override
+    public boolean isEmpty() {
         for (ItemStack s : items) if (!s.isEmpty()) return false;
         return true;
     }
 
-    @Override public ItemStack getItem(int idx) { return items.get(idx); }
+    @Override
+    public ItemStack getItem(int idx) {
+        return items.get(idx);
+    }
 
-    @Override public ItemStack removeItem(int idx, int count) {
+    @Override
+    public ItemStack removeItem(int idx, int count) {
         return ContainerHelper.removeItem(items, idx, count);
     }
 
-    @Override public ItemStack removeItemNoUpdate(int idx) {
+    @Override
+    public ItemStack removeItemNoUpdate(int idx) {
         return ContainerHelper.takeItem(items, idx);
     }
 
-    @Override public void clearContent() { items.clear(); }
+    @Override
+    public void clearContent() {
+        items.clear();
+    }
 
-    @Override public void setItem(int idx, ItemStack stack) {
+    @Override
+    public void setItem(int idx, ItemStack stack) {
         ItemStack old = items.get(idx);
         boolean same = !stack.isEmpty() && ItemStack.isSameItemSameComponents(old, stack);
         items.set(idx, stack);
@@ -124,81 +149,100 @@ public class ShadeStoveBlockEntity extends BaseContainerBlockEntity implements W
             cookingProgress = 0;
             setChanged();
         }
+        if (idx == SLOT_FUEL) {
+            soulCheckCooldown = 0;
+        }
     }
 
-    @Override public boolean stillValid(Player player) {
+    @Override
+    public boolean stillValid(Player player) {
         if (level == null || level.getBlockEntity(worldPosition) != this) return false;
         return player.distanceToSqr(worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5) <= 64.0;
     }
 
-    @Override public NonNullList<ItemStack> getItems() { return items; }
+    @Override
+    public NonNullList<ItemStack> getItems() {
+        return items;
+    }
 
-    @Override public void setItems(NonNullList<ItemStack> pItems) { items = pItems; }
+    @Override
+    public void setItems(NonNullList<ItemStack> pItems) {
+        items = pItems;
+    }
 
-    @Override protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+    @Override
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         tag.putInt("BurnTime", litTime);
+        tag.putInt("BurnDuration", litDuration);
         tag.putInt("CookTime", cookingProgress);
         tag.putInt("CookTimeTotal", cookingTotalTime);
         ContainerHelper.saveAllItems(tag, items, registries);
     }
 
-    @Override protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+    @Override
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         items = NonNullList.withSize(getContainerSize(), ItemStack.EMPTY);
         ContainerHelper.loadAllItems(tag, items, registries);
         litTime = tag.getInt("BurnTime");
+        litDuration = tag.getInt("BurnDuration");
         cookingProgress = tag.getInt("CookTime");
         cookingTotalTime = tag.getInt("CookTimeTotal");
-        litDuration = getBurnDuration(items.get(SLOT_FUEL));
+        soulCheckCooldown = 0;
     }
 
-    // ===== 数据同步 =====
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         CompoundTag tag = super.getUpdateTag(registries);
-        tag.putInt("BurnTime", this.litTime);
-        tag.putInt("CookTime", this.cookingProgress);
-        tag.putInt("CookTimeTotal", this.cookingTotalTime);
+        tag.putInt("BurnTime", litTime);
+        tag.putInt("BurnDuration", litDuration);
+        tag.putInt("CookTime", cookingProgress);
+        tag.putInt("CookTimeTotal", cookingTotalTime);
         return tag;
     }
 
     @Override
     public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
         super.handleUpdateTag(tag, registries);
-        this.litTime = tag.getInt("BurnTime");
-        this.cookingProgress = tag.getInt("CookTime");
-        this.cookingTotalTime = tag.getInt("CookTimeTotal");
+        litTime = tag.getInt("BurnTime");
+        litDuration = tag.getInt("BurnDuration");
+        cookingProgress = tag.getInt("CookTime");
+        cookingTotalTime = tag.getInt("CookTimeTotal");
     }
 
-    @Override public int[] getSlotsForFace(Direction side) {
+    @Override
+    public int[] getSlotsForFace(Direction side) {
         if (side == Direction.DOWN) return SLOTS_FOR_DOWN;
         return side == Direction.UP ? SLOTS_FOR_UP : SLOTS_FOR_SIDES;
     }
 
-    @Override public boolean canPlaceItemThroughFace(int idx, ItemStack stack, @Nullable Direction dir) {
+    @Override
+    public boolean canPlaceItemThroughFace(int idx, ItemStack stack, @Nullable Direction dir) {
         return canPlaceItem(idx, stack);
     }
 
-    @Override public boolean canTakeItemThroughFace(int idx, ItemStack stack, Direction dir) {
+    @Override
+    public boolean canTakeItemThroughFace(int idx, ItemStack stack, Direction dir) {
         if (dir == Direction.DOWN && idx == SLOT_FUEL) {
             return stack.is(net.minecraft.world.item.Items.WATER_BUCKET) || stack.is(net.minecraft.world.item.Items.BUCKET);
         }
         return true;
     }
 
-    @Override public boolean canPlaceItem(int idx, ItemStack stack) {
+    @Override
+    public boolean canPlaceItem(int idx, ItemStack stack) {
         if (idx == SLOT_RESULT) return false;
         if (idx != SLOT_FUEL) return true;
-        ItemStack current = items.get(SLOT_FUEL);
-        return isFuel(stack) || (stack.is(net.minecraft.world.item.Items.BUCKET) && !current.is(net.minecraft.world.item.Items.BUCKET));
+
+        return isFuel(stack);
     }
 
-    // ===== 灵魂能量消耗 =====
+    // 灵魂能量消耗
     private boolean consumeSoulEnergy(int amount) {
+        if (level == null) return false;
         ItemStack soulSource = items.get(SLOT_FUEL);
         if (soulSource.isEmpty()) return false;
-        if (level == null) return false;
 
         CustomData customData = soulSource.get(DataComponents.CUSTOM_DATA);
         CompoundTag tag = customData != null ? customData.copyTag() : new CompoundTag();
@@ -208,7 +252,8 @@ public class ShadeStoveBlockEntity extends BaseContainerBlockEntity implements W
                 UUID ownerUuid = tag.getUUID("owner");
                 Player owner = level.getPlayerByUUID(ownerUuid);
                 if (owner == null) return false;
-                if (!SEHelper.getSEActive(owner) || SEHelper.getSESouls(owner) < amount) return false;
+                if (!SEHelper.getSEActive(owner) || SEHelper.getSESouls(owner) < amount)
+                    return false;
 
                 SEHelper.decreaseSESouls(owner, amount);
                 SEHelper.sendSEUpdatePacket(owner);
@@ -236,18 +281,17 @@ public class ShadeStoveBlockEntity extends BaseContainerBlockEntity implements W
     }
 
     public static boolean isFuel(ItemStack stack) {
-        return stack.getItem() instanceof ITotem ||
-                stack.getItem() == SOUL_TRANSFER.get() ||
-                stack.getBurnTime(RecipeType.SMOKING) > 0;
+        return stack.getItem() instanceof ITotem || stack.getItem() == SOUL_TRANSFER.get();
     }
 
+    // 保留但不再使用（可移除，为兼容性保留）
     protected int getBurnDuration(ItemStack fuel) {
-        if (fuel.isEmpty()) return 0;
-        if (fuel.getItem() instanceof ITotem || fuel.getItem() == SOUL_TRANSFER.get()) return 0;
-        return (int) (fuel.getBurnTime(recipeType) / FUEL_CONSUMPTION_MULTIPLIER);
+        return 0;
     }
 
-    private boolean isLit() { return litTime > 0; }
+    private boolean isLit() {
+        return litTime > 0;
+    }
 
     private boolean canBurn(@Nullable RecipeHolder<? extends AbstractCookingRecipe> holder) {
         if (items.get(SLOT_INPUT).isEmpty() || holder == null || level == null) return false;
@@ -269,6 +313,7 @@ public class ShadeStoveBlockEntity extends BaseContainerBlockEntity implements W
         if (current.isEmpty()) items.set(SLOT_RESULT, result.copy());
         else if (current.is(result.getItem())) current.grow(result.getCount());
 
+        // 湿海绵桶处理（保留原有特殊规则）
         if (input.getItem(0).is(net.minecraft.world.level.block.Blocks.WET_SPONGE.asItem()) &&
                 !items.get(SLOT_FUEL).isEmpty() &&
                 items.get(SLOT_FUEL).is(net.minecraft.world.item.Items.BUCKET)) {
@@ -286,13 +331,22 @@ public class ShadeStoveBlockEntity extends BaseContainerBlockEntity implements W
         return Math.max(1, base / COOKING_SPEED_MULTIPLIER);
     }
 
-    // ★★★ 修改后的 serverTick ★★★
+    // 服务器 Tick 逻辑（纯灵魂能量 + 冷却）
     public static void serverTick(Level level, BlockPos pos, BlockState state, ShadeStoveBlockEntity be) {
         boolean wasLit = be.isLit();
         boolean changed = false;
 
+        // 1. 冷却递减
+        if (be.soulCheckCooldown > 0) {
+            be.soulCheckCooldown--;
+        }
+
+        // 2. 燃烧时间递减
         if (be.isLit()) {
-            be.litTime = Math.max(0, be.litTime - (int) be.FUEL_CONSUMPTION_MULTIPLIER);
+            be.litTime = Math.max(0, be.litTime - 1);
+            if (be.litTime == 0) {
+                changed = true;
+            }
         }
 
         ItemStack fuel = be.items.get(SLOT_FUEL);
@@ -306,33 +360,24 @@ public class ShadeStoveBlockEntity extends BaseContainerBlockEntity implements W
                 recipe = be.quickCheck.getRecipeFor(input, level).orElse(null);
             }
 
-            // ★★★ 灵魂能量点火：只有存在有效配方且可烹饪时才消耗 ★★★
-            if (!be.isLit() && hasInput && recipe != null && be.canBurn(recipe) && be.consumeSoulEnergy(SOUL_ENERGY_COST)) {
-                be.litTime = (int)(BURN_TIME_GAIN / be.FUEL_CONSUMPTION_MULTIPLIER);
-                be.litDuration = be.litTime;
-                changed = true;
-                be.cookingTotalTime = be.getTotalCookTime();
-            }
-
-            // ★★★ 普通燃料点火（保留兼容，但阴影炉灶不使用） ★★★
-            else if (!be.isLit() && be.canBurn(recipe)) {
-                be.litTime = be.getBurnDuration(fuel);
-                be.litDuration = be.litTime;
-                if (be.isLit()) {
-                    changed = true;
-                    be.cookingTotalTime = be.getTotalCookTime();
-                    if (fuel.hasCraftingRemainingItem()) {
-                        be.items.set(SLOT_FUEL, fuel.getCraftingRemainingItem());
-                    } else if (hasFuel) {
-                        fuel.shrink(1);
-                        if (fuel.isEmpty()) {
-                            be.items.set(SLOT_FUEL, fuel.getCraftingRemainingItem());
-                        }
+            // 3. 灵魂能量点火（仅当冷却为0）
+            if (!be.isLit() && hasInput && recipe != null && be.canBurn(recipe)) {
+                if (be.soulCheckCooldown == 0) {
+                    if (be.consumeSoulEnergy(SOUL_ENERGY_COST)) {
+                        be.litTime = (int) (BURN_TIME_GAIN / FUEL_CONSUMPTION_MULTIPLIER);
+                        be.litDuration = be.litTime;
+                        changed = true;
+                        be.cookingTotalTime = be.getTotalCookTime();
+                        be.soulCheckCooldown = 0; // 成功则重置冷却
+                    } else {
+                        // 失败则设置冷却
+                        be.soulCheckCooldown = SOUL_CHECK_COOLDOWN;
+                        // 不设置 changed，避免频繁更新
                     }
                 }
             }
 
-            // 烹饪进度
+            // 4. 烹饪进度
             if (be.isLit() && be.canBurn(recipe)) {
                 be.cookingProgress += 1;
                 changed = true;
@@ -348,7 +393,15 @@ public class ShadeStoveBlockEntity extends BaseContainerBlockEntity implements W
                 }
             }
         } else if (!be.isLit() && be.cookingProgress > 0) {
+            // 5. 未点燃时冷却进度
             be.cookingProgress = Mth.clamp(be.cookingProgress - 2, 0, be.cookingTotalTime);
+            changed = true;
+        }
+
+        // 6. 状态一致性
+        if (!be.isLit() && state.getValue(AbstractFurnaceBlock.LIT)) {
+            state = state.setValue(AbstractFurnaceBlock.LIT, false);
+            level.setBlock(pos, state, 3);
             changed = true;
         }
 
