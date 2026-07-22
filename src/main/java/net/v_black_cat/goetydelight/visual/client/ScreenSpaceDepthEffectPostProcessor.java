@@ -69,7 +69,7 @@ public final class ScreenSpaceDepthEffectPostProcessor {
 
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
-            cachedViewProjection = new Matrix4f(event.getProjectionMatrix()).mul(event.getPoseStack().last().pose());
+            cachedViewProjection = new Matrix4f(event.getProjectionMatrix()).mul(event.getModelViewMatrix());
             return;
         }
 
@@ -258,7 +258,7 @@ public final class ScreenSpaceDepthEffectPostProcessor {
         if (cachedViewProjection != null) {
             TEMP_VIEW_PROJECTION.set(cachedViewProjection);
         } else {
-            TEMP_VIEW_PROJECTION.set(event.getProjectionMatrix());
+            TEMP_VIEW_PROJECTION.set(new Matrix4f(event.getProjectionMatrix()).mul(event.getModelViewMatrix()));
         }
 
         mainTarget.unbindWrite();
