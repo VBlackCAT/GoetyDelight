@@ -4,9 +4,9 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.v_black_cat.goetydelight.events.*;
 import net.v_black_cat.goetydelight.init.*;
+import net.v_black_cat.goetydelight.visual.GDVisualEffects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +57,7 @@ public class GoetyDelight {
         ModAttachments.register(modEventBus);
         ModBuffTypes.register(modEventBus);
         ModRituals.register(modEventBus);
+        GDVisualEffects.register(modEventBus);
     }
 
     /**
@@ -81,10 +82,15 @@ public class GoetyDelight {
         NeoForge.EVENT_BUS.addListener(MobEffectEventHandler::onEffectAdded);
         NeoForge.EVENT_BUS.addListener(PlayerInteractEventHandler::onLeftClickEmpty);
         NeoForge.EVENT_BUS.addListener(LivingIncomingDamageEventHandler::onLivingIncomingDamage);
+        NeoForge.EVENT_BUS.addListener(LivingChangeTargetEventHandler::onLivingChangeTarget);
         NeoForge.EVENT_BUS.addListener(PlayerTickEventHandler::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(PlayerTickEventHandler::onBreakSpeed);
         NeoForge.EVENT_BUS.addListener(PlayerTickEventHandler::onPlayerDeath);
         NeoForge.EVENT_BUS.addListener(PlayerTickEventHandler::onPlayerRespawn);
+        NeoForge.EVENT_BUS.addListener(VisualEffectEventHandler::onLevelTick);
+        NeoForge.EVENT_BUS.addListener(VisualEffectEventHandler::onStartTracking);
+        NeoForge.EVENT_BUS.addListener(VisualEffectEventHandler::onPlayerLoggedIn);
+        NeoForge.EVENT_BUS.addListener(VisualEffectEventHandler::onPlayerClone);
 
     }
 }
