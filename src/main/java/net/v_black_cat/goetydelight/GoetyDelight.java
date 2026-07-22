@@ -68,6 +68,7 @@ public class GoetyDelight {
         modEventBus.addListener(CommonSetupHandler::onCommonSetup);
         modEventBus.addListener(AddCreativeHandler::onAddCreative);
         modEventBus.addListener(RegisterPayloadHandlersEventHandler::register);
+        modEventBus.addListener(ModEntityAttributesHandler::onEntityAttributeCreation);
 
         // 游戏总线事件
         NeoForge.EVENT_BUS.addListener(ServerStartingHandler::onServerStarting);
@@ -91,6 +92,7 @@ public class GoetyDelight {
         NeoForge.EVENT_BUS.addListener(VisualEffectEventHandler::onStartTracking);
         NeoForge.EVENT_BUS.addListener(VisualEffectEventHandler::onPlayerLoggedIn);
         NeoForge.EVENT_BUS.addListener(VisualEffectEventHandler::onPlayerClone);
+        NeoForge.EVENT_BUS.addListener(GhostFarmerBlockBreakHandler::onBlockBreak);
 
     }
 }
