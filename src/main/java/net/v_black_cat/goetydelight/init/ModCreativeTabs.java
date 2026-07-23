@@ -20,14 +20,14 @@ public class ModCreativeTabs {
             CREATIVE_MODE_TABS.register("goetydelight_tab", () -> CreativeModeTab.builder()
                     .title(Component.translatable("creativetab.goetydelight_tab"))
                     .withTabsBefore(CreativeModeTabs.COMBAT)
-                    .icon(() -> ModItems.GOETYDELIGHT_ICON.get().getDefaultInstance())
+.icon(() -> new ItemStack(ModBlocks.NIGHT_STOVE.get()))
                     .displayItems((parameters, output) -> {
                         // ==================== 物品 ====================
                         // 武器
                         output.accept(ModItems.FALSE_PROVERBS.get());
 
                         // 图标
-                        output.accept(ModItems.GOETYDELIGHT_ICON.get());
+                      //  output.accept(ModItems.GOETYDELIGHT_ICON.get());
 
                         // 饮品
                         output.accept(ModItems.TAINTED_DRINK.get());
@@ -43,6 +43,7 @@ public class ModCreativeTabs {
 
                         // 普通食物
                         output.accept(ModItems.PROMOTION_HARD_CANDY.get());
+                        output.accept(ModItems.PARASITIZED_WARDEN.get());
                         output.accept(ModItems.ECTOPLASM_JELLY.get());
                         output.accept(ModItems.WHITE_SHARK_SUGAR_PACK.get());
                         output.accept(ModItems.SUNSHINE_SUGAR_BUN.get());
@@ -67,6 +68,7 @@ public class ModCreativeTabs {
                         output.accept(ModItems.WARPED_WART_OMELETTE.get());
                         output.accept(ModItems.FULL_SPIDER_FEAST.get());
                         output.accept(ModItems.METAMORPHIC_SCENT_FRUIT.get());
+                        output.accept(ModItems.METAMORPHIC_SCENT_GRASS.get());
                         output.accept(ModItems.SHAWARMA.get());
                         output.accept(ModItems.MENEMEN_WITH_BREAD.get());
                         output.accept(ModItems.BAKLAVA.get());
@@ -101,7 +103,10 @@ public class ModCreativeTabs {
                         output.accept(ModItems.ROAST_LAOWANG_LEG.get());
                         output.accept(ModItems.ONION_PORK_CHOP_RICE.get());
                         output.accept(ModItems.ECTOPLASMIC_MELON_SALAD.get());
-
+                        //刷怪蛋
+                        output.accept(ModItems.GHOST_FARMER_SPAWN_EGG.get());
+                        //卷轴
+                        output.accept(ModItems.VIZIERS_COOKBOOK.get());
                         // 种子
                         output.accept(ModItems.ECTOPLASMIC_MELON_SEEDS.get());
                         output.accept(ModItems.METAMORPHIC_SCENT_GRASS_SEEDS.get());
@@ -111,7 +116,7 @@ public class ModCreativeTabs {
 
                         // ==================== 方块 ====================
                         // 建筑方块 - 大理石系列
-                        output.accept(ModBlocks.MARBLE.get());
+                     /*   output.accept(ModBlocks.MARBLE.get());
                         output.accept(ModBlocks.SILT_MARBLE_HEAVY.get());
                         output.accept(ModBlocks.BLUE_MARBLE.get());
                         output.accept(ModBlocks.JUNGLE_MARBLE.get());
@@ -126,13 +131,13 @@ public class ModCreativeTabs {
                         output.accept(ModBlocks.MARBLE_FENCE_GATE.get());
                         output.accept(ModBlocks.MARBLE_WALL.get());
                         output.accept(ModBlocks.MARBLE_DOOR.get());
-                        output.accept(ModBlocks.MARBLE_TRAPDOOR.get());
+                        output.accept(ModBlocks.MARBLE_TRAPDOOR.get());    */
 
                         // 功能方块 - 炉灶与设备
                         output.accept(ModBlocks.NIGHT_STOVE.get());
                         output.accept(ModBlocks.SHADE_STOVE.get());
                         output.accept(ModBlocks.CURSED_INGOT_POT.get());
-                        output.accept(ModBlocks.APOCALYPTIUM_POT.get());
+                     //   output.accept(ModBlocks.APOCALYPTIUM_POT.get());
 
                         // 作物
                         output.accept(ModBlocks.ECTOPLASMIC_MELON_BLOCK.get());

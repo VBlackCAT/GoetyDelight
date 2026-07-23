@@ -1,10 +1,7 @@
 package net.v_black_cat.goetydelight.block;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -14,6 +11,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -58,12 +58,11 @@ public class MetamorphicScentGrassBlock extends CropBlock {
     @Override
     public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
         BlockState belowState = level.getBlockState(pos.below());
-        boolean isRichSoil = belowState.is(RICH_SOIL_FARMLAND.get());
 
-        Block infinisoilFarmland = BuiltInRegistries.BLOCK.get(ResourceLocation.parse("enigmaticdelicacy:infinisoil_farmland"));
-        boolean isInfinisoil = infinisoilFarmland != null && belowState.is(infinisoilFarmland);
-
-        return super.canSurvive(state, level, pos) && (isRichSoil || isInfinisoil);
+        return belowState.is(Blocks.FARMLAND) ||
+                belowState.is(RICH_SOIL_FARMLAND.get()) ||
+                (BuiltInRegistries.BLOCK.getOptional(ResourceLocation.parse("enigmaticdelicacy:infinisoil_farmland"))
+                        .map(belowState::is).orElse(false));
     }
 
     @Override
@@ -71,12 +70,14 @@ public class MetamorphicScentGrassBlock extends CropBlock {
         return SHAPE_BY_AGE[this.getAge(state)];
     }
 
+    /** 骨粉增长逻辑：有 50% 概率增长 1~2 阶段（原版小麦为 1~2 阶段，概率较高） */
     @Override
     protected int getBonemealAgeIncrease(Level level) {
-        int randomValue = level.random.nextInt(100);
-        return randomValue == 0 ? 1 : 0;
+        // 在 0~2 之间随机，使骨粉有效
+        return level.random.nextInt(3); // 返回 0,1,2
     }
 
+    /** 自然生长速度与光照、水分有关，保留原版逻辑 */
     @Override
     public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         if (!level.isAreaLoaded(pos, 1)) return;

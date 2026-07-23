@@ -9,17 +9,20 @@ import net.minecraft.world.item.ItemNameBlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.bus.api.IEventBus;
 import net.v_black_cat.goetydelight.init.ModTiers;
 import net.v_black_cat.goetydelight.init.ModBlocks;
+import net.v_black_cat.goetydelight.init.ModEntities;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.item.CustomDollItem;
 import net.v_black_cat.goetydelight.item.CustomDrinkItem;
 import net.v_black_cat.goetydelight.item.food.*;
 import net.v_black_cat.goetydelight.item.FalseProverbsItem;
+import net.v_black_cat.goetydelight.item.ViziersCookbookItem;
 import vectorwing.farmersdelight.common.registry.ModEffects;
 import vectorwing.farmersdelight.common.item.KnifeItem;
 
@@ -61,11 +64,11 @@ public class ModItems {
 //    // 武器物品
 //    public static final DeferredItem<Item> MARBLE_OP_SWORD;
     public static final DeferredItem<Item> FALSE_PROVERBS;
-//    public static final DeferredItem<Item> PARASITIZED_WARDEN;
-    // public static final DeferredItem<Item> VIZIERS_COOKBOOK;
+    public static final DeferredItem<Item> PARASITIZED_WARDEN;
+    public static final DeferredItem<Item> VIZIERS_COOKBOOK;
 //    //刷怪蛋
 //
-//    public static final DeferredItem<Item> GHOST_FARMER_SPAWN_EGG;
+    public static final DeferredItem<Item> GHOST_FARMER_SPAWN_EGG;
 //    // 食物物品
     public static final DeferredItem<Item> GOETYDELIGHT_ICON;
     public static final DeferredItem<Item> TAINTED_DRINK;
@@ -131,7 +134,7 @@ public class ModItems {
     public static final DeferredItem<Item> BOAT_STUFFED_ROASTED_WARDEN_MEET;
     public static final DeferredItem<Item> BOAT_STUFFED_ROASTED_WARDEN_FLANK;
 //    public static final DeferredItem<Item> ANCIENT_ENCHANTED_GOLDEN_APPLE;
-//    public static final DeferredItem<Item> NOT_ANYTHING;
+   public static final DeferredItem<Item> NOT_ANYTHING;
 //    public static final DeferredItem<Item> ROAST_LAOWANG;
 //    public static final DeferredItem<Item> POLARICE;
     public static final DeferredItem<Item> METAMORPHIC_SCENT_FRUIT;
@@ -165,8 +168,8 @@ public class ModItems {
 
     //    // ==================== 静态初始化块：物品定义区域 ====================
     static {
-//        NOT_ANYTHING = ITEMS.register("not_anything",
-//                () -> new Item(basicItem().stacksTo(1)));
+        NOT_ANYTHING = ITEMS.register("not_anything",
+               () -> new Item(basicItem().stacksTo(1)));
 //
 //        CUSTOM_DOLL = ITEMS.register("custom_doll", () -> new
 // CustomDollItem(ModBlocks.CUSTOM_DOLL.get()));
@@ -219,12 +222,12 @@ public class ModItems {
 //        // 大理石op剑
 //        MARBLE_OP_SWORD = ITEMS.register("marble_op_sword",
 //                () -> new MarbleOpSwordItem(Tiers.WOOD, 1, 2, basicItem().rarity(Rarity.EPIC)));
-//
-//        PARASITIZED_WARDEN = ITEMS.register("parasitized_warden",
-//                () -> new Item(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON)));
-//
-//        VIZIERS_COOKBOOK = ITEMS.register("viziers_cookbook",
-//                () -> new ViziersCookbookItem());
+
+        PARASITIZED_WARDEN = ITEMS.register("parasitized_warden",
+                () -> new Item(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON)));
+
+        VIZIERS_COOKBOOK = ITEMS.register("viziers_cookbook",
+                () -> new ViziersCookbookItem());
 //
         GOETYDELIGHT_ICON = ITEMS.register("goetydelight_icon",
                 () -> simpleFoodItem(666, 666, true));
@@ -255,6 +258,8 @@ public class ModItems {
 // EternalRefusalOfBlackMeatSoupItem(basicItem().stacksTo(1).rarity(Rarity.RARE).food(
 //                        ModFoods.CUP
 //                )));
+        GHOST_FARMER_SPAWN_EGG = ITEMS.register("ghost_farmer_spawn_egg",
+                () -> new SpawnEggItem(ModEntities.GHOST_FARMER.get(), 0xABCDEF, 0x123456, new Item.Properties()));
 //
         REJECTED_DARK_MEAT_SOUP = ITEMS.register("rejected_dark_meat_soup",
                 () -> new RejectedDarkMeatSoupItem(basicItem().stacksTo(16).food(
@@ -630,12 +635,18 @@ public class ModItems {
                 simpleFoodItemProperties(nutrition, saturationMod).build()));
     }
 
+    /**
+     * 生成食物属性构建器，适用于 1.21.1 的饱和度计算规则。
+     * 传入的 saturationMod 表示你期望的**总饱和点数**（即食物提供的实际饱和度），
+     * 方法内部会自动计算正确的 saturationModifier 值。
+     * 实际饱和度 = nutrition × saturationModifier × 2
+     * 因此修正值 = saturationMod / (nutrition × 2)
+     */
     public static FoodProperties.Builder simpleFoodItemProperties(int nutrition, float saturationMod) {
-        return new FoodProperties
-                .Builder()
+        return new FoodProperties.Builder()
                 .alwaysEdible()
                 .nutrition(nutrition)
-                .saturationModifier(saturationMod / nutrition);
+                .saturationModifier(saturationMod / (nutrition * 2.0f));   // 修复：按 1.21.1 正确计算
     }
 
     // 注册方法：供主类调用，将 DeferredRegister 绑定到 mod 事件总线
