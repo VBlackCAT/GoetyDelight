@@ -1,0 +1,39 @@
+{
+
+  "type": "farmersdelight:cooking",
+
+  "cookingtime": 300,
+
+  "experience": 0.5,
+
+  "ingredients": [
+
+    {
+
+      "item": "goety:refuse_bottle"
+
+    },
+
+    {
+
+      "tag": "goety:meat"
+
+    },
+
+    {
+
+      "item": "minecraft:stick"
+
+    }
+
+  ],
+
+  "recipe_book_tab": "misc",
+
+  "result": {
+
+    "item": "goetydelight:rejected_dark_meat_soup"
+
+  }
+
+}

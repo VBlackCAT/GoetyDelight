@@ -8,6 +8,11 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.entities.ghostfarmer.GhostFarmerModel;
+import net.v_black_cat.goetydelight.entities.ghostfarmer.GhostFarmerRenderer;
+import net.v_black_cat.goetydelight.entities.soul_lich.SoulLichModel;
+import net.v_black_cat.goetydelight.entities.soul_lich.SoulLichRenderer;
+import net.v_black_cat.goetydelight.init.ModEntities;
 import net.v_black_cat.goetydelight.init.ModMenuTypes;
 import net.v_black_cat.goetydelight.item.FalseProverbsItemModel;
 import net.v_black_cat.goetydelight.renderer.FalseProverbsBackLayer;
@@ -35,7 +40,8 @@ public class ClientSetup {
                 FalseProverbsItemModel.LAYER_LOCATION,
                 FalseProverbsItemModel::createBodyLayer
         );
-        //   System.out.println("[客户端] 注册 FalseProverbsItemModel 图层定义");
+        event.registerLayerDefinition(ModLayerDefinitions.GHOST_FARMER, GhostFarmerModel::createBodyLayer);
+        event.registerLayerDefinition(ModLayerDefinitions.SOUL_LICH, SoulLichModel::createBodyLayer);
     }
 
     @SubscribeEvent
@@ -44,8 +50,13 @@ public class ClientSetup {
             var renderer = event.getSkin(skin);
             if (renderer instanceof PlayerRenderer playerRenderer) {
                 playerRenderer.addLayer(new FalseProverbsBackLayer(playerRenderer));
-                // System.out.println("[客户端] 已添加 FalseProverbsBackLayer");
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(ModEntities.GHOST_FARMER.get(), GhostFarmerRenderer::new);
+        event.registerEntityRenderer(ModEntities.SOUL_LICH.get(), SoulLichRenderer::new);
     }
 }

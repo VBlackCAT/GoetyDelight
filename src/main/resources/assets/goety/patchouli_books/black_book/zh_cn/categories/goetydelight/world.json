@@ -1,0 +1,7 @@
+{
+  "name": "自然生成",
+  "description": "一些新结构……",
+  "icon": "goety:arca_compass",
+  "parent": "goety:goetydelight",
+  "sortnum": 6
+}

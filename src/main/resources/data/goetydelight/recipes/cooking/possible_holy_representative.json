@@ -1,0 +1,32 @@
+{
+  "type": "farmersdelight:cooking",
+  "ingredients": [
+    {
+      "item": "goety:mystic_core"
+    },
+    {
+      "item": "goety:forbidden_piece"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:wheat"
+    },
+    {
+      "tag": "forge:milk"
+    },
+    {
+      "item": "minecraft:egg"
+    }
+
+  ],
+  "result": {
+    "item": "goetydelight:possible_holy_representative"
+  },
+  "container": {
+    "item": "minecraft:glass_bottle"
+  },
+  "experience": 1.5,
+  "cookingtime": 200
+}

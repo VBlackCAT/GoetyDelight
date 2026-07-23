@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "goety:unholy_blood"
+  },
+  "base": {
+    "item": "goetydelight:the_box_of_the_dead"
+  },
+  "result": {
+    "item": "goety:pithos"
+  },
+  "template": {
+    "item": "goety:forbidden_fragment"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "type": "farmersdelight:cooking",
+  "cookingtime": 200,
+  "experience": 1.0,
+  "ingredients": [
+    {
+      "item": "minecraft:wheat"
+    },
+    {
+      "item": "minecraft:wheat"
+    },
+    {
+      "item": "minecraft:quartz"
+    },
+    {
+      "tag": "forge:milk"
+    },
+    {
+      "item": "goety:mystic_core"
+    }
+  ],
+  "recipe_book_tab": "misc",
+  "result": {
+    "item": "goetydelight:magic_quartz_cookie"
+  }
+}

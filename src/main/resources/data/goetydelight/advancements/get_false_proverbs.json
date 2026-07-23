@@ -1,0 +1,38 @@
+{
+  "parent": "goetydelight:root",
+  "criteria": {
+    "false_proverbs": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "goetydelight:false_proverbs"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "translate": "goetydelight.advancement.get_false_proverbs.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "goetydelight:false_proverbs"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "goetydelight.advancement.get_false_proverbs.title"
+    }
+  },
+  "requirements": [
+    [
+      "false_proverbs"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

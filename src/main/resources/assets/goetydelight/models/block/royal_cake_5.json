@@ -1,0 +1,61 @@
+{
+	"format_version": "1.21.6",
+	"credit": "Made with Blockbench",
+	"texture_size": [64, 64],
+	"textures": {
+		"1": "goetydelight:block/royal_cake_block",
+		"particle": "#1"
+	},
+	"elements": [
+		{
+			"from": [1, 1, 1],
+			"to": [15, 8, 15],
+			"faces": {
+				"north": {"uv": [0, 8, 3.5, 9.75], "texture": "#1"},
+				"east": {"uv": [7.5, 8.5, 11, 10.25], "texture": "#1"},
+				"south": {"uv": [0, 9.75, 3.5, 11.5], "texture": "#1"},
+				"west": {"uv": [10, 3.5, 13.5, 5.25], "texture": "#1"},
+				"up": {"uv": [7.5, 3.5, 4, 0], "texture": "#1"},
+				"down": {"uv": [7.5, 3.5, 4, 7], "texture": "#1", "cullface": "down"}
+			}
+		},
+		{
+			"from": [0, 0, 0],
+			"to": [16, 1, 16],
+			"faces": {
+				"north": {"uv": [11, 3.25, 15, 3.5], "texture": "#1"},
+				"east": {"uv": [11, 11.5, 15, 11.75], "texture": "#1"},
+				"south": {"uv": [11, 11.75, 15, 12], "texture": "#1"},
+				"west": {"uv": [7, 12, 11, 12.25], "texture": "#1"},
+				"up": {"uv": [4, 4, 0, 0], "texture": "#1"},
+				"down": {"uv": [4, 4, 0, 8], "texture": "#1"}
+			}
+		},
+		{
+			"name": "cube_outline",
+			"from": [16, 9, 16],
+			"to": [0, 0, 0],
+			"faces": {
+				"north": {"uv": [10, 5.25, 13.5, 7], "texture": "#1"},
+				"east": {"uv": [7.5, 10.25, 11, 12], "texture": "#1"},
+				"south": {"uv": [3.5, 10.5, 7, 12.25], "texture": "#1"},
+				"west": {"uv": [11, 0, 14.5, 1.75], "texture": "#1"},
+				"up": {"uv": [7.5, 10.5, 4, 7], "texture": "#1", "cullface": "down"},
+				"down": {"uv": [11, 0, 7.5, 3.5], "texture": "#1"}
+			}
+		},
+		{
+			"from": [3, 7, 3],
+			"to": [8, 14, 8],
+			"rotation": {"angle": 0, "axis": "y", "origin": [6, 7, 3]},
+			"faces": {
+				"north": {"uv": [12.25, 1.75, 13.5, 3.5], "texture": "#1"},
+				"east": {"uv": [12.25, 1.75, 13.5, 3.5], "texture": "#1"},
+				"south": {"uv": [12.25, 10, 13.5, 11.75], "texture": "#1"},
+				"west": {"uv": [11, 10, 12.25, 11.75], "texture": "#1"},
+				"up": {"uv": [10, 6, 8.75, 4.75], "texture": "#1"},
+				"down": {"uv": [10, 7, 8.75, 8.25], "texture": "#1"}
+			}
+		}
+	]
+}

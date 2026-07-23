@@ -1,0 +1,23 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "goety:undeath_potion"
+  },
+  "craftType": "necroturgy",
+  "research": "forbidden",
+  "soulCost": 1000,
+  "duration": 10,
+  "ingredients": [
+    {
+      "item": "minecraft:totem_of_undying"
+    },
+    {
+      "item": "goety:unholy_blood"
+    }
+  ],
+  "result": {
+    "item": "goety:undeath_potion",
+    "count": 2
+  }
+}

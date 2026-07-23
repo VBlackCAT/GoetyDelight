@@ -1,0 +1,40 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "goetydelight:dark_knife"
+  },
+  "craftType": "forge",
+  "research": "forbidden",
+  "soulCost": 50,
+  "duration": 15,
+  "ingredients": [
+    {
+      "item": "goety:dark_ingot"
+    },
+    {
+      "item": "goety:dark_ingot"
+    },
+    {
+      "item": "goety:shadow_essence"
+    },
+    {
+      "item": "goety:shadow_essence"
+    },
+    {
+      "item": "goety:void_echo"
+    },
+    {
+      "item": "goety:void_echo"
+    },
+    {
+      "item": "goety:end_walk_focus"
+    },
+    {
+      "item": "goety:night_beacon"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:false_proverbs"
+  }
+}

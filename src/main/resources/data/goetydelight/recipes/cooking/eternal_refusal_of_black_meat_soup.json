@@ -1,0 +1,54 @@
+{
+
+  "type": "farmersdelight:cooking",
+
+  "cookingtime": 300,
+
+  "experience": 0.5,
+
+  "ingredients": [
+
+    {
+
+      "item": "goety:refuse_bottle"
+
+    },
+
+    {
+
+      "tag": "goety:meat"
+
+    },
+
+    {
+
+      "item": "minecraft:stick"
+
+    },
+
+    {
+
+      "item": "goety:forbidden_fragment"
+
+    },
+
+    {
+
+      "item": "minecraft:echo_shard"
+
+    }
+
+  ],
+
+  "recipe_book_tab": "misc",
+  "container": {
+    "item": "goety:haunted_jug"
+  },
+
+  "result": {
+
+    "item": "goetydelight:eternal_refusal_of_black_meat_soup"
+
+  }
+
+}

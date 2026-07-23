@@ -1,0 +1,43 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "minecraft:cake"
+  },
+  "craftType": "culinary",
+  "research": "vizier_cookbook",
+  "soulCost": 111,
+  "duration": 10,
+  "ingredients": [
+    {
+      "item": "minecraft:honey_bottle"
+    },
+    {
+      "item": "minecraft:honey_bottle"
+    },
+    {
+      "item": "minecraft:chorus_fruit"
+    },
+    {
+      "item": "goety:occult_fabric"
+    },
+    {
+      "item": "goety:occult_fabric"
+    },
+    {
+      "item": "goety:occult_fabric"
+    },
+    {
+      "item": "goety:occult_fabric"
+    },
+    {
+      "item": "goety:ice_cube"
+    },
+    {
+      "item": "goetydelight:ruby_syrup"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:royal_cake_block"
+  }
+}

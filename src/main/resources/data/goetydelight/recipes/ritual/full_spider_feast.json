@@ -1,0 +1,40 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "minecraft:bone"
+  },
+  "craftType": "culinary",
+  "entity_to_sacrifice": {
+    "tag": "goetydelight:spider",
+    "display_name": "entity.minecraft.spider"
+  },
+  "soulCost": 5,
+  "duration": 10,
+  "ingredients": [
+    {
+      "tag": "goety:meat"
+    },
+    {
+      "tag": "goety:meat"
+    },
+    {
+      "item": "farmersdelight:onion"
+    },
+    {
+      "item": "farmersdelight:tomato"
+    },
+    {
+      "tag": "forge:crops/cabbage"
+    },
+    {
+      "item": "minecraft:carrot"
+    },
+    {
+      "item": "minecraft:apple"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:full_spider_feast"
+  }
+}

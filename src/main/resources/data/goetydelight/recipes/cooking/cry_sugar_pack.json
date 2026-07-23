@@ -1,0 +1,25 @@
+{
+  "type": "farmersdelight:cooking",
+  "ingredients": [
+    {
+      "item": "minecraft:wheat"
+    },
+    {
+      "item": "minecraft:wheat"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:cocoa_beans"
+    },
+    {
+      "item": "goety:hail_focus"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:cry_sugar_pack"
+  },
+  "experience": 1.5,
+  "cookingtime": 200
+}

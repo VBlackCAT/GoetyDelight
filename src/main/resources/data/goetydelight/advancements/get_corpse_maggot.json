@@ -1,0 +1,38 @@
+{
+  "parent": "goetydelight:root",
+  "criteria": {
+    "corpse_maggot": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "goetydelight:corpse_maggot"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "translate": "goetydelight.advancement.get_corpse_maggot.description"
+    },
+    "frame": "task",
+    "hidden": true,
+    "icon": {
+      "item": "goetydelight:corpse_maggot"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "goetydelight.advancement.get_corpse_maggot.title"
+    }
+  },
+  "requirements": [
+    [
+      "corpse_maggot"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

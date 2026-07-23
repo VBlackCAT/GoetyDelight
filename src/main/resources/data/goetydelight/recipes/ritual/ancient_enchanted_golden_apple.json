@@ -1,0 +1,56 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "minecraft:enchanted_golden_apple"
+  },
+  "craftType": "culinary",
+  "entity_to_sacrifice": {
+    "tag": "goetydelight:villager",
+    "display_name": "entity.minecraft.villager"
+  },
+  "soulCost": 10,
+  "duration": 20,
+  "ingredients": [
+    {
+      "item": "minecraft:gold_block"
+    },
+    {
+      "item": "minecraft:gold_block"
+    },
+    {
+      "item": "minecraft:gold_block"
+    },
+    {
+      "item": "minecraft:gold_block"
+    },
+    {
+      "item": "minecraft:gold_block"
+    },
+    {
+      "item": "minecraft:gold_block"
+    },
+    {
+      "item": "minecraft:gold_block"
+    },
+    {
+      "item": "minecraft:gold_block"
+    },
+    {
+      "item": "goety:mystic_core"
+    },
+    {
+      "item": "goetydelight:ruby_syrup"
+    },
+    {
+      "item": "goety:quick_growing_seed"
+    },
+    {
+      "item": "minecraft:experience_bottle"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:ancient_enchanted_golden_apple",
+    "count": 2
+  }
+}

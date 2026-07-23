@@ -1,0 +1,52 @@
+{
+
+  "type": "farmersdelight:cooking",
+
+  "cookingtime": 200,
+
+  "experience": 1.2,
+
+  "ingredients": [
+
+    {
+
+      "item": "goety:tall_skull"
+
+    },
+
+    {
+
+      "item": "minecraft:sugar_cane"
+
+    },
+
+    {
+
+      "item": "minecraft:sugar"
+
+    },
+
+    {
+      "type": "forge:nbt",
+      "item": "minecraft:potion",
+      "nbt": {
+        "Potion": "minecraft:water"
+      }
+    },
+
+    {
+
+      "item": "minecraft:apple"
+
+    }
+
+  ],
+
+  "recipe_book_tab": "drinks",
+
+  "result": {
+
+    "item": "goetydelight:skull_shot"
+
+  }
+}

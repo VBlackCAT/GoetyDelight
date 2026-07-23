@@ -1,0 +1,9 @@
+{
+    "type": "goety:brewing",
+    "ingredient": {
+        "item": "minecraft:sculk_catalyst"
+    },
+    "effect": "goetydelight:hunting_denial",
+    "soulCost": 50,
+    "duration": 18000
+}

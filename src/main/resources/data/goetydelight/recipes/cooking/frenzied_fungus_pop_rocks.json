@@ -1,0 +1,23 @@
+{
+  "type": "farmersdelight:cooking",
+  "cookingtime": 120,
+  "experience": 0.8,
+  "ingredients": [
+    {
+      "item": "goety:berserk_fungus"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:gunpowder"
+    }
+  ],
+  "recipe_book_tab": "misc",
+  "result": {
+    "item": "goetydelight:frenzied_fungus_pop_rocks"
+  },
+  "container": {
+    "item": "minecraft:glass_bottle"
+  }
+}

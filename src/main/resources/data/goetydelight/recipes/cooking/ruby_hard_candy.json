@@ -1,0 +1,22 @@
+{
+  "type": "farmersdelight:cooking",
+  "ingredients": [
+    {
+      "item": "goety:soul_emerald"
+    },
+    {
+      "item": "goetydelight:ruby_syrup"
+    },
+    {
+      "item": "goety:ice_cube"
+    },
+    {
+      "item": "goety:ice_cube"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:ruby_hard_candy"
+  },
+  "experience": 1.2,
+  "cookingtime": 200
+}

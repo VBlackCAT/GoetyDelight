@@ -1,0 +1,39 @@
+{
+
+  "type": "farmersdelight:cooking",
+
+  "cookingtime": 150,
+
+  "experience": 0.8,
+
+  "ingredients": [
+
+    {
+
+      "item": "goety:ice_cube"
+
+    },
+
+    {
+
+      "item": "minecraft:melon_slice"
+
+    },
+
+    {
+
+      "item": "goety:ectoplasm"
+
+    }
+
+  ],
+
+  "recipe_book_tab": "drinks",
+
+  "result": {
+
+    "item": "goetydelight:ectoplasmic_melon"
+
+  }
+
+}

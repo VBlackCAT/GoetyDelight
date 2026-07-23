@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "category": "food",
+  "cookingtime": 200,
+  "experience": 0.35,
+  "ingredient": {
+    "item": "goety:warped_wartful_egg"
+  },
+  "result": "goetydelight:warped_wart_omelette"
+}

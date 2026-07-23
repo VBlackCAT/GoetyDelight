@@ -1,0 +1,31 @@
+{
+  "type": "farmersdelight:cooking",
+  "ingredients": [
+    {
+      "item": "goety:quick_growing_seed"
+    },
+    {
+      "item": "goety:quick_growing_seed"
+    },
+    {
+      "item": "minecraft:baked_potato"
+    },
+    {
+      "item": "farmersdelight:onion"
+    },
+    {
+      "item": "goety:corpse_blossom"
+    },
+    {
+      "tag": "goety:meat"
+    }
+  ],
+  "container": {
+    "item": "goety:tall_skull"
+  },
+  "result": {
+    "item": "goetydelight:stuffed_tall_skull_rice_block"
+  },
+  "experience": 1.5,
+  "cookingtime": 200
+}

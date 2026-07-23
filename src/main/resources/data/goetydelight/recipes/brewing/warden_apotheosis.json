@@ -1,0 +1,16 @@
+{
+    "type": "goety:brewing",
+    "ingredient": {
+        "item": "apotheosis:warden_tendril"
+    },
+    "effect": "goetydelight:warden",
+    "soulCost": 25,
+    "capacityExtra": 5,
+    "duration": 4200,
+    "conditions": [
+        {
+            "type": "forge:mod_loaded",
+            "modid": "apotheosis"
+        }
+    ]
+}

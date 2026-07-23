@@ -1,0 +1,47 @@
+{
+  "blend": {
+    "func": "add",
+    "srcrgb": "one",
+    "dstrgb": "zero"
+  },
+  "vertex": "goetydelight:entity_depth_reconstruct",
+  "fragment": "goetydelight:entity_depth_reconstruct",
+  "attributes": [ "Position" ],
+  "samplers": [
+    { "name": "DiffuseSampler" },
+    { "name": "DepthSampler" }
+  ],
+  "uniforms": [
+    { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+    { "name": "ViewProjMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+    { "name": "InvViewProjMat", "type": "matrix4x4", "count": 16, "values": [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ] },
+    { "name": "InSize", "type": "float", "count": 2, "values": [ 1.0, 1.0 ] },
+    { "name": "OutSize", "type": "float", "count": 2, "values": [ 1.0, 1.0 ] },
+    { "name": "Time", "type": "float", "count": 1, "values": [ 0.0 ] },
+    { "name": "EffectCount", "type": "int", "count": 1, "values": [ 0 ] },
+    { "name": "EffectCenter0", "type": "float", "count": 3, "values": [ 0.0, 0.0, 0.0 ] },
+    { "name": "EffectCenter1", "type": "float", "count": 3, "values": [ 0.0, 0.0, 0.0 ] },
+    { "name": "EffectCenter2", "type": "float", "count": 3, "values": [ 0.0, 0.0, 0.0 ] },
+    { "name": "EffectCenter3", "type": "float", "count": 3, "values": [ 0.0, 0.0, 0.0 ] },
+    { "name": "EffectCenter4", "type": "float", "count": 3, "values": [ 0.0, 0.0, 0.0 ] },
+    { "name": "EffectCenter5", "type": "float", "count": 3, "values": [ 0.0, 0.0, 0.0 ] },
+    { "name": "EffectCenter6", "type": "float", "count": 3, "values": [ 0.0, 0.0, 0.0 ] },
+    { "name": "EffectCenter7", "type": "float", "count": 3, "values": [ 0.0, 0.0, 0.0 ] },
+    { "name": "EffectData0", "type": "float", "count": 4, "values": [ 0.0, 0.0, 0.0, 0.0 ] },
+    { "name": "EffectData1", "type": "float", "count": 4, "values": [ 0.0, 0.0, 0.0, 0.0 ] },
+    { "name": "EffectData2", "type": "float", "count": 4, "values": [ 0.0, 0.0, 0.0, 0.0 ] },
+    { "name": "EffectData3", "type": "float", "count": 4, "values": [ 0.0, 0.0, 0.0, 0.0 ] },
+    { "name": "EffectData4", "type": "float", "count": 4, "values": [ 0.0, 0.0, 0.0, 0.0 ] },
+    { "name": "EffectData5", "type": "float", "count": 4, "values": [ 0.0, 0.0, 0.0, 0.0 ] },
+    { "name": "EffectData6", "type": "float", "count": 4, "values": [ 0.0, 0.0, 0.0, 0.0 ] },
+    { "name": "EffectData7", "type": "float", "count": 4, "values": [ 0.0, 0.0, 0.0, 0.0 ] },
+    { "name": "EffectColor0", "type": "float", "count": 3, "values": [ 1.0, 0.35, 0.85 ] },
+    { "name": "EffectColor1", "type": "float", "count": 3, "values": [ 0.3, 0.85, 1.0 ] },
+    { "name": "EffectColor2", "type": "float", "count": 3, "values": [ 0.7, 1.0, 0.35 ] },
+    { "name": "EffectColor3", "type": "float", "count": 3, "values": [ 1.0, 0.65, 0.25 ] },
+    { "name": "EffectColor4", "type": "float", "count": 3, "values": [ 1.0, 0.35, 0.85 ] },
+    { "name": "EffectColor5", "type": "float", "count": 3, "values": [ 0.3, 0.85, 1.0 ] },
+    { "name": "EffectColor6", "type": "float", "count": 3, "values": [ 0.7, 1.0, 0.35 ] },
+    { "name": "EffectColor7", "type": "float", "count": 3, "values": [ 1.0, 0.65, 0.25 ] }
+  ]
+}

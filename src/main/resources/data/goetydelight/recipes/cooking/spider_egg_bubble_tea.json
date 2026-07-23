@@ -1,0 +1,31 @@
+{
+  "type": "farmersdelight:cooking",
+  "ingredients": [
+    {
+      "item": "goety:spider_egg"
+    },
+    {
+      "item": "goety:spider_egg"
+    },
+    {
+      "item": "minecraft:glow_berries"
+    },
+    {
+      "item": "minecraft:wheat"
+    },
+    {
+      "tag": "forge:milk"
+    }
+  ],
+
+  "recipe_book_tab": "drinks",
+
+  "result": {
+    "item": "goetydelight:spider_egg_bubble_tea"
+  },
+  "container": {
+    "item": "minecraft:glass_bottle"
+  },
+  "experience": 1.5,
+  "cookingtime": 200
+}

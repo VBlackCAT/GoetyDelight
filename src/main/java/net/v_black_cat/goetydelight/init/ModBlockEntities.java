@@ -1,14 +1,19 @@
 package net.v_black_cat.goetydelight.init;
 
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.block.CustomDollBlockEntity;
 import net.v_black_cat.goetydelight.block.NightStoveBlockEntity;
+import net.v_black_cat.goetydelight.block.RenderBlockEntity;
 import net.v_black_cat.goetydelight.block.ShadeStoveBlockEntity;
 import net.v_black_cat.goetydelight.block.CursedIngotPotBlockEntity;
+
+import java.util.stream.Stream;
 
 public class ModBlockEntities {
     public static final DeferredRegister<
@@ -35,8 +40,29 @@ public class ModBlockEntities {
             BlockEntityType<
                     CursedIngotPotBlockEntity>> CURSED_INGOT_POT_BE = BLOCK_ENTITIES.register("cursed_ingot_pot", () -> BlockEntityType.Builder.of(
             CursedIngotPotBlockEntity::new,
-            ModBlocks.CURSED_INGOT_POT.get() // 确保方块已注册
+            ModBlocks.CURSED_INGOT_POT.get()
     ).build(null));
+
+    public static final DeferredHolder<
+            BlockEntityType<?>,
+            BlockEntityType<
+                    CustomDollBlockEntity>> CUSTOM_DOLL_BE = BLOCK_ENTITIES.register("custom_doll", () -> BlockEntityType.Builder.of(
+            CustomDollBlockEntity::new,
+            getDollBlocks()
+    ).build(null));
+
+    public static final DeferredHolder<
+            BlockEntityType<?>,
+            BlockEntityType<
+                    RenderBlockEntity>> RENDER_BLOCK = BLOCK_ENTITIES.register("render_block", () -> BlockEntityType.Builder.of(
+            RenderBlockEntity::new,
+            ModBlocks.RENDER_BLOCK.get()
+    ).build(null));
+
+    private static Block[] getDollBlocks() {
+        return Stream.concat(Stream.of(ModBlocks.CUSTOM_DOLL.get()), Stream.empty())
+                .toArray(Block[]::new);
+    }
 
     public static void register(IEventBus modEventBus) {
         BLOCK_ENTITIES.register(modEventBus);

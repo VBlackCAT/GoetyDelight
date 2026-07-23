@@ -5,6 +5,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemNameBlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
@@ -13,7 +14,9 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.bus.api.IEventBus;
 import net.v_black_cat.goetydelight.init.ModTiers;
+import net.v_black_cat.goetydelight.init.ModBlocks;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.item.CustomDollItem;
 import net.v_black_cat.goetydelight.item.CustomDrinkItem;
 import net.v_black_cat.goetydelight.item.food.*;
 import net.v_black_cat.goetydelight.item.FalseProverbsItem;
@@ -42,7 +45,7 @@ public class ModItems {
 
     //    // ==================== 物品声明区域 ====================
 //    // 块物品
-//    public static final DeferredItem<Item> METAMORPHIC_SCENT_GRASS;
+    public static final DeferredItem<Item> METAMORPHIC_SCENT_GRASS;
 //
 //    //刷子
 //    public static final DeferredItem<Item> CURSED_METAL_BRUSH;
@@ -59,7 +62,7 @@ public class ModItems {
 //    public static final DeferredItem<Item> MARBLE_OP_SWORD;
     public static final DeferredItem<Item> FALSE_PROVERBS;
 //    public static final DeferredItem<Item> PARASITIZED_WARDEN;
-   // public static final DeferredItem<Item> VIZIERS_COOKBOOK;
+    // public static final DeferredItem<Item> VIZIERS_COOKBOOK;
 //    //刷怪蛋
 //
 //    public static final DeferredItem<Item> GHOST_FARMER_SPAWN_EGG;
@@ -68,14 +71,14 @@ public class ModItems {
     public static final DeferredItem<Item> TAINTED_DRINK;
     public static final DeferredItem<Item> PURE_DRINK;
     public static final DeferredItem<Item> REJECTED_DARK_MEAT_SOUP;
-//    public static final DeferredItem<Item> SIBLING_SUNDAE;
+    public static final DeferredItem<Item> SIBLING_SUNDAE;
     public static final DeferredItem<Item> PROMOTION_HARD_CANDY;
     //    public static final DeferredItem<Item> CUP;
     public static final DeferredItem<Item> TOXIC_MEAL;
 //    public static final DeferredItem<Item> POACHED_NETHER_WART_EGG;
     public static final DeferredItem<Item> ECTOPLASM_JELLY;
     //    public static final DeferredItem<Item> ROASTED_CORPSE_MAGGOTS;
-//    public static final DeferredItem<Item> WHITE_SHARK_CANDY;
+    public static final DeferredItem<Item> WHITE_SHARK_CANDY;
     public static final DeferredItem<Item> WHITE_SHARK_SUGAR_PACK;
     public static final DeferredItem<Item> SUNSHINE_SUGAR_BUN;
     public static final DeferredItem<Item> CANDY_FISH;
@@ -85,7 +88,7 @@ public class ModItems {
     public static final DeferredItem<Item> SPIDER_EGG_BUBBLE_TEA_2;
     public static final DeferredItem<Item> SAUCE_GRILLED_CANDY_FISH;
     public static final DeferredItem<Item> CRYING_SHARK_SUGAR_PACK;
-    //    public static final DeferredItem<Item> SEVEN_LEAF_PUDDING;
+    public static final DeferredItem<Item> SEVEN_LEAF_PUDDING;
     public static final DeferredItem<Item> BEAR_PAW;
     public static final DeferredItem<Item> CAKE;
 //    public static final DeferredItem<Item> OMINOUS_ICE_CREAM;
@@ -99,7 +102,7 @@ public class ModItems {
     public static final DeferredItem<Item> SOUL_CONVERGENCE_ROOM;
     public static final DeferredItem<Item> SOUL_CONVERGENCE_ROOM_2;
     public static final DeferredItem<Item> BONE_LORD_ASH_RICE;
-//    public static final DeferredItem<Item> RUBY_HARD_CANDY;
+    public static final DeferredItem<Item> RUBY_HARD_CANDY;
     public static final DeferredItem<Item> CRISP_BISCUIT;
     public static final DeferredItem<Item> ROTTEN_CORPSE_MAGGOT_FEAST;
     public static final DeferredItem<Item> CORPSE_MAGGOT;
@@ -119,9 +122,9 @@ public class ModItems {
     public static final DeferredItem<Item> LICHS_CHAOS_STEW;
 //    public static final DeferredItem<Item> MAGIC_QUARTZ_COOKIE;
     public static final DeferredItem<Item> SNAP_UNHOLY_TRIPE;
-//    public static final DeferredItem<Item> SUNDAE_OF_THE_PHILOSOPHERS_POTION;
+    public static final DeferredItem<Item> SUNDAE_OF_THE_PHILOSOPHERS_POTION;
     public static final DeferredItem<Item> THE_BOX_OF_THE_DEAD;
-//    public static final DeferredItem<Item> RING_PACKED_VOID_GEL_JELLY;
+    public static final DeferredItem<Item> RING_PACKED_VOID_GEL_JELLY;
     public static final DeferredItem<Item> STUFFED_TALL_SKULL_RICE;
     public static final DeferredItem<Item> OMINOUS_RAMUNE;
     public static final DeferredItem<Item> BOAT_STUFFED_ROASTED_WARDEN_HEAD;
@@ -140,20 +143,22 @@ public class ModItems {
     public static final DeferredItem<Item> RAKI;
     public static final DeferredItem<Item> MENEMEN_WITH_BREAD;
     public static final DeferredItem<Item> BAKLAVA;
-//    public static final DeferredItem<Item> CUSTOM_DOLL;
+    public static final DeferredItem<Item> CUSTOM_DOLL;
     public static final DeferredItem<Item> BISCAT;
     public static final DeferredItem<Item> RUBY_SYRUP;
 
-//    public static final DeferredItem<Item> ROAST_LAOWANG_EAR;
-//    public static final DeferredItem<Item> ROAST_LAOWANG_FEET;
-//    public static final DeferredItem<Item> ROAST_LAOWANG_HEAD;
-//    public static final DeferredItem<Item> ROAST_LAOWANG_LEG;
-//    public static final DeferredItem<Item> ONION_PORK_CHOP_RICE;
-//    public static final DeferredItem<Item> ECTOPLASMIC_MELON_SALAD;
-//
-//    //种子
-//    public static final DeferredItem<Item> ECTOPLASMIC_MELON_SEEDS;
-//    public static final DeferredItem<Item> METAMORPHIC_SCENT_GRASS_SEEDS;
+    public static final DeferredItem<Item> ROAST_SPIDER_EGG;
+    public static final DeferredItem<Item> ROAST_LAOWANG_EAR;
+    public static final DeferredItem<Item> ROAST_LAOWANG_FEET;
+    public static final DeferredItem<Item> ROAST_LAOWANG_HEAD;
+    public static final DeferredItem<Item> ROAST_LAOWANG_LEG;
+    public static final DeferredItem<Item> ONION_PORK_CHOP_RICE;
+    public static final DeferredItem<Item> ECTOPLASMIC_MELON_SALAD;
+
+    // 种子
+    public static final DeferredItem<Item> ECTOPLASMIC_MELON_SEEDS;
+    public static final DeferredItem<Item> METAMORPHIC_SCENT_GRASS_SEEDS;
+
 //
 //    //    public static final DeferredItem<Item> MENU;
 //    public static final DeferredItem<Item> DOLL_ITEM;
@@ -166,10 +171,9 @@ public class ModItems {
 //        CUSTOM_DOLL = ITEMS.register("custom_doll", () -> new
 // CustomDollItem(ModBlocks.CUSTOM_DOLL.get()));
 //
-//        METAMORPHIC_SCENT_GRASS = ITEMS.register("metamorphic_scent_grass",
-//                () -> new
-// MetamorphicScentGrassItem(basicItem().stacksTo(64).food(simpleFoodItemProperties(2,
-// 3).build())));
+        METAMORPHIC_SCENT_GRASS = ITEMS.register("metamorphic_scent_grass",
+                () -> new MetamorphicScentGrassItem(basicItem().stacksTo(64).food(simpleFoodItemProperties(2,
+                        3).build())));
 //
 //        // 神金刀
 //        APOCALYPTIUM_KNIFE = registerWithTab("apocalyptium_knife",
@@ -336,16 +340,16 @@ public class ModItems {
                         ModFoods.WHITE_SHARK_SUGAR_PACK
                 )));
 //
-//        WHITE_SHARK_CANDY = ITEMS.register("sugar_scepter",
-//                () -> new SugarScepterItem(basicItem().stacksTo(8).rarity(Rarity.UNCOMMON).food(
-//                        ModFoods.WHITE_SHARK_CANDY
-//                )));
-//
-//        SIBLING_SUNDAE = ITEMS.register("possible_holy_representative",
-//                () -> new SiblingSundaeItem(basicItem().stacksTo(8).rarity(Rarity.UNCOMMON).food(
-//                        ModFoods.SIBLING_SUNDAE
-//                )));
-//
+        WHITE_SHARK_CANDY = ITEMS.register("sugar_scepter",
+                () -> new SugarScepterItem(basicItem().stacksTo(8).rarity(Rarity.UNCOMMON).food(
+                        ModFoods.WHITE_SHARK_CANDY
+                )));
+
+        SIBLING_SUNDAE = ITEMS.register("possible_holy_representative",
+                () -> new SiblingSundaeItem(basicItem().stacksTo(8).rarity(Rarity.UNCOMMON).food(
+                        ModFoods.SIBLING_SUNDAE
+                )));
+
 //        ROASTED_CORPSE_MAGGOTS = ITEMS.register("roasted_corpse_maggots",
 //                () -> new
 // RoastedCorpseMaggotsitem(basicItem().craftRemainder(Items.BOWL).stacksTo(16).food(
@@ -372,12 +376,11 @@ public class ModItems {
                         ModFoods.GRAPE_SLUSH
                 )));
 //
-//        SEVEN_LEAF_PUDDING = ITEMS.register("sweet_berry_pudding",
-//                () -> new
-// SevenLeafPuddingItem(basicItem().stacksTo(64).craftRemainder(Items.BOWL).food(
-//                        ModFoods.SEVEN_LEAF_PUDDING
-//                )));
-//
+        SEVEN_LEAF_PUDDING = ITEMS.register("sweet_berry_pudding",
+                () -> new SevenLeafPuddingItem(basicItem().stacksTo(64).craftRemainder(Items.BOWL).food(
+                        ModFoods.SEVEN_LEAF_PUDDING
+                )));
+
         BEAR_PAW = ITEMS.register("bear_paw",
                 () -> new Item(basicItem().stacksTo(64).food(
                         ModFoods.BEAR_PAW
@@ -433,10 +436,10 @@ public class ModItems {
                 () -> new BoneLordAshRiceItem(basicItem().craftRemainder(Items.BOWL).stacksTo(64).food(
                         ModFoods.BONE_LORD_ASH_RICE
                 )));
-//        RUBY_HARD_CANDY = ITEMS.register("ruby_hard_candy",
-//                () -> new RubyHardCandyItem(basicItem().stacksTo(64).rarity(Rarity.UNCOMMON).food(
-//                        ModFoods.RUBY_HARD_CANDY
-//                )));
+        RUBY_HARD_CANDY = ITEMS.register("ruby_hard_candy",
+                () -> new RubyHardCandyItem(basicItem().stacksTo(64).rarity(Rarity.UNCOMMON).food(
+                        ModFoods.RUBY_HARD_CANDY
+                )));
         CRISP_BISCUIT = ITEMS.register("crisp_biscuit",
                 () -> new CrispBiscuitItem(basicItem().stacksTo(64).food(
                         ModFoods.CRISP_BISCUIT
@@ -477,11 +480,10 @@ public class ModItems {
                 () -> new SnapUnholyTripeItem(basicItem().stacksTo(16).rarity(Rarity.RARE).food(
                         ModFoods.SNAP_UNHOLY_TRIPE
                 )));
-//        SUNDAE_OF_THE_PHILOSOPHERS_POTION = ITEMS.register("sundae_of_the_philosophers_potion",
-//                () -> new
-// SundaeOfThePhilosophersPotionItem(basicItem().stacksTo(16).rarity(Rarity.EPIC).food(
-//                        ModFoods.SUNDAE_OF_THE_PHILOSOPHERS_POTION
-//                )));
+        SUNDAE_OF_THE_PHILOSOPHERS_POTION = ITEMS.register("sundae_of_the_philosophers_potion",
+                () -> new SundaeOfThePhilosophersPotionItem(basicItem().stacksTo(16).rarity(Rarity.EPIC).food(
+                        ModFoods.SUNDAE_OF_THE_PHILOSOPHERS_POTION
+                )));
         THE_BOX_OF_THE_DEAD = ITEMS.register("the_box_of_the_dead",
                 () -> new TheBoxOfTheDeadItem(basicItem().stacksTo(64).rarity(Rarity.UNCOMMON).food(
                         ModFoods.THE_BOX_OF_THE_DEAD
@@ -572,22 +574,49 @@ public class ModItems {
         RUBY_SYRUP = ITEMS.register("ruby_syrup",
                 () -> new GlassBottleFoodItem(basicItem().stacksTo(16).rarity(Rarity.COMMON)
                         .food(ModFoods.RUBY_SYRUP)));
-//
-//        // ==================== 种子物品 ====================
-//        ECTOPLASMIC_MELON_SEEDS = ITEMS.register("ectoplasmic_melon_seeds",
-//                () -> new ItemNameBlockItem(ModBlocks.ECTOPLASMIC_MELON_STEM.get(),
-//                        new Item.Properties()
-//                ));
-//        METAMORPHIC_SCENT_GRASS_SEEDS = ITEMS.register("metamorphic_scent_grass_seeds",
-//                () -> new ItemNameBlockItem(ModBlocks.METAMORPHIC_SCENT_GRASS.get(),
-//                        new Item.Properties()
-//                ));
-//        // ==================== 杂项物品 ====================
-//        GHOST_FARMER_SPAWN_EGG = ITEMS.register("ghost_farmer_spawn_egg",
-//                () -> new SpawnEggItem(ModEntities.GHOST_FARMER.get(), 0xFFFFFF, 0xFFFFFF, new
-// Item.Properties()));
-//
-//        DOLL_ITEM = registerWithTab("doll_item", DollEntityItem::new);
+
+        CUSTOM_DOLL = ITEMS.register("custom_doll", () -> new CustomDollItem(ModBlocks.CUSTOM_DOLL.get()));
+        RING_PACKED_VOID_GEL_JELLY = ITEMS.register("ring_packed_void_gel_jelly",
+                () -> new FoiledBowlFoodItem(basicItem().craftRemainder(Items.BOWL).stacksTo(64)
+                        .food(ModFoods.RING_PACKED_VOID_GEL_JELLY)));
+
+        ROAST_SPIDER_EGG = ITEMS.register("roast_spider_egg",
+                () -> new Item(basicItem().stacksTo(16).rarity(Rarity.COMMON)
+                        .food(simpleFoodItemProperties(10, 6).build())));
+
+        ROAST_LAOWANG_EAR = ITEMS.register("roast_laowang_ear",
+                () -> new Item(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
+                        .food(simpleFoodItemProperties(4, 3).build())));
+
+        ROAST_LAOWANG_FEET = ITEMS.register("roast_laowang_feet",
+                () -> new Item(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
+                        .food(simpleFoodItemProperties(10, 6).build())));
+
+        ROAST_LAOWANG_HEAD = ITEMS.register("roast_laowang_head",
+                () -> new Item(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
+                        .food(simpleFoodItemProperties(20, 13).build())));
+
+        ROAST_LAOWANG_LEG = ITEMS.register("roast_laowang_leg",
+                () -> new Item(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
+                        .food(simpleFoodItemProperties(10, 6).build())));
+
+        ONION_PORK_CHOP_RICE = ITEMS.register("onion_pork_chop_rice",
+                () -> new BowlFoodItem(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
+                        .food(simpleFoodItemProperties(12, 8).build())));
+
+        ECTOPLASMIC_MELON_SALAD = ITEMS.register("ectoplasmic_melon_salad",
+                () -> new BowlFoodItem(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
+                        .food(simpleFoodItemProperties(6, 5).build())));
+
+        // ==================== 种子物品 ====================
+        ECTOPLASMIC_MELON_SEEDS = ITEMS.register("ectoplasmic_melon_seeds",
+                () -> new ItemNameBlockItem(ModBlocks.ECTOPLASMIC_MELON_STEM.get(),
+                new Item.Properties()
+                ));
+        METAMORPHIC_SCENT_GRASS_SEEDS = ITEMS.register("metamorphic_scent_grass_seeds",
+                () -> new ItemNameBlockItem(ModBlocks.METAMORPHIC_SCENT_GRASS.get(),
+                new Item.Properties()
+                ));
     }
 
     // ==================== 辅助方法 ====================

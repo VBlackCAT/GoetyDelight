@@ -1,0 +1,7 @@
+{
+  "name": "食物",
+  "description": "一些或亵渎、或黑暗的食物",
+  "icon": "goetydelight:royal_cake",
+  "parent": "goety:goetydelight",
+  "sortnum": 1
+}

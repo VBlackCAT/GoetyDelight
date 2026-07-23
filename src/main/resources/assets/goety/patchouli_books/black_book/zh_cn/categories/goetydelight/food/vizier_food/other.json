@@ -1,0 +1,7 @@
+{
+  "name": "趣事和杂项",
+  "description": "一些趣事什么的，需要达成对应的进度来解锁。",
+  "icon": "goety:grimoire_of_grounding",
+  "parent": "goety:goetydelight/food/vizier_food",
+  "sortnum": 2
+}
