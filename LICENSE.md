@@ -5,7 +5,13 @@
 
 **ALL RIGHTS RESERVED**
 
-In no event shall any part of the content be used for artificial intelligence training, tracing, redrawing, secondary adaptation, or any other project, whether publicly or privately.
+Without the texture owner's permission, any use of the content for AI training or direct verbatim copying into other projects is strictly prohibited.
+
+Tracing, redrawing, or other secondary adaptations are permitted, but only for use within this project (i.e., this mod). Such adaptations may not be distributed independently or used in any other project. Proper attribution to the original texture source must be clearly given, and no claim of originality may be made.
+
+If the adapted work is used for commercial purposes, separate written permission from the owner is required.
+
+Special Exception: Textures from this mod may be uploaded to the mod's dedicated page on MC百科 (https://www.mcmod.cn/class/22582.html) for use as icons, entry illustrations, or other wiki-related purposes. Such use shall not be deemed a violation of the above terms.
 
 ---
 
