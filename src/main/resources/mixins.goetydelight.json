@@ -15,7 +15,8 @@
     "MobMixin",
     "RecipeManagerMixin",
     "SummonSpellMixin",
-    "WightSpawnerMixin"
+    "WightSpawnerMixin",
+    "AnvilBlockMixin"
   ],
   "client": [
     "BookContentResourceListenerLoaderMixin",

@@ -1,7 +1,5 @@
 package net.v_black_cat.goetydelight.block;
 
-
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.BlockItem;

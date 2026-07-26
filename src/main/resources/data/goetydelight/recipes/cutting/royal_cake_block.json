@@ -1,0 +1,17 @@
+{
+  "type": "farmersdelight:cutting",
+  "ingredients": [
+    {
+      "item": "goetydelight:royal_cake_block"
+    }
+  ],
+  "result": [
+    {
+      "count": 8,
+      "item": "goetydelight:royal_cake"
+    }
+  ],
+  "tool": {
+    "tag": "forge:tools/knives"
+  }
+}

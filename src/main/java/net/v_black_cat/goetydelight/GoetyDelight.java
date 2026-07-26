@@ -18,6 +18,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.v_black_cat.goetydelight.advancements.ModAdvancementsTrigger;
+import net.v_black_cat.goetydelight.event.AnvilLandInBlockEvent;
 import net.v_black_cat.goetydelight.init.ModBuffTypes;
 import net.v_black_cat.goetydelight.block.ModBlockEntities;
 import net.v_black_cat.goetydelight.block.ModBlocks;

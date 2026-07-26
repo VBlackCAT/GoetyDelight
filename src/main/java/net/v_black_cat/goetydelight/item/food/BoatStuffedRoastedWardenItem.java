@@ -21,6 +21,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.v_black_cat.goetydelight.item.ModItems;
 import net.v_black_cat.goetydelight.util.ParticlesUtil;
 
 import java.util.function.Consumer;
@@ -62,7 +63,7 @@ public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity enti
         setServings(resultStack, servings - 1);
         return resultStack;
     } else {
-        return new ItemStack(Items.DARK_OAK_BOAT);
+        return new ItemStack(ModItems.BOAT_PLATE.get());
     }
 }
 

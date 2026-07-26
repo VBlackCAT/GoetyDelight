@@ -1,0 +1,17 @@
+{
+  "type": "farmersdelight:cutting",
+  "ingredients": [
+    {
+      "item": "goetydelight:soul_convergence_room"
+    }
+  ],
+  "result": [
+    {
+      "count": 3,
+      "item": "goetydelight:gathering_soul_embryos"
+    }
+  ],
+  "tool": {
+    "tag": "forge:tools/knives"
+  }
+}
