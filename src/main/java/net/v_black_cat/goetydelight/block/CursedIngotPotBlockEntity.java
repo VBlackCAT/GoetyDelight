@@ -301,26 +301,55 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
         return false;
     }
 
+    // 在类中添加新的方法，获取灵魂加速倍率
+    private double getSoulBoostMultiplier(boolean isHeated) {
+        boolean hasSoulEnergy = this.hasSoulEnergy();
+
+        if (hasSoulEnergy && isHeated) {
+            return 2.0;  // 有灵魂能量+热源：2倍速度
+        } else if (hasSoulEnergy && !isHeated) {
+            return 1.2;  // 有灵魂能量无热源：1.2倍速度
+        } else if (!hasSoulEnergy && isHeated) {
+            return 1.1;  // 仅有热源：1.1倍速度（比普通锅快10%）
+        }
+        return 0;  // 无灵魂无热源：停止烹饪
+    }
+
+    // 修改cookingTick方法
     public static void cookingTick(Level level, BlockPos pos, BlockState state, CursedIngotPotBlockEntity cookingPot) {
         boolean isHeated = cookingPot.isHeated(level, pos);
         boolean didInventoryChange = false;
 
-        // 检查是否有灵魂能量可用 - 这是关键修改
-        boolean hasSoulEnergy = cookingPot.hasSoulEnergy();
+        // 获取烹饪速度倍率
+        double cookSpeedMultiplier = cookingPot.getSoulBoostMultiplier(isHeated);
 
-        // 只有在有灵魂能量时才进行烹饪
-        if (isHeated && hasSoulEnergy && cookingPot.hasInput()) {
+        // 当倍率大于0且有输入材料时进行烹饪
+        if (cookSpeedMultiplier > 0 && cookingPot.hasInput()) {
             Optional<CookingPotRecipe> recipe = cookingPot.getMatchingRecipe(new RecipeWrapper(cookingPot.inventory));
             if (recipe.isPresent() && cookingPot.canCook((CookingPotRecipe)recipe.get())) {
-                // 加速烹饪
-                cookingPot.cookTime += 2;
+                // 根据倍率加速烹饪
+                int cookSpeed = (int)Math.round(cookSpeedMultiplier);
+                // 处理小数部分（如1.2倍速：每5tick额外+1进度）
+                double fractionalPart = cookSpeedMultiplier - cookSpeed;
+
+                cookingPot.cookTime += cookSpeed;
+
+                // 处理小数倍率部分
+                if (fractionalPart > 0 && cookingPot.cookTime > 0) {
+                    // 每5个tick有概率额外增加1点进度
+                    if (level.getGameTime() % Math.round(1.0 / fractionalPart) == 0) {
+                        cookingPot.cookTime += 1;
+                    }
+                }
+
                 didInventoryChange = cookingPot.processCooking((CookingPotRecipe)recipe.get(), cookingPot);
             } else {
-                cookingPot.cookTime = Mth.clamp(cookingPot.cookTime - 2, 0, cookingPot.cookTimeTotal);
+                // 保持烹饪进度，但缓慢下降
+                cookingPot.cookTime = Mth.clamp(cookingPot.cookTime - 1, 0, cookingPot.cookTimeTotal);
             }
         } else if (cookingPot.cookTime > 0) {
-            // 没有灵魂能量时重置烹饪进度
-            cookingPot.cookTime = 0;
+            // 无热源无灵魂能量时缓慢重置烹饪进度
+            cookingPot.cookTime = Mth.clamp(cookingPot.cookTime - 2, 0, cookingPot.cookTimeTotal);
         }
 
         // 成品输出逻辑保持不变
@@ -337,6 +366,16 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
 
         if (didInventoryChange) {
             cookingPot.inventoryChanged();
+        }
+
+        // 有灵魂能量时添加特效
+        if (cookingPot.hasSoulEnergy() && cookingPot.hasInput()) {
+            if (level instanceof ServerLevel serverLevel && level.random.nextFloat() < 0.1F) {
+                double x = pos.getX() + 0.5 + (level.random.nextDouble() * 0.6 - 0.3);
+                double y = pos.getY() + 1.0;
+                double z = pos.getZ() + 0.5 + (level.random.nextDouble() * 0.6 - 0.3);
+                serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, x, y, z, 1, 0.0, 0.0, 0.0, 0.0);
+            }
         }
     }
 
