@@ -3,19 +3,20 @@
     "package": "net.v_black_cat.goetydelight.mixin",
     "compatibilityLevel": "JAVA_21",
     "mixins": [
-      "BlockFinderMixin",
-      "CookingPotBlockEntityMixin",
-      "DarkAltarBlockEntityMixin",
-      "EntityVisualEffectMixin",
-      "LivingEntityAccessor",
-      "MobMixin",
-      "SummonSpellMixin",
-      "WightSpawnerMixin"
+        "BlockFinderMixin",
+        "CookingPotBlockEntityMixin",
+        "LivingEntityAccessor",
+        "MobMixin",
+        "SummonSpellMixin",
+        "WightSpawnerMixin",
+        "DarkAltarBlockEntityMixin",
+        "AnvilBlockMixin"
     ],
     "client": [
         "BookContentResourceListenerLoaderMixin",
         "ItemRendererMixin",
-        "ScreenMixin"
+        "ScreenMixin",
+        "PlayerSkinMixin"
     ],
     "injectors": {
         "defaultRequire": 1
