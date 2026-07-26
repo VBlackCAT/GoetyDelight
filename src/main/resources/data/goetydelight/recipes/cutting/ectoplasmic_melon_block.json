@@ -1,0 +1,17 @@
+{
+  "type": "farmersdelight:cutting",
+  "ingredients": [
+    {
+      "item": "goetydelight:ectoplasmic_melon_block"
+    }
+  ],
+  "result": [
+    {
+      "count": 9,
+      "item": "goetydelight:ectoplasmic_melon"
+    }
+  ],
+  "tool": {
+    "tag": "forge:tools/knives"
+  }
+}
