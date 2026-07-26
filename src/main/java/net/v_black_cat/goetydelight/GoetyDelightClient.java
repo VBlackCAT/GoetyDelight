@@ -1,5 +1,6 @@
 package net.v_black_cat.goetydelight;
 
+import com.Polarice3.Goety.common.events.ModEvents;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
@@ -11,6 +12,7 @@ import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import net.v_black_cat.goetydelight.events.ClientSetupHandler;
+import net.v_black_cat.goetydelight.events.InitializeClientEventHandler;
 import net.v_black_cat.goetydelight.events.RegisterClientExtensionsEventHandler;
 import net.v_black_cat.goetydelight.render.test.ModShaderReg;
 import net.v_black_cat.goetydelight.visual.client.ClientEntityVisualEffectPackets;
@@ -28,7 +30,9 @@ public class GoetyDelightClient {
 
         // 手动注册客户端设置事件监听器
         modEventBus.addListener(ClientSetupHandler::onClientSetup);
+        modEventBus.addListener(ClientSetupHandler::onRegisterClientReloadListeners);
         modEventBus.addListener(RegisterClientExtensionsEventHandler::onRegisterClientExtensions);
+        modEventBus.addListener(InitializeClientEventHandler::onRegisterClientExtensions);
         modEventBus.addListener((RegisterShadersEvent event) -> {
             try {
                 ModShaderReg.registerShaders(event);

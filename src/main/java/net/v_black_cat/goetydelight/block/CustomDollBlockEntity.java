@@ -10,10 +10,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.v_black_cat.goetydelight.init.ModBlockEntities;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.Nullable;
 
-import static net.v_black_cat.goetydelight.init.ModBlockEntities.CUSTOM_DOLL_BE;
+import javax.annotation.Nullable;
 
 public class CustomDollBlockEntity extends BlockEntity {
     private static final String NBT_MODEL_ID = "DollModelId";
@@ -25,7 +25,7 @@ public class CustomDollBlockEntity extends BlockEntity {
     }
 
     public CustomDollBlockEntity(BlockPos pos, BlockState state) {
-        this(CUSTOM_DOLL_BE.get(), pos, state);
+        this(ModBlockEntities.CUSTOM_DOLL_BE.get(), pos, state);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class CustomDollBlockEntity extends BlockEntity {
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        return this.saveWithoutMetadata(registries);
+        return this.saveCustomOnly(registries);
     }
 
     @Nullable

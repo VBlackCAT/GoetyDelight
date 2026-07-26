@@ -164,7 +164,7 @@ public class ModItems {
 
 //
 //    //    public static final DeferredItem<Item> MENU;
-//    public static final DeferredItem<Item> DOLL_ITEM;
+    public static final DeferredItem<Item> DOLL_ITEM;
 
     //    // ==================== 静态初始化块：物品定义区域 ====================
     static {
@@ -622,6 +622,9 @@ public class ModItems {
                 () -> new ItemNameBlockItem(ModBlocks.METAMORPHIC_SCENT_GRASS.get(),
                 new Item.Properties()
                 ));
+        // ==================== 杂项物品 ====================
+        DOLL_ITEM = ITEMS.register("doll_item",
+                () -> new Item(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON)));
     }
 
     // ==================== 辅助方法 ====================

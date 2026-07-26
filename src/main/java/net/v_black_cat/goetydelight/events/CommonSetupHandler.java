@@ -3,6 +3,7 @@ package net.v_black_cat.goetydelight.events;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.compat.curios.CuriosCompat;
 import net.v_black_cat.goetydelight.init.ModBlocks;
 import net.v_black_cat.goetydelight.init.ModItems;
 import net.v_black_cat.goetydelight.ritual.DelightRitualType;
@@ -22,5 +23,7 @@ public class CommonSetupHandler {
             ComposterBlock.COMPOSTABLES.put(ModItems.ECTOPLASMIC_MELON_SEEDS.get(), 0.09F);
             ComposterBlock.COMPOSTABLES.put(ModBlocks.ECTOPLASMIC_MELON_BLOCK.get().asItem(), 0.95F);
         });
+
+        event.enqueueWork(CuriosCompat::commonSetup);
     }
 }

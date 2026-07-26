@@ -2,10 +2,8 @@ package net.v_black_cat.goetydelight.item;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -17,16 +15,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.v_black_cat.goetydelight.block.CustomDollBlockEntity;
-import net.v_black_cat.goetydelight.init.CustomDollLoader;
+import net.v_black_cat.goetydelight.init.doll.CustomDollLoader;
 import net.v_black_cat.goetydelight.init.ModItems;
-import net.v_black_cat.goetydelight.init.ServerCustomDollLoader;
-import net.v_black_cat.goetydelight.render.item.CustomDollItemRender;
+import net.v_black_cat.goetydelight.init.doll.ServerCustomDollLoader;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class CustomDollItem extends BlockItem {
     private static final String NBT_MODEL_ID = "DollModelId";

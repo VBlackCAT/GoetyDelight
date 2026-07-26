@@ -393,7 +393,7 @@
 		},
 		"head": {
 			"rotation": [90, -45, 0],
-			"translation": [0, -11, 16]
+			"translation": [0, -14, 16]
 		},
 		"fixed": {
 			"rotation": [-90, -45, -180],
