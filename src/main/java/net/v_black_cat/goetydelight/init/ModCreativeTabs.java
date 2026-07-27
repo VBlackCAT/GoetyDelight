@@ -74,6 +74,7 @@ public class ModCreativeTabs {
                         output.accept(ModItems.BAKLAVA.get());
                         output.accept(ModItems.BISCAT.get());
                         output.accept(ModItems.CAKE.get());
+                        output.accept(ModItems.JUNGLE_SALAD.get());
 
                         // 特殊食物（有特殊效果的）
                         output.accept(ModItems.REJECTED_DARK_MEAT_SOUP.get());
@@ -93,6 +94,14 @@ public class ModCreativeTabs {
                         output.accept(ModItems.BOAT_STUFFED_ROASTED_WARDEN_MEET.get());
                         output.accept(ModItems.BOAT_STUFFED_ROASTED_WARDEN_FLANK.get());
                         output.accept(ModItems.FORBIDDDEN_SOUP_BUN.get());
+                        output.accept(ModItems.CUP.get());
+                        output.accept(ModItems.OMINOUS_ICE_CREAM.get());
+                        output.accept(ModItems.MAGIC_QUARTZ_COOKIE.get());
+                        output.accept(ModItems.ROASTED_CORPSE_MAGGOTS.get());
+                        output.accept(ModItems.ROAST_LAOWANG.get());
+                        output.accept(ModItems.ANCIENT_ENCHANTED_GOLDEN_APPLE.get());
+                        output.accept(ModItems.HIDDEN_PANCAKE.get());
+                        output.accept(ModItems.POLARICE.get());
 
                         // 盛宴食物（烤肉相关）
                         output.accept(ModItems.RING_PACKED_VOID_GEL_JELLY.get());

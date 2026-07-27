@@ -11,6 +11,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.bus.api.IEventBus;
@@ -76,11 +77,11 @@ public class ModItems {
     public static final DeferredItem<Item> REJECTED_DARK_MEAT_SOUP;
     public static final DeferredItem<Item> SIBLING_SUNDAE;
     public static final DeferredItem<Item> PROMOTION_HARD_CANDY;
-    //    public static final DeferredItem<Item> CUP;
+    public static final DeferredItem<Item> CUP;
     public static final DeferredItem<Item> TOXIC_MEAL;
-//    public static final DeferredItem<Item> POACHED_NETHER_WART_EGG;
+    public static final DeferredItem<Item> POACHED_NETHER_WART_EGG;
     public static final DeferredItem<Item> ECTOPLASM_JELLY;
-    //    public static final DeferredItem<Item> ROASTED_CORPSE_MAGGOTS;
+    public static final DeferredItem<Item> ROASTED_CORPSE_MAGGOTS;
     public static final DeferredItem<Item> WHITE_SHARK_CANDY;
     public static final DeferredItem<Item> WHITE_SHARK_SUGAR_PACK;
     public static final DeferredItem<Item> SUNSHINE_SUGAR_BUN;
@@ -94,7 +95,7 @@ public class ModItems {
     public static final DeferredItem<Item> SEVEN_LEAF_PUDDING;
     public static final DeferredItem<Item> BEAR_PAW;
     public static final DeferredItem<Item> CAKE;
-//    public static final DeferredItem<Item> OMINOUS_ICE_CREAM;
+    public static final DeferredItem<Item> OMINOUS_ICE_CREAM;
     public static final DeferredItem<Item> ECTOPLASMIC_MELON;
     public static final DeferredItem<Item> BLUE_ECTOPLASMIC_SUNDAE;
     public static final DeferredItem<Item> SKULL_SHOT;
@@ -112,7 +113,7 @@ public class ModItems {
     public static final DeferredItem<Item> QUICK_GROWING_SEED_POPCORN;
     public static final DeferredItem<Item> NETHER_STYLE_FRIED_EGG_SANDWICH;
     public static final DeferredItem<Item> EXOTIC_BREAKFAST;
-    //    public static final DeferredItem<Item> JUNGLE_SALAD;
+    public static final DeferredItem<Item> JUNGLE_SALAD;
     public static final DeferredItem<Item> BOILING_BLOOD_BREW;
     public static final DeferredItem<Item> ASCENSION_MOONCAKE;
     public static final DeferredItem<Item> VILLAGERS_FEAST;
@@ -123,7 +124,7 @@ public class ModItems {
     public static final DeferredItem<Item> LIQUID_VOID_TEA_DRINK;
 
     public static final DeferredItem<Item> LICHS_CHAOS_STEW;
-//    public static final DeferredItem<Item> MAGIC_QUARTZ_COOKIE;
+    public static final DeferredItem<Item> MAGIC_QUARTZ_COOKIE;
     public static final DeferredItem<Item> SNAP_UNHOLY_TRIPE;
     public static final DeferredItem<Item> SUNDAE_OF_THE_PHILOSOPHERS_POTION;
     public static final DeferredItem<Item> THE_BOX_OF_THE_DEAD;
@@ -133,15 +134,15 @@ public class ModItems {
     public static final DeferredItem<Item> BOAT_STUFFED_ROASTED_WARDEN_HEAD;
     public static final DeferredItem<Item> BOAT_STUFFED_ROASTED_WARDEN_MEET;
     public static final DeferredItem<Item> BOAT_STUFFED_ROASTED_WARDEN_FLANK;
-//    public static final DeferredItem<Item> ANCIENT_ENCHANTED_GOLDEN_APPLE;
-   public static final DeferredItem<Item> NOT_ANYTHING;
-//    public static final DeferredItem<Item> ROAST_LAOWANG;
-//    public static final DeferredItem<Item> POLARICE;
+    public static final DeferredItem<Item> ANCIENT_ENCHANTED_GOLDEN_APPLE;
+    public static final DeferredItem<Item> NOT_ANYTHING;
+    public static final DeferredItem<Item> ROAST_LAOWANG;
+    public static final DeferredItem<Item> POLARICE;
     public static final DeferredItem<Item> METAMORPHIC_SCENT_FRUIT;
     public static final DeferredItem<Item> FORBIDDDEN_SOUP_BUN;
-//    public static final DeferredItem<Item> HIDDEN_PANCAKE;
-//    public static final DeferredItem<Item> CREAMY_BERRY_FISH_PASTE_DUMPLING_WITH_CHOCOLATE_SAUCE;
-//    public static final DeferredItem<Item> OBSIDIAN_THICK_SOUP;
+    public static final DeferredItem<Item> HIDDEN_PANCAKE;
+    public static final DeferredItem<Item> CREAMY_BERRY_FISH_PASTE_DUMPLING_WITH_CHOCOLATE_SAUCE;
+    public static final DeferredItem<Item> OBSIDIAN_THICK_SOUP;
     public static final DeferredItem<Item> SHAWARMA;
     public static final DeferredItem<Item> RAKI;
     public static final DeferredItem<Item> MENEMEN_WITH_BREAD;
@@ -169,7 +170,7 @@ public class ModItems {
     //    // ==================== 静态初始化块：物品定义区域 ====================
     static {
         NOT_ANYTHING = ITEMS.register("not_anything",
-               () -> new Item(basicItem().stacksTo(1)));
+                () -> new Item(basicItem().stacksTo(1)));
 //
 //        CUSTOM_DOLL = ITEMS.register("custom_doll", () -> new
 // CustomDollItem(ModBlocks.CUSTOM_DOLL.get()));
@@ -252,15 +253,14 @@ public class ModItems {
                         }
                     };
                 });
-//
-//        CUP = ITEMS.register("eternal_refusal_of_black_meat_soup",
-//                () -> new
-// EternalRefusalOfBlackMeatSoupItem(basicItem().stacksTo(1).rarity(Rarity.RARE).food(
-//                        ModFoods.CUP
-//                )));
+
+        CUP = ITEMS.register("eternal_refusal_of_black_meat_soup",
+                () -> new EternalRefusalOfBlackMeatSoupItem(basicItem().stacksTo(1).rarity(Rarity.RARE).food(
+                        ModFoods.CUP
+                )));
         GHOST_FARMER_SPAWN_EGG = ITEMS.register("ghost_farmer_spawn_egg",
                 () -> new SpawnEggItem(ModEntities.GHOST_FARMER.get(), 0xABCDEF, 0x123456, new Item.Properties()));
-//
+
         REJECTED_DARK_MEAT_SOUP = ITEMS.register("rejected_dark_meat_soup",
                 () -> new RejectedDarkMeatSoupItem(basicItem().stacksTo(16).food(
                         ModFoods.REJECTED_DARK_MEAT_SOUP
@@ -273,10 +273,10 @@ public class ModItems {
                 () -> new ToxicMealItem(basicItem().stacksTo(16).food(
                         ModFoods.TOXIC_MEAL
                 )));
-//        POACHED_NETHER_WART_EGG = ITEMS.register("poached_nether_wart_egg",
-//                () -> new PoachedNetherWartEggItem(basicItem().stacksTo(16).food(
-//                        ModFoods.POACHED_NETHER_WART_EGG
-//                )));
+        POACHED_NETHER_WART_EGG = ITEMS.register("poached_nether_wart_egg",
+                () -> new PoachedNetherWartEggItem(basicItem().stacksTo(16).food(
+                        ModFoods.POACHED_NETHER_WART_EGG
+                )));
         ECTOPLASM_JELLY = ITEMS.register("ectoplasm_jelly",
                 () -> new Item(basicItem()
                         .stacksTo(1)
@@ -322,11 +322,11 @@ public class ModItems {
                         ModFoods.VILLAGERS_FEAST
                 )));
 //
-//        JUNGLE_SALAD = ITEMS.register("jungle_salad",
-//                () -> new BowlFoodItem(basicItem().stacksTo(16).food(
-//                        ModFoods.JUNGLE_SALAD
-//                )));
-//
+        JUNGLE_SALAD = ITEMS.register("jungle_salad",
+                () -> new BowlFoodItem(basicItem().stacksTo(16).food(
+                        ModFoods.JUNGLE_SALAD
+                )));
+
         QUICK_GROWING_SEED_POPCORN = ITEMS.register("quick_growing_seed_popcorn",
                 () -> new Item(basicItem().stacksTo(16).food(ModFoods.QUICK_GROWING_SEED_POPCORN)));
 //
@@ -355,12 +355,11 @@ public class ModItems {
                         ModFoods.SIBLING_SUNDAE
                 )));
 
-//        ROASTED_CORPSE_MAGGOTS = ITEMS.register("roasted_corpse_maggots",
-//                () -> new
-// RoastedCorpseMaggotsitem(basicItem().craftRemainder(Items.BOWL).stacksTo(16).food(
-//                        ModFoods.ROASTED_CORPSE_MAGGOTS
-//                )));
-//
+        ROASTED_CORPSE_MAGGOTS = ITEMS.register("roasted_corpse_maggots",
+                () -> new RoastedCorpseMaggotsItem(basicItem().craftRemainder(Items.BOWL).stacksTo(16).food(
+                        ModFoods.ROASTED_CORPSE_MAGGOTS
+                )));
+
         CORPSE_MAGGOT = ITEMS.register("corpse_maggot",
                 () -> new CorpseMaggotItem(basicItem().stacksTo(64).food(
                         ModFoods.CORPSE_MAGGOT
@@ -394,11 +393,11 @@ public class ModItems {
                 () -> new CakeItem(basicItem().stacksTo(64).rarity(Rarity.RARE).food(
                         ModFoods.CAKE
                 )));
-//        OMINOUS_ICE_CREAM = ITEMS.register("ominous_ice_cream",
-//                () -> new
-// OminousIceCreamItem(basicItem().stacksTo(64).rarity(Rarity.UNCOMMON).food(
-//                        ModFoods.OMINOUS_ICE_CREAM
-//                )));
+        OMINOUS_ICE_CREAM = ITEMS.register("ominous_ice_cream",
+                () -> new
+ OminousIceCreamItem(basicItem().stacksTo(64).rarity(Rarity.UNCOMMON).food(
+                       ModFoods.OMINOUS_ICE_CREAM
+            )));
         ECTOPLASMIC_MELON = ITEMS.register("ectoplasmic_melon",
                 () -> new Item(basicItem().stacksTo(64).food(
                         ModFoods.ECTOPLASMIC_MELON
@@ -477,10 +476,10 @@ public class ModItems {
                 () -> new LichsChaosStewItem(basicItem().craftRemainder(Items.BOWL).stacksTo(64).rarity(Rarity.EPIC).food(
                         ModFoods.LICHS_CHAOS_STEW
                 )));
-//        MAGIC_QUARTZ_COOKIE = ITEMS.register("magic_quartz_cookie",
-//                () -> new MagicQuartzCookieItem(basicItem().stacksTo(64).food(
-//                        ModFoods.MAGIC_QUARTZ_COOKIE
-//                )));
+        MAGIC_QUARTZ_COOKIE = ITEMS.register("magic_quartz_cookie",
+                () -> new MagicQuartzCookieItem(basicItem().stacksTo(64).food(
+                       ModFoods.MAGIC_QUARTZ_COOKIE
+               )));
         SNAP_UNHOLY_TRIPE = ITEMS.register("snap_unholy_tripe",
                 () -> new SnapUnholyTripeItem(basicItem().stacksTo(16).rarity(Rarity.RARE).food(
                         ModFoods.SNAP_UNHOLY_TRIPE
@@ -516,46 +515,44 @@ public class ModItems {
                 () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).craftRemainder(Items.DARK_OAK_BOAT)
                         .food(ModFoods.BOAT_STUFFED_ROASTED_WARDEN_FLANK)));
 //
-//        ANCIENT_ENCHANTED_GOLDEN_APPLE = ITEMS.register("ancient_enchanted_golden_apple",
-//                () -> new
-// AncientEnchantedGoldenAppleItem(basicItem().stacksTo(64).rarity(Rarity.EPIC)
-//                        .food(ModFoods.ANCIENT_ENCHANTED_GOLDEN_APPLE)));
-//
-//        ROAST_LAOWANG = ITEMS.register("roast_laowang",
-//                () -> new RoastLaowangItem(basicItem().stacksTo(64).rarity(Rarity.EPIC)
-//                        .food(ModFoods.ROAST_LAOWANG)));
-//
-//        POLARICE = ITEMS.register("polarice",
-//                () -> new PolariceItem(basicItem().stacksTo(64).rarity(Rarity.EPIC)
-//                        .food(ModFoods.POLARICE)));
+        ANCIENT_ENCHANTED_GOLDEN_APPLE = ITEMS.register("ancient_enchanted_golden_apple",
+                () -> new
+ AncientEnchantedGoldenAppleItem(basicItem().stacksTo(64).rarity(Rarity.EPIC)
+                        .food(ModFoods.ANCIENT_ENCHANTED_GOLDEN_APPLE)));
+
+        ROAST_LAOWANG = ITEMS.register("roast_laowang",
+                () -> new RoastLaowangItem(basicItem().stacksTo(64).rarity(Rarity.EPIC)
+                       .food(ModFoods.ROAST_LAOWANG)));
+
+        POLARICE = ITEMS.register("polarice",
+               () -> new PolariceItem(basicItem().stacksTo(64).rarity(Rarity.EPIC)
+                      .food(ModFoods.POLARICE)));
         METAMORPHIC_SCENT_FRUIT = ITEMS.register("metamorphic_scent_fruit",
                 () -> new Item(basicItem().stacksTo(64).food(ModFoods.METAMORPHIC_SCENT_FRUIT)));
 //
         FORBIDDDEN_SOUP_BUN = ITEMS.register("forbidden_soup_bun",
                 () -> new ForbiddenSoupBunItem(basicItem().stacksTo(64).rarity(Rarity.UNCOMMON)
                         .food(ModFoods.FORBIDDDEN_SOUP_BUN)));
-//
-//        HIDDEN_PANCAKE = ITEMS.register("hidden_pancake",
-//                () -> new HiddenPancakeItem(basicItem().stacksTo(64).rarity(Rarity.RARE)
-//                        .food(ModFoods.HIDDEN_PANCAKE)));
-//
-//        CREAMY_BERRY_FISH_PASTE_DUMPLING_WITH_CHOCOLATE_SAUCE =
-// ITEMS.register("creamy_berry_fish_paste_dumpling_with_chocolate_sauce",
-//                () -> new Item(
-//                        basicItem().stacksTo(64)
-//
-// .food(ModFoods.CREAMY_BERRY_FISH_PASTE_DUMPLING_WITH_CHOCOLATE_SAUCE)
-//                ) {
-//                    @Override
-//                    public int getUseDuration(ItemStack stack, LivingEntity entity) {
-//                        return (int) (32 * 4);
-//                    }
-//                });
-//
-//        OBSIDIAN_THICK_SOUP = ITEMS.register("obsidian_thick_soup",
-//                () -> new BowlFoodItem(basicItem().stacksTo(64).rarity(Rarity.EPIC)
-//                        .food(ModFoods.OBSIDIAN_THICK_SOUP)));
-//
+
+      HIDDEN_PANCAKE = ITEMS.register("hidden_pancake",
+               () -> new HiddenPancakeItem(basicItem().stacksTo(64).rarity(Rarity.RARE)
+                       .food(ModFoods.HIDDEN_PANCAKE)));
+
+        CREAMY_BERRY_FISH_PASTE_DUMPLING_WITH_CHOCOLATE_SAUCE = ITEMS.register("creamy_berry_fish_paste_dumpling_with_chocolate_sauce",
+                () -> new Item(
+                basicItem().stacksTo(64)
+                        .food(ModFoods.CREAMY_BERRY_FISH_PASTE_DUMPLING_WITH_CHOCOLATE_SAUCE)
+                ) {
+                    @Override
+                    public int getUseDuration(ItemStack stack, LivingEntity entity) {
+                        return (int) (32 * 4);
+                    }
+                });
+
+        OBSIDIAN_THICK_SOUP = ITEMS.register("obsidian_thick_soup",
+                () -> new BowlFoodItem(basicItem().stacksTo(64).rarity(Rarity.EPIC)
+                        .food(ModFoods.OBSIDIAN_THICK_SOUP)));
+
         SHAWARMA = ITEMS.register("shawarma",
                 () -> new Item(basicItem().stacksTo(64).rarity(Rarity.COMMON)
                         .food(ModFoods.SHAWARMA)));
@@ -639,17 +636,15 @@ public class ModItems {
     }
 
     /**
-     * 生成食物属性构建器，适用于 1.21.1 的饱和度计算规则。
-     * 传入的 saturationMod 表示你期望的**总饱和点数**（即食物提供的实际饱和度），
-     * 方法内部会自动计算正确的 saturationModifier 值。
-     * 实际饱和度 = nutrition × saturationModifier × 2
-     * 因此修正值 = saturationMod / (nutrition × 2)
+     * 生成食物属性构建器，适用于 1.21.1 的饱和度计算规则。 传入的 saturationMod 表示你期望的**总饱和点数**（即食物提供的实际饱和度）， 方法内部会自动计算正确的
+     * saturationModifier 值。 实际饱和度 = nutrition × saturationModifier × 2 因此修正值 = saturationMod /
+     * (nutrition × 2)
      */
     public static FoodProperties.Builder simpleFoodItemProperties(int nutrition, float saturationMod) {
         return new FoodProperties.Builder()
                 .alwaysEdible()
                 .nutrition(nutrition)
-                .saturationModifier(saturationMod / (nutrition * 2.0f));   // 修复：按 1.21.1 正确计算
+                .saturationModifier(saturationMod / (nutrition * 2.0f)); // 修复：按 1.21.1 正确计算
     }
 
     // 注册方法：供主类调用，将 DeferredRegister 绑定到 mod 事件总线

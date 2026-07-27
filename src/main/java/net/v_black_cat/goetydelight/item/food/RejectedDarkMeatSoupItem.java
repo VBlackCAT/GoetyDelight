@@ -82,7 +82,7 @@ public class RejectedDarkMeatSoupItem extends Item {
     /**
      * 投掷汤主体逻辑
      */
-    private static void throwSoup(ItemStack stack, Player player) {
+    private void throwSoup(ItemStack stack, Player player) {
 
 
         Level level = player.level();
@@ -150,7 +150,7 @@ public class RejectedDarkMeatSoupItem extends Item {
     /**
      * 给外部调用
      */
-    public static void throwSoup(ItemStack stack, LivingEntity entity) {
+    public void throwSoup(ItemStack stack, LivingEntity entity) {
 
 
         if (entity instanceof Player player) {
