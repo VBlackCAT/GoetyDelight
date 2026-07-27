@@ -58,8 +58,8 @@ public class ModEffects {
     public static final DeferredHolder<
             MobEffect, MobEffect> TINGLING = EFFECTS.register("tingling", TinglingEffect::new);
 
-    public static final DeferredHolder<
-            MobEffect, MobEffect> WARDEN = EFFECTS.register("warden", WardenEffect::new);
+ //   public static final DeferredHolder<
+        //    MobEffect, MobEffect> WARDEN = EFFECTS.register("warden", WardenEffect::new);
 
     public static void register(IEventBus modEventBus) {
         EFFECTS.register(modEventBus);
