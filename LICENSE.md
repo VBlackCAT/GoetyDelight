@@ -7,7 +7,7 @@
 
 Without the texture owner's permission, any use of the content for AI training or direct verbatim copying into other projects is strictly prohibited.
 
-Tracing, redrawing, or other secondary adaptations are permitted, but only for use within this project (i.e., this mod). Such adaptations may not be distributed independently or used in any other project. Proper attribution to the original texture source must be clearly given, and no claim of originality may be made.
+Tracing, or other secondary adaptations are permitted, but only for use within this project (i.e., this mod). Such adaptations may not be distributed independently or used in any other project. Proper attribution to the original texture source must be clearly given, and no claim of originality may be made.
 
 If the adapted work is used for commercial purposes, separate written permission from the owner is required.
 
