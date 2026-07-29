@@ -23,6 +23,9 @@ import net.v_black_cat.goetydelight.item.CustomDollItem;
 import net.v_black_cat.goetydelight.item.CustomDrinkItem;
 import net.v_black_cat.goetydelight.item.food.*;
 import net.v_black_cat.goetydelight.item.FalseProverbsItem;
+import net.v_black_cat.goetydelight.item.DarkKnifeItem;
+import net.v_black_cat.goetydelight.item.CursedIngotKnifeItem;
+import net.v_black_cat.goetydelight.item.DarkBrushItem;
 import net.v_black_cat.goetydelight.item.ViziersCookbookItem;
 import vectorwing.farmersdelight.common.registry.ModEffects;
 import vectorwing.farmersdelight.common.item.KnifeItem;
@@ -52,14 +55,14 @@ public class ModItems {
     public static final DeferredItem<Item> METAMORPHIC_SCENT_GRASS;
 //
 //    //刷子
-//    public static final DeferredItem<Item> CURSED_METAL_BRUSH;
-//    public static final DeferredItem<Item> DARK_BRUSH;
+    public static final DeferredItem<Item> CURSED_METAL_BRUSH;
+    public static final DeferredItem<Item> DARK_BRUSH;
 //    // 刀具物品
 //    public static final DeferredItem<Item> APOCALYPTIUM_KNIFE;
-//    public static final DeferredItem<Item> VENOMOUS_SPIDER_KNIFE;
-//    public static final DeferredItem<Item> SPECTRE_KNIFE;
-    //   public static final DeferredItem<Item> CURSED_INGOT_KNIFE;
-    //  public static final DeferredItem<Item> DARK_KNIFE;
+    // public static final DeferredItem<Item> VENOMOUS_SPIDER_KNIFE;
+    //  public static final DeferredItem<Item> SPECTRE_KNIFE;
+    public static final DeferredItem<Item> CURSED_INGOT_KNIFE;
+    public static final DeferredItem<Item> DARK_KNIFE;
 //    public static final DeferredItem<Item> APOCALYPTIUM_INGOT_BRUSH;
 //
 //    // 武器物品
@@ -189,32 +192,23 @@ public class ModItems {
 //                () -> new KnifeItem(Tiers.IRON, basicItem()));
 //
         // 诅咒金属刀
-        //   CURSED_INGOT_KNIFE = ITEMS.register("cursed_ingot_knife",
-        // () -> new KnifeItem(ModTiers.SPECIAL, basicItem().durability(256)));
-//
-        // 黑暗金属刀
-        /*      DARK_KNIFE = ITEMS.register("dark_knife",
-        () -> new DarkKnifeItem(ModTiers.DARK, 1F, -2.0F, basicItem().durability(512)
-                .attributes(EquipmentSlot.MAINHAND,
-                        new AttributeModifier(ResourceLocation.withDefaultNamespace("dark_knife_boost"),
-                        added, AttributeModifier.Operation.ADD_VALUE)
-                )
-                .attributes(EquipmentSlot.OFFHAND,
-                        new AttributeModifier(ResourceLocation.withDefaultNamespace("dark_knife_boost_offhand"),
-                        added, AttributeModifier.Operation.ADD_VALUE)
-                )));*/
-//
+        CURSED_INGOT_KNIFE = ITEMS.register("cursed_ingot_knife",
+                () -> new CursedIngotKnifeItem(ModTiers.SPECIAL,basicItem().durability(256)));
+
+        DARK_KNIFE = ITEMS.register("dark_knife",
+                () -> new DarkKnifeItem(ModTiers.DARK,new Item.Properties().durability(512)));
+
         FALSE_PROVERBS = ITEMS.register("false_proverbs",
-                () -> new FalseProverbsItem(ModTiers.VOID,
+                () -> new FalseProverbsItem(ModTiers.VOID, 0, -2.4F,
                 basicItem().rarity(Rarity.EPIC)));
 //
 //        // 诅咒金属刷子
-//        CURSED_METAL_BRUSH = ITEMS.register("cursed_metal_brush",
-//                () -> new DarkBrushItem(basicItem().durability(64), 2));
+        CURSED_METAL_BRUSH = ITEMS.register("cursed_metal_brush",
+                () -> new DarkBrushItem(basicItem().durability(128), 2));
 //
 //        // 黑暗金属刷子
-//        DARK_BRUSH = ITEMS.register("dark_brush",
-//                () -> new DarkBrushItem(basicItem().durability(64), 3));
+        DARK_BRUSH = ITEMS.register("dark_brush",
+                () -> new DarkBrushItem(basicItem().durability(256), 3));
 //
 //        // 神金刷子
 //        APOCALYPTIUM_INGOT_BRUSH = ITEMS.register("apocalyptium_ingot_brush",
@@ -394,10 +388,9 @@ public class ModItems {
                         ModFoods.CAKE
                 )));
         OMINOUS_ICE_CREAM = ITEMS.register("ominous_ice_cream",
-                () -> new
- OminousIceCreamItem(basicItem().stacksTo(64).rarity(Rarity.UNCOMMON).food(
-                       ModFoods.OMINOUS_ICE_CREAM
-            )));
+                () -> new OminousIceCreamItem(basicItem().stacksTo(64).rarity(Rarity.UNCOMMON).food(
+                        ModFoods.OMINOUS_ICE_CREAM
+                )));
         ECTOPLASMIC_MELON = ITEMS.register("ectoplasmic_melon",
                 () -> new Item(basicItem().stacksTo(64).food(
                         ModFoods.ECTOPLASMIC_MELON
@@ -478,8 +471,8 @@ public class ModItems {
                 )));
         MAGIC_QUARTZ_COOKIE = ITEMS.register("magic_quartz_cookie",
                 () -> new MagicQuartzCookieItem(basicItem().stacksTo(64).food(
-                       ModFoods.MAGIC_QUARTZ_COOKIE
-               )));
+                        ModFoods.MAGIC_QUARTZ_COOKIE
+                )));
         SNAP_UNHOLY_TRIPE = ITEMS.register("snap_unholy_tripe",
                 () -> new SnapUnholyTripeItem(basicItem().stacksTo(16).rarity(Rarity.RARE).food(
                         ModFoods.SNAP_UNHOLY_TRIPE
@@ -516,17 +509,16 @@ public class ModItems {
                         .food(ModFoods.BOAT_STUFFED_ROASTED_WARDEN_FLANK)));
 //
         ANCIENT_ENCHANTED_GOLDEN_APPLE = ITEMS.register("ancient_enchanted_golden_apple",
-                () -> new
- AncientEnchantedGoldenAppleItem(basicItem().stacksTo(64).rarity(Rarity.EPIC)
+                () -> new AncientEnchantedGoldenAppleItem(basicItem().stacksTo(64).rarity(Rarity.EPIC)
                         .food(ModFoods.ANCIENT_ENCHANTED_GOLDEN_APPLE)));
 
         ROAST_LAOWANG = ITEMS.register("roast_laowang",
                 () -> new RoastLaowangItem(basicItem().stacksTo(64).rarity(Rarity.EPIC)
-                       .food(ModFoods.ROAST_LAOWANG)));
+                        .food(ModFoods.ROAST_LAOWANG)));
 
         POLARICE = ITEMS.register("polarice",
-               () -> new PolariceItem(basicItem().stacksTo(64).rarity(Rarity.EPIC)
-                      .food(ModFoods.POLARICE)));
+                () -> new PolariceItem(basicItem().stacksTo(64).rarity(Rarity.EPIC)
+                        .food(ModFoods.POLARICE)));
         METAMORPHIC_SCENT_FRUIT = ITEMS.register("metamorphic_scent_fruit",
                 () -> new Item(basicItem().stacksTo(64).food(ModFoods.METAMORPHIC_SCENT_FRUIT)));
 //
@@ -534,9 +526,9 @@ public class ModItems {
                 () -> new ForbiddenSoupBunItem(basicItem().stacksTo(64).rarity(Rarity.UNCOMMON)
                         .food(ModFoods.FORBIDDDEN_SOUP_BUN)));
 
-      HIDDEN_PANCAKE = ITEMS.register("hidden_pancake",
-               () -> new HiddenPancakeItem(basicItem().stacksTo(64).rarity(Rarity.RARE)
-                       .food(ModFoods.HIDDEN_PANCAKE)));
+        HIDDEN_PANCAKE = ITEMS.register("hidden_pancake",
+                () -> new HiddenPancakeItem(basicItem().stacksTo(64).rarity(Rarity.RARE)
+                        .food(ModFoods.HIDDEN_PANCAKE)));
 
         CREAMY_BERRY_FISH_PASTE_DUMPLING_WITH_CHOCOLATE_SAUCE = ITEMS.register("creamy_berry_fish_paste_dumpling_with_chocolate_sauce",
                 () -> new Item(

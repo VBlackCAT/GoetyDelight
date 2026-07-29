@@ -24,7 +24,11 @@ public class ModCreativeTabs {
                     .displayItems((parameters, output) -> {
                         // ==================== 物品 ====================
                         // 武器
+                        output.accept(ModItems.CURSED_INGOT_KNIFE.get());
+                        output.accept(ModItems.DARK_KNIFE.get());
                         output.accept(ModItems.FALSE_PROVERBS.get());
+                        output.accept(ModItems.CURSED_METAL_BRUSH.get());
+                        output.accept(ModItems.DARK_BRUSH.get());
 
                         // 图标
                       //  output.accept(ModItems.GOETYDELIGHT_ICON.get());
