@@ -1,6 +1,7 @@
 package net.v_black_cat.goetydelight.init.doll;
 
 import net.minecraft.core.HolderLookup;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
@@ -35,7 +36,6 @@ public class DollEntityCraftingRecipe extends CustomRecipe {
                 if (stack.getItem() instanceof DollItem) {
                     hasDollItem = true;
                 } else if (stack.is(ModItems.CUSTOM_DOLL.get())) {
-                    // 检查是否是有效的 custom doll
                     String modelId = CustomDollItem.getModelId(stack);
                     if (StringUtils.isNotBlank(modelId)) {
                         hasDollItem = true;
@@ -59,21 +59,23 @@ public class DollEntityCraftingRecipe extends CustomRecipe {
     public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
         ItemStack dollItemStack = ItemStack.EMPTY;
         boolean isCustomDoll = false;
+        String extractedId = null;
 
-        // 先找到玩偶物品
         for (int i = 0; i < input.size(); i++) {
             ItemStack stack = input.getItem(i);
-            if (!stack.isEmpty()) {
-                if (stack.getItem() instanceof DollItem) {
+            if (stack.getItem() instanceof DollItem dollItem) {
+                dollItemStack = stack;
+                ResourceLocation registryName = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(dollItem);
+                if (registryName != null) {
+                    extractedId = registryName.getPath();
+                }
+                break;
+            } else if (stack.is(ModItems.CUSTOM_DOLL.get())) {
+                String modelId = CustomDollItem.getModelId(stack);
+                if (StringUtils.isNotBlank(modelId)) {
                     dollItemStack = stack;
+                    isCustomDoll = true;
                     break;
-                } else if (stack.is(ModItems.CUSTOM_DOLL.get())) {
-                    String modelId = CustomDollItem.getModelId(stack);
-                    if (StringUtils.isNotBlank(modelId)) {
-                        dollItemStack = stack;
-                        isCustomDoll = true;
-                        break;
-                    }
                 }
             }
         }
@@ -82,15 +84,17 @@ public class DollEntityCraftingRecipe extends CustomRecipe {
             return ItemStack.EMPTY;
         }
 
-        // 创建 DollEntityItem
         if (isCustomDoll) {
             String modelId = CustomDollItem.getModelId(dollItemStack);
             return DollEntityItem.createItemWithCustomDollId(modelId);
-        } else if (dollItemStack.getItem() instanceof DollItem dollItem) {
-            return DollEntityItem.createItemWithBlockState(dollItem.getBlock().defaultBlockState());
+        } else {
+            if (extractedId != null) {
+                return DollEntityItem.createItemWithCustomDollId(extractedId);
+            } else {
+                DollItem dollItem = (DollItem) dollItemStack.getItem();
+                return DollEntityItem.createItemWithBlockState(dollItem.getBlock().defaultBlockState());
+            }
         }
-
-        return ItemStack.EMPTY;
     }
 
     @Override

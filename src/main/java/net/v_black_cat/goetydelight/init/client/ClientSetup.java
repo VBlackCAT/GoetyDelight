@@ -1,7 +1,5 @@
 package net.v_black_cat.goetydelight.init.client;
 
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
-import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.resources.PlayerSkin;
 import net.neoforged.api.distmarker.Dist;
@@ -10,6 +8,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.compat.curios.CuriosCompat;
 import net.v_black_cat.goetydelight.entities.ghostfarmer.GhostFarmerModel;
 import net.v_black_cat.goetydelight.entities.ghostfarmer.GhostFarmerRenderer;
 import net.v_black_cat.goetydelight.entities.soul_lich.SoulLichModel;
@@ -18,8 +17,8 @@ import net.v_black_cat.goetydelight.init.ModBlockEntities;
 import net.v_black_cat.goetydelight.init.ModEntities;
 import net.v_black_cat.goetydelight.init.ModMenuTypes;
 import net.v_black_cat.goetydelight.item.FalseProverbsItemModel;
-import net.v_black_cat.goetydelight.render.item.CustomDollRender;
-import net.v_black_cat.goetydelight.render.item.DollEntityRender;
+import net.v_black_cat.goetydelight.render.doll.CustomDollRender;
+import net.v_black_cat.goetydelight.render.doll.DollEntityRender;
 import net.v_black_cat.goetydelight.renderer.FalseProverbsBackLayer;
 import net.v_black_cat.goetydelight.screen.CursedIngotPotScreen;
 import net.v_black_cat.goetydelight.screen.NightStoveScreen;
@@ -57,14 +56,15 @@ public class ClientSetup {
                 playerRenderer.addLayer(new FalseProverbsBackLayer(playerRenderer));
             }
         }
+        CuriosCompat.addEntityLayers(event);
     }
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.GHOST_FARMER.get(), GhostFarmerRenderer::new);
         event.registerEntityRenderer(ModEntities.SOUL_LICH.get(), SoulLichRenderer::new);
-        event.registerEntityRenderer(ModEntities.DOLL_ENTITY.get(), DollEntityRender::new);
 
-        event.registerBlockEntityRenderer(ModBlockEntities.CUSTOM_DOLL_BE.get(), CustomDollRender::new);
+        event.registerEntityRenderer(ModEntities.DOLL_ENTITY.get(), DollEntityRender::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.DOLL_BLOCK.get(), CustomDollRender::new);
     }
 }

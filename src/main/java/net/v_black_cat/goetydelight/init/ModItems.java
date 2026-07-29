@@ -1,8 +1,5 @@
 package net.v_black_cat.goetydelight.init;
 
-import com.Polarice3.Goety.common.effects.GoetyEffects;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemNameBlockItem;
@@ -10,24 +7,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SpawnEggItem;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.bus.api.IEventBus;
-import net.v_black_cat.goetydelight.init.ModTiers;
-import net.v_black_cat.goetydelight.init.ModBlocks;
-import net.v_black_cat.goetydelight.init.ModEntities;
 import net.v_black_cat.goetydelight.GoetyDelight;
-import net.v_black_cat.goetydelight.item.CustomDollItem;
+import net.v_black_cat.goetydelight.item.*;
 import net.v_black_cat.goetydelight.item.CustomDrinkItem;
 import net.v_black_cat.goetydelight.item.food.*;
-import net.v_black_cat.goetydelight.item.FalseProverbsItem;
-import net.v_black_cat.goetydelight.item.ViziersCookbookItem;
-import vectorwing.farmersdelight.common.registry.ModEffects;
-import vectorwing.farmersdelight.common.item.KnifeItem;
+import net.v_black_cat.goetydelight.item.food.MetamorphicScentGrassItem;
 
-import static net.v_black_cat.goetydelight.util.TickConverterUtil.minToTick;
 import static vectorwing.farmersdelight.common.registry.ModItems.basicItem;
 
 public class ModItems {
@@ -172,8 +161,8 @@ public class ModItems {
         NOT_ANYTHING = ITEMS.register("not_anything",
                 () -> new Item(basicItem().stacksTo(1)));
 //
-//        CUSTOM_DOLL = ITEMS.register("custom_doll", () -> new
-// CustomDollItem(ModBlocks.CUSTOM_DOLL.get()));
+//        DOLL_BLOCK = ITEMS.register("custom_doll", () -> new
+// CustomDollItem(ModBlocks.DOLL_BLOCK.get()));
 //
         METAMORPHIC_SCENT_GRASS = ITEMS.register("metamorphic_scent_grass",
                 () -> new MetamorphicScentGrassItem(basicItem().stacksTo(64).food(simpleFoodItemProperties(2,
@@ -577,7 +566,6 @@ public class ModItems {
                 () -> new GlassBottleFoodItem(basicItem().stacksTo(16).rarity(Rarity.COMMON)
                         .food(ModFoods.RUBY_SYRUP)));
 
-        CUSTOM_DOLL = ITEMS.register("custom_doll", () -> new CustomDollItem(ModBlocks.CUSTOM_DOLL.get()));
         RING_PACKED_VOID_GEL_JELLY = ITEMS.register("ring_packed_void_gel_jelly",
                 () -> new FoiledBowlFoodItem(basicItem().craftRemainder(Items.BOWL).stacksTo(64)
                         .food(ModFoods.RING_PACKED_VOID_GEL_JELLY)));
@@ -620,8 +608,9 @@ public class ModItems {
                 new Item.Properties()
                 ));
         // ==================== 杂项物品 ====================
-        DOLL_ITEM = ITEMS.register("doll_item",
-                () -> new Item(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON)));
+        DOLL_ITEM = ITEMS.register("doll_item", DollEntityItem::new);
+
+        CUSTOM_DOLL = ITEMS.register("custom_doll", () -> new CustomDollItem(ModBlocks.CUSTOM_DOLL.get()));
     }
 
     // ==================== 辅助方法 ====================

@@ -2,6 +2,7 @@ package net.v_black_cat.goetydelight.item;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -15,13 +16,16 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.v_black_cat.goetydelight.block.CustomDollBlockEntity;
 import net.v_black_cat.goetydelight.init.doll.CustomDollLoader;
 import net.v_black_cat.goetydelight.init.ModItems;
 import net.v_black_cat.goetydelight.init.doll.ServerCustomDollLoader;
+import net.v_black_cat.goetydelight.render.doll.CustomDollItemRender;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class CustomDollItem extends BlockItem {
     private static final String NBT_MODEL_ID = "DollModelId";
@@ -77,13 +81,30 @@ public class CustomDollItem extends BlockItem {
     }
 
     @Override
+    @SuppressWarnings("removal")
+    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+        consumer.accept(new IClientItemExtensions() {
+            private CustomDollItemRender render = null;
+
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                Minecraft minecraft = Minecraft.getInstance();
+                if (render == null) {
+                    render = new CustomDollItemRender(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
+                }
+                return render;
+            }
+        });
+    }
+
+    @Override
     public EquipmentSlot getEquipmentSlot(ItemStack stack) {
         return EquipmentSlot.HEAD;
     }
 
     @Override
     public Component getName(ItemStack stack) {
-        return Component.translatable("block.goetydelight.doll");
+        return Component.translatable("block.goetydelight.doll_block");
     }
 
     @Override

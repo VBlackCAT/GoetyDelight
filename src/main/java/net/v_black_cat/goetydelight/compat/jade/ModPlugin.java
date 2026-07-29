@@ -1,5 +1,6 @@
 package net.v_black_cat.goetydelight.compat.jade;
 
+import net.v_black_cat.goetydelight.block.DollBlock;
 import net.v_black_cat.goetydelight.entities.DollEntity;
 import snownee.jade.api.IWailaClientRegistration;
 import snownee.jade.api.IWailaPlugin;
@@ -9,6 +10,7 @@ import snownee.jade.api.WailaPlugin;
 public class ModPlugin implements IWailaPlugin {
     @Override
     public void registerClient(IWailaClientRegistration registration) {
+        registration.registerBlockComponent(DollBlockComponentProvider.INSTANCE, DollBlock.class);
         registration.registerEntityComponent(DollEntityComponentProvider.INSTANCE, DollEntity.class);
     }
 }

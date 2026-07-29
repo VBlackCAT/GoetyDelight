@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.Set;
 
 public class ServerCustomDollResourceLoader {
-    private static final String FILE_PATH = "custom_dolls.json";
+    private static final String FILE_PATH = "custom_doll.json";
 
     /**
      * 缓存数据

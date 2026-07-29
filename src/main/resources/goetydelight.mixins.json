@@ -1,27 +1,27 @@
 {
-    "required": true,
-    "package": "net.v_black_cat.goetydelight.mixin",
-    "compatibilityLevel": "JAVA_21",
-    "mixins": [
-        "BlockFinderMixin",
-        "CookingPotBlockEntityMixin",
-        "LivingEntityAccessor",
-        "MobMixin",
-        "SummonSpellMixin",
-        "WightSpawnerMixin",
-        "DarkAltarBlockEntityMixin",
-        "AnvilBlockMixin"
-    ],
-    "client": [
-        "BookContentResourceListenerLoaderMixin",
-        "ItemRendererMixin",
-        "ScreenMixin",
-        "PlayerSkinMixin"
-    ],
-    "injectors": {
-        "defaultRequire": 1
-    },
-    "overwrites": {
-        "requireAnnotations": true
-    }
+  "required": true,
+  "package": "net.v_black_cat.goetydelight.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "AnvilBlockMixin",
+    "BlockFinderMixin",
+    "CookingPotBlockEntityMixin",
+    "DarkAltarBlockEntityMixin",
+    "LivingEntityAccessor",
+    "MobMixin",
+    "SummonSpellMixin",
+    "WightSpawnerMixin"
+  ],
+  "client": [
+    "BookContentResourceListenerLoaderMixin",
+    "ItemRendererMixin",
+    "PlayerSkinMixin",
+    "ScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
 }

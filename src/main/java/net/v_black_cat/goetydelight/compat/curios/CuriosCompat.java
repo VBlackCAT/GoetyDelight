@@ -8,7 +8,7 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 public class CuriosCompat {
     private static final String ID = "curios";
-    private static final boolean IS_LOADED;
+    public static final boolean IS_LOADED;
 
     static {
         IS_LOADED = ModList.get().isLoaded(ID);

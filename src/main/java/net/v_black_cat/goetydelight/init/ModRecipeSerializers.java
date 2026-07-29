@@ -1,5 +1,6 @@
 package net.v_black_cat.goetydelight.init;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
 import net.neoforged.bus.api.IEventBus;
@@ -10,7 +11,7 @@ import net.v_black_cat.goetydelight.init.doll.DollEntityCraftingRecipe;
 
 public class ModRecipeSerializers {
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS =
-            DeferredRegister.create(net.minecraft.core.registries.Registries.RECIPE_SERIALIZER, GoetyDelight.MODID);
+            DeferredRegister.create(Registries.RECIPE_SERIALIZER, GoetyDelight.MODID);
 
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<DollEntityCraftingRecipe>> DOLL_ENTITY_CRAFTING =
             RECIPE_SERIALIZERS.register("doll_entity_crafting",

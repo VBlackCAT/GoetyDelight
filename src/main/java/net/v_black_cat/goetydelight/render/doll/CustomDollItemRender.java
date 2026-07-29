@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.render.item;
+package net.v_black_cat.goetydelight.render.doll;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -26,6 +25,8 @@ public class CustomDollItemRender extends BlockEntityWithoutLevelRenderer {
         super(dispatcher, modelSet);
     }
 
+
+
     @Override
     public void renderByItem(ItemStack itemStackIn, ItemDisplayContext transformType, PoseStack poseStack,
                              MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
@@ -39,7 +40,6 @@ public class CustomDollItemRender extends BlockEntityWithoutLevelRenderer {
 
         String modelId = CustomDollItem.getModelId(itemStackIn);
         if (StringUtils.isBlank(modelId)) {
-            // 使用 BuiltInRegistries 替代 ForgeRegistries
             ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(itemStackIn.getItem());
             texture = itemId == null ? CustomDollReloadListener.DEFAULT_TEXTURE_ID : getTextureByName(itemId.getPath());
         } else {

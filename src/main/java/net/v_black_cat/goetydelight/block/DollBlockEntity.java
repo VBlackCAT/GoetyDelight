@@ -15,16 +15,16 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 
-public class CustomDollBlockEntity extends BlockEntity {
+public class DollBlockEntity extends BlockEntity {
     private static final String NBT_MODEL_ID = "DollModelId";
 
     private String modelId = StringUtils.EMPTY;
 
-    public CustomDollBlockEntity(BlockEntityType<?> entityType, BlockPos pos, BlockState state) {
+    public DollBlockEntity(BlockEntityType<?> entityType, BlockPos pos, BlockState state) {
         super(entityType, pos, state);
     }
 
-    public CustomDollBlockEntity(BlockPos pos, BlockState state) {
+    public DollBlockEntity(BlockPos pos, BlockState state) {
         this(ModBlockEntities.DOLL_BLOCK.get(), pos, state);
     }
 

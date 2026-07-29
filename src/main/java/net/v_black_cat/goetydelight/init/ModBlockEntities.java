@@ -46,7 +46,7 @@ public class ModBlockEntities {
     public static final DeferredHolder<
             BlockEntityType<?>,
             BlockEntityType<
-                    CustomDollBlockEntity>> CUSTOM_DOLL_BE = BLOCK_ENTITIES.register("custom_doll", () -> BlockEntityType.Builder.of(
+                    CustomDollBlockEntity>> DOLL_BLOCK = BLOCK_ENTITIES.register("custom_doll", () -> BlockEntityType.Builder.of(
             CustomDollBlockEntity::new,
             getDollBlocks()
     ).build(null));

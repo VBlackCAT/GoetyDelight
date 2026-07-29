@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.render.item;
+package net.v_black_cat.goetydelight.render.doll;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -26,37 +26,26 @@ public class CustomDollRender implements BlockEntityRenderer<CustomDollBlockEnti
     public void render(CustomDollBlockEntity doll, float partialTick, PoseStack poseStack,
                        MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
         String modelId = doll.getModelId();
-
         Model model = CustomDollReloadListener.DFAULT_DOLL_MODEL;
         ResourceLocation texture;
-
         BlockState blockState = doll.getBlockState();
-
         if (StringUtils.isBlank(modelId)) {
             texture = getTextureByBlockState(blockState);
         } else {
             texture = getTextureByName(modelId);
         }
-
         Direction facing = blockState.getValue(HorizontalDirectionalBlock.FACING);
-
         poseStack.pushPose();
         poseStack.translate(0.5, 1.5, 0.5);
         poseStack.mulPose(Axis.ZN.rotationDegrees(180));
-
-        // 1.21 中获取方向角度的方法可能有变化
         poseStack.mulPose(Axis.YN.rotationDegrees(180 - facing.toYRot()));
-
         VertexConsumer buffer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(texture));
-
-        // 1.21 renderToBuffer 方法签名改变：使用打包的 ARGB 颜色
         model.renderToBuffer(poseStack, buffer, packedLight, packedOverlay, 0xFFFFFFFF);
 
         poseStack.popPose();
     }
 
     private ResourceLocation getTextureByBlockState(BlockState blockState) {
-        // 使用 BuiltInRegistries 替代 ForgeRegistries
         ResourceLocation blockId = BuiltInRegistries.BLOCK.getKey(blockState.getBlock());
         if (blockId == null || "custom_doll".equals(blockId.getPath())) {
             return CustomDollReloadListener.DEFAULT_TEXTURE_ID;

@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.render.item;
+package net.v_black_cat.goetydelight.render.doll;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -62,12 +62,10 @@ public class DollEntityItemRender extends BlockEntityWithoutLevelRenderer {
 
             ResourceLocation texture = getTextureByName(dollId);
 
-            poseStack.translate(0.5, 1.5, 0.5);
+            poseStack.translate(0.6, 1.6, 0.6);
             poseStack.mulPose(Axis.ZN.rotationDegrees(180));
-
             VertexConsumer buffer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(texture));
 
-            // 1.21 renderToBuffer 使用打包的 ARGB 颜色
             model.renderToBuffer(poseStack, buffer, combinedLight, combinedOverlay, 0xFFFFFFFF);
         } else {
             Block displayBlock = entity.getDisplayBlockState().getBlock();
