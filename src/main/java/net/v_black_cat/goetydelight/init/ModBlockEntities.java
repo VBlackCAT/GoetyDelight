@@ -1,6 +1,8 @@
 package net.v_black_cat.goetydelight.init;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
@@ -12,7 +14,10 @@ import net.v_black_cat.goetydelight.block.NightStoveBlockEntity;
 import net.v_black_cat.goetydelight.block.RenderBlockEntity;
 import net.v_black_cat.goetydelight.block.ShadeStoveBlockEntity;
 import net.v_black_cat.goetydelight.block.CursedIngotPotBlockEntity;
+import net.v_black_cat.goetydelight.events.DollRegisterEventHandler;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class ModBlockEntities {
@@ -43,13 +48,16 @@ public class ModBlockEntities {
             ModBlocks.CURSED_INGOT_POT.get()
     ).build(null));
 
-    public static final DeferredHolder<
-            BlockEntityType<?>,
-            BlockEntityType<
-                    CustomDollBlockEntity>> DOLL_BLOCK = BLOCK_ENTITIES.register("custom_doll", () -> BlockEntityType.Builder.of(
-            CustomDollBlockEntity::new,
-            getDollBlocks()
-    ).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<CustomDollBlockEntity>> DOLL_BLOCK =
+            BLOCK_ENTITIES.register("custom_doll", () -> {
+                // 这个 lambda 会在方块注册完成后执行
+                // 此时所有方块都已经注册到 BuiltInRegistries.BLOCK 中
+                Block[] validBlocks = getAllDollBlocksFromRegistry();
+                return BlockEntityType.Builder.of(
+                        CustomDollBlockEntity::new,
+                        validBlocks
+                ).build(null);
+            });
 
     public static final DeferredHolder<
             BlockEntityType<?>,
@@ -59,9 +67,26 @@ public class ModBlockEntities {
             ModBlocks.RENDER_BLOCK.get()
     ).build(null));
 
-    private static Block[] getDollBlocks() {
-        return Stream.concat(Stream.of(ModBlocks.CUSTOM_DOLL.get()), Stream.empty())
-                .toArray(Block[]::new);
+    private static Block[] getAllDollBlocksFromRegistry() {
+        List<Block> blocks = new ArrayList<>();
+
+        for (String dollName : DollRegisterEventHandler.SPECIAL_DOLL_NAMES) {
+            ResourceLocation id = ResourceLocation.fromNamespaceAndPath(GoetyDelight.MODID, dollName);
+            Block block = BuiltInRegistries.BLOCK.get(id);
+            if (block != null) {
+                blocks.add(block);
+            }
+        }
+
+        // 也添加 CUSTOM_DOLL 如果存在
+        Block customDoll = BuiltInRegistries.BLOCK.get(
+                ResourceLocation.fromNamespaceAndPath(GoetyDelight.MODID, "custom_doll")
+        );
+        if (customDoll != null && !blocks.contains(customDoll)) {
+            blocks.add(customDoll);
+        }
+
+        return blocks.toArray(new Block[0]);
     }
 
     public static void register(IEventBus modEventBus) {
