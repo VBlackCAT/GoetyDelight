@@ -51,7 +51,7 @@ public class DollItem extends BlockItem {
 
     @Override
     public Component getName(ItemStack stack) {
-        return Component.translatable("block.goetydelight.doll_block");
+        return Component.translatable("block.goetydelight.custom_doll");
     }
 
     @Override

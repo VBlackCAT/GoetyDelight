@@ -127,6 +127,11 @@ public class DollBlock extends HorizontalDirectionalBlock implements SimpleWater
     }
 
     @Override
+    public RenderShape getRenderShape(BlockState state) {
+        return RenderShape.INVISIBLE;
+    }
+
+    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING, WATERLOGGED);
     }
