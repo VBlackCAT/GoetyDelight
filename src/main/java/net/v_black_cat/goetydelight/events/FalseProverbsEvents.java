@@ -18,18 +18,25 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderArmEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.init.ModConfig;
 import net.v_black_cat.goetydelight.item.FalseProverbsItem;
 import net.v_black_cat.goetydelight.network.SyncBackModelPacket;
 import vectorwing.farmersdelight.common.item.enchantment.BackstabbingEnchantment;
+
+import java.util.UUID;
 
 import static net.v_black_cat.goetydelight.item.FalseProverbsItem.SHIFT_KEY_TAG;
 
@@ -37,64 +44,96 @@ import static net.v_black_cat.goetydelight.item.FalseProverbsItem.SHIFT_KEY_TAG;
 public class FalseProverbsEvents {
 
     private static final ResourceLocation SHIFT_SPEED_MODIFIER_ID = ResourceLocation.withDefaultNamespace("shift_speed");
+    private static final int SYNC_DISTANCE_SQR = 4096; // 64格内同步
+    private static final int CLEANUP_INTERVAL = 1200; // 60秒清理一次
+    private static int cleanupCounter = 0;
 
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
         if (!player.level().isClientSide) {
+            UUID playerUUID = player.getUUID();
+
             if (player.getMainHandItem().getItem() instanceof FalseProverbsItem) {
                 CompoundTag persistentData = player.getPersistentData();
+
                 if (player.isShiftKeyDown()) {
                     if (!persistentData.getBoolean(SHIFT_KEY_TAG)) {
+                        // 第一次按下Shift
                         addBonusAttributes(player);
                         persistentData.putBoolean(SHIFT_KEY_TAG, true);
-                        FalseProverbsItem.originalPosition = player.position();
-                        FalseProverbsItem.setPlayerTeleportStatus(player.getUUID(), true);
-                        FalseProverbsItem.worldLevel = player.level();
+
+                        FalseProverbsItem.setOriginalPosition(playerUUID, player.position());
+                        FalseProverbsItem.setWorldLevel(playerUUID, player.level());
+                        FalseProverbsItem.setPlayerTeleportStatus(playerUUID, true);
+
                         player.setInvisible(true);
-                        if (player.level() instanceof ServerLevel serverLevel) {
-                            for (int i = 0; i < 16; ++i) {
-                                double d0 = MathHelper.rgbToSpeed(96.0F);
-                                double d1 = MathHelper.rgbToSpeed(62.0F);
-                                double d2 = MathHelper.rgbToSpeed(92.0F);
-                                serverLevel.sendParticles((SimpleParticleType) ModParticleTypes.CULT_SPELL.get(),
-                                        player.getRandomX(1.0F), player.getRandomY(), player.getRandomZ(1.0F),
-                                        0, d0, d1, d2, 0.5F);
-                            }
-                            ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(ModSounds.END_WALK.get(), 0.5F, 1.0F));
-                        }
+
+                        // 优化粒子效果
+                        spawnShiftParticles(player);
+                        ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(ModSounds.END_WALK.get(), 0.5F, 1.0F));
                     }
-                    if (FalseProverbsItem.worldLevel != null && player.level() != FalseProverbsItem.worldLevel) {
-                        FalseProverbsItem.originalPosition = null;
+
+                    // 检查维度变化
+                    Level storedLevel = FalseProverbsItem.getWorldLevel(playerUUID);
+                    if (storedLevel != null && player.level() != storedLevel) {
+                        FalseProverbsItem.setOriginalPosition(playerUUID, null);
                     }
                 } else {
+                    // Shift释放时的处理
                     if (persistentData.getBoolean(SHIFT_KEY_TAG)) {
-                        player.getPersistentData().remove(SHIFT_KEY_TAG);
-                        removeBonusAttributes(player);
-                        FalseProverbsItem.originalPosition = null;
-                        FalseProverbsItem.setPlayerTeleportStatus(player.getUUID(), false);
-                        player.setInvisible(false);
+                        resetShiftState(player, persistentData);
                     }
                 }
             } else {
+                // 主手不是FalseProverbsItem，但仍有Shift状态
                 if (player.getPersistentData().getBoolean(SHIFT_KEY_TAG)) {
-                    player.getPersistentData().remove(SHIFT_KEY_TAG);
-                    removeBonusAttributes(player);
-                    FalseProverbsItem.originalPosition = null;
-                    FalseProverbsItem.setPlayerTeleportStatus(player.getUUID(), false);
-                    player.setInvisible(false);
+                    resetShiftState(player, player.getPersistentData());
                 }
             }
 
-            // 背部模型同步（仅在状态变化时发送）
-            boolean newStatus = FalseProverbsItem.shouldShowBackModel(player);
-            boolean oldStatus = FalseProverbsItem.getPlayerBackModelStatus(player.getUUID());
+            // 优化的背部模型同步
+            syncBackModelStatus(player, playerUUID);
+        }
+    }
 
-            if (newStatus != oldStatus) {
-                FalseProverbsItem.setPlayerBackModelStatus(player.getUUID(), newStatus);
-                SyncBackModelPacket packet = new SyncBackModelPacket(player.getId(), newStatus);
-                if (player.level() instanceof ServerLevel serverLevel) {
-                    for (ServerPlayer serverPlayer : serverLevel.players()) {
+    private static void spawnShiftParticles(Player player) {
+        if (!(player.level() instanceof ServerLevel serverLevel)) return;
+        if (player.tickCount % 20 != 0) return; // 每20tick生成一次粒子，优化性能
+
+        SimpleParticleType particleType = (SimpleParticleType) ModParticleTypes.CULT_SPELL.get();
+        for (int i = 0; i < 2; ++i) { // 减少粒子数量，1.20.1版本优化
+            double d0 = MathHelper.rgbToSpeed(96.0F);
+            double d1 = MathHelper.rgbToSpeed(62.0F);
+            double d2 = MathHelper.rgbToSpeed(92.0F);
+            serverLevel.sendParticles(particleType,
+                    player.getRandomX(1.0F), player.getRandomY(), player.getRandomZ(1.0F),
+                    0, d0, d1, d2, 0.5F);
+        }
+    }
+
+    private static void resetShiftState(Player player, CompoundTag persistentData) {
+        UUID playerUUID = player.getUUID();
+        persistentData.remove(SHIFT_KEY_TAG);
+        removeBonusAttributes(player);
+        FalseProverbsItem.setOriginalPosition(playerUUID, null);
+        FalseProverbsItem.setPlayerTeleportStatus(playerUUID, false);
+        player.setInvisible(false);
+    }
+
+    private static void syncBackModelStatus(Player player, UUID playerUUID) {
+        boolean newStatus = FalseProverbsItem.shouldShowBackModel(player);
+        Boolean lastStatus = FalseProverbsItem.getLastSentBackModelStatus().get(playerUUID);
+
+        if (lastStatus == null || lastStatus != newStatus) {
+            FalseProverbsItem.setPlayerBackModelStatus(playerUUID, newStatus);
+            FalseProverbsItem.getLastSentBackModelStatus().put(playerUUID, newStatus);
+
+            SyncBackModelPacket packet = new SyncBackModelPacket(player.getId(), newStatus);
+            if (player.level() instanceof ServerLevel serverLevel) {
+                for (ServerPlayer serverPlayer : serverLevel.players()) {
+                    // 距离优化，减少不必要的网络传输
+                    if (serverPlayer.distanceToSqr(player) < SYNC_DISTANCE_SQR) {
                         SyncBackModelPacket.sendToClient(packet, serverPlayer);
                     }
                 }
@@ -105,11 +144,10 @@ public class FalseProverbsEvents {
     private static void addBonusAttributes(Player player) {
         AttributeInstance speedAttribute = player.getAttribute(Attributes.MOVEMENT_SPEED);
         if (speedAttribute != null && speedAttribute.getModifier(SHIFT_SPEED_MODIFIER_ID) == null) {
-
             AttributeModifier modifier = new AttributeModifier(
-            SHIFT_SPEED_MODIFIER_ID,
-            ModConfig.getShiftSpeedMultiplier(),
-            AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+                    SHIFT_SPEED_MODIFIER_ID,
+                    ModConfig.getShiftSpeedMultiplier(),
+                    AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
             );
             speedAttribute.addTransientModifier(modifier);
         }
@@ -120,54 +158,82 @@ public class FalseProverbsEvents {
         if (speedAttribute != null) {
             speedAttribute.removeModifier(SHIFT_SPEED_MODIFIER_ID);
         }
-        player.getPersistentData().remove(SHIFT_KEY_TAG);
     }
 
+    // 统一的伤害处理
     @SubscribeEvent
-    public static void onLivingHurt(LivingDamageEvent.Pre event) {
-        if (event.getSource().getEntity() instanceof Player player) {
-            ItemStack mainHand = player.getMainHandItem();
-            if (mainHand.getItem() instanceof FalseProverbsItem) {
-                float amount = event.getOriginalDamage();
+    public static void onLivingHurt(LivingIncomingDamageEvent event) {
+        if (!(event.getSource().getEntity() instanceof Player player)) return;
+        if (!(player.getMainHandItem().getItem() instanceof FalseProverbsItem)) return;
+        if (player.isUsingItem()) return;
 
-                if (!player.isShiftKeyDown() && !player.isUsingItem() && amount > 0.0F) {
-                    event.setNewDamage(amount * ModConfig.getFalseProverbsNormalDamageMultiplier());
+        float amount = event.getAmount();
+        UUID playerUUID = player.getUUID();
+
+        if (amount > 0.0F) {
+            if (player.isShiftKeyDown()) {
+                if (FalseProverbsItem.getPlayerTeleportStatus(playerUUID)) {
+                    // 传送状态下的背刺检查
+                    if (!BackstabbingEnchantment.isLookingBehindTarget(event.getEntity(), player.getEyePosition())) {
+                        event.setAmount(amount * ModConfig.getFalseProverbsShiftDamageMultiplier());
+                    }
+                    // 如果是背刺，在onLivingDamage中处理
+                } else {
+                    // 非传送状态下的Shift伤害
+                    event.setAmount(amount * ModConfig.getFalseProverbsShiftDamageMultiplier());
                 }
-                if (player.isShiftKeyDown() && !player.isUsingItem() &&
-                        !FalseProverbsItem.getPlayerTeleportStatus(player.getUUID())) {
-                    event.setNewDamage(amount * ModConfig.getFalseProverbsShiftDamageMultiplier());
-                }
-                if (player.isShiftKeyDown() && !player.isUsingItem() &&
-                        FalseProverbsItem.getPlayerTeleportStatus(player.getUUID()) &&
-                        !BackstabbingEnchantment.isLookingBehindTarget(event.getEntity(), player.getEyePosition())) {
-                    event.setNewDamage(amount * ModConfig.getFalseProverbsShiftDamageMultiplier());
-                }
+            } else {
+                // 普通攻击
+                event.setAmount(amount * ModConfig.getFalseProverbsNormalDamageMultiplier());
             }
         }
     }
 
     @SubscribeEvent
     public static void onLivingDamage(LivingDamageEvent.Pre event) {
-        if (event.getSource().getEntity() instanceof Player player) {
-            ItemStack mainHand = player.getMainHandItem();
-            if (mainHand.getItem() instanceof FalseProverbsItem) {
-                if (FalseProverbsItem.getPlayerTeleportStatus(player.getUUID()) &&
-                        player.isShiftKeyDown() && !player.isUsingItem()) {
-                    if (event.getOriginalDamage() > 0.0F) {
-                        if (BackstabbingEnchantment.isLookingBehindTarget(event.getEntity(), player.getEyePosition())) {
+        if (!(event.getSource().getEntity() instanceof Player player)) return;
+        if (!(player.getMainHandItem().getItem() instanceof FalseProverbsItem)) return;
+        if (player.isUsingItem()) return;
 
-                            event.setNewDamage(event.getOriginalDamage() * ModConfig.getFalseProverbsBackstabDamageMultiplier());
-                            FalseProverbsItem.setPlayerTeleportStatus(player.getUUID(), false);
-                        }
-                        if (FalseProverbsItem.originalPosition != null) {
-                            player.teleportTo(FalseProverbsItem.originalPosition.x,
-                                    FalseProverbsItem.originalPosition.y,
-                                    FalseProverbsItem.originalPosition.z);
-                            FalseProverbsItem.originalPosition = null;
-                        }
-                    }
+        UUID playerUUID = player.getUUID();
+
+        if (FalseProverbsItem.getPlayerTeleportStatus(playerUUID) && player.isShiftKeyDown()) {
+            if (event.getOriginalDamage() > 0.0F) {
+                // 背刺额外伤害
+                if (BackstabbingEnchantment.isLookingBehindTarget(event.getEntity(), player.getEyePosition())) {
+                    event.setNewDamage(event.getOriginalDamage() * ModConfig.getFalseProverbsBackstabDamageMultiplier());
                 }
+
+                // 传送回原位
+                Vec3 originalPos = FalseProverbsItem.getOriginalPosition(playerUUID);
+                if (originalPos != null) {
+                    player.teleportTo(originalPos.x, originalPos.y, originalPos.z);
+                }
+
+                // 清除传送状态
+                FalseProverbsItem.removePlayerTeleportStatus(playerUUID);
+                player.setInvisible(false);
             }
+        }
+    }
+
+    // 玩家登出清理
+    @SubscribeEvent
+    public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        FalseProverbsItem.clearPlayerData(event.getEntity().getUUID());
+    }
+
+    // 定期清理过期数据
+    @SubscribeEvent
+    public static void onServerTick(ServerTickEvent.Post event) {
+        cleanupCounter++;
+        if (cleanupCounter >= CLEANUP_INTERVAL) {
+            cleanupCounter = 0;
+
+            long currentTick = event.getServer().getTickCount();
+            FalseProverbsItem.cleanupExpiredData(currentTick, uuid ->
+                    event.getServer().getPlayerList().getPlayer(uuid) != null
+            );
         }
     }
 
@@ -175,27 +241,25 @@ public class FalseProverbsEvents {
     public static class ClientEvents {
         @SubscribeEvent
         public static void onPlayerRenderPre(RenderLivingEvent.Pre event) {
-            if (event.getEntity() instanceof Player player && event.getEntity().level()
-                            instanceof ClientLevel) {
-                if (player.getMainHandItem().getItem() instanceof FalseProverbsItem) {
-                    if (player.isShiftKeyDown()) {
-                        event.setCanceled(true);
-                    }
-                }
+            if (!(event.getEntity() instanceof Player player)) return;
+            if (!(event.getEntity().level() instanceof ClientLevel)) return;
+            if (!(player.getMainHandItem().getItem() instanceof FalseProverbsItem)) return;
+
+            if (player.isShiftKeyDown()) {
+                event.setCanceled(true);
             }
         }
 
         @SubscribeEvent
         public static void renderArm(RenderArmEvent event) {
             AbstractClientPlayer player = event.getPlayer();
-            if (player.getMainHandItem().getItem() instanceof FalseProverbsItem) {
-                if (player.isShiftKeyDown()) {
-                    if (player.getMainHandItem().isEmpty() && event.getArm() == player.getMainArm()) {
-                        event.setCanceled(true);
-                    } else if (player.getOffhandItem().isEmpty() && event.getArm() != player.getMainArm()) {
-                        event.setCanceled(true);
-                    }
-                }
+            if (!(player.getMainHandItem().getItem() instanceof FalseProverbsItem)) return;
+            if (!player.isShiftKeyDown()) return;
+
+            if (player.getMainHandItem().isEmpty() && event.getArm() == player.getMainArm()) {
+                event.setCanceled(true);
+            } else if (player.getOffhandItem().isEmpty() && event.getArm() != player.getMainArm()) {
+                event.setCanceled(true);
             }
         }
     }
