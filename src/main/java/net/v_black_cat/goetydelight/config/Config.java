@@ -259,15 +259,15 @@ public class Config
 
     private static final ForgeConfigSpec.DoubleValue TEN_THOUSAND_POISON_FEAST_DEFAULT_MIN_DURATION = BUILDER
             .comment("Default minimum duration (minutes) for debuffs not configured in DurationConfig\n未在DurationConfig中配置的效果的默认最短持续时间（分钟）")
-            .defineInRange("tenThousandPoisonFeastDefaultMinDuration", 0.25, 0.0, Double.MAX_VALUE);
+            .defineInRange("tenThousandPoisonFeastDefaultMinDuration", 0.1, 0.0, Double.MAX_VALUE);
 
     private static final ForgeConfigSpec.DoubleValue TEN_THOUSAND_POISON_FEAST_DEFAULT_MAX_DURATION = BUILDER
             .comment("Default maximum duration (minutes) for debuffs not configured in DurationConfig\n未在DurationConfig中配置的效果的默认最长持续时间（分钟）")
-            .defineInRange("tenThousandPoisonFeastDefaultMaxDuration", 3.0, 0.0, Double.MAX_VALUE);
+            .defineInRange("tenThousandPoisonFeastDefaultMaxDuration", 5.0, 0.0, Double.MAX_VALUE);
 
     private static final ForgeConfigSpec.IntValue TEN_THOUSAND_POISON_FEAST_EFFECT_COUNT = BUILDER
             .comment("Number of random debuffs to apply when eating Ten Thousand Poison Feast\n食用万毒盛宴时随机施加的debuff数量")
-            .defineInRange("tenThousandPoisonFeastEffectCount", 3, 1, 20);
+            .defineInRange("tenThousandPoisonFeastEffectCount", 6, 1, 100);
 
     // 万毒盛宴 - 合成所需最小物品数量
     private static final ForgeConfigSpec.IntValue TEN_THOUSAND_POISON_FEAST_MIN_ITEM_COUNT = BUILDER
