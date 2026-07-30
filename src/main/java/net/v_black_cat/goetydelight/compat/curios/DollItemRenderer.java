@@ -30,7 +30,7 @@ public class DollItemRenderer<T extends LivingEntity, M extends EntityModel<T> &
     }
 
     public static void translateToHead(PoseStack poseStack) {
-        poseStack.translate(0.0F, -0.8F, 0.0F);
+        poseStack.translate(0.0625F, -0.75F, -0.075F);
         poseStack.mulPose(Axis.YP.rotationDegrees(0.0F));
         poseStack.scale(0.625F, -0.625F, -0.625F);
     }

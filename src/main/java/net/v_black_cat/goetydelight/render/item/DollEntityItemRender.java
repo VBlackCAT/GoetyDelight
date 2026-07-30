@@ -55,7 +55,7 @@ public class DollEntityItemRender extends BlockEntityWithoutLevelRenderer {
             Model model = CustomDollReloadListener.DFAULT_DOLL_MODEL;
             ResourceLocation texture = getTextureByName(dollId);
 
-            poseStack.translate(0.5, 1.5, 0.5);
+            poseStack.translate(0.6, 1.6, 0.6);
             poseStack.mulPose(Axis.ZN.rotationDegrees(180));
 
             VertexConsumer buffer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(texture));
