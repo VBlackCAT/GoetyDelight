@@ -5,7 +5,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.neoforged.neoforge.client.ChunkRenderTypeSet;
 
 public class ModItemBlockRender {
-    public static void setRenderLayer(){
+    public static void setRenderLayer() {
         ItemBlockRenderTypes.setRenderLayer(
                 ModBlocks.ATTACHED_ECTOPLASMIC_MELON_STEM.get(),
                 ChunkRenderTypeSet.of(RenderType.cutout())
@@ -25,6 +25,10 @@ public class ModItemBlockRender {
         ItemBlockRenderTypes.setRenderLayer(
                 ModBlocks.BOAT_STUFFED_ROASTED_WARDEN_BlOCK.get(),
                 ChunkRenderTypeSet.of(RenderType.cutout())
+        );
+        ItemBlockRenderTypes.setRenderLayer(
+                ModBlocks.ECTOPLASMIC_MELON_STEM.get(),
+                ChunkRenderTypeSet.of(RenderType.translucent())
         );
         ItemBlockRenderTypes.setRenderLayer(
                 ModBlocks.ROAST_LAOWANG_BLOCK.get(),

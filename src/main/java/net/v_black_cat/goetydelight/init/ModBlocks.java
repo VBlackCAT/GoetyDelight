@@ -249,25 +249,25 @@ public class ModBlocks {
 
         ECTOPLASMIC_MELON_STEM = registerBlockWithoutBlockItem("ectoplasmic_melon_stem",
         () -> new StemBlock(
-        ModBlocks.ECTOPLASMIC_MELON_BLOCK.getKey(),
-        ModBlocks.ATTACHED_ECTOPLASMIC_MELON_STEM.getKey(), // <-- 改为附着茎
-        ModItems.ECTOPLASMIC_MELON_SEEDS.getKey(),
-        BlockBehaviour.Properties.ofFullCopy(Blocks.MELON_STEM)
-                .noOcclusion()
-                .noCollission()
-                .instabreak()
-                .sound(SoundType.CROP)
-                .randomTicks()));
+                ModBlocks.ECTOPLASMIC_MELON_BLOCK.getKey(),          
+                ModBlocks.ATTACHED_ECTOPLASMIC_MELON_STEM.getKey(),  
+                ModItems.ECTOPLASMIC_MELON_SEEDS.getKey(),           // seed
+                BlockBehaviour.Properties.ofFullCopy(Blocks.MELON_STEM)
+                        .noOcclusion()
+                        .noCollission()
+                        .instabreak()
+                        .sound(SoundType.CROP)
+                        .randomTicks()));
 
-        ATTACHED_ECTOPLASMIC_MELON_STEM = registerBlockWithoutBlockItem("attached_ectoplasmic_melon_stem",
+       ATTACHED_ECTOPLASMIC_MELON_STEM = registerBlockWithoutBlockItem("attached_ectoplasmic_melon_stem",
         () -> new AttachedStemBlock(
-        ModBlocks.ECTOPLASMIC_MELON_BLOCK.getKey(),
-        ModBlocks.ECTOPLASMIC_MELON_STEM.getKey(),
-        ModItems.ECTOPLASMIC_MELON_SEEDS.getKey(),
-        BlockBehaviour.Properties.ofFullCopy(Blocks.ATTACHED_MELON_STEM)
-                .noCollission()
-                .instabreak()
-                .sound(SoundType.CROP)));
+                ModBlocks.ECTOPLASMIC_MELON_STEM.getKey(),           
+                ModBlocks.ECTOPLASMIC_MELON_BLOCK.getKey(),         
+                ModItems.ECTOPLASMIC_MELON_SEEDS.getKey(),           
+                BlockBehaviour.Properties.ofFullCopy(Blocks.ATTACHED_MELON_STEM)
+                        .noCollission()
+                        .instabreak()
+                        .sound(SoundType.CROP)));
 
         METAMORPHIC_SCENT_GRASS = registerBlockWithoutBlockItem("metamorphic_scent_grass",
         () -> new MetamorphicScentGrassBlock(
