@@ -145,6 +145,7 @@ public class ModItems {
     public static final RegistryObject<Item> ECTOPLASMIC_MELON_SALAD;
     public static final RegistryObject<Item> ROAST_SPIDER_EGG;
     public static final RegistryObject<Item> BOAT_PLATE;
+    public static final RegistryObject<Item> TEN_THOUSAND_POISON_FEAST;
 
 
 
@@ -167,7 +168,7 @@ public class ModItems {
     private static final Supplier<MobEffect> FROG_LEG_EFFECT_SUPPLIER = goetyBuff("frog_leg");
     private static final Supplier<MobEffect> CHARGED_EFFECT_SUPPLIER = goetyBuff("charged");
     private static final Supplier<MobEffect> SOUL_ARMOR_EFFECT_SUPPLIER = goetyBuff("soul_armor");
-    private static final Supplier<MobEffect> BUFF_EFFECT_SUPPLIER = goetyBuff("buff");
+    public static final Supplier<MobEffect> BUFF_EFFECT_SUPPLIER = goetyBuff("buff");
     private static final Supplier<MobEffect> SAVE_EFFECTS_SUPPLIER = goetyBuff("save_effects");
     private static final Supplier<MobEffect> PHOTOSYNTHESIS_SUPPLIER = goetyBuff("photosynthesis");
     private static final Supplier<MobEffect> FROSTY_AURA_SUPPLIER = goetyBuff("frosty_aura");
@@ -818,6 +819,11 @@ public class ModItems {
                                 .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
                                 .effect(() ->new MobEffectInstance(CLIMBING_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .effect(() ->new MobEffectInstance(VENOMOUS_HANDS.get(), minToTick(5), 0), 1.0F)
+                                .build())));
+
+        TEN_THOUSAND_POISON_FEAST = ITEMS.register("ten_thousand_poison_feast",
+                () -> new TenThousandPoisonFeast(basicItem().stacksTo(16).rarity(Rarity.UNCOMMON)
+                        .food(simpleFoodItemProperties(10, 6)
                                 .build())));
 
         // ==================== 种子物品 ====================

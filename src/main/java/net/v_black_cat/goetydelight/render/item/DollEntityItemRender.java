@@ -18,15 +18,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.v_black_cat.goetydelight.block.CustomDollBlockEntity;
-import net.v_black_cat.goetydelight.block.ModBlockEntities;
 import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.v_black_cat.goetydelight.entities.DollEntity;
 import net.v_black_cat.goetydelight.init.CustomDollReloadListener;
-import net.v_black_cat.goetydelight.item.CustomDollItem;
 import net.v_black_cat.goetydelight.item.DollEntityItem;
-import net.v_black_cat.goetydelight.item.ModItems;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.concurrent.TimeUnit;

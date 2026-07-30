@@ -20,4 +20,8 @@ public class ModRecipeSerializers {
 
     public static final RegistryObject<RecipeSerializer<DollEntityCraftingRecipe>> DOLL_ENTITY_CRAFTING = SERIALIZERS.register("doll_entity_crafting",
             () -> new SimpleCraftingRecipeSerializer<>(DollEntityCraftingRecipe::new));
+
+    public static final RegistryObject<RecipeSerializer<TenThousandPoisonFeastRecipe>> TEN_THOUSAND_POISON_FEAST =
+            SERIALIZERS.register("ten_thousand_poison_feast",
+                    () -> new SimpleCraftingRecipeSerializer<>(TenThousandPoisonFeastRecipe::new));
 }

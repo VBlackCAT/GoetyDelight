@@ -10,6 +10,7 @@ import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.v_black_cat.goetydelight.GoetyDelight;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -160,6 +161,127 @@ public class Config
             .comment("Maximum stack count for Night Heart Pea Soup effect\n暗夜之心豌豆汤效果的最大叠加层数")
             .defineInRange("nightPeaSoupMaxCount", 12, 1, 30);
 
+    private static final ForgeConfigSpec.BooleanValue TEN_THOUSAND_POISON_FEAST_USE_WHITELIST = BUILDER
+            .comment("If true, use whitelist mode (only apply debuffs in the list); if false, use blacklist mode (exclude debuffs in the list)\n" +
+                    "true=白名单模式（仅施加列表中的debuff），false=黑名单模式（排除列表中的debuff）")
+            .define("tenThousandPoisonFeastUseWhitelist", true);
+
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> TEN_THOUSAND_POISON_FEAST_EFFECT_LIST = BUILDER
+            .comment("""
+                    A list of debuff effects for whitelist/blacklist (mode controlled by tenThousandPoisonFeastUseWhitelist)
+                    万毒盛宴的效果白名单/黑名单（模式由tenThousandPoisonFeastUseWhitelist控制）
+                    Supports:
+                      - Effect ID: 'minecraft:slowness' (exact match)
+                      - MOD ID partial match: 'mod:goety' (matches any effect from modid containing 'goety', supports sub-mods)
+                    支持格式：
+                      - 效果ID：'minecraft:slowness'（精确匹配）
+                      - MOD ID部分匹配：'mod:goety'（匹配modid包含'goety'的所有效果，支持附属模组）""")
+            .defineListAllowEmpty("tenThousandPoisonFeastEffectList", List.of(
+                    "minecraft:slowness", "minecraft:mining_fatigue", "minecraft:poison", "minecraft:wither",
+                    "minecraft:blindness", "minecraft:nausea", "minecraft:darkness", "minecraft:weakness",
+                    "minecraft:hunger", "minecraft:unluck", "minecraft:bad_omen", "minecraft:levitation",
+                    "mod:goety","mod:twilightforest","mod:quark","mod:jerotes","mod:delight","mod:cataclysm",
+                    "mod:enigmatic","mod:aether","mod:born_in_chaos_v1","mod:spell","mod:iron"
+            ), entry -> {
+                if (!(entry instanceof String str)) return false;
+                if (str.startsWith("mod:")) {
+                    String modidPartial = str.substring(4);
+                    return !modidPartial.isEmpty();
+                }
+                return validateEffectName(str);
+            });
+
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> TEN_THOUSAND_POISON_FEAST_LEVEL_CONFIG = BUILDER
+            .comment("""
+                    Level range configuration for specific debuffs (format: effect_id=min-max)
+                    万毒宴特定效果等级范围配置（格式：效果id=最小值-最大值）
+                    Priority: Level/Duration Config > Whitelist/Blacklist > Default Config
+                    优先级：等级/时长配置 > 白名单/黑名单 > 默认配置""")
+            .defineListAllowEmpty("tenThousandPoisonFeastLevelConfig", List.of(
+                    "minecraft:slowness=0-4",
+                    "minecraft:weakness=0-3",
+                    "minecraft:wither=0-2",
+                    "minecraft:blindness=0-1",
+                    "minecraft:nausea=0-1",
+                    "minecraft:hunger=0-3",
+                    "minecraft:mining_fatigue=0-3"
+            ), entry -> {
+                if (!(entry instanceof String str)) return false;
+                String[] parts = str.split("=");
+                if (parts.length != 2) return false;
+                String[] range = parts[1].split("-");
+                if (range.length != 2) return false;
+                try {
+                    int min = Integer.parseInt(range[0]);
+                    int max = Integer.parseInt(range[1]);
+                    return min >= 0 && max >= min && validateEffectName(parts[0]);
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+            });
+
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> TEN_THOUSAND_POISON_FEAST_DURATION_CONFIG = BUILDER
+            .comment("""
+                    Duration range configuration for specific debuffs (format: effect_id=min-max, unit: minutes)
+                    万毒宴特定效果时长范围配置（格式：效果id=最小值-最大值，单位：分钟）
+                    Priority: Level/Duration Config > Whitelist/Blacklist > Default Config
+                    优先级：等级/时长配置 > 白名单/黑名单 > 默认配置""")
+            .defineListAllowEmpty("tenThousandPoisonFeastDurationConfig", List.of(
+                    "minecraft:slowness=0.5-3",
+                    "minecraft:weakness=0.5-3",
+                    "minecraft:wither=0.25-1.5",
+                    "minecraft:blindness=0.25-0.5",
+                    "minecraft:nausea=0.25-0.5",
+                    "minecraft:hunger=0.5-2",
+                    "minecraft:mining_fatigue=0.5-2"
+            ), entry -> {
+                if (!(entry instanceof String str)) return false;
+                String[] parts = str.split("=");
+                if (parts.length != 2) return false;
+                String[] range = parts[1].split("-");
+                if (range.length != 2) return false;
+                try {
+                    double min = Double.parseDouble(range[0]);
+                    double max = Double.parseDouble(range[1]);
+                    return min > 0 && max >= min && validateEffectName(parts[0]);
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+            });
+
+    private static final ForgeConfigSpec.IntValue TEN_THOUSAND_POISON_FEAST_DEFAULT_MIN_LEVEL = BUILDER
+            .comment("Default minimum level for debuffs not configured in LevelConfig\n未在LevelConfig中配置的效果的默认最小等级")
+            .defineInRange("tenThousandPoisonFeastDefaultMinLevel", 0, 0, 255);
+
+    private static final ForgeConfigSpec.IntValue TEN_THOUSAND_POISON_FEAST_DEFAULT_MAX_LEVEL = BUILDER
+            .comment("Default maximum level for debuffs not configured in LevelConfig\n未在LevelConfig中配置的效果的默认最大等级")
+            .defineInRange("tenThousandPoisonFeastDefaultMaxLevel", 2, 0, 255);
+
+    private static final ForgeConfigSpec.DoubleValue TEN_THOUSAND_POISON_FEAST_DEFAULT_MIN_DURATION = BUILDER
+            .comment("Default minimum duration (minutes) for debuffs not configured in DurationConfig\n未在DurationConfig中配置的效果的默认最短持续时间（分钟）")
+            .defineInRange("tenThousandPoisonFeastDefaultMinDuration", 0.25, 0.0, Double.MAX_VALUE);
+
+    private static final ForgeConfigSpec.DoubleValue TEN_THOUSAND_POISON_FEAST_DEFAULT_MAX_DURATION = BUILDER
+            .comment("Default maximum duration (minutes) for debuffs not configured in DurationConfig\n未在DurationConfig中配置的效果的默认最长持续时间（分钟）")
+            .defineInRange("tenThousandPoisonFeastDefaultMaxDuration", 3.0, 0.0, Double.MAX_VALUE);
+
+    private static final ForgeConfigSpec.IntValue TEN_THOUSAND_POISON_FEAST_EFFECT_COUNT = BUILDER
+            .comment("Number of random debuffs to apply when eating Ten Thousand Poison Feast\n食用万毒盛宴时随机施加的debuff数量")
+            .defineInRange("tenThousandPoisonFeastEffectCount", 3, 1, 20);
+
+    // 万毒盛宴 - 合成所需最小物品数量
+    private static final ForgeConfigSpec.IntValue TEN_THOUSAND_POISON_FEAST_MIN_ITEM_COUNT = BUILDER
+            .comment("Minimum number of items required in crafting grid to create Ten Thousand Poison Feast\n" +
+                    "合成万毒盛宴所需的最少物品数量")
+            .defineInRange("tenThousandPoisonFeastMinItemCount", 4, 1, 9);
+
+    // 万毒盛宴 - 合成所需最小debuff种类数
+    private static final ForgeConfigSpec.IntValue TEN_THOUSAND_POISON_FEAST_MIN_DEBUFF_COUNT = BUILDER
+            .comment("Minimum number of unique debuff types from all ingredients required to create Ten Thousand Poison Feast\n" +
+                    "合成万毒盛宴所需的最少debuff种类数（所有材料提供的不同debuff种类之和）")
+            .defineInRange("tenThousandPoisonFeastMinDebuffCount", 8, 1, 100);
+
+
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> PLAYER_MODEL_SCALES = BUILDER
             .comment("Player model scale settings (format: playerName=scale)\n玩家模型缩放设置（格式：玩家名称=缩放比例）\n注：请勿在高版本ysm中使用该功能（2.6.2版本可用，2.6.5版本不可用）")
             .defineListAllowEmpty("playerModelScales", List.of(
@@ -300,6 +422,117 @@ public class Config
 
     public static double getLivingDamageBackstabMultiplier() {
         return LIVING_DAMAGE_BACKSTAB_MULTIPLIER.get();
+    }
+
+    // 添加验证方法
+    private static boolean validateEffectName(final Object obj) {
+        return obj instanceof final String effectName &&
+                ForgeRegistries.MOB_EFFECTS.containsKey(new ResourceLocation(effectName));
+    }
+
+    public static boolean isTenThousandPoisonFeastUseWhitelist() {
+        return TEN_THOUSAND_POISON_FEAST_USE_WHITELIST.get();
+    }
+
+    public static Set<String> getTenThousandPoisonFeastEffectList() {
+        return Set.copyOf(TEN_THOUSAND_POISON_FEAST_EFFECT_LIST.get());
+    }
+
+    public static Map<ResourceLocation, int[]> getTenThousandPoisonFeastLevelConfig() {
+        return parseEffectRangeConfig(TEN_THOUSAND_POISON_FEAST_LEVEL_CONFIG.get());
+    }
+
+    public static Map<ResourceLocation, double[]> getTenThousandPoisonFeastDurationConfig() {
+        return parseEffectDurationConfig(TEN_THOUSAND_POISON_FEAST_DURATION_CONFIG.get());
+    }
+
+    public static int getTenThousandPoisonFeastDefaultMinLevel() {
+        return TEN_THOUSAND_POISON_FEAST_DEFAULT_MIN_LEVEL.get();
+    }
+
+    public static int getTenThousandPoisonFeastDefaultMaxLevel() {
+        return TEN_THOUSAND_POISON_FEAST_DEFAULT_MAX_LEVEL.get();
+    }
+
+    public static double getTenThousandPoisonFeastDefaultMinDuration() {
+        return TEN_THOUSAND_POISON_FEAST_DEFAULT_MIN_DURATION.get();
+    }
+
+    public static double getTenThousandPoisonFeastDefaultMaxDuration() {
+        return TEN_THOUSAND_POISON_FEAST_DEFAULT_MAX_DURATION.get();
+    }
+
+    public static int getTenThousandPoisonFeastEffectCount() {
+        return TEN_THOUSAND_POISON_FEAST_EFFECT_COUNT.get();
+    }
+
+    public static int getTenThousandPoisonFeastMinItemCount() {
+        return TEN_THOUSAND_POISON_FEAST_MIN_ITEM_COUNT.get();
+    }
+
+    public static int getTenThousandPoisonFeastMinDebuffCount() {
+        return TEN_THOUSAND_POISON_FEAST_MIN_DEBUFF_COUNT.get();
+    }
+
+    private static Map<ResourceLocation, int[]> parseEffectRangeConfig(List<? extends String> configList) {
+        Map<ResourceLocation, int[]> result = new HashMap<>();
+        for (String entry : configList) {
+            String[] parts = entry.split("=");
+            if (parts.length == 2) {
+                String[] range = parts[1].split("-");
+                if (range.length == 2) {
+                    try {
+                        ResourceLocation effectId = new ResourceLocation(parts[0]);
+                        int min = Integer.parseInt(range[0]);
+                        int max = Integer.parseInt(range[1]);
+                        result.put(effectId, new int[]{min, max});
+                    } catch (NumberFormatException ignored) {}
+                }
+            }
+        }
+        return result;
+    }
+
+    private static Map<ResourceLocation, double[]> parseEffectDurationConfig(List<? extends String> configList) {
+        Map<ResourceLocation, double[]> result = new HashMap<>();
+        for (String entry : configList) {
+            String[] parts = entry.split("=");
+            if (parts.length == 2) {
+                String[] range = parts[1].split("-");
+                if (range.length == 2) {
+                    try {
+                        ResourceLocation effectId = new ResourceLocation(parts[0]);
+                        double min = Double.parseDouble(range[0]);
+                        double max = Double.parseDouble(range[1]);
+                        result.put(effectId, new double[]{min, max});
+                    } catch (NumberFormatException ignored) {}
+                }
+            }
+        }
+        return result;
+    }
+    public static int minutesToTicks(double minutes) {
+        return (int) Math.round(minutes * 60 * 20);
+    }
+
+    public static boolean isEffectInFilterList(ResourceLocation effectId) {
+        Set<String> effectList = getTenThousandPoisonFeastEffectList();
+        String effectIdStr = effectId.toString();
+        String effectModid = effectId.getNamespace();
+
+        for (String entry : effectList) {
+            if (entry.startsWith("mod:")) {
+                String modidPartial = entry.substring(4).toLowerCase();
+                if (effectModid.toLowerCase().contains(modidPartial)) {
+                    return true;
+                }
+            } else {
+                if (effectIdStr.equals(entry)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static boolean validateEntityName(final Object obj) {
