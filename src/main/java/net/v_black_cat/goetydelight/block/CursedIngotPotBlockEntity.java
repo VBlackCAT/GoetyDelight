@@ -73,7 +73,8 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
     private ItemStack mealContainerStack = ItemStack.EMPTY;
     private Component customName;
     protected final ContainerData cookingPotData;
-    private final Object2IntOpenHashMap<ResourceLocation> usedRecipeTracker = new Object2IntOpenHashMap<>();
+    private final Object2IntOpenHashMap<
+            ResourceLocation> usedRecipeTracker = new Object2IntOpenHashMap<>();
 
     public CursedIngotPotBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CURSED_INGOT_POT_BE.get(), pos, state);
@@ -213,6 +214,13 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
         return false;
     }
 
+    private boolean isSoulInfused(ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        var customData = stack.get(DataComponents.CUSTOM_DATA);
+        CompoundTag tag = customData != null ? customData.copyTag() : null;
+        return tag != null && tag.getBoolean("SoulInfused");
+    }
+
     private int getRemainingSoulEnergy() {
         ItemStack soulSource = this.inventory.getStackInSlot(SOUL_SOURCE_SLOT);
         if (soulSource.isEmpty()) return 0;
@@ -235,6 +243,7 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
     }
 
     private boolean consumeSoulEnergy(int amount) {
+        if (amount <= 0) return false;
         ItemStack soulSource = this.inventory.getStackInSlot(SOUL_SOURCE_SLOT);
         if (soulSource.isEmpty()) return false;
         if (this.level == null) return false;
@@ -274,66 +283,75 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
         }
     }
 
-    // ===================== 烹饪逻辑 =====================
+    // ======================== 核心修复 ========================
     public static void cookingTick(Level level, BlockPos pos, BlockState state, CursedIngotPotBlockEntity cookingPot) {
         boolean isHeated = cookingPot.isHeated(level, pos);
         boolean hasSoulEnergy = cookingPot.hasSoulEnergy();
         boolean didInventoryChange = false;
 
+        ItemStack currentMeal = cookingPot.getMeal();
+        ItemStack outputStack = cookingPot.inventory.getStackInSlot(OUTPUT_SLOT);
+        boolean anyHasMark = cookingPot.isSoulInfused(currentMeal) || cookingPot.isSoulInfused(outputStack);
+
         boolean canCook = false;
         float speedMultiplier = 1.0f;
+        RecipeHolder<CookingPotRecipe> currentRecipe = null;
 
-        int remainingSoul = cookingPot.getRemainingSoulEnergy();
-        boolean soulEnoughForCooking = true;
-
-        if (hasSoulEnergy && cookingPot.hasInput()) {
+        if (cookingPot.hasInput()) {
             RecipeWrapper wrapper = new RecipeWrapper(cookingPot.inventory);
             RecipeManager recipeManager = level.getRecipeManager();
             var recipeHolder = recipeManager.getRecipeFor(ModRecipeTypes.COOKING.get(), wrapper, level).orElse(null);
             if (recipeHolder != null && cookingPot.canCook(recipeHolder.value())) {
+                currentRecipe = recipeHolder;
                 ItemStack resultStack = recipeHolder.value().getResultItem(level.registryAccess());
                 int estimatedCost = cookingPot.calculateSoulCost(resultStack);
-                soulEnoughForCooking = remainingSoul >= estimatedCost;
-            } else {
-                soulEnoughForCooking = true;
+                int remainingSoul = cookingPot.getRemainingSoulEnergy();
+
+                // 决定是否需要灵魂
+                boolean needSoul;
+                if (currentMeal.isEmpty() && outputStack.isEmpty()) {
+                    needSoul = hasSoulEnergy && (remainingSoul >= estimatedCost);
+                } else {
+                    needSoul = anyHasMark;
+                }
+
+                boolean soulAvailable = hasSoulEnergy && (remainingSoul >= estimatedCost);
+
+                // 有标记但灵魂不足 → 停止并重置
+                if (anyHasMark && !soulAvailable) {
+                    canCook = false;
+                    cookingPot.cookTime = 0;
+                } else {
+                    if (isHeated && needSoul && soulAvailable) {
+                        canCook = true;
+                        speedMultiplier = 2.0f;
+                    } else if (isHeated && !needSoul) {
+                        canCook = true;
+                        speedMultiplier = 1.0f;
+                    } else if (needSoul && soulAvailable) {
+                        canCook = true;
+                        speedMultiplier = 1.2f;
+                    } else {
+                        canCook = false;
+                        speedMultiplier = 0f;
+                    }
+                }
             }
         }
 
-        //速度决策（结合灵魂能量预判）
-        if (isHeated && hasSoulEnergy && soulEnoughForCooking) {
-            canCook = true;
-            speedMultiplier = 2.0f;//两者皆有
-        } else if (isHeated) {
-            canCook = true;
-            speedMultiplier = 1.0f;//仅热源
-        } else if (hasSoulEnergy && soulEnoughForCooking) {
-            canCook = true;
-            speedMultiplier = 1.2f;   //仅灵魂能量
-        }
-        //两者都没有
-        if (!isHeated && !(hasSoulEnergy && soulEnoughForCooking)) {
-            canCook = false;
-            speedMultiplier = 0f;
-        }
-
-        if (canCook && cookingPot.hasInput()) {
-            RecipeWrapper wrapper = new RecipeWrapper(cookingPot.inventory);
-            RecipeManager recipeManager = level.getRecipeManager();
-            var recipeHolder = recipeManager.getRecipeFor(ModRecipeTypes.COOKING.get(), wrapper, level).orElse(null);
-
-            if (recipeHolder != null && cookingPot.canCook(recipeHolder.value())) {
-                cookingPot.cookTime += 1.0f * speedMultiplier;
-                if (cookingPot.cookTime >= cookingPot.cookTimeTotal) {
-                    didInventoryChange = cookingPot.processCooking(recipeHolder);
+        if (canCook && cookingPot.hasInput() && currentRecipe != null) {
+            cookingPot.cookTime += 1.0f * speedMultiplier;
+            if (cookingPot.cookTime >= cookingPot.cookTimeTotal) {
+                boolean success = cookingPot.processCooking(currentRecipe);
+                if (!success) {
+                    cookingPot.cookTime = 0;
                 }
-            } else {
-                cookingPot.cookTime = Mth.clamp(cookingPot.cookTime - 1.0f, 0.0f, cookingPot.cookTimeTotal);
             }
         } else if (cookingPot.cookTime > 0) {
             cookingPot.cookTime = Mth.clamp(cookingPot.cookTime - 1.0f, 0.0f, cookingPot.cookTimeTotal);
         }
 
-        // 自动输出与容器处理
+        // 自动输出与容器处理（不变）
         ItemStack mealStack = cookingPot.getMeal();
         if (!mealStack.isEmpty()) {
             if (!cookingPot.doesMealHaveContainer(mealStack)) {
@@ -403,30 +421,63 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
         CookingPotRecipe recipe = holder.value();
         this.cookTimeTotal = recipe.getCookTime();
         if (this.cookTime < this.cookTimeTotal) return false;
-        this.cookTime = 0.0f;
-        this.mealContainerStack = recipe.getOutputContainer();
+
+        ItemStack currentMeal = this.inventory.getStackInSlot(MEAL_DISPLAY_SLOT);
+        ItemStack outputStack = this.inventory.getStackInSlot(OUTPUT_SLOT);
+        boolean anyHasMark = isSoulInfused(currentMeal) || isSoulInfused(outputStack);
         ItemStack resultStack = recipe.getResultItem(this.level.registryAccess());
 
-        //尝试消耗灵魂能量
-        boolean hasSoul = this.hasSoulEnergy();
-        if (hasSoul) {
-            int soulCost = calculateSoulCost(resultStack);
-            boolean soulInfused = this.consumeSoulEnergy(soulCost);
-            if (soulInfused) {
-                CompoundTag tag = new CompoundTag();
-                tag.putBoolean("SoulInfused", true);
-                resultStack.set(DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(tag));
-            }
-            // 如果能量不足，则不添加 SoulInfused 标记，食物正常产出但不含灵魂注入
+        // 【关键】强制清除可能残留的标记
+        resultStack.remove(DataComponents.CUSTOM_DATA);
+
+        int soulCost = calculateSoulCost(resultStack);
+        ItemStack soulSource = this.inventory.getStackInSlot(SOUL_SOURCE_SLOT);
+        boolean hasSoulSource = !soulSource.isEmpty();
+        int remainingSoul = getRemainingSoulEnergy();
+
+        // 决定是否使用灵魂
+        boolean shouldUseSoul;
+        if (currentMeal.isEmpty() && outputStack.isEmpty()) {
+            // 空锅时：只有灵魂源存在且灵魂足够，才使用灵魂
+            shouldUseSoul = hasSoulSource && (remainingSoul >= soulCost);
+        } else {
+            // 非空锅：必须与当前标记一致，且灵魂充足
+            shouldUseSoul = anyHasMark && hasSoulSource && (remainingSoul >= soulCost);
         }
 
-        ItemStack storedMeal = this.inventory.getStackInSlot(MEAL_DISPLAY_SLOT);
-        if (storedMeal.isEmpty()) {
-            this.inventory.setStackInSlot(MEAL_DISPLAY_SLOT, resultStack.copy());
-        } else if (ItemStack.isSameItem(storedMeal, resultStack)) {
-            storedMeal.grow(resultStack.getCount());
+        if (shouldUseSoul) {
+            // 双重验证：灵魂源必须存在且足够
+            if (hasSoulSource && remainingSoul >= soulCost) {
+                boolean soulInfused = this.consumeSoulEnergy(soulCost);
+                if (soulInfused) {
+                    CompoundTag tag = new CompoundTag();
+                    tag.putBoolean("SoulInfused", true);
+                    resultStack.set(DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(tag));
+                } else {
+                    this.cookTime = 0.0f;
+                    return false;
+                }
+            } else {
+                this.cookTime = 0.0f;
+                return false;
+            }
         }
+        // 若 shouldUseSoul 为 false，则 resultStack 已清除标记，不会附加
+
+        // 将结果放入暂存槽
+        if (currentMeal.isEmpty()) {
+            this.inventory.setStackInSlot(MEAL_DISPLAY_SLOT, resultStack.copy());
+        } else if (ItemStack.isSameItem(currentMeal, resultStack)) {
+            currentMeal.grow(resultStack.getCount());
+        } else {
+            return false;
+        }
+
+        this.cookTime = 0.0f;
+        this.mealContainerStack = recipe.getOutputContainer();
         this.usedRecipeTracker.addTo(holder.id(), 1);
+
+        // 消耗原料
         for (int i = 0; i < 6; i++) {
             ItemStack slotStack = this.inventory.getStackInSlot(i);
             if (slotStack.hasCraftingRemainingItem()) {
@@ -452,7 +503,8 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
 
     public List<Recipe<?>> getUsedRecipesAndPopExperience(Level level, Vec3 pos) {
         List<Recipe<?>> list = Lists.newArrayList();
-        for (Object2IntMap.Entry<ResourceLocation> entry : this.usedRecipeTracker.object2IntEntrySet()) {
+        for (Object2IntMap.Entry<
+                ResourceLocation> entry : this.usedRecipeTracker.object2IntEntrySet()) {
             level.getRecipeManager().byKey(entry.getKey()).ifPresent(holder -> {
                 Recipe<?> recipe = holder.value();
                 list.add(recipe);
@@ -584,7 +636,7 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
             this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
         }
     }
-    
+
     public boolean isHeated() {
         return this.level != null && this.isHeated(this.level, this.worldPosition);
     }

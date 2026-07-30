@@ -1,8 +1,7 @@
 package net.v_black_cat.goetydelight.screen;
 
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
@@ -26,6 +25,14 @@ public class ShadeStoveScreen extends AbstractContainerScreen<ShadeStoveMenu>
     private final SmokingRecipeBookComponent recipeBook = new SmokingRecipeBookComponent();
     private boolean widthTooNarrow;
 
+    private static final int NORMAL_U = 2; // 常态图标 U 坐标（避开最左列）
+    private static final int NORMAL_V = 0; // 常态图标 V 坐标（如果 (1,0) 也有白色，改为 2）
+    private static final int HOVER_U = 2; // 悬停图标 U 坐标（通常与常态相同）
+    private static final int HOVER_V = 19; // 悬停图标 V 坐标（NORMAL_V + 图标高度 + 间距 = 1+18+1 = 20）
+    private static final int ICON_WIDTH = 20;
+    private static final int ICON_HEIGHT = 18;
+    private static final int TEXTURE_SIZE = 256;
+
     public ShadeStoveScreen(ShadeStoveMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, Component.translatable("goetydelight.container.shade_stove"));
         this.imageWidth = 176;
@@ -39,18 +46,30 @@ public class ShadeStoveScreen extends AbstractContainerScreen<ShadeStoveMenu>
         this.recipeBook.init(this.width, this.height, this.minecraft, this.widthTooNarrow, this.menu);
         this.leftPos = this.recipeBook.updateScreenPosition(this.width, this.imageWidth);
 
-        WidgetSprites buttonSprites = new WidgetSprites(RECIPE_BUTTON_LOCATION, RECIPE_BUTTON_LOCATION);
-        this.addRenderableWidget(new ImageButton(
+        this.addRenderableWidget(new Button(
         this.leftPos + 20,
         this.height / 2 - 49,
-        20, 18,
-        buttonSprites,
+        ICON_WIDTH, ICON_HEIGHT,
+        Component.empty(),
         (button) -> {
             this.recipeBook.toggleVisibility();
             this.leftPos = this.recipeBook.updateScreenPosition(this.width, this.imageWidth);
             button.setPosition(this.leftPos + 20, this.height / 2 - 49);
-        }
-        ));
+        },
+        (component) -> Component.empty()
+        ) {
+            @Override
+            public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+                int u = this.isHovered() ? HOVER_U : NORMAL_U;
+                int v = this.isHovered() ? HOVER_V : NORMAL_V;
+                guiGraphics.blit(RECIPE_BUTTON_LOCATION,
+                        this.getX(), this.getY(),
+                        u, v,
+                        ICON_WIDTH, ICON_HEIGHT,
+                        TEXTURE_SIZE, TEXTURE_SIZE
+                );
+            }
+        });
 
         this.titleLabelX = (this.imageWidth - this.font.width(this.title)) / 2;
     }
@@ -91,14 +110,14 @@ public class ShadeStoveScreen extends AbstractContainerScreen<ShadeStoveMenu>
         int j = this.topPos;
         guiGraphics.blit(TEXTURE, i, j, 0, 0, this.imageWidth, this.imageHeight);
 
-        // ★★★ 燃烧进度：父类 getLitProgress() 返回 0.0 ~ 1.0，乘以 13 得到像素 ★★★
+        // 燃烧进度（火焰最大高度13像素）
         if (this.menu.isLit()) {
             int k = (int) (this.menu.getLitProgress() * 13);
             k = Mth.clamp(k, 0, 13);
-            guiGraphics.blit(TEXTURE, i + 56, j + 36 + 12 - k, 177, 256 + 12 - k, 14, k + 1);
+            guiGraphics.blit(TEXTURE, i + 56, j + 36 + 12 - k, 176, 12 - k, 14, k + 1);
         }
 
-        // ★★★ 烹饪进度：父类 getBurnProgress() 返回 0.0 ~ 1.0，乘以 24 得到像素 ★★★
+        // 烹饪进度（箭头最大宽度24像素）
         int l = (int) (this.menu.getBurnProgress() * 24);
         l = Mth.clamp(l, 0, 24);
         guiGraphics.blit(TEXTURE, i + 79, j + 34, 176, 14, l + 1, 16);

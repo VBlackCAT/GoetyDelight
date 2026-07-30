@@ -3,8 +3,7 @@ package net.v_black_cat.goetydelight.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.gui.components.WidgetSprites;
+import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
@@ -37,6 +36,15 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
     private static final Rectangle PROGRESS_ARROW = new Rectangle(89, 25, 0, 17);
     private static final Rectangle SOUL_SOURCE_SLOT = new Rectangle(8, 55, 16, 16);
 
+    
+    private static final int NORMAL_U = 2;   // 常态图标 U 坐标
+    private static final int NORMAL_V = 0;   // 常态图标 V 坐标
+    private static final int HOVER_U = 2;    // 悬停图标 U 坐标
+    private static final int HOVER_V = 19;   // 悬停图标 V 坐标
+    private static final int ICON_WIDTH = 20;
+    private static final int ICON_HEIGHT = 18;
+    private static final int TEXTURE_SIZE = 256;
+
     private final CookingPotRecipeBookComponent recipeBookComponent = new CookingPotRecipeBookComponent();
     private boolean widthTooNarrow;
 
@@ -53,17 +61,31 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
         this.leftPos = this.recipeBookComponent.updateScreenPosition(this.width, this.imageWidth);
 
         if ((Boolean) Configuration.ENABLE_COOKING_POT_RECIPE_BOOK.get()) {
-            WidgetSprites sprites = new WidgetSprites(RECIPE_BUTTON_LOCATION, RECIPE_BUTTON_LOCATION);
-            this.addRenderableWidget(new ImageButton(
-            this.leftPos + 5, this.height / 2 - 49,
-            20, 18, sprites,
-            button -> {
-                this.recipeBookComponent.toggleVisibility();
-                this.leftPos = this.recipeBookComponent.updateScreenPosition(this.width, this.imageWidth);
-                button.setPosition(this.leftPos + 5, this.height / 2 - 49);
-            },
-            Component.empty()
-            ));
+            // 使用自定义 Button 手动绘制纹理，替换原有的 ImageButton
+            this.addRenderableWidget(new Button(
+                    this.leftPos + 5,
+                    this.height / 2 - 49,
+                    ICON_WIDTH, ICON_HEIGHT,
+                    Component.empty(),
+                    button -> {
+                        this.recipeBookComponent.toggleVisibility();
+                        this.leftPos = this.recipeBookComponent.updateScreenPosition(this.width, this.imageWidth);
+                        button.setPosition(this.leftPos + 5, this.height / 2 - 49);
+                    },
+                    (component) -> Component.empty()   // 提供空讲叙，解决 NO_NARRATION 不可用
+            ) {
+                @Override
+                public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+                    int u = this.isHovered() ? HOVER_U : NORMAL_U;
+                    int v = this.isHovered() ? HOVER_V : NORMAL_V;
+                    guiGraphics.blit(RECIPE_BUTTON_LOCATION,
+                            this.getX(), this.getY(),
+                            u, v,
+                            ICON_WIDTH, ICON_HEIGHT,
+                            TEXTURE_SIZE, TEXTURE_SIZE
+                    );
+                }
+            });
         } else {
             this.recipeBookComponent.hide();
             this.leftPos = this.recipeBookComponent.updateScreenPosition(this.width, this.imageWidth);
