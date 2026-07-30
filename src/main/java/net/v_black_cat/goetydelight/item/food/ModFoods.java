@@ -88,6 +88,7 @@ public class ModFoods {
     public static final FoodProperties SAUCE_GRILLED_CANDY_FISH;
     public static final FoodProperties METAMORPHIC_SCENT_FRUIT;
     public static final FoodProperties METAMORPHIC_SCENT_GRASS;
+    public static final FoodProperties TEN_THOUSAND_POISON_FEAST;
 
     static {
         // ========== 饮品 ==========
@@ -548,6 +549,11 @@ public class ModFoods {
 
         METAMORPHIC_SCENT_GRASS = new FoodProperties.Builder()
                 .nutrition(2).saturationModifier(1.5F).alwaysEdible()
+                .build();
+        TEN_THOUSAND_POISON_FEAST = new FoodProperties.Builder()
+                .nutrition(8)
+                .saturationModifier(0.6f)
+                .alwaysEdible()
                 .build();
     }
 }

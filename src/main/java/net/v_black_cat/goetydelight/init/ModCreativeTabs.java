@@ -9,6 +9,9 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.item.CustomDollItem;
+import net.v_black_cat.goetydelight.init.ModBlocks;
+
 public class ModCreativeTabs {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, GoetyDelight.MODID);
@@ -98,11 +101,12 @@ public class ModCreativeTabs {
                         output.accept(ModItems.CUP.get());
                         output.accept(ModItems.OMINOUS_ICE_CREAM.get());
                         output.accept(ModItems.MAGIC_QUARTZ_COOKIE.get());
-//                        output.accept(ModItems.ROASTED_CORPSE_MAGGOTS.get());
+                        output.accept(ModItems.ROASTED_CORPSE_MAGGOTS.get());
                         output.accept(ModItems.ROAST_LAOWANG.get());
                         output.accept(ModItems.ANCIENT_ENCHANTED_GOLDEN_APPLE.get());
                         output.accept(ModItems.HIDDEN_PANCAKE.get());
                         output.accept(ModItems.POLARICE.get());
+                        output.accept(ModItems.TEN_THOUSAND_POISON_FEAST.get());
 
                         // 盛宴食物（烤肉相关）
                         output.accept(ModItems.RING_PACKED_VOID_GEL_JELLY.get());
@@ -122,7 +126,7 @@ public class ModCreativeTabs {
                         output.accept(ModItems.METAMORPHIC_SCENT_GRASS_SEEDS.get());
 
                         // 人偶
-//                        CustomDollItem.addCreativeTab(output);
+                        CustomDollItem.addCreativeTab(output);
 
                         // ==================== 方块 ====================
                         // 建筑方块 - 大理石系列

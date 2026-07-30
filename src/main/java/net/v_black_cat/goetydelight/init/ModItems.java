@@ -149,6 +149,7 @@ public class ModItems {
     public static final DeferredItem<Item> CUSTOM_DOLL;
     public static final DeferredItem<Item> BISCAT;
     public static final DeferredItem<Item> RUBY_SYRUP;
+    public static final DeferredItem<Item> TEN_THOUSAND_POISON_FEAST;
 
     public static final DeferredItem<Item> ROAST_SPIDER_EGG;
     public static final DeferredItem<Item> ROAST_LAOWANG_EAR;
@@ -525,7 +526,11 @@ public class ModItems {
         HIDDEN_PANCAKE = ITEMS.register("hidden_pancake",
                 () -> new HiddenPancakeItem(basicItem().stacksTo(64).rarity(Rarity.RARE)
                         .food(ModFoods.HIDDEN_PANCAKE)));
-
+                        
+        TEN_THOUSAND_POISON_FEAST = ITEMS.register("ten_thousand_poison_feast",
+                () -> new TenThousandPoisonFeastItem(basicItem().stacksTo(64).rarity(Rarity.UNCOMMON)
+                        .food(ModFoods.TEN_THOUSAND_POISON_FEAST)));
+                        
         CREAMY_BERRY_FISH_PASTE_DUMPLING_WITH_CHOCOLATE_SAUCE = ITEMS.register("creamy_berry_fish_paste_dumpling_with_chocolate_sauce",
                 () -> new Item(
                 basicItem().stacksTo(64)
