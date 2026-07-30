@@ -1,15 +1,21 @@
 package net.v_black_cat.goetydelight.events;
 
+import com.Polarice3.Goety.api.entities.IOwned;
 import com.Polarice3.Goety.utils.SEHelper;
+import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.OwnableEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -17,11 +23,14 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.init.ModEnchantments;
+import net.v_black_cat.goetydelight.util.SearchServant;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -36,9 +45,9 @@ public class EnchantmentEffectHandlers {
 
     // === Frost Aspect ===
     @SubscribeEvent
-    public static void onFrostAspect(LivingDamageEvent.Pre event) {
+    public static void onFrostAspect(LivingIncomingDamageEvent event) {
         if (!(event.getSource().getEntity() instanceof Player attacker)) return;
-        if (!(event.getEntity() instanceof LivingEntity target)) return;
+        LivingEntity target = event.getEntity();
 
         RegistryAccess registryAccess = attacker.level().registryAccess();
         int level = attacker.getMainHandItem().getEnchantmentLevel(getHolder(registryAccess, ModEnchantments.FROST_ASPECT));
@@ -108,9 +117,50 @@ public class EnchantmentEffectHandlers {
         }
     }
 
+    @SubscribeEvent
+    public static void onSoulMendingServantTick(PlayerTickEvent.Post event) {
+        Player player = event.getEntity();
+        if (player.level().isClientSide()) return;
+        if (player.tickCount % 4 != 0) return;
+        if (!(player instanceof ServerPlayer serverPlayer)) return;
+
+        // 处理仆人装备
+        Optional<SearchServant.ServantData> servantDataOpt = SearchServant.getServantData(serverPlayer);
+        if (servantDataOpt.isPresent()) {
+            SearchServant.ServantData servantData = servantDataOpt.get();
+            ServerLevel level = (ServerLevel) serverPlayer.level();
+            RegistryAccess registryAccess = level.registryAccess();
+            Holder<Enchantment> holder = getHolder(registryAccess, ModEnchantments.SOUL_MENDING);
+
+            for (UUID servantUUID : servantData.servantUUIDs) {
+                Entity entity = level.getEntity(servantUUID);
+                if (entity instanceof LivingEntity servant) {
+                    // 处理不同类型的所有者
+                    Player owner = null;
+                    if (servant instanceof IOwned owned && owned.getTrueOwner() instanceof Player p) {
+                        owner = p;
+                    } else if (servant instanceof OwnableEntity ownable && ownable.getOwner() instanceof Player p) {
+                        owner = p;
+                    }
+
+                    if (owner != null) {
+                        for (ItemStack stack : servant.getAllSlots()) {
+                            if (stack.getEnchantmentLevel(holder) > 0 &&
+                                    stack.isDamageableItem() &&
+                                    stack.getDamageValue() > 0) {
+                                repairItemWithSoulEnergy(owner, stack,
+                                        stack.getEnchantmentLevel(holder));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     // === Soul Affix ===
     @SubscribeEvent
-    public static void onSoulAffix(LivingDamageEvent.Pre event) {
+    public static void onSoulAffix(LivingIncomingDamageEvent event) {
         if (!(event.getSource().getEntity() instanceof Player player)) return;
 
         RegistryAccess registryAccess = player.level().registryAccess();
@@ -124,47 +174,74 @@ public class EnchantmentEffectHandlers {
 
         int cost = 5 * totalLevel;
         if (SEHelper.getSoulsAmount(player, cost)) {
-            float original = event.getOriginalDamage();
-            event.setNewDamage(original + totalLevel);
+            float original = event.getAmount();
+            event.setAmount(original + totalLevel);
             SEHelper.decreaseSouls(player, cost);
         }
     }
 
     // === Soul Drain ===
     @SubscribeEvent
-    public static void onSoulDrain(LivingDamageEvent.Pre event) {
+    public static void onSoulDrain(LivingIncomingDamageEvent event) {
         if (!(event.getSource().getEntity() instanceof Player player)) return;
-        ItemStack weapon = player.getMainHandItem();
 
+        ItemStack weapon = player.getMainHandItem();
         RegistryAccess registryAccess = player.level().registryAccess();
-        int level = weapon.getEnchantmentLevel(getHolder(registryAccess, ModEnchantments.SOUL_DRAIN));
-        if (level <= 0) return;
+        Holder<Enchantment> holder = getHolder(registryAccess, ModEnchantments.SOUL_DRAIN);
+        int enchantmentLevel = weapon.getEnchantmentLevel(holder);
+
+        if (enchantmentLevel <= 0) return;
 
         LivingEntity target = event.getEntity();
 
-        float drainBase = event.getOriginalDamage() * 0.2f;
-        float damageBonus = drainBase * level;
-        event.setNewDamage(event.getOriginalDamage() + damageBonus);
-
+        // 初始化追踪器
         UUID playerId = player.getUUID();
-        UUID targetId = target.getUUID();
-        Map<UUID, Integer> targetMap = playerDrainTracker.computeIfAbsent(playerId, k -> new ConcurrentHashMap<>());
-        int count = targetMap.getOrDefault(targetId, 0);
-        int maxCount = (int) (0.5 + 1.5 * level);
+        playerDrainTracker.computeIfAbsent(playerId, k -> new ConcurrentHashMap<>());
 
-        if (count < maxCount) {
-            int soulDrop = SEHelper.getSoulGiven(target);
-            if (soulDrop > 0) {
-                int drainAmount = (int) Math.ceil(soulDrop * (0.1 + 0.05 * level));
-                SEHelper.increaseSouls(player, drainAmount);
-                targetMap.put(targetId, count + 1);
-            }
+        // 计算基础伤害（与1.20.1逻辑一致，基于武器的基础攻击力）
+        float baseDamage = calculateBaseWeaponDamage(weapon);
+        if (baseDamage <= 0) {
+            baseDamage = 1.0f;
+        }
+
+        // 计算伤害加成
+        int targetSouls = SEHelper.getSoulGiven(target);
+        float maxBonusDamage = baseDamage * enchantmentLevel;
+        float damageBonus = Math.min((float) targetSouls, maxBonusDamage);
+
+        event.setAmount(event.getAmount() + damageBonus);
+
+        // 处理灵魂吸取逻辑
+        UUID targetId = target.getUUID();
+        Map<UUID, Integer> targetMap = playerDrainTracker.get(playerId);
+        if (targetMap == null) return;
+
+        int currentDrainCount = targetMap.getOrDefault(targetId, 0);
+        int maxDrainCount = (int) (0.5 + 1.5 * enchantmentLevel);
+
+        if (currentDrainCount < maxDrainCount && targetSouls > 0) {
+            double soulDrainPercent = 0.10 + 0.05 * enchantmentLevel;
+            int drainAmount = (int) Math.ceil(targetSouls * soulDrainPercent);
+            SEHelper.increaseSouls(player, drainAmount);
+
+            targetMap.put(targetId, currentDrainCount + 1);
         }
     }
 
+    // 清理死亡实体的追踪数据
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
         UUID targetId = event.getEntity().getUUID();
         playerDrainTracker.forEach((playerId, targetMap) -> targetMap.remove(targetId));
+    }
+
+    private static float calculateBaseWeaponDamage(ItemStack weapon) {
+        if (weapon.isEmpty()) return 0;
+        return (float) weapon.getAttributeModifiers()
+                .modifiers()
+                .stream()
+                .filter(entry -> entry.attribute().equals(Attributes.ATTACK_DAMAGE))
+                .mapToDouble(entry -> entry.modifier().amount())
+                .sum();
     }
 }

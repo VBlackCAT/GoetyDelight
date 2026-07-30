@@ -19,14 +19,10 @@ import net.v_black_cat.goetydelight.init.ModTiers;
 import net.v_black_cat.goetydelight.init.ModBlocks;
 import net.v_black_cat.goetydelight.init.ModEntities;
 import net.v_black_cat.goetydelight.GoetyDelight;
-import net.v_black_cat.goetydelight.item.CustomDollItem;
+import net.v_black_cat.goetydelight.item.*;
 import net.v_black_cat.goetydelight.item.CustomDrinkItem;
 import net.v_black_cat.goetydelight.item.food.*;
-import net.v_black_cat.goetydelight.item.FalseProverbsItem;
-import net.v_black_cat.goetydelight.item.DarkKnifeItem;
-import net.v_black_cat.goetydelight.item.CursedIngotKnifeItem;
-import net.v_black_cat.goetydelight.item.DarkBrushItem;
-import net.v_black_cat.goetydelight.item.ViziersCookbookItem;
+import net.v_black_cat.goetydelight.item.food.MetamorphicScentGrassItem;
 import vectorwing.farmersdelight.common.registry.ModEffects;
 import vectorwing.farmersdelight.common.item.KnifeItem;
 
@@ -569,7 +565,6 @@ public class ModItems {
                 () -> new GlassBottleFoodItem(basicItem().stacksTo(16).rarity(Rarity.COMMON)
                         .food(ModFoods.RUBY_SYRUP)));
 
-        CUSTOM_DOLL = ITEMS.register("custom_doll", () -> new CustomDollItem(ModBlocks.CUSTOM_DOLL.get()));
         RING_PACKED_VOID_GEL_JELLY = ITEMS.register("ring_packed_void_gel_jelly",
                 () -> new FoiledBowlFoodItem(basicItem().craftRemainder(Items.BOWL).stacksTo(64)
                         .food(ModFoods.RING_PACKED_VOID_GEL_JELLY)));
@@ -612,8 +607,8 @@ public class ModItems {
                 new Item.Properties()
                 ));
         // ==================== 杂项物品 ====================
-        DOLL_ITEM = ITEMS.register("doll_item",
-                () -> new Item(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON)));
+        DOLL_ITEM = ITEMS.register("doll_item", DollEntityItem::new);
+        CUSTOM_DOLL = ITEMS.register("custom_doll", () -> new CustomDollItem(ModBlocks.CUSTOM_DOLL.get()));
     }
 
     // ==================== 辅助方法 ====================
