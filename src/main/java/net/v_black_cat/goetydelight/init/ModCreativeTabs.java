@@ -53,7 +53,7 @@ public class ModCreativeTabs {
                         output.accept(ModItems.SUNSHINE_SUGAR_BUN.get());
                         output.accept(ModItems.CANDY_FISH.get());
                         output.accept(ModItems.FROG_LEG_SANDWICH.get());
-                        output.accept(ModItems.SPIDER_EGG_BUBBLE_TEA_2.get());
+//                        output.accept(ModItems.SPIDER_EGG_BUBBLE_TEA_2.get());
                         output.accept(ModItems.CRYING_SHARK_SUGAR_PACK.get());
                         output.accept(ModItems.BEAR_PAW.get());
                         output.accept(ModItems.ECTOPLASMIC_MELON.get());
@@ -95,8 +95,10 @@ public class ModCreativeTabs {
                         output.accept(ModItems.STUFFED_TALL_SKULL_RICE.get());
                         output.accept(ModItems.NIGHT_HEART_PEA_SOUP.get());
                         output.accept(ModItems.BOAT_STUFFED_ROASTED_WARDEN_HEAD.get());
-                        output.accept(ModItems.BOAT_STUFFED_ROASTED_WARDEN_MEET.get());
-                        output.accept(ModItems.BOAT_STUFFED_ROASTED_WARDEN_FLANK.get());
+                        output.accept(ModItems.BOAT_STUFFED_ROASTED_WARDEN_HAND.get());
+                        output.accept(ModItems.BOAT_STUFFED_ROASTED_WARDEN_BODY.get());
+                        output.accept(ModItems.BOAT_STUFFED_ROASTED_WARDEN_LEG.get());
+                        output.accept(ModItems.BOAT_STUFFED_ROASTED_WARDEN_SOUP.get());
                         output.accept(ModItems.FORBIDDDEN_SOUP_BUN.get());
                         output.accept(ModItems.CUP.get());
                         output.accept(ModItems.OMINOUS_ICE_CREAM.get());

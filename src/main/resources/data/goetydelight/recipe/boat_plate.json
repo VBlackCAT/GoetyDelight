@@ -1,0 +1,19 @@
+{
+  "type": "crafting_shaped",
+  "pattern": [
+    " A ",
+    "ABA",
+    " A "
+  ],
+  "key": {
+    "A": {
+      "tag": "minecraft:logs"
+    },
+    "B": {
+      "tag": "minecraft:boats"
+    }
+  },
+  "result": {
+    "item": "goetydelight:boat_plate"
+  }
+}

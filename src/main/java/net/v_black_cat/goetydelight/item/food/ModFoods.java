@@ -58,8 +58,10 @@ public class ModFoods {
     public static final FoodProperties RING_PACKED_VOID_GEL_JELLY;
     public static final FoodProperties STUFFED_TALL_SKULL_RICE;
     public static final FoodProperties BOAT_STUFFED_ROASTED_WARDEN_HEAD;
-    public static final FoodProperties BOAT_STUFFED_ROASTED_WARDEN_MEET;
-    public static final FoodProperties BOAT_STUFFED_ROASTED_WARDEN_FLANK;
+    public static final FoodProperties BOAT_STUFFED_ROASTED_WARDEN_HAND;
+    public static final FoodProperties BOAT_STUFFED_ROASTED_WARDEN_BODY;
+    public static final FoodProperties BOAT_STUFFED_ROASTED_WARDEN_LEG;
+    public static final FoodProperties BOAT_STUFFED_ROASTED_WARDEN_SOUP;
     public static final FoodProperties ANCIENT_ENCHANTED_GOLDEN_APPLE;
     public static final FoodProperties ROAST_LAOWANG;
     public static final FoodProperties POLARICE;
@@ -374,7 +376,7 @@ public class ModFoods {
                 .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(5), 1), 1.0F)
                 .build();
 
-        BOAT_STUFFED_ROASTED_WARDEN_MEET = new FoodProperties.Builder()
+        BOAT_STUFFED_ROASTED_WARDEN_HAND = new FoodProperties.Builder()
                 .nutrition(30).saturationModifier(0.8333F).alwaysEdible()
                 .effect(() -> new MobEffectInstance(GoetyEffects.SOUL_ARMOR, minToTick(5), 3), 1.0F)
                 .effect(() -> new MobEffectInstance(ModEffects.HUNTING_DENIAL, minToTick(10), 0), 1.0F)
@@ -382,7 +384,23 @@ public class ModFoods {
                 .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(5), 1), 1.0F)
                 .build();
 
-        BOAT_STUFFED_ROASTED_WARDEN_FLANK = new FoodProperties.Builder()
+        BOAT_STUFFED_ROASTED_WARDEN_BODY = new FoodProperties.Builder()
+                .nutrition(40).saturationModifier(0.75F).alwaysEdible()
+                .effect(() -> new MobEffectInstance(GoetyEffects.SOUL_ARMOR, minToTick(5), 3), 1.0F)
+                .effect(() -> new MobEffectInstance(ModEffects.HUNTING_DENIAL, minToTick(15), 0), 1.0F)
+                .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(7.5f), 1), 1.0F)
+                .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(7.5f), 1), 1.0F)
+                .build();
+
+        BOAT_STUFFED_ROASTED_WARDEN_LEG = new FoodProperties.Builder()
+                .nutrition(30).saturationModifier(0.8333F).alwaysEdible()
+                .effect(() -> new MobEffectInstance(GoetyEffects.SOUL_ARMOR, minToTick(5), 3), 1.0F)
+                .effect(() -> new MobEffectInstance(ModEffects.HUNTING_DENIAL, minToTick(10), 0), 1.0F)
+                .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(5), 1), 1.0F)
+                .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(5), 1), 1.0F)
+                .build();
+
+        BOAT_STUFFED_ROASTED_WARDEN_SOUP = new FoodProperties.Builder()
                 .nutrition(40).saturationModifier(0.75F).alwaysEdible()
                 .effect(() -> new MobEffectInstance(GoetyEffects.SOUL_ARMOR, minToTick(5), 3), 1.0F)
                 .effect(() -> new MobEffectInstance(ModEffects.HUNTING_DENIAL, minToTick(15), 0), 1.0F)

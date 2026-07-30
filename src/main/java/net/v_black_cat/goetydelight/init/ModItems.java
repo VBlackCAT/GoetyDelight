@@ -1,8 +1,5 @@
 package net.v_black_cat.goetydelight.init;
 
-import com.Polarice3.Goety.common.effects.GoetyEffects;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemNameBlockItem;
@@ -10,23 +7,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SpawnEggItem;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.bus.api.IEventBus;
-import net.v_black_cat.goetydelight.init.ModTiers;
-import net.v_black_cat.goetydelight.init.ModBlocks;
-import net.v_black_cat.goetydelight.init.ModEntities;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.item.*;
 import net.v_black_cat.goetydelight.item.CustomDrinkItem;
 import net.v_black_cat.goetydelight.item.food.*;
 import net.v_black_cat.goetydelight.item.food.MetamorphicScentGrassItem;
-import vectorwing.farmersdelight.common.registry.ModEffects;
-import vectorwing.farmersdelight.common.item.KnifeItem;
 
-import static net.v_black_cat.goetydelight.util.TickConverterUtil.minToTick;
 import static vectorwing.farmersdelight.common.registry.ModItems.basicItem;
 
 public class ModItems {
@@ -37,13 +27,6 @@ public class ModItems {
     public static final DeferredItem<Item> EXAMPLE_ITEM = ITEMS.registerSimpleItem(
             "example_item",
             new Item.Properties()
-    );
-
-    // 示例食物物品
-    public static final DeferredItem<Item> EXAMPLE_FOOD = ITEMS.registerSimpleItem(
-            "example_food",
-            new Item.Properties().food(new net.minecraft.world.food.FoodProperties.Builder()
-                            .nutrition(4).saturationModifier(0.5f).build())
     );
 
     //    // ==================== 物品声明区域 ====================
@@ -131,8 +114,10 @@ public class ModItems {
     public static final DeferredItem<Item> STUFFED_TALL_SKULL_RICE;
     public static final DeferredItem<Item> OMINOUS_RAMUNE;
     public static final DeferredItem<Item> BOAT_STUFFED_ROASTED_WARDEN_HEAD;
-    public static final DeferredItem<Item> BOAT_STUFFED_ROASTED_WARDEN_MEET;
-    public static final DeferredItem<Item> BOAT_STUFFED_ROASTED_WARDEN_FLANK;
+    public static final DeferredItem<Item> BOAT_STUFFED_ROASTED_WARDEN_HAND;
+    public static final DeferredItem<Item> BOAT_STUFFED_ROASTED_WARDEN_BODY;
+    public static final DeferredItem<Item> BOAT_STUFFED_ROASTED_WARDEN_LEG;
+    public static final DeferredItem<Item> BOAT_STUFFED_ROASTED_WARDEN_SOUP;
     public static final DeferredItem<Item> ANCIENT_ENCHANTED_GOLDEN_APPLE;
     public static final DeferredItem<Item> NOT_ANYTHING;
     public static final DeferredItem<Item> ROAST_LAOWANG;
@@ -166,11 +151,15 @@ public class ModItems {
 //
 //    //    public static final DeferredItem<Item> MENU;
     public static final DeferredItem<Item> DOLL_ITEM;
+    public static final DeferredItem<Item> BOAT_PLATE;
 
     //    // ==================== 静态初始化块：物品定义区域 ====================
     static {
         NOT_ANYTHING = ITEMS.register("not_anything",
                 () -> new Item(basicItem().stacksTo(1)));
+
+        BOAT_PLATE = ITEMS.register("boat_plate",
+                () -> new Item(basicItem().stacksTo(64)));
 //
 //        CUSTOM_DOLL = ITEMS.register("custom_doll", () -> new
 // CustomDollItem(ModBlocks.CUSTOM_DOLL.get()));
@@ -494,16 +483,24 @@ public class ModItems {
                         .food(ModFoods.OMINOUS_RAMUNE)));
 //
         BOAT_STUFFED_ROASTED_WARDEN_HEAD = ITEMS.register("boat_stuffed_roasted_warden_head",
-                () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).craftRemainder(Items.DARK_OAK_BOAT)
+                () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).craftRemainder(ModItems.BOAT_PLATE.get())
                         .food(ModFoods.BOAT_STUFFED_ROASTED_WARDEN_HEAD)));
 
-        BOAT_STUFFED_ROASTED_WARDEN_MEET = ITEMS.register("boat_stuffed_roasted_warden_meet",
-                () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).craftRemainder(Items.DARK_OAK_BOAT)
-                        .food(ModFoods.BOAT_STUFFED_ROASTED_WARDEN_MEET)));
+        BOAT_STUFFED_ROASTED_WARDEN_HAND = ITEMS.register("boat_stuffed_roasted_warden_hand",
+                () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).craftRemainder(ModItems.BOAT_PLATE.get())
+                        .food(ModFoods.BOAT_STUFFED_ROASTED_WARDEN_HAND)));
 
-        BOAT_STUFFED_ROASTED_WARDEN_FLANK = ITEMS.register("boat_stuffed_roasted_warden_flank",
-                () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).craftRemainder(Items.DARK_OAK_BOAT)
-                        .food(ModFoods.BOAT_STUFFED_ROASTED_WARDEN_FLANK)));
+        BOAT_STUFFED_ROASTED_WARDEN_BODY = ITEMS.register("boat_stuffed_roasted_warden_body",
+                () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).craftRemainder(ModItems.BOAT_PLATE.get())
+                        .food(ModFoods.BOAT_STUFFED_ROASTED_WARDEN_BODY)));
+
+        BOAT_STUFFED_ROASTED_WARDEN_LEG = ITEMS.register("boat_stuffed_roasted_warden_leg",
+                () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).craftRemainder(ModItems.BOAT_PLATE.get())
+                        .food(ModFoods.BOAT_STUFFED_ROASTED_WARDEN_LEG)));
+
+        BOAT_STUFFED_ROASTED_WARDEN_SOUP = ITEMS.register("boat_stuffed_roasted_warden_soup",
+                () -> new BoatStuffedRoastedWardenItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).craftRemainder(ModItems.BOAT_PLATE.get())
+                        .food(ModFoods.BOAT_STUFFED_ROASTED_WARDEN_SOUP)));
 //
         ANCIENT_ENCHANTED_GOLDEN_APPLE = ITEMS.register("ancient_enchanted_golden_apple",
                 () -> new AncientEnchantedGoldenAppleItem(basicItem().stacksTo(64).rarity(Rarity.EPIC)

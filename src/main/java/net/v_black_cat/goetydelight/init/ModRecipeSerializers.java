@@ -7,6 +7,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.events.recipe.RecraftBoatPlate;
 import net.v_black_cat.goetydelight.init.doll.DollEntityCraftingRecipe;
 import net.v_black_cat.goetydelight.events.recipe.TenThousandPoisonFeastRecipe;
 
@@ -21,6 +22,10 @@ public class ModRecipeSerializers {
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<TenThousandPoisonFeastRecipe>> TEN_THOUSAND_POISON_FEAST =
             RECIPE_SERIALIZERS.register("ten_thousand_poison_feast",
                     () -> new SimpleCraftingRecipeSerializer<>(TenThousandPoisonFeastRecipe::new));
+
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<RecraftBoatPlate>> RECRAFT_BOAT_PLATE =
+            RECIPE_SERIALIZERS.register("recraft_boat_plate",
+                    () -> new SimpleCraftingRecipeSerializer<>(RecraftBoatPlate::new));
 
     public static void register(IEventBus modEventBus) {
         RECIPE_SERIALIZERS.register(modEventBus);

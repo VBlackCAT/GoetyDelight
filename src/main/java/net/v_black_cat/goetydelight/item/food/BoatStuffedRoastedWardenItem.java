@@ -2,19 +2,16 @@ package net.v_black_cat.goetydelight.item.food;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.Mth;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -24,8 +21,6 @@ import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.v_black_cat.goetydelight.init.ModItems;
 import net.v_black_cat.goetydelight.util.ParticlesUtil;
-
-import java.util.function.Consumer;
 
 public class BoatStuffedRoastedWardenItem extends Item {
 
@@ -51,20 +46,29 @@ public class BoatStuffedRoastedWardenItem extends Item {
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
-        if (entity instanceof Player player) {
-            ParticlesUtil.spawnItemParticles(stack, 20, entity);
-            player.playSound(getEatingSound(), 0.5F, 1.0F);
+    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity livingEntity) {
+        if (livingEntity instanceof Player player) {
+            FoodProperties foodProperties = stack.getFoodProperties(livingEntity);
+            if (foodProperties != null) {
+                player.getFoodData().eat(foodProperties.nutrition(), foodProperties.saturation());
+                foodProperties.effects().forEach(pair -> {
+                    if (player.getRandom().nextFloat() < pair.probability()) {
+                        player.addEffect(new MobEffectInstance(pair.effect()));
+                    }
+                });
+            }
+            ParticlesUtil.spawnItemParticles(stack, 20, livingEntity);
+            player.playSound(this.getEatingSound(), 0.5F, 1.0F);
+            player.awardStat(Stats.ITEM_USED.get(this));
         }
 
-        ItemStack resultStack = stack.copy();
-        int servings = getServings(resultStack);
+        int servings = getServings(stack);
         if (servings > 1) {
-            super.finishUsingItem(stack, level, entity);
-            setServings(resultStack, servings - 1);
-            return resultStack;
+            // 直接设置 DAMAGE 组件
+            stack.set(DataComponents.DAMAGE, 4 - (servings - 1));
+            return stack;
         } else {
-            return new ItemStack(Items.DARK_OAK_BOAT);
+            return new ItemStack(ModItems.BOAT_PLATE.get());
         }
     }
 
@@ -104,7 +108,6 @@ public class BoatStuffedRoastedWardenItem extends Item {
         }
     }
 
-    // ✅ 使用耐久度存储份数：耐久0=4份，耐久4=0份
     public static int getServings(ItemStack stack) {
         int damage = stack.getDamageValue();
         if (damage < 0) damage = 0;
@@ -173,7 +176,7 @@ public class BoatStuffedRoastedWardenItem extends Item {
     public static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
         event.registerItem(
                 new BoatStuffedRoastedWardenItem.ClientExtensions(),
-                ModItems.BOAT_STUFFED_ROASTED_WARDEN_FLANK.get()
+                ModItems.BOAT_STUFFED_ROASTED_WARDEN_BODY.get()
         );
         event.registerItem(
                 new BoatStuffedRoastedWardenItem.ClientExtensions(),
@@ -181,7 +184,15 @@ public class BoatStuffedRoastedWardenItem extends Item {
         );
         event.registerItem(
                 new BoatStuffedRoastedWardenItem.ClientExtensions(),
-                ModItems.BOAT_STUFFED_ROASTED_WARDEN_MEET.get()
+                ModItems.BOAT_STUFFED_ROASTED_WARDEN_HAND.get()
+        );
+        event.registerItem(
+                new BoatStuffedRoastedWardenItem.ClientExtensions(),
+                ModItems.BOAT_STUFFED_ROASTED_WARDEN_LEG.get()
+        );
+        event.registerItem(
+                new BoatStuffedRoastedWardenItem.ClientExtensions(),
+                ModItems.BOAT_STUFFED_ROASTED_WARDEN_SOUP.get()
         );
     }
 }

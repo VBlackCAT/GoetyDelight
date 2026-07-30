@@ -190,13 +190,16 @@ public class ModBlocks {
         () -> new BoatStuffedRoastedWardenBlock(
         BlockBehaviour.Properties.ofFullCopy(Blocks.CAKE),
         Arrays.asList(
+                ModItems.ROAST_SPIDER_EGG,
                 ModItems.BOAT_STUFFED_ROASTED_WARDEN_HEAD,
-                ModItems.BOAT_STUFFED_ROASTED_WARDEN_MEET,
-                ModItems.BOAT_STUFFED_ROASTED_WARDEN_MEET,
-                ModItems.BOAT_STUFFED_ROASTED_WARDEN_MEET,
-                ModItems.BOAT_STUFFED_ROASTED_WARDEN_MEET,
-                ModItems.BOAT_STUFFED_ROASTED_WARDEN_FLANK,
-                ModItems.BOAT_STUFFED_ROASTED_WARDEN_FLANK
+                ModItems.BOAT_STUFFED_ROASTED_WARDEN_HAND,
+                ModItems.BOAT_STUFFED_ROASTED_WARDEN_LEG,
+                ModItems.BOAT_STUFFED_ROASTED_WARDEN_HAND,
+                ModItems.BOAT_STUFFED_ROASTED_WARDEN_LEG,
+                ModItems.BOAT_STUFFED_ROASTED_WARDEN_SOUP,
+                ModItems.BOAT_STUFFED_ROASTED_WARDEN_SOUP,
+                ModItems.BOAT_STUFFED_ROASTED_WARDEN_SOUP,
+                ModItems.BOAT_STUFFED_ROASTED_WARDEN_BODY
         ),
         true
         ), 1
