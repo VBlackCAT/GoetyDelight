@@ -1,13 +1,12 @@
 {
     "type": "goety:ritual",
-    "ritual_type": "goety:enchant",
+    "ritual_type": "goety:craft",
     "activation_item": {
         "item": "minecraft:book"
     },
     "craftType": "magic",
     "soulCost": 10,
     "duration": 10,
-  "enchantment":  "goetydelight:soul_affix",
     "ingredients": [
         {
             "item": "minecraft:sculk"
@@ -29,6 +28,11 @@
         }
     ],
     "result": {
-        "id": "minecraft:enchanted_book"
+        "id": "minecraft:enchanted_book",
+        "components": {
+            "minecraft:stored_enchantments": {
+                "goetydelight:soul_affix": 5
+            }
+        }
     }
 }

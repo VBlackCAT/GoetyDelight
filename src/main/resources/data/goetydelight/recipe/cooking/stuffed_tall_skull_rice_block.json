@@ -21,7 +21,7 @@
     }
   ],
   "container": {
-    "item": "goety:tall_skull"
+    "id": "goety:tall_skull"
   },
   "result": {
     "id": "goetydelight:stuffed_tall_skull_rice_block"

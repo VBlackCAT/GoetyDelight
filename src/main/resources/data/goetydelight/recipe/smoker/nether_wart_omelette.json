@@ -1,10 +1,12 @@
 {
-  "type": "minecraft:smelting",
-  "category": "food",
-  "cookingtime": 150,
-  "experience": 0.35,
-  "ingredient": {
-    "item": "goety:wartful_egg"
-  },
-  "id": "goetydelight:nether_wart_omelette"
+    "type": "minecraft:smelting",
+    "category": "food",
+    "cookingtime": 150,
+    "experience": 0.35,
+    "ingredient": {
+        "item": "goety:wartful_egg"
+    },
+    "result": {
+        "id": "goetydelight:nether_wart_omelette"
+    }
 }

@@ -9,7 +9,7 @@
   "duration": 15,
   "ingredients": [
     {
-      "tag": "forge:dough"
+      "tag": "c:dough"
     },
     {
       "tag": "c:foods/milk"
@@ -21,10 +21,10 @@
       "item": "goety:ectoplasm"
     },
     {
-      "tag": "forge:crops/cabbage"
+      "tag": "c:crops/cabbage"
     },
     {
-      "tag": "forge:crops/cabbage"
+      "tag": "c:crops/cabbage"
     }
   ],
   "result": {

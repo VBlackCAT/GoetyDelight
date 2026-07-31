@@ -1,30 +1,38 @@
 {
-  "type": "farmersdelight:cooking",
-  "cookingtime": 800,
-  "experience": 5.0,
-  "ingredients": [
-    {
-      "type": "forge:nbt",
-      "item": "goety:unholy_blood",
-      "nbt": "{\"Pure\": 1b}"
-    },
-    {
-      "type": "forge:nbt",
-      "item": "goety:unholy_blood",
-      "nbt": "{\"Pure\": 1b}"
-    },
-    {
-      "item": "goetydelight:ruby_syrup"
-    },
-    {
-      "item": "goety:brew"
-    },
-    {
-      "item": "goety:mystic_core"
+    "type": "farmersdelight:cooking",
+    "cookingtime": 800,
+    "experience": 5.0,
+    "ingredients": [
+        {
+            "type": "neoforge:components",
+            "items": "goety:unholy_blood",
+            "components": {
+                "minecraft:custom_data": {
+                    "Pure": true
+                }
+            }
+        },
+        {
+            "type": "neoforge:components",
+            "items": "goety:unholy_blood",
+            "components": {
+                "minecraft:custom_data": {
+                    "Pure": true
+                }
+            }
+        },
+        {
+            "item": "goetydelight:ruby_syrup"
+        },
+        {
+            "item": "goety:brew"
+        },
+        {
+            "item": "goety:mystic_core"
+        }
+    ],
+    "recipe_book_tab": "misc",
+    "result": {
+        "id": "goetydelight:pure_drink"
     }
-  ],
-  "recipe_book_tab": "misc",
-  "result": {
-    "id": "goetydelight:pure_drink"
-  }
 }

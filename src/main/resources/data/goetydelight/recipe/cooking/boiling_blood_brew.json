@@ -12,7 +12,7 @@
     }
   ],
   "container": {
-    "item": "minecraft:glass_bottle"
+    "id": "minecraft:glass_bottle"
   },
   "result": {
     "id": "goetydelight:boiling_blood_brew"

@@ -10,25 +10,25 @@
     "duration": 7,
     "ingredients": [
         {
-         "tag": "forge:eggs"
+            "tag": "c:eggs"
         },
         {
-          "tag": "forge:eggs"
+            "tag": "c:eggs"
         },
         {
-          "tag": "forge:eggs"
+            "tag": "c:eggs"
         },
         {
-            "tag": "forge:crops/tomato"
+            "tag": "c:crops/tomato"
         },
         {
-            "tag": "forge:crops/tomato"
+            "tag": "c:crops/tomato"
         },
         {
-            "tag": "forge:crops/tomato"
+            "tag": "c:crops/tomato"
         },
         {
-            "tag": "forge:crops/onion"
+            "tag": "c:crops/onion"
         },
         {
             "item": "minecraft:blaze_powder"

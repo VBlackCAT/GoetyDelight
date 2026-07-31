@@ -25,13 +25,13 @@
       "item": "farmersdelight:tomato"
     },
     {
-      "tag": "forge:crops/cabbage"
+      "tag": "c:crops/cabbage"
     },
     {
       "item": "minecraft:sugar"
     }
   ],
   "result": {
-    "id": "goetydelight:snap_unholy_tripe"
+    "id": "goetydelight:snap_unholy_tripe_block"
   }
 }

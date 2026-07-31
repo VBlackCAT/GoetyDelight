@@ -17,14 +17,14 @@
       "item": "goety:ice_cube"
     },
     {
-      "tag": "forge:berries"
+      "tag": "minecraft:fox_food"
     }
   ],
   "result": {
     "id": "goetydelight:sundae_of_the_philosophers_potion"
   },
   "container": {
-    "item": "minecraft:bowl"
+    "id": "minecraft:bowl"
   },
   "experience": 1.5,
   "cookingtime": 800

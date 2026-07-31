@@ -13,7 +13,7 @@
       "item": "minecraft:quartz"
     },
     {
-      "tag": "forge:milk"
+      "tag": "c:drinks/milk"
     },
     {
       "item": "goety:mystic_core"

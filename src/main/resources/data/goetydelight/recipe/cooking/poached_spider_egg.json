@@ -1,27 +1,29 @@
 {
-  "type": "farmersdelight:cooking",
-  "cookingtime": 200,
-  "experience": 1.0,
-  "ingredients": [
-    {
-      "item": "goety:spider_egg"
-    },
-    {
-      "type": "forge:nbt",
-      "item": "minecraft:potion",
-      "nbt": {
-        "Potion": "minecraft:water"
-      }
-    },
-    {
-      "item": "minecraft:red_mushroom"
-    },
-    {
-      "item": "minecraft:brown_mushroom"
+    "type": "farmersdelight:cooking",
+    "cookingtime": 200,
+    "experience": 1.0,
+    "ingredients": [
+        {
+            "item": "goety:spider_egg"
+        },
+        {
+            "type": "neoforge:components",
+            "items": "minecraft:potion",
+            "components": {
+                "minecraft:potion_contents": {
+                    "potion": "minecraft:water"
+                }
+            }
+        },
+        {
+            "item": "minecraft:red_mushroom"
+        },
+        {
+            "item": "minecraft:brown_mushroom"
+        }
+    ],
+    "recipe_book_tab": "meals",
+    "result": {
+        "id": "goetydelight:poached_spider_egg"
     }
-  ],
-  "recipe_book_tab": "meals",
-  "result": {
-    "id": "goetydelight:poached_spider_egg"
-  }
 }

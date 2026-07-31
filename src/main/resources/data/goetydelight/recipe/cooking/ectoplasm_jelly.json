@@ -1,23 +1,23 @@
 {
-  "type": "farmersdelight:cooking",
-  "cookingtime": 160,
-  "experience": 0.8,
-  "ingredients": [
-    {
-      "item": "goety:ectoplasm"
-    },
-    {
-      "item": "goety:ectoplasm"
-    },
-    {
-      "item": "minecraft:slime_ball"
-    },
-    {
-      "item": "minecraft:slime_ball"
+    "type": "farmersdelight:cooking",
+    "cookingtime": 160,
+    "experience": 0.8,
+    "ingredients": [
+        {
+            "item": "goety:ectoplasm"
+        },
+        {
+            "item": "goety:ectoplasm"
+        },
+        {
+            "item": "minecraft:slime_ball"
+        },
+        {
+            "item": "minecraft:slime_ball"
+        }
+    ],
+    "recipe_book_tab": "misc",
+    "result": {
+        "id": "goetydelight:ectoplasm_jelly"
     }
-  ],
-  "recipe_book_tab": "misc",
-  "result": {
-    "id": "goetydelight:ectoplasm_jelly"
-  }
 }

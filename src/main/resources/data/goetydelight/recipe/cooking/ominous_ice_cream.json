@@ -24,6 +24,6 @@
     "id": "goetydelight:ominous_ice_cream"
   },
   "container": {
-    "item": "minecraft:bowl"
+    "id": "minecraft:bowl"
   }
 }

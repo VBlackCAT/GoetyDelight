@@ -2,7 +2,7 @@
     "type": "goety:ritual",
     "ritual_type": "goety:craft",
     "activation_item": {
-      "tag": "forge:dough"
+      "tag": "c:foods/dough"
     },
     "craftType": "culinary",
     "research": "viziers_cookbook",
@@ -25,13 +25,13 @@
             "item": "farmersdelight:cabbage_leaf"
         },
         {
-            "tag": "forge:crops/tomato"
+            "tag": "c:crops/tomato"
         },
         {
             "item": "farmersdelight:tomato_sauce"
         },
         {
-          "tag": "forge:crops/onion"
+          "tag": "c:crops/onion"
         }
     ],
     "result": {

@@ -21,7 +21,7 @@
     }
   ],
   "container": {
-    "item": "minecraft:bowl"
+    "id": "minecraft:bowl"
   },
   "result": {
     "id": "goetydelight:void_gel_jelly_block",

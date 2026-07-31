@@ -17,7 +17,7 @@
       "tag": "c:foods/milk"
     },
     {
-      "item": "minecraft:egg"
+      "tag": "c:eggs"
     }
 
   ],
@@ -25,7 +25,7 @@
     "id": "goetydelight:possible_holy_representative"
   },
   "container": {
-    "item": "minecraft:glass_bottle"
+    "id": "minecraft:glass_bottle"
   },
   "experience": 1.5,
   "cookingtime": 200

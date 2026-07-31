@@ -18,6 +18,6 @@
     "id": "goetydelight:frenzied_fungus_pop_rocks"
   },
   "container": {
-    "item": "minecraft:glass_bottle"
+    "id": "minecraft:glass_bottle"
   }
 }

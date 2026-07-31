@@ -16,7 +16,7 @@
       "item": "minecraft:crying_obsidian"
     },
     {
-      "tag": "forge:crops/onion"
+      "tag": "c:crops/onion"
     }
   ],
   "recipe_book_tab": "meals",
@@ -24,6 +24,6 @@
     "id": "goetydelight:obsidian_thick_soup"
   },
   "container": {
-    "item": "minecraft:bowl"
+    "id": "minecraft:bowl"
   }
 }

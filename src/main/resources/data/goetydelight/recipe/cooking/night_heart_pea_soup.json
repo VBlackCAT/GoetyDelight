@@ -7,7 +7,7 @@
       "item": "goety:heart_of_the_night"
     },
     {
-      "tag": "forge:crops/tomato"
+      "tag": "c:crops/tomato"
     },
     {
       "tag": "goety:meat"
@@ -16,7 +16,7 @@
       "item": "minecraft:water_bucket"
     },
     {
-      "tag": "forge:crops/onion"
+      "tag": "c:crops/onion"
     }
   ],
   "recipe_book_tab": "meals",
@@ -24,6 +24,6 @@
     "id": "goetydelight:night_heart_pea_soup_block"
   },
   "container": {
-    "item": "goetydelight:cursed_ingot_pot"
+    "id": "goetydelight:cursed_ingot_pot"
   }
 }

@@ -1,20 +1,20 @@
 {
-  "type": "farmersdelight:cooking",
-  "cookingtime": 100,
-  "experience": 1.2,
-  "ingredients": [
-    {
-      "item": "goetydelight:corpse_maggot"
-    },
-    {
-      "item": "minecraft:honey_bottle"
-    },
-    {
-      "tag":  "forge:crops/cabbage"
+    "type": "farmersdelight:cooking",
+    "cookingtime": 100,
+    "experience": 1.2,
+    "ingredients": [
+        {
+            "item": "goetydelight:corpse_maggot"
+        },
+        {
+            "item": "minecraft:honey_bottle"
+        },
+        {
+            "tag": "c:crops/cabbage"
+        }
+    ],
+    "recipe_book_tab": "misc",
+    "result": {
+        "id": "goetydelight:roasted_corpse_maggots"
     }
-  ],
-  "recipe_book_tab": "misc",
-  "result": {
-    "id": "goetydelight:roasted_corpse_maggots"
-  }
 }

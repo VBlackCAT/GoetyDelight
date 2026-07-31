@@ -2,7 +2,7 @@
     "type": "goety:ritual",
     "ritual_type": "goety:craft",
     "activation_item": {
-        "item": "goety:soul_convergence_room"
+        "item": "goetydelight:soul_convergence_room"
     },
     "craftType": "culinary",
     "soulCost": 750,
