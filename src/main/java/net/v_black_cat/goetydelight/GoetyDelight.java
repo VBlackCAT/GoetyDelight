@@ -53,13 +53,16 @@ public class GoetyDelight {
         ModFeatures.register(modEventBus);
         ModConfiguredFeatures.register(modEventBus);
         ModPlacedFeatures.register(modEventBus);
-        ModStructures.register(modEventBus);
         ModLootModifiers.register(modEventBus);
         ModAttachments.register(modEventBus);
         ModBuffTypes.register(modEventBus);
         ModRituals.register(modEventBus);
         GDVisualEffects.register(modEventBus);
         ModAdvancementsTrigger.TRIGGERS.register(modEventBus);
+
+        ModStructures.register(modEventBus);
+        ModStructurePieceTypes.register(modEventBus);
+        ModStructureProcessorTypes.register(modEventBus);
     }
 
     /**

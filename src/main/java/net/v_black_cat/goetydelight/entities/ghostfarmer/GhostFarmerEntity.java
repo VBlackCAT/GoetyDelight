@@ -8,6 +8,8 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -67,6 +69,9 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
     private Player tradingPlayer;
     private long lastRestockTime = -1;
     private boolean hasRestockedToday = false;
+
+    // 添加一个集合来跟踪可疑玩家
+    private final Set<UUID> suspiciousPlayers = new HashSet<>();
 
     public final AnimationState attackAnimationState = new AnimationState();
     private int attackTick = 0;
@@ -433,6 +438,20 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
         return structureStart != null && structureStart.isValid();
     }
 
+    /**
+     * 检查玩家是否在目标结构内
+     */
+    private boolean isPlayerInTargetStructure(Player player) {
+        BlockPos playerPos = player.blockPosition();
+        ServerLevel serverLevel = (ServerLevel) this.level();
+        Structure structure = serverLevel.registryAccess().registryOrThrow(Registries.STRUCTURE)
+                .get(ResourceKey.create(Registries.STRUCTURE,
+                        ResourceLocation.fromNamespaceAndPath("goetydelight", "ectoplasmic_melon_field")));
+        if (structure == null) return false;
+        StructureStart structureStart = serverLevel.structureManager().getStructureWithPieceAt(playerPos, structure);
+        return structureStart != null && structureStart.isValid();
+    }
+
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(1, new FloatSwimGoal(this));
@@ -507,7 +526,8 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
             AABB searchArea = new AABB(blockPosition()).inflate(16);
             List<Player> players = level().getEntitiesOfClass(Player.class, searchArea);
             for (Player player : players) {
-                if (hasStolenMelon(player) || isSuspicious(player)) {
+                // 检查玩家是否在结构内并且是可疑玩家
+                if (isPlayerInTargetStructure(player) && isSuspicious(player)) {
                     return player;
                 }
             }
@@ -537,6 +557,9 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
         dealMagicDamageToPlayer(player);
         playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
         addParticlesAroundSelf(ParticleTypes.REVERSE_PORTAL);
+
+        // 攻击后清除可疑状态
+        suspiciousPlayers.remove(player.getUUID());
     }
 
     @Override
@@ -575,32 +598,63 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
         return Component.translatable("entity.goetydelight.ghost_farmer");
     }
 
+    /**
+     * 当幽冥瓜被破坏时调用
+     */
     public void onEctoplasmicMelonBreak(Player player) {
-        markPlayerAsSuspicious(player);
-        if (distanceToSqr(player) < 16.0D) {
-            startAttack(player);
+        // 检查玩家是否在结构内
+        if (isPlayerInTargetStructure(player)) {
+            markPlayerAsSuspicious(player);
+            // 如果玩家在攻击范围内，立即攻击
+            if (distanceToSqr(player) < 16.0D) {
+                startAttack(player);
+            }
         }
     }
 
+    /**
+     * 标记玩家为可疑状态
+     */
     private void markPlayerAsSuspicious(Player player) {
+        suspiciousPlayers.add(player.getUUID());
     }
 
-    private boolean hasStolenMelon(Player player) {
-        return false;
-    }
-
+    /**
+     * 检查玩家是否为可疑状态
+     */
     private boolean isSuspicious(Player player) {
-        return false;
+        return suspiciousPlayers.contains(player.getUUID());
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
+
+        // 保存可疑玩家列表
+        ListTag suspiciousList = new ListTag();
+        for (UUID uuid : suspiciousPlayers) {
+            CompoundTag uuidTag = new CompoundTag();
+            uuidTag.putUUID("UUID", uuid);
+            suspiciousList.add(uuidTag);
+        }
+        compound.put("SuspiciousPlayers", suspiciousList);
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
+
+        // 读取可疑玩家列表
+        suspiciousPlayers.clear();
+        if (compound.contains("SuspiciousPlayers", Tag.TAG_LIST)) {
+            ListTag suspiciousList = compound.getList("SuspiciousPlayers", Tag.TAG_COMPOUND);
+            for (int i = 0; i < suspiciousList.size(); i++) {
+                CompoundTag uuidTag = suspiciousList.getCompound(i);
+                if (uuidTag.hasUUID("UUID")) {
+                    suspiciousPlayers.add(uuidTag.getUUID("UUID"));
+                }
+            }
+        }
     }
 
     private void teleportToPlayerFront(Player player) {
