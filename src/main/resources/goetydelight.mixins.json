@@ -10,7 +10,8 @@
     "LivingEntityAccessor",
     "MobMixin",
     "SummonSpellMixin",
-    "WightSpawnerMixin"
+    "WightSpawnerMixin",
+    "BlockStateModelLoaderMixin"
   ],
   "client": [
     "BookContentResourceListenerLoaderMixin",

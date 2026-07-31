@@ -1,0 +1,38 @@
+{
+  "parent": "goetydelight:root",
+  "criteria": {
+    "creamy_berry_fish_paste_dumpling_with_chocolate_sauce": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "goetydelight:creamy_berry_fish_paste_dumpling_with_chocolate_sauce"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "goetydelight.advancement.get_creamy_berry_fish_paste_dumpling_with_chocolate_sauce.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "goetydelight:creamy_berry_fish_paste_dumpling_with_chocolate_sauce"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "goetydelight.advancement.get_creamy_berry_fish_paste_dumpling_with_chocolate_sauce.title"
+    }
+  },
+  "requirements": [
+    [
+      "creamy_berry_fish_paste_dumpling_with_chocolate_sauce"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

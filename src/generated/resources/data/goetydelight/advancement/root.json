@@ -1,0 +1,28 @@
+{
+  "criteria": {
+    "seeds": {
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "background": "goety:textures/block/shade_stone_bricks.png",
+    "description": {
+      "translate": "goetydelight.advancement.root.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "goetydelight:cursed_ingot_pot"
+    },
+    "show_toast": false,
+    "title": {
+      "translate": "goetydelight.advancement.root"
+    }
+  },
+  "requirements": [
+    [
+      "seeds"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

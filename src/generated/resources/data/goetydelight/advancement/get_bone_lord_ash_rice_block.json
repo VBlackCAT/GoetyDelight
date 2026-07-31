@@ -1,0 +1,38 @@
+{
+  "parent": "goetydelight:root",
+  "criteria": {
+    "bone_lord_ash_rice_block": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "goetydelight:bone_lord_ash_rice_block"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "goetydelight.advancement.get_bone_lord_ash_rice_block.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "goetydelight:bone_lord_ash_rice_block"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "goetydelight.advancement.get_bone_lord_ash_rice_block.title"
+    }
+  },
+  "requirements": [
+    [
+      "bone_lord_ash_rice_block"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

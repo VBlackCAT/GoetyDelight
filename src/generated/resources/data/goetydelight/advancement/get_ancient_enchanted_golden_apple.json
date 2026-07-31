@@ -1,0 +1,39 @@
+{
+  "parent": "goetydelight:root",
+  "criteria": {
+    "ancient_enchanted_golden_apple": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "goetydelight:ancient_enchanted_golden_apple"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "goetydelight.advancement.get_ancient_enchanted_golden_apple.description"
+    },
+    "frame": "challenge",
+    "hidden": false,
+    "icon": {
+      "count": 1,
+      "id": "goetydelight:ancient_enchanted_golden_apple"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "goetydelight.advancement.get_ancient_enchanted_golden_apple.title"
+    }
+  },
+  "requirements": [
+    [
+      "ancient_enchanted_golden_apple"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

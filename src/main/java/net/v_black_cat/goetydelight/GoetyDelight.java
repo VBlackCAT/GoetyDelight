@@ -4,6 +4,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
+import net.v_black_cat.goetydelight.advancements.ModAdvancementsTrigger;
 import net.v_black_cat.goetydelight.events.*;
 import net.v_black_cat.goetydelight.init.*;
 import net.v_black_cat.goetydelight.visual.GDVisualEffects;
@@ -58,6 +59,7 @@ public class GoetyDelight {
         ModBuffTypes.register(modEventBus);
         ModRituals.register(modEventBus);
         GDVisualEffects.register(modEventBus);
+        ModAdvancementsTrigger.TRIGGERS.register(modEventBus);
     }
 
     /**

@@ -1,0 +1,38 @@
+{
+  "parent": "goetydelight:root",
+  "criteria": {
+    "parasitized_warden": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "goetydelight:parasitized_warden"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "goetydelight.advancement.get_parasitized_warden.description"
+    },
+    "frame": "challenge",
+    "hidden": false,
+    "icon": {
+      "id": "goetydelight:parasitized_warden"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "goetydelight.advancement.get_parasitized_warden.title"
+    }
+  },
+  "requirements": [
+    [
+      "parasitized_warden"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

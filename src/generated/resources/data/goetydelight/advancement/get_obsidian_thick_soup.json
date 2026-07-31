@@ -1,0 +1,38 @@
+{
+  "parent": "goetydelight:root",
+  "criteria": {
+    "obsidian_thick_soup": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "goetydelight:obsidian_thick_soup"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "goetydelight.advancement.get_obsidian_thick_soup.description"
+    },
+    "frame": "challenge",
+    "hidden": false,
+    "icon": {
+      "id": "goetydelight:obsidian_thick_soup"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "goetydelight.advancement.get_obsidian_thick_soup.title"
+    }
+  },
+  "requirements": [
+    [
+      "obsidian_thick_soup"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

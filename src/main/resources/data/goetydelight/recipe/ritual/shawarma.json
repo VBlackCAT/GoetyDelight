@@ -5,7 +5,7 @@
       "tag": "forge:dough"
     },
     "craftType": "culinary",
-    "research": "vizier_cookbook",
+    "research": "viziers_cookbook",
     "soulCost": 24,
     "duration": 14,
     "ingredients": [
