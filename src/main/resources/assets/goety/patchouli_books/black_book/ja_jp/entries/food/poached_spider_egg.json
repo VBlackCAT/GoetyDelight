@@ -1,0 +1,16 @@
+{
+    "name": "落としクモの卵",
+    "icon": "goetydelight:poached_spider_egg",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        
+        {
+            "type": "patchouli:text",
+            "text": "カリカリしていて、失敗の味がする。$(br)壁登り（10秒）を付与する。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/poached_spider_egg"
+        }
+    ]
+}

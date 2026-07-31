@@ -1,0 +1,15 @@
+{
+    "name": "魔法石英饼干",
+    "icon": "goetydelight:magic_quartz_cookie",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "给予食用者：$(br)$(li)抗性提升2$(li)30秒的两个随机正面效果（一个2级，一个3级）。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/magic_quartz_cookie"
+        }
+    ]
+}

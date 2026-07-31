@@ -1,0 +1,11 @@
+{
+    "name": "Hunting Denial",
+    "icon": "goetydelight:textures/mob_effect/hunting_denial.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Prevent Illager Assaul - (Effect holder functions as a mobile Soul Obelisk)"
+        }
+    ]
+}

@@ -1,0 +1,43 @@
+{
+    "name": "Sugar Pack",
+    "icon": "goetydelight:cry_sugar_pack",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "spotlight",
+            "title": "Sugar Pack",
+            "link_recipe": true,
+            "item": "goetydelight:sugar_pack",
+            "scale": 1.2,
+            "text": "$(br)Grants consumer 4-minute Nourishment."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/sugar_pack"
+        },
+        {
+            "type": "spotlight",
+            "title": "Sunshine Sugar Pack",
+            "link_recipe": true,
+            "item": "goetydelight:sunshine_sugar_bun",
+            "scale": 1.2,
+            "text": "Grants consumer:$(br)$(li)5-minute Nourishment$(li)1-minute Photosynthesis II"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/sunshine_sugar_bun"
+        },
+        {
+            "type": "spotlight",
+            "title": "Cry Sugar Pack",
+            "link_recipe": true,
+            "item": "goetydelight:cry_sugar_pack",
+            "scale": 1.2,
+            "text": "Grants consumer:$(br)$(li)5-minute Nourishment$(li)1-minute Hydration"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/cry_sugar_pack"
+        }
+    ]
+}

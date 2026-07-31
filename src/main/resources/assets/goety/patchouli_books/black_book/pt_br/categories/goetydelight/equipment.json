@@ -1,0 +1,7 @@
+{
+  "name": "Equipamentos de Cozinha",
+  "description": "Pratos da alta gastronomia sombria frequentemente exigem as formas mais sombrias de cozinhar...",
+  "icon": "goetydelight:cursed_ingot_pot",
+  "parent": "goety:goetydelight",
+  "sortnum": 2
+}

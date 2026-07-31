@@ -1,0 +1,23 @@
+{
+    "name": "Toxic Meal",
+    "icon": "goetydelight:toxic_meal",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Perhaps driven by the peculiar madness of dark mages, you've blended lethal toxins with rice to create this revolting concoction even you can scarcely stomach.$(br)After repeatedly enduring its nauseating flavor and potent toxicity, your body gradually develops tolerance to the virulent compounds.$(br)Alternatively, force-feeding it to others remains a viable option."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Can be fed to other creatures.$(br)Grants consumer (or victim):$(br)$(li)1-minute 40-second Nausea, Poison X, Weakness V$(li)Upon repeated consumption, grants immunity to negative effects:$(li2)After 5 servings: Nausea immunity$(li2)After 10 servings: Poison immunity$(li2)After 15 servings: Weakness immunity$(br)Right-click any entity to confer identical buffs while consuming the item."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/toxic_meal"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "A meal steeped in five venoms, requiring tremendous willpower to overcome the trepidation of consumption.$(br)While it grants disease immunity upon ingestion, few would willingly endure repeated servings.$(br)Fortunately, it can also be wielded as a weapon to smear across unsuspecting mouths."
+        }
+    ]
+}

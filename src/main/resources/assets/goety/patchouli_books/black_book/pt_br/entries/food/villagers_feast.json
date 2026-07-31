@@ -1,0 +1,15 @@
+{
+    "name": "Banquete dos Aldeões",
+    "icon": "goetydelight:villagers_feast",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Concede a quem consome:$(br)$(li)3 minutos de Herói da Villa$(li)10 minutos de Nutrição"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/villagers_feast"
+        }
+    ]
+}

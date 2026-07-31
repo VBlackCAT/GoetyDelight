@@ -1,0 +1,12 @@
+{
+    "name": "Roast LaoWang",
+    "icon": "goetydelight:roast_laowang",
+    "category": "goety:goetydelight/food",
+    "advancement": "goetydelight:get_roast_laowang",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "$(b)[Hidden Food] Electrocuting a pig has a chance to drop this$(br)$()Origin: i forgor. Anyway, it has absolutely nothing to do with vanillahaozi, Player_VI~$(br)Ha! Y'all are pigs, die die die!$(br)Bad rat, ha!$(br)Evil Bai Ze Li, I'm not a bamboo!$(br)Dali Shi, we hate you, super hate Dali Shi$(br)I'm baka I dunno uwu$(br)You've successfully enraged a male lion"
+        }
+    ]
+}

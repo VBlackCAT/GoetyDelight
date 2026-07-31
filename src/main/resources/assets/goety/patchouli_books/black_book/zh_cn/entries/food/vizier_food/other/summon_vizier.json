@@ -1,0 +1,23 @@
+{
+    "name": "一种基于黑暗料理的召唤灾厄宰相的新方法",
+    "icon": "goety:dark_scroll",
+    "category": "goety:goetydelight/food/vizier_food/other",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "林地府邸实在是太难找了！！怀着钻研的心态，你开始思考：既然灾厄宰相可以在林地府邸里用黑暗卷轴假传圣旨骗出来，那么能不能干脆用仪式给府邸环境也造假一下呢？$(br)于是你搭建了$(l:goety:rituals/magic_ritual)魔法仪式$()，并往祭坛上放了一些林地府邸特色方块——深色橡木木板和原石。"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "不过，仅靠这些简单的建材大概还不足以让宰相相信“卷轴的呼唤来自林地府邸”，你还需要一些特色鲜明的东西，用以表示“这里就是如假包换的府邸呀！”$(br)欸！你有灵感了！有道$(l:goety:food/vizier_food/food/creamy_berry_fish_paste_dumpling_with_chocolate_sauce)黑暗料理$()特别适合担此重任——"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/please_vizier_eat_creamy_berry_fish_paste_dumpling_with_chocolate_sauce"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "这下不用再找林地府邸也能召唤灾厄宰相了！只有宰相的消化系统受伤的世界达成了。"
+        }
+    ]
+}

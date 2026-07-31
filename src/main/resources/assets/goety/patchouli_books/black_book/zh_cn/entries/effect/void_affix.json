@@ -1,0 +1,11 @@
+{
+    "name": "虚空之附",
+    "icon": "goetydelight:textures/mob_effect/void_affix.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "效果拥有者每次攻击将附带（效果等级*1）点虚空伤害"
+        }
+    ]
+}

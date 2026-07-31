@@ -1,0 +1,20 @@
+{
+    "name": "Bolo Real",
+    "icon": "goetydelight:royal_cake",
+    "category": "goety:goetydelight/food",
+    "advancement": "goety:goety/kill_a_vizier",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Pode ser dropado ao derrotar o Flagelo dos Chanceleres.$(br)Concede a quem consome:$(br)$(li)Nutrição (4 minutos)$(li)Afortunado III (1 minutos e 15 segundos)$(li)Engarrafamento III (1 minutos e 15 segundos),$(li)Resistência II (1 minutos e 15 segundos)$(li)Após o consumo, mata instantaneamente todos os Allays, Vex, e algumas criaturas 'alex668's living family' ao redor, ao mesmo tempo que recupera uma quantidade de vida equivalente à soma da vida máxima total das unidades mortas. Pode ser consumido 8 vezes no total."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "\"Um bolo enorme decorado com creme e geléia, supostamente uma iguaria refinada oferecida pelas forças da Calamidade ao seu governante.\"$(br)\"Ao comê-lo, a doce fragrância que se dissipa é capaz de dispersar até mesmo aquelas almas voadoras, enquanto os fragmentos de alma dispersos reparam os ferimentos do comedor.\"$(br)\"As almas errantes são frágeis e incapazes de apreciar tal delícia. Que triste, que infortúnio.\"$(br)\"Mas será que a sua alma aguenta o impacto repetido de tal banquete? Provavelmente não.\"$(br)\"Ao ver este bolo, é possível entender por que alguém ficou tão furioso.\""
+        },
+        {
+            "type": "patchouli:text",
+            "text": "\"Se alguém te arrasta para um duelo justamente quando você está prestes a saborear uma iguaria, mesmo com a melhor das índoles, você vai querer esmagá-lo completamente.\"$(br)\"Esta é uma rixa mortal, que não pode ficar sem reparação.\""
+        }
+    ]
+}

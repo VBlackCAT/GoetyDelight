@@ -1,0 +1,15 @@
+{
+    "name": "巫妖乱炖",
+    "icon": "goetydelight:lichs_chaos_stew",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "仅种族为巫妖时可食用$(br)给予食用者：$(br)$(li)无限时长的抗火，永恒III$(li)30分钟的尸鬼拒止$(li)每次食用会使你的所有仆从的数值增加15%，最多可增加6次。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/lichs_chaos_stew_block"
+        }
+    ]
+}

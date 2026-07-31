@@ -1,0 +1,7 @@
+{
+  "name": "料理",
+  "description": "冒涜的か、あるいは闇に属するいくつかの食べ物について。",
+  "icon": "goetydelight:royal_cake",
+  "parent": "goety:goetydelight",
+  "sortnum": 1
+}

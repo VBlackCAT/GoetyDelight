@@ -1,0 +1,15 @@
+{
+    "name": "Fruity Ectoplasmic Slippery Blue Sundae",
+    "icon": "goetydelight:blue_ectoplasmic_sundae",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Add ectoplasm ice cubes, sweet berries, and a little sugar, and you get this delicious sundae that glows with a deep blue light.$(br)For the consumer:$(li)10 minutes of Nourishment$(li)2 minutes of Regeneration$(li)2 minutes of Frost Ward$(li)Also restores 300 Soul Energy.$(br)“Turn ectoplasm — drizzled with slimeball — into the flavor of sweet berries!”"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/blue_ectoplasmic_sundae"
+        }
+    ]
+}

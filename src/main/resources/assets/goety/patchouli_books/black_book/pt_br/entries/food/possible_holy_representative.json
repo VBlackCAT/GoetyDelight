@@ -1,0 +1,23 @@
+{
+    "name": "Sundae da Possibilidade",
+    "icon": "goetydelight:possible_holy_representative",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "\"Originado na imaginação, continuado pela criação, culminando no resultado.\"$(br)$(li)Concede ao jogador Perspicácia IV, e também ativa um efeito misterioso ("
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/possible_holy_representative"
+        },
+        {
+            "type": "spotlight",
+            "title": "Sundae da Possibilidade: Mecânica da Ordem",
+            "link_recipe": true,
+            "item": "goetydelight:possible_holy_representative",
+            "scale": 1.2,
+            "text": "Ativado ao consumir o Sundae da Possibilidade. Após a ativação:$(li)Invoca um lacaio de um pool pré-definido. Para cada 3 pontos de Sorte do jogador, uma invocação adicional é disparada.$(li)Cada pool tem uma certa chance de ativar o mecanismo de lacaio permanente, com as seguintes probabilidades:$(li2)Pool Nível 1 (Lacaios de monstros comuns): 50%;$(li2)Pool Nível 2 (Lacaios de monstros elites): 50%;$(li2)Pool Nível 3 (Lacaios de monstros elites superiores): 50%;$(li2)Pool Nível 4 (Lacaios de Mini-Chefes): 30%;$(li2)Pool Nível 5 (Lacaios de Chefes): 20%;$(li2)Pool Nível 6 (Lacaios de Apóstolos): 10%."
+        }
+    ]
+}

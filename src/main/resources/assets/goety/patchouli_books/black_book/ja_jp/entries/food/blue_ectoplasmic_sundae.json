@@ -1,0 +1,15 @@
+{
+    "name": "青いエクトプラズムサンデー",
+    "icon": "goetydelight:blue_ectoplasmic_sundae",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "「エクトプラズムを注ぎ、スライムボールをトッピング、そしてスイートベリー風味に仕上げる！」$(br)プレイヤーに滋養（10分）、再生能力 I（2分）、防寒 I（2分）を付与する。$(br)さらにソウルエネルギーを300回復する。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/blue_ectoplasmic_sundae"
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+{
+    "name": "ステータス効果",
+    "description": "冒涜的なもの、あるいは闇に属するもの……いくつかの神秘的な効果について。",
+    "icon": "goetydelight:textures/mob_effect/spell_duration.png",
+    "parent": "goety:goetydelight",
+    "sortnum": 4
+}

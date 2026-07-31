@@ -1,0 +1,23 @@
+{
+    "name": "填馅高头骨",
+    "icon": "goetydelight:stuffed_tall_skull_rice_block",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "将速生之种，大王花什么的放入锅中炖煮，以村民（又或者是灾厄村民）的头为碗，你便能得到这个能吓哭村民的神秘料理。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/stuffed_tall_skull_rice_block"
+        },
+        {
+            "type": "spotlight",
+            "title": "碗装填馅高头骨炒饭",
+            "link_recipe": true,
+            "item": "goetydelight:stuffed_tall_skull_rice",
+            "scale": 1.2,
+            "text": "用碗右击填馅高头骨获取$(br)给予食用者：$(br)$(li)1分钟的滋养$(li)5分钟的光和作用II$(li)10分钟的不祥之兆（可随食用次数叠加，最高可叠加至5级）"
+        }
+    ]
+}

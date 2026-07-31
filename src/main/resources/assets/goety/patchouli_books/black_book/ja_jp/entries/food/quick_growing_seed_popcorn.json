@@ -1,0 +1,15 @@
+{
+    "name": "急成長の種ポップコーン",
+    "icon": "goetydelight:quick_growing_seed_popcorn",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "摂取した者に、満腹度回復（30秒）、栄養（10分）、健康（10分）、光合成（5分）を付与する。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/quick_growing_seed_popcorn"
+        }
+    ]
+}

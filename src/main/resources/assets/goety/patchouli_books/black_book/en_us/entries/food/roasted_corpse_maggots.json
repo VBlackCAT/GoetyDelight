@@ -1,0 +1,27 @@
+{
+    "name": "Roasted Corpse Maggots",
+    "icon": "goetydelight:roasted_corpse_maggots",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "A symbiotic organism of the Wraith Ghoul, containing six times the protein of beef. As a dark mage who'll try biting almost anything, you shouldn't pass up such a rare delicacy."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/roasted_corpse_maggots"
+        },
+        {
+            "type": "spotlight",
+            "title": "Rotten Corpse Maggot Feast",
+            "link_recipe": true,
+            "item": "goetydelight:rotten_corpse_maggot_feast_block",
+            "scale": 1.2,
+            "text": "Can be collected three times. Grants consumer Nourishment (10 minutes).$(br)$(4)25% chance to immediately summon a$(4)Wraith Ghoul upon consumption"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/rotten_corpse_maggot_feast_block"
+        }
+    ]
+}

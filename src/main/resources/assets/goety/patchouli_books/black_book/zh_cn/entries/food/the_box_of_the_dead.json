@@ -1,0 +1,11 @@
+{
+    "name": "逝者之盒",
+    "icon": "goetydelight:the_box_of_the_dead",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "亡灵的遗物，可在墓穴中的宝箱找到。$(br)给予食用者：$(br)$(li)20秒的诅咒2$(br)随机抽取墓穴瓮里的战利品表三次"
+        }
+    ]
+}

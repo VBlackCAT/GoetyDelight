@@ -1,0 +1,28 @@
+{
+    "name": "Cabana do Agricultor de Melancias",
+    "icon": "goety:rotten_planks",
+    "category": "goety:goetydelight/world",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Viajando pelo Mundo Superior, você às vezes encontrará essas cabanas decadentes, habitadas por agricultores de melancias que já se foram, mas ainda retêm um vestígio de sanidade."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Página de Captura de Tela"
+        },
+        {
+            "type": "spotlight",
+            "title": "Agricultor de Melancia",
+            "link_recipe": true,
+            "item": "goetydelight:sugar_pack",
+            "scale": 1.2,
+            "text": "Aviso: O Agricultor de Melancia tem um forte instinto de proteger suas melancias. Não parta melancias debaixo do nariz dele."
+        },
+        {
+            "type": "patchouli:entity",
+            "entity": "goetydelight:ghost_farmer",
+            "scale": 0.5
+        }
+    ]
+}

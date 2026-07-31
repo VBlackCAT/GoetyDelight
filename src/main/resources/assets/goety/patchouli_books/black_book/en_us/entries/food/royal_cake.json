@@ -1,0 +1,13 @@
+{
+    "name": "皇家蛋糕",
+    "icon": "goetydelight:royal_cake",
+    "category": "goety:goetydelight/food",
+    "advancement": "goety:goety/kill_a_vizier",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Dropped occasionally by defeating the Calamity Chancellor.$(br)Grants consumer:$(br)$(li)Nourishment (30 minutes)$(li)Opportunity III (10 minutes)$(li)Dexterity III (10 minutes)$(li)Resistance II (10 minutes)$(li)Upon consumption, kills surrounding Allays/Vexes/Glowsquitos and certain “living familycreatures” by alex668, restoring HP equal to the sum of the slain units' max health. Can be consumed up to 8 times."
+        }
+        
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "name": "速生爆米花",
+    "icon": "goetydelight:quick_growing_seed_popcorn",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "速生之种可以快速生长，倘若将其做成爆米花一定相当管饱，像你这样的异食癖想必一定能承受爆米花在胃里膨胀吧。$(br)给予食用者：$(br)$(li)30秒的饱和，10分钟的滋养以及舒适，$(li)5分钟的光合作用"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/quick_growing_seed_popcorn"
+        }
+    ]
+}

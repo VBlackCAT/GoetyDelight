@@ -1,0 +1,15 @@
+{
+    "name": "ブドウスラッシュ",
+    "icon": "goetydelight:grape_slush",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "あなたはブドウが何なのか知らないが、それは紫色の何かであるはずだ。$(br)だが、料理と魔法の両方に長けた天才であるあなたは、アメジストの結晶に秘められた甘い魔力を、パフボールオニオンに注入したのだ。$(br)これは完全にブドウだ！見た目も同じ、味も同じ！$(br)砕いた氷の小片を入れてスラッシュにすれば、当然味はさらに良くなる。$(br)摂取した者に、チルハイド II（3.5分）、栄養（10分）、凍えるオーラ（30秒）を付与する。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/grape_slush"
+        }
+    ]
+}

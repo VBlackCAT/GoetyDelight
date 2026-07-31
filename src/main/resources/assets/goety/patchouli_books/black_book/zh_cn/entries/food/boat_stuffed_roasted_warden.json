@@ -1,0 +1,47 @@
+{
+    "name": "烤全监",
+    "icon": "goetydelight:boat_stuffed_roasted_warden_block",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "监守者，力大血厚，饱含灵魂能量，探险家所畏惧之物，如此饱含力量与灵魂能量之物，不整只给烤了未免太可惜了，只可惜幽匿的口感简直难以下咽。$(br)直到你从永恒禁书的记载之中发现了一段菜谱……"
+        },
+        {
+            "type": "spotlight",
+            "title": "被寄生的监守者",
+            "link_recipe": true,
+            "item": "goetydelight:parasitized_warden",
+            "scale": 1.2,
+            "text": "正常的监守者尸体无法满足你对于美食的追求，首先要让育母蜘蛛将卵产于监守者体内，配合仪式的灵魂能量注入即可使难以下咽的幽匿变成类似于肉松的口感。（即让育母蜘蛛仆从杀死监守者）而后将被寄生的监守者尸体搬到你的厨房，在仪式基座放上灵质瓜等食材，再将监守者尸体放于祭坛之上来驱动仪式…"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/boat_stuffed_roasted_warden_block"
+        },
+        {
+            "type": "spotlight",
+            "title": "船装烤监守者首",
+            "link_recipe": true,
+            "item": "goetydelight:boat_stuffed_roasted_warden_head",
+            "scale": 1.2,
+            "text": "总计可食用4次$(br)每次食用后给予食用者：$(br)$(li)5分钟的灵魂护甲IV、生命提升II、力量II、巡声者(li)10分钟的猎杀拒止$(li)增加5000点灵魂能量。$(br)注意：主手持有该物品时副手物品会失效"
+        },
+        {
+            "type": "spotlight",
+            "title": "船装烤监守者肢",
+            "link_recipe": true,
+            "item": "goetydelight:boat_stuffed_roasted_warden_hand",
+            "scale": 1.2,
+            "text": "总计可食用4次$(br)每次食用后给予食用者：$(br)$(li)5分钟的灵魂护甲IV、生命提升II、力量II、巡声者$(li)10分钟的猎杀拒止$(li)增加5000点灵魂能量。$(br)注意：主手持有该物品时副手物品会失效"
+        },
+        {
+            "type": "spotlight",
+            "title": "船装烤监守者身",
+            "link_recipe": true,
+            "item": "goetydelight:boat_stuffed_roasted_warden_body",
+            "scale": 1.2,
+            "text": "总计可食用4次$(br)每次食用后给予食用者：$(br)$(li)7.5分钟的灵魂护甲IV、生命提升II、力量II、巡声者(li)15分钟的猎杀拒止$(li)增加5000点灵魂能量。$(br)注意：主手持有该物品时副手物品会失效"
+        }
+    ]
+}

@@ -1,0 +1,23 @@
+{
+    "name": "Peixe Doce",
+    "icon": "goetydelight:candy_fish",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Concede a quem consome:$(br)$(li)7 minutos de Nutrição$(li)5 minutos de Respiração Aquática$(li)Botão direito em um Apóstolo ou lacaio Apóstolo recupera 10% de sua vida máxima."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/candy_fish"
+        },
+        {
+            "type": "spotlight",
+            "title": "Peixe Doce Grelhado com Molho",
+            "link_recipe": true,
+            "item": "goetydelight:sauce_grilled_candy_fish",
+            "scale": 1.2,
+            "text": "Concede a quem consome:$(br)$(li)8 minutos de Nutrição$(li)2 minutos de Aura Flamejante$(li)Botão direito em um Apóstolo ou lacaio Apóstolo recupera 15% de sua vida máxima."
+        }
+    ]
+}

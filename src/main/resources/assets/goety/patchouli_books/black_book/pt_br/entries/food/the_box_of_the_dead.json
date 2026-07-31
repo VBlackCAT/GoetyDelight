@@ -1,0 +1,11 @@
+{
+    "name": "Caixa do Falecido",
+    "icon": "goetydelight:the_box_of_the_dead",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Relíquia dos mortos-vivos, pode ser encontrada em baús em tumbas.$(br)Concede a quem consome:$(br)$(li)20 segundos de Amaldiçoado II$(br)Realiza três sorteios aleatórios da tabela de saque das urnas funerárias."
+        }
+    ]
+}

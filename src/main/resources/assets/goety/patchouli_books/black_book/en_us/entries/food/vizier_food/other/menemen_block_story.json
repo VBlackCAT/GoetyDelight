@@ -1,0 +1,27 @@
+{
+    "name": "Tidbits - Menemen",
+    "icon": "goetydelight:menemen_block",
+    "category": "goety:goetydelight/food/vizier_food/other",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Waking up from a nice and spicy dream, you reach a really high mood. Even the trader llamas seemed much pleasing to your eye. You buy a Illager News from this pass-by wandering trader, humming, lay on your dark alter in a comfort position, ready to take a look at Illagers’ recent activities. Then, the headlines rushed into your sight like ravagers break into the farmland:"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "$(l)Complaint--Vindicator Chef’ s Idea V.S The Profane’ s Kitchen$()$(br)Yesterday, the Mansion office received a letter with red-black envelope and golden seal. The receptionist quickly called Vizier to unseal. The letter was still warm, with its edge mildly burnt, and several words were written heavily. Illagers gathered with curiosity to take a look. The following is the content of the letter (got demonstrate permission from Mansion and Nether):"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "$(4)Vizier:$(br)How’s your digestion going?$(br)My apologies. The Nether is $(l)not productive nor rich in ingredients, $()$(4)could not afford the $(l)huge consumption$()$(4) by your brainstorming Vindicator chefs when they’re learning new way to cook. I’ve tried to lead them follow your recipes, but probably because an ocelot can’t change its spot, anyway, $(br)not very successful…$()$(4)$(br)Your chefs should reach the Mansion with or slightly after the letter. I can make sure they don’t get hurt in the Nether. As for their cooking style… You’d better figure out if it’s truly improved on your own.$(br)PLEASE emphasize to them again: don’t eat bullet peppers next to a stove, don’t use cinder flour to knead a dough, don’t strike a normal egg with the strength to knock a strider rock, and…$(br)$(l)DON’T MAKE THEM COME AGAIN!!$()$(4)$(br)Best regards,$(br)The Profane"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "We believe that you, who are reading this report, have also felt the care and forbearance behind the words, just like our reporter. Vizier’s moustache quivered when finished reading. Then, a commotion rose from the front door before he could make any expression:$(br)“Greetings the Grand Vizier we discovered wonderful ways to make Menemen and  Baklava in the Nether and can’t wait to show you—we can use dried berries in replace of and though we Mansion don’t have honey storage we found some bee nests at the forest edge and bring them all here you may take a look aughhhhhhhhhhhhh—”$(br)Then, the office became absolutely chaos, like:$(br)The wind, the voices, and the buzz—all sounds fill the air;$(br)The bees, the cooks, and the fuss—all things Vizier care.$(br)(Executive editor: an anonymous maverick)"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "How fantastic! With a shrug, you put down the Newspaper and turn to the next page of Vizer’s Cookbook…"
+        }
+    ]
+}

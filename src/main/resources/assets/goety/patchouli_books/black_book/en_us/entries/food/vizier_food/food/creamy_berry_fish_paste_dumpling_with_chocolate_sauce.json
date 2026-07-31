@@ -1,0 +1,20 @@
+{
+    "name": "Creamy berry fish paste Dumplings with chocolate sauce",
+    "icon": "goetydelight:creamy_berry_fish_paste_dumpling_with_chocolate_sauce",
+    "category": "goety:goetydelight/food/vizier_food/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "You had already heard about illagers’ savage cooking style, but not until you “consulted” a vindicator chef did you get shocked by something darker than dark magic:$(br)“Hahaha, now you’re talking! I used to raid around with my fellows when I was young, we’ve taken over frigid villages that grow sweet berries, tropic villages that plant cocoa beans, seaside fishing villages, and grassland village that herd cattle and sheep… Then I create a unique cuisine—"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "just blend cod and berries together to paste, pack them into dumpling skin, boil in cream sauce and add some rosemary… Every taster gives me a thumb and praises me ‘Delight Raider’!”“No rosemary? Just grab some grass, looked the same, green and natural. Fish needs scaling and gutting? What do you mean?  Flour needs sieving?  What is sieving? Well kid you just do what I told you, my cuisine moves Vizier to tears every time!”"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/creamy_berry_fish_paste_dumpling_with_chocolate_sauce",
+            "text": "Your common sense told you this is trash, but you’re still curious about how could such stuff moved Vizier to tears. So, $(l:goety:food/vizier_food/other/summon_vizier)you walk towards your Ritual…"
+        }
+    ]
+}

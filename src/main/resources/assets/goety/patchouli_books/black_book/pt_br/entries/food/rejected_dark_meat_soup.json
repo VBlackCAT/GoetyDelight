@@ -1,0 +1,19 @@
+{
+    "name": "Sopa de Carne Negra Rejeitada",
+    "icon": "goetydelight:rejected_dark_meat_soup",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "O Espírito da Poção rejeitou seu chamado.$(br)Mas o tomismo da bruxa ainda permite que você faça uma sopa de carne. Talvez seu sabor único faça você refletir sobre a verdadeira essência da Mistura Medicinal.$(br)Mexa com um graveto para experimentar seu sabor peculiar."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Pode ser arremessada como uma poção, concedendo efeitos negativos às entidades ao redor. $(b)(Náusea (30s), Veneno de nível aleatório entre 2 e 5 (30s), Fraqueza II (30s))$() Também pode ser combinada com uma Mistura Medicinal na bancada de trabalho. Após a síntese, o resultado também será uma Mistura Medicinal, mas o nível dos efeitos negativos da mistura aumentará em um nível (até no máximo três níveis)."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/rejected_dark_meat_soup"
+        }
+    ]
+}

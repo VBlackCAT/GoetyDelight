@@ -1,0 +1,15 @@
+{
+    "name": "Lichs Chaos Stew",
+    "icon": "goetydelight:lichs_chaos_stew",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Only edible if your race is Lich.$(br)Grants the consumer:$(li)Infinite Fire Resistance and Eternal III$(li)Wight Bane for 30 minutes$(li)Each consumption increases the stats of all your minions by 15%, up to a maximum of 6 times."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/lichs_chaos_stew"
+        }
+    ]
+}

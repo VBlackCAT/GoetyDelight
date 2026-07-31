@@ -1,0 +1,11 @@
+{
+    "name": "The Box Of The Dead",
+    "icon": "goetydelight:the_box_of_the_dead",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Relic of the undead, found in chests within tombs.$(br)Grants consumer:$(br)$(li)20-second Curse II$(br)Randomly draws from the tomb urn loot table three times"
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "name": "Full Spider Feast",
+    "icon": "goetydelight:full_spider_feast",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Upon consumption, grants the consumer:$(br)$(li)5-minute Climbing & Nourishment"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/full_spider_feast"
+        }
+    ]
+}

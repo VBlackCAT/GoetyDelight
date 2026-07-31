@@ -1,0 +1,27 @@
+{
+    "name": "Perna de Sapo Grelhada",
+    "icon": "goetydelight:grill_frog_leg",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Espetando duas pernas de sapo com folhas de repolho e carne, você obtém esta perna de sapo grelhada suculenta e saborosa.$(br)\"Suculenta e saborosa, ao mastigar cuidadosamente, sobram na boca apenas minúsculos ossos carbonizados e o aroma tentador da pele e da carne.\"$(br)Concede a quem consome:$(br)$(li)1 minuto de Perna de Sapo$(li)20 segundos de Regeneração II"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/grill_frog_leg"
+        },
+        {
+            "type": "spotlight",
+            "title": "Sanduíche de Perna de Sapo",
+            "link_recipe": true,
+            "item": "goetydelight:frog_leg_sandwich",
+            "scale": 1.2,
+            "text": "Considerado uma iguaria em um certo país, pode-se saborear traços brutos e o sabor do pântano.$(br)\"O que quer dizer que a prioridade da almôndega é menor que a do sanduíche?\""
+        },
+        {
+            "type": "patchouli:crafting",
+            "recipe": "goetydelight:frog_leg_sandwich"
+        }
+    ]
+}

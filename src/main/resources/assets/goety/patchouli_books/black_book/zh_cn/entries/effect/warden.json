@@ -1,0 +1,11 @@
+{
+    "name": "巡声者",
+    "icon": "goetydelight:textures/mob_effect/warden.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "效果持有者对五秒内发出过声音的生物造成的伤害增加50%"
+        }
+    ]
+}

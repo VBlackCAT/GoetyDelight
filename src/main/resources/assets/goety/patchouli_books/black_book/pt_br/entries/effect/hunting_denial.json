@@ -1,0 +1,11 @@
+{
+    "name": "Negação da Caça",
+    "icon": "goetydelight:textures/mob_effect/hunting_denial.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Impede a Caçada da Calamidade - (O portador do efeito é equivalente a um Obelisco das Almas móvel)."
+        }
+    ]
+}

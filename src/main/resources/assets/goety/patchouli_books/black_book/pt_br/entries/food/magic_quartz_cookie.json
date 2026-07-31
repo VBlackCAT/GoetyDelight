@@ -1,0 +1,15 @@
+{
+    "name": "Biscoito Mágico de Quartzo",
+    "icon": "goetydelight:magic_quartz_cookie",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Concede a quem consome:$(br)$(li)Resistência II$(li)30 segundos de dois efeitos positivos aleatórios (um de nível II, um de nível III)."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/magic_quartz_cookie"
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "name": "Night Heart Pea Soup",
+    "icon": "goetydelight:night_heart_pea_soup",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Grants the consumer:$(br)$(li)1 minute of Shadowmeld 4$(li)5 minutes of Strength 4$(li)5 minutes of Resistance 3$(li)10 minutes of Nourishment$(li)10 minutes of Comfort$(br)Upon consumption, time is set to night, the number of minions summoned in a single cast is doubled (lasting 5 minutes), all minions permanently gain a +5% bonus to Attack, Health, and Armor (stacks up to 12 times), and the minion cap is doubled (applies only once)."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/night_heart_pea_soup"
+        }
+    ]
+}

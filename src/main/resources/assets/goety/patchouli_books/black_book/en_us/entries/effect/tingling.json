@@ -1,0 +1,11 @@
+{
+    "name": "Tingling",
+    "icon": "goetydelight:textures/mob_effect/tingling.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "During effect duration:$(br)$(li)Effect holder will be aimlessly pushed around$(li)Deals 1 damage to the effect holder every 25 ticks, with damage interval halved per level (rounded down)$(li)Grants 10% bonus attack damage to the effect holder"
+        }
+    ]
+}

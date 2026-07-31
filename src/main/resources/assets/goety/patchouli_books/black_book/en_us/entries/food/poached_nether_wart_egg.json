@@ -1,0 +1,12 @@
+{
+    "name": "Poached Nether Wart Egg",
+    "icon": "goetydelight:poached_nether_wart_egg",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/poached_nether_wart_egg",
+            "text": "Removes all negative effects from the consumer."
+        }
+    ]
+}

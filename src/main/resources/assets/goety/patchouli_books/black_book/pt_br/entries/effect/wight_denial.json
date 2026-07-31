@@ -1,0 +1,11 @@
+{
+    "name": "Negação do Cadáver do Wight",
+    "icon": "goetydelight:textures/mob_effect/wight_denial.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Impede a geração de Cadáveres do Wight amaldiçoados enquanto o efeito durar."
+        }
+    ]
+}

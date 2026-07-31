@@ -1,0 +1,15 @@
+{
+    "name": "Sugar Scepter",
+    "icon": "goetydelight:sugar_scepter",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Grants consumer:$(br)$(li)10-minute Nourishment$(li)1-minute Regeneration II$(br)Grants one instance of damage immunity upon consumption (20s cooldown per immunity, non-stackable)"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/sugar_scepter"
+        }
+    ]
+}

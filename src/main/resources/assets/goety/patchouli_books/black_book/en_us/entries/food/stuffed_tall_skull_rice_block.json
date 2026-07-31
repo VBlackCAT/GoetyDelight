@@ -1,0 +1,23 @@
+{
+    "name": "Stuffed Tall Skull",
+    "icon": "goetydelight:stuffed_tall_skull_rice_block",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Stew Swift-Growth Seeds, Rafflesia, and such in a pot, using a Villager (or Illager) head as a bowl, and you'll get this mysterious dish that can scare Villagers to tears."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/stuffed_tall_skull_rice_block"
+        },
+        {
+            "type": "spotlight",
+            "title": "Bowl of Stuffed Tall Skull Fried Rice",
+            "link_recipe": true,
+            "item": "goetydelight:stuffed_tall_skull_rice",
+            "scale": 1.2,
+            "text": "Obtained by right-clicking a Stuffed Tall Skull with a bowl.$(br)Grants the consumer:$(br)$(li)1 minute of Nourishment$(li)5 minutes of Photosynthesis II$(li)10 minutes of Bad Omen (stacks with each consumption, up to level 5)"
+        }
+    ]
+}

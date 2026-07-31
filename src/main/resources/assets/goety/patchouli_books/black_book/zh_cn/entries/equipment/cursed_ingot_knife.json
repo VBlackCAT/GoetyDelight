@@ -1,0 +1,15 @@
+{
+    "name": "诅咒金属刀",
+    "icon": "goetydelight:cursed_ingot_knife",
+    "category": "goety:goetydelight/equipment",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "利用诅咒金属制作而成的刀，貌似并没有什么特别的。"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/cursed_ingot_knife"
+        }
+    ]
+}

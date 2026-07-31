@@ -1,0 +1,15 @@
+{
+    "name": "Ancient Enchanted Golden Apple",
+    "icon": "goetydelight:ancient_enchanted_golden_apple",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "$(br)To the consumer:$(br)$(li)5 minutes of Resistance and Fire Resistance$(li)2 minutes of Absorption IV$(li)30 seconds of Regeneration VI$(li)Subsequent 60 instances of damage taken are reduced by 20%"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/ancient_enchanted_golden_apple"
+        }
+    ]
+}

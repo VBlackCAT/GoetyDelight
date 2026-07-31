@@ -1,0 +1,15 @@
+{
+    "name": "Chá Líquido do Vácuo",
+    "icon": "goetydelight:liquid_void_tea_drink",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Concede a quem consome (ou à vítima):$(br)$(li)"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/liquid_void_tea_drink"
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "name": "エキゾチックな朝食",
+    "icon": "goetydelight:exotic_breakfast",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "摂取した者に、ワイルドレイジ（30秒）、栄養（3分）を付与する。"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/exotic_breakfast"
+        }
+    ]
+}

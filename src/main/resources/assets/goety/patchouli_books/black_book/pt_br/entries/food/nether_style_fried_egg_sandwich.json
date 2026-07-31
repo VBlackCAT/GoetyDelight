@@ -1,0 +1,15 @@
+{
+    "name": "Sanduíche de Ovo Frito ao Estilo do Nether",
+    "icon": "goetydelight:nether_style_fried_egg_sandwich",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Ao consumir, concede a quem consome:$(br)$(li)8 minutos de Resistência ao Fogo"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/nether_style_fried_egg_sandwich"
+        }
+    ]
+}

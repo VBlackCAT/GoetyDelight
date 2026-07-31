@@ -1,0 +1,15 @@
+{
+    "name": "Dark Brush",
+    "icon": "goetydelight:dark_brush",
+    "category": "goety:goetydelight/else",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "A brush forged from dark metal, inherently possessing the same Soul Mending as the Dark set.$(br)2x block scanning speed."
+        },
+        {
+            "type": "crafting",
+            "recipe": "goetydelight:dark_ingot_brush"
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "name": "果味灵质滑溜幽蓝圣代",
+    "icon": "goetydelight:blue_ectoplasmic_sundae",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "放入灵质冰块甜浆果和一点糖，你就得到了这散发着幽蓝光亮的美味圣代。$(br)给予食用者：$(li)10分钟的滋养$(li)2分钟的生命恢复$(li)2分钟的寒庇$(li)同时恢复300点灵魂能量。$(br)“把灵质——淋上粘液球——做成甜浆果的味道！”"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/blue_ectoplasmic_sundae"
+        }
+    ]
+}

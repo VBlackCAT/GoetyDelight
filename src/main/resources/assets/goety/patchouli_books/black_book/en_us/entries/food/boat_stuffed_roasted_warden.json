@@ -1,0 +1,47 @@
+{
+    "name": "Boat Stuffed Roasted Warden",
+    "icon": "goetydelight:boat_stuffed_roasted_warden_block",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "The Warden, immensely powerful and resilient, is brimming with soul energy and feared by explorers. Such a creature, so rich in strength and soul energy, would be a shame not to roast it whole. It's just a pity that the Sculk's taste is simply unpalatable.$(br)That was, until you discovered a recipe within the eternal pages of the Everlasting Tome..."
+        },
+        {
+            "type": "spotlight",
+            "title": "Parasitized Warden",
+            "link_recipe": true,
+            "item": "goetydelight:parasitized_warden",
+            "scale": 1.2,
+            "text": "A normal Warden carcass cannot satisfy your pursuit of gourmet food. First, you must have the Broodmother spider lay its eggs inside the Warden. Combined with the infusion of soul energy from a ritual, this will transform the unpalatable Sculk into a texture resembling dried meat floss. (That is, have a Broodmother spider minion kill the Warden.)Then, transport the parasitized Warden carcass to your kitchen. Place ingredients like Ectoplasmic Melon on the ritual pedestal, and position the Warden carcass upon the altar to activate the ritual..."
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/boat_stuffed_roasted_warden_block"
+        },
+        {
+            "type": "spotlight",
+            "title": "Boat Stuffed Roasted Warden Head",
+            "link_recipe": true,
+            "item": "goetydelight:boat_stuffed_roasted_warden_head",
+            "scale": 1.2,
+            "text": "Total Edible Uses: 4$(br)Each use grants the consumer:$(br)$(li)5 minutes of Soul Armor IV, Health Boost II, Strength II, and Acoustic Observer$(li)10 minutes of Hunt Denial$(li)Increases Soul Energy by 5000 points.$(br)Note: The off-hand item becomes ineffective while this item is held in the main hand."
+        },
+        {
+            "type": "spotlight",
+            "title": "Boat Stuffed Roasted Warden Hand",
+            "link_recipe": true,
+            "item": "goetydelight:boat_stuffed_roasted_warden_hand",
+            "scale": 1.2,
+            "text": "Total Edible Uses: 4$(br)Effects granted per consumption:$(br)$(li)5 minutes of Soul Armor IV,Health Boost II, Strength II, and Sound Tracker$(li)10 minutes of Hunt Immunity$(li)+5000 Soul Energy$(br)Note:Off-hand item becomes inactive while this item is held in the main hand."
+        },
+        {
+            "type": "spotlight",
+            "title": "Boat Stuffed Roasted Warden Body",
+            "link_recipe": true,
+            "item": "goetydelight:boat_stuffed_roasted_warden_body",
+            "scale": 1.2,
+            "text": "Total Edible Uses: 4$(br)Effects granted per consumption:$(br)$(li)7.5 minutes of Soul Armor IV, Health Boost II, Strength II, and Acoustic Observer$(li)15 minutes of Hunt Denial$(li)+5000 Soul Energy$(br)Note: Off-hand item becomes inactive while this item is held in the main hand."
+        }
+    ]
+}

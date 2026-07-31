@@ -1,0 +1,15 @@
+{
+    "name": "村人のごちそう",
+    "icon": "goetydelight:villagers_feast",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "摂取後、プレイヤーに村の英雄（1分）、栄養（10分）を付与する。"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/villagers_feast"
+        }
+    ]
+}

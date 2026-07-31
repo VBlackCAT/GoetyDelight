@@ -1,0 +1,21 @@
+{
+  "name": "料理の儀式",
+  "icon": "goetydelight:cursed_ingot_pot",
+  "category": "goety:rituals",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "必要アイテム: $(li)燻製器 2個 $(li)影のコンロ 1個 $(li)呪われたインゴットの鍋 1個"
+    },
+    {
+      "type": "patchouli:image",
+      "images": ["goety:textures/gui/culinary_rituals.png"],
+      "border": true,
+      "text": "儀式の配置例。"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "闇の祭壇の周囲に、闇の魔女のための美食キッチンを作り上げろ！それにより、特別な料理を作ることができるようになる。"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+    "name": "猪灵支援",
+    "icon": "goetydelight:textures/mob_effect/zombified_piglin_brute_servant_support.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "受到伤害时将会有50％的概率生成一只属于你的僵尸猪灵蛮兵仆从（拥有3分钟寿命）食用$(l:goety:food/tainted_drink)不洁之饮$()获得。"
+        }
+    ]
+}

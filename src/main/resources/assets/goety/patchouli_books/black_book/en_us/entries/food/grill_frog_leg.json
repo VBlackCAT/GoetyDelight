@@ -1,0 +1,27 @@
+{
+    "name": "Grill Frog Leg",
+    "icon": "goetydelight:grill_frog_leg",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Skewering two frog legs with cabbage leaves and meat yields these juicy, savory grilled frog legs.$(br)Succulent and flavorful, when chewed thoroughly only delicate charred bones and the enticing aroma of skin and flesh remain between your teeth.$(br)Grants consumer$(br)$(li)1-minute Frog Legs$(li)20-second Regeneration II"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/grill_frog_leg"
+        },
+        {
+            "type": "spotlight",
+            "title": "Frog Leg Sandwich",
+            "link_recipe": true,
+            "item": "goetydelight:frog_leg_sandwich",
+            "scale": 1.2,
+            "text": "Considered a delicacy in certain nations, one can taste bold brushstrokes and swampy undertones in this dish.$(br)What do you mean meatballs have lower priority than sandwiches?"
+        },
+        {
+            "type": "patchouli:crafting",
+            "recipe": "goetydelight:frog_leg_sandwich"
+        }
+    ]
+}

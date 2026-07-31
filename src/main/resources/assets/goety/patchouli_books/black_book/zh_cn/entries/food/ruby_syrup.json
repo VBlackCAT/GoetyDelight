@@ -1,0 +1,15 @@
+{
+    "name": "红宝石糖浆",
+    "icon": "goetydelight:ruby_syrup",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "把红宝石、糖以及灵质什么的倒一个锅里面加热，然后它们就会以一种天知道的方式变成一锅……糖浆？$(br)给予食用者：$(br)$(li)1分钟的法术精通、法术长续和滋养"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/ruby_syrup"
+        }
+    ]
+}

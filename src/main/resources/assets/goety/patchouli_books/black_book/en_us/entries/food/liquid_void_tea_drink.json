@@ -1,0 +1,15 @@
+{
+    "name": "Liquid Void Tea Drink",
+    "icon": "goetydelight:liquid_void_tea_drink",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Grants consumer (or victim):$(li)Void Corruption III (0:30)$(li)Takes fixed 5 points of void damage"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/liquid_void_tea_drink"
+        }
+    ]
+}

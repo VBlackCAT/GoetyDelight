@@ -1,0 +1,20 @@
+{
+    "name": "Crisp Biscuit",
+    "icon": "goetydelight:crisp_biscuit",
+    "category": "goety:goetydelight/food",
+    "pages": [
+
+        {
+            "type": "patchouli:text",
+            "text": "Grants consumer:$(br)$(li)30-second Herbivore$(li)30-minute Eternity$(li)5-minute Nourishment$(li)2-minute Spell Mastery$(br)Can be consumed regardless of satiation. Eternity duration stacks. Consuming during Herbivore effect increases Herbivore level by 1 and doubles duration (max level 4, max duration 10 minutes)."
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/crisp_biscuit"
+        },
+        {
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/crisp_biscuit_2"
+        }
+    ]
+}

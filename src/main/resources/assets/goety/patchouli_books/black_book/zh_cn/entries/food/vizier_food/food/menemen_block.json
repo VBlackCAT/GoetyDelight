@@ -1,0 +1,35 @@
+{
+    "name": "盘装炒蛋",
+    "icon": "goetydelight:menemen_block",
+    "category": "goety:goetydelight/food/vizier_food/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "对于你来说，这样的料理早已是小菜一碟。把洋葱切丝、番茄切块、鸡蛋打散，剩下的都可以交给仪式——你说这烹饪仪式，谁研究的呢？"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/menemen_block"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "辛香扑鼻的配料与加热得恰到好处、柔软滑润的炒蛋相得益彰，无论从卖相还是口感上来说都无可挑剔。你从菜谱上了解到，这道菜沾面包吃最正宗，于是拿出几条平时用作外出干粮的面包，在锅里搅和搅和，再将满裹的酱料与蛋和面包一起送入口中。"
+        },
+        {
+            "type": "spotlight",
+            "title": "炒蛋沾面包",
+            "link_recipe": true,
+            "item": "goetydelight:menemen_with_bread",
+            "scale": 1.2,
+            "text": "用面包对盘装炒蛋右键获得。一份盘装炒蛋可以装出5份炒蛋沾面包。$(br)给予食用者：$(br)$(li)3分钟的滋养和舒适$(li)30秒的光合作用$(li)30分钟的$(l:goety:effect/wight_denial)尸鬼拒止"
+        },
+        {
+            "type": "patchouli:relations",
+            "title": "趣闻",
+            "text": "温热的炒蛋激发了面包的麦香，鸡蛋的嫩滑与烈焰粉的辛辣交相辉映……你在饱餐一顿后决定饱睡一顿，好好放松一下身心。",
+            "entries": [
+                "goety:food/vizier_food/other/menemen_block_story"
+            ]
+        }
+    ]
+}

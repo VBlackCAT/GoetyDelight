@@ -1,0 +1,7 @@
+{
+    "name": "Efeitos de Status",
+    "description": "Alguns efeitos misteriosos, sejam profanos ou sombrios...",
+    "icon": "goetydelight:textures/mob_effect/spell_duration.png",
+    "parent": "goety:goetydelight",
+    "sortnum": 4
+}

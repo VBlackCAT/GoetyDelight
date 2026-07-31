@@ -1,0 +1,15 @@
+{
+    "name": "阴影炉灶",
+    "icon": "goetydelight:shade_stove",
+    "category": "goety:goetydelight/equipment",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "利用阴影石对灵魂能量的亲合性可以让你使用灵魂能量烟熏食物$(br)可以作为烟熏炉使用灵魂能量烟熏食物，每50点灵魂能量可以烹饪1道菜品，烹饪速度为正常的1.5倍。"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/shade_stove"
+        }
+    ]
+}

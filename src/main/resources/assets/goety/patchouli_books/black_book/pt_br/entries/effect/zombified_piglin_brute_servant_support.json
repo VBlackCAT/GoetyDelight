@@ -1,0 +1,11 @@
+{
+    "name": "Suporte de Servo Piglin Zumbi Bruto",
+    "icon": "goetydelight:textures/mob_effect/zombified_piglin_brute_servant_support.png",
+    "category": "goety:goetydelight/effect",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Ao receber dano, 50% de chance de invocar um Servo Piglin Zumbi Bruto sob seu controle (com 3 minutos de duração). Obtido ao consumir $(l:goety:food/tainted_drink)Bebida Profana$()."
+        }
+    ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "北极刨冰",
+  "icon": "goetydelight:polarice",
+  "category": "goety:goetydelight/food",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "吃下之后给予食用者$(br)$(li)5分钟的灾厄瘟疫$(br)$(li)5分钟的急迫3$(br)$(br)同时会在1分钟之内，允许食用者攻击时将目标转化为对应的仆从，默认只能转化10个50血及以下的仆从"
+    },
+    {
+      "type": "spotlight",
+      "title": "北极刨冰",
+      "link_recipe": true,
+      "item": "goetydelight:polarice",
+      "scale": 1.2,
+      "text": "灵质拌霜瓤$(br)蜜泪冻雪沙$(br)冷心冷面无心傀$(br)白容白幕碗中装$(br)弥留之魂迷茫尘世$(br)禁忌食味留于指尖$(br)许是那魔法使没有心$(br)这才让那北冰封了臻"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetydelight:ritual/polarice"
+    }
+  ]
+}

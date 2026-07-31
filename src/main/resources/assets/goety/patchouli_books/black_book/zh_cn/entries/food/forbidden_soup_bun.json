@@ -1,0 +1,15 @@
+{
+    "name": "幽匿灌汤包",
+    "icon": "goetydelight:forbidden_soup_bun",
+    "category": "goety:goetydelight/food",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "在古城中找到的汤包，虽然里面的馅和外面的皮都被幽匿所浸染，口感指定也不怎么地就是了。$(br)吃下去可能会眼前一黑，你可能会吃到一些禁书碎片什么的……这大概是古城原住民过春节的额……奇妙传统。"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "食用后：$(br)$(li)30%%概率给予30s失明$(li)70%%概率给予30s感官缺失$(li)90%%概率吃到禁书碎片$(li)10%%概率吃到禁书片段"
+        }
+    ]
+}
