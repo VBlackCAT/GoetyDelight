@@ -24,7 +24,7 @@
     "item": "goety:tall_skull"
   },
   "result": {
-    "item": "goetydelight:stuffed_tall_skull_rice_block"
+    "id": "goetydelight:stuffed_tall_skull_rice_block"
   },
   "experience": 1.5,
   "cookingtime": 200

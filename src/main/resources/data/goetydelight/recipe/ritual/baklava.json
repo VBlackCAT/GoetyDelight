@@ -34,11 +34,11 @@
             "item": "minecraft:sugar"
         },
         {
-            "tag": "forge:milk"
+            "tag": "c:foods/milk"
         }
     ],
     "result": {
-        "item": "goetydelight:baklava",
+        "id": "goetydelight:baklava",
         "count": 16
     }
 }

@@ -8,7 +8,7 @@
       "item": "goety:corpse_blossom"
     },
     {
-      "tag": "forge:crops/onion"
+      "tag": "c:crops/onion"
     },
     {
       "tag": "goety:meat"
@@ -21,7 +21,7 @@
     "item": "minecraft:bowl"
   },
   "result": {
-    "item": "goetydelight:jungle_salad"
+    "id": "goetydelight:jungle_salad"
   },
   "experience": 1.5,
   "cookingtime": 200

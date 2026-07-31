@@ -21,7 +21,7 @@
     }
   ],
   "result": {
-    "item": "goetydelight:sundae_of_the_philosophers_potion"
+    "id": "goetydelight:sundae_of_the_philosophers_potion"
   },
   "container": {
     "item": "minecraft:bowl"

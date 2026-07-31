@@ -21,7 +21,7 @@
   ],
   "recipe_book_tab": "misc",
   "result": {
-    "item": "goetydelight:ominous_ice_cream"
+    "id": "goetydelight:ominous_ice_cream"
   },
   "container": {
     "item": "minecraft:bowl"

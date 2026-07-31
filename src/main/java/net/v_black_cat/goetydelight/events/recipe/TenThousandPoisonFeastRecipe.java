@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.recipe;
+package net.v_black_cat.goetydelight.events.recipe;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;

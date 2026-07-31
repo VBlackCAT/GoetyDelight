@@ -8,17 +8,17 @@
       "item": "minecraft:bread"
     },
     {
-      "tag": "forge:eggs"
+      "tag": "c:eggs"
     },
     {
-      "tag": "forge:eggs"
+      "tag": "c:eggs"
     }
   ],
   "container": {
     "item": "minecraft:bowl"
   },
   "result": {
-    "item": "goetydelight:exotic_breakfast"
+    "id": "goetydelight:exotic_breakfast"
   },
   "experience": 1.5,
   "cookingtime": 200

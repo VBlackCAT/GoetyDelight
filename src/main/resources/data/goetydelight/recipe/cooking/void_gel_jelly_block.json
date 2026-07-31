@@ -24,7 +24,7 @@
     "item": "minecraft:bowl"
   },
   "result": {
-    "item": "goetydelight:void_gel_jelly_block",
+    "id": "goetydelight:void_gel_jelly_block",
     "count": 1
   },
   "experience": 1.5,

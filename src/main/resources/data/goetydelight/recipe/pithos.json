@@ -7,7 +7,7 @@
     "item": "goetydelight:the_box_of_the_dead"
   },
   "result": {
-    "item": "goety:pithos"
+    "id": "goety:pithos"
   },
   "template": {
     "item": "goety:forbidden_fragment"

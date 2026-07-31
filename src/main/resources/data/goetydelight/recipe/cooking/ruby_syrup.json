@@ -15,7 +15,7 @@
     }
   ],
   "result": {
-    "item": "goetydelight:ruby_syrup"
+    "id": "goetydelight:ruby_syrup"
   },
   "container": {
     "item": "minecraft:glass_bottle"

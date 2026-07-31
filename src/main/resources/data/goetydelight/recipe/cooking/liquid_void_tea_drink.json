@@ -12,7 +12,7 @@
     }
   ],
   "result": {
-    "item": "goetydelight:liquid_void_tea_drink"
+    "id": "goetydelight:liquid_void_tea_drink"
   },
   "experience": 1.5,
   "cookingtime": 200

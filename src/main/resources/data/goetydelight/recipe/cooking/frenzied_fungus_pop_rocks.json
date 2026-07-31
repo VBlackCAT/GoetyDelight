@@ -15,7 +15,7 @@
   ],
   "recipe_book_tab": "misc",
   "result": {
-    "item": "goetydelight:frenzied_fungus_pop_rocks"
+    "id": "goetydelight:frenzied_fungus_pop_rocks"
   },
   "container": {
     "item": "minecraft:glass_bottle"

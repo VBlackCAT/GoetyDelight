@@ -7,7 +7,7 @@
     "item": "minecraft:obsidian"
   },
   "result": {
-    "item": "minecraft:crying_obsidian"
+    "id": "minecraft:crying_obsidian"
   },
   "template": {
     "item": "farmersdelight:onion"

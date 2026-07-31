@@ -16,14 +16,14 @@
             "item": "minecraft:cocoa_beans"
         },
         {
-            "tag": "forge:raw_fishes"
+            "tag": "c:raw_fishes"
         },
         {
-            "tag": "forge:milk"
+            "tag": "c:foods/milk"
         }
     ],
     "recipe_book_tab": "misc",
     "result": {
-        "item": "goetydelight:creamy_berry_fish_paste_dumpling_with_chocolate_sauce"
+        "id": "goetydelight:creamy_berry_fish_paste_dumpling_with_chocolate_sauce"
     }
 }

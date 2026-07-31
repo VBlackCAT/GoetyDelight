@@ -1,12 +1,13 @@
 {
   "type": "goety:ritual",
-  "ritual_type": "goety:craft",
+  "ritual_type": "goety:enchant",
   "activation_item": {
     "item": "minecraft:book"
   },
   "craftType": "magic",
   "soulCost": 10,
   "duration": 10,
+  "enchantment":  "goetydelight:soul_healing",
   "ingredients": [
     {
       "item": "minecraft:enchanted_golden_apple"
@@ -25,14 +26,6 @@
     }
   ],
   "result": {
-    "item": "minecraft:enchanted_book",
-    "nbt": {
-      "StoredEnchantments": [
-        {
-          "id": "goetydelight:soul_healing",
-          "lvl": 1
-        }
-      ]
-    }
+    "id": "minecraft:enchanted_book"
   }
 }

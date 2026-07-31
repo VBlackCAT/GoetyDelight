@@ -14,11 +14,11 @@
       "item": "minecraft:bread"
     },
     {
-      "tag": "forge:eggs"
+      "tag": "c:foods/eggs"
     }
   ],
   "result": {
-    "item": "goetydelight:nether_style_fried_egg_sandwich"
+    "id": "goetydelight:nether_style_fried_egg_sandwich"
   },
   "experience": 1.5,
   "cookingtime": 200

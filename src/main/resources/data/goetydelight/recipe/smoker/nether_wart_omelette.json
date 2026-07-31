@@ -6,5 +6,5 @@
   "ingredient": {
     "item": "goety:wartful_egg"
   },
-  "result": "goetydelight:nether_wart_omelette"
+  "id": "goetydelight:nether_wart_omelette"
 }

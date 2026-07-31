@@ -1,12 +1,13 @@
 {
   "type": "goety:ritual",
-  "ritual_type": "goety:craft",
+  "ritual_type": "goety:enchant",
   "activation_item": {
     "item": "minecraft:book"
   },
   "craftType": "magic",
   "soulCost": 10,
   "duration": 10,
+  "enchantment":  "goetydelight:soul_mending",
   "ingredients": [
     {
       "item": "minecraft:quartz"
@@ -28,14 +29,6 @@
     }
   ],
   "result": {
-    "item": "minecraft:enchanted_book",
-    "nbt": {
-      "StoredEnchantments": [
-        {
-          "id": "goetydelight:soul_mending",
-          "lvl": 3
-        }
-      ]
-    }
+    "id": "minecraft:enchanted_book"
   }
 }

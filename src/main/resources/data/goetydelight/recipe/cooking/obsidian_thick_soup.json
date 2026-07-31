@@ -21,7 +21,7 @@
   ],
   "recipe_book_tab": "meals",
   "result": {
-    "item": "goetydelight:obsidian_thick_soup"
+    "id": "goetydelight:obsidian_thick_soup"
   },
   "container": {
     "item": "minecraft:bowl"

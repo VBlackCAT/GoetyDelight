@@ -14,7 +14,7 @@
       "item": "minecraft:wheat"
     },
     {
-      "tag": "forge:milk"
+      "tag": "c:foods/milk"
     },
     {
       "item": "minecraft:egg"
@@ -22,7 +22,7 @@
 
   ],
   "result": {
-    "item": "goetydelight:possible_holy_representative"
+    "id": "goetydelight:possible_holy_representative"
   },
   "container": {
     "item": "minecraft:glass_bottle"

@@ -7,7 +7,7 @@
     "item": "goetydelight:parasitized_warden"
   },
   "result": {
-    "item": "goety:dark_alloy_block"
+    "id": "goety:dark_alloy_block"
   },
   "template": {
     "item": "goety:shadow_essence"

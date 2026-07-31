@@ -21,7 +21,7 @@
   ],
   "recipe_book_tab": "meals",
   "result": {
-    "item": "goetydelight:night_heart_pea_soup_block"
+    "id": "goetydelight:night_heart_pea_soup_block"
   },
   "container": {
     "item": "goetydelight:cursed_ingot_pot"

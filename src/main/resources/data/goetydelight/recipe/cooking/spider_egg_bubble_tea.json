@@ -14,14 +14,14 @@
       "item": "minecraft:wheat"
     },
     {
-      "tag": "forge:milk"
+      "tag": "c:foods/milk"
     }
   ],
 
   "recipe_book_tab": "drinks",
 
   "result": {
-    "item": "goetydelight:spider_egg_bubble_tea"
+    "id": "goetydelight:spider_egg_bubble_tea"
   },
   "container": {
     "item": "minecraft:glass_bottle"

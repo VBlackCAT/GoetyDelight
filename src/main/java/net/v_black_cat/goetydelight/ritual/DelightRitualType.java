@@ -2,7 +2,6 @@ package net.v_black_cat.goetydelight.ritual;
 
 import com.Polarice3.Goety.api.ritual.IRitualType;
 import com.Polarice3.Goety.api.ritual.RitualType;
-import com.Polarice3.Goety.common.blocks.ModBlocks;
 import com.Polarice3.Goety.common.blocks.entities.DarkAltarBlockEntity;
 import com.Polarice3.Goety.common.blocks.entities.RitualBlockEntity;
 import com.Polarice3.Goety.common.crafting.RitualRecipe;
@@ -22,6 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.v_black_cat.goetydelight.init.ModBlocks;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +40,7 @@ public class DelightRitualType implements IRitualType {
 
     @Override
     public ItemStack getJeiIcon() {
-        return new ItemStack(net.v_black_cat.goetydelight.init.ModItems.GOETYDELIGHT_ICON.get());
+        return new ItemStack(ModBlocks.CURSED_INGOT_POT.get());
     }
 
     @Override
@@ -52,8 +52,8 @@ public class DelightRitualType implements IRitualType {
         final int RANGE = 8;
         Map<Block, Integer> blockRequirements = new HashMap<>();
         blockRequirements.put(Blocks.SMOKER, 2);
-        // blockRequirements.put(ModBlocks.SHADE_STOVE.get(), 1);
-        // blockRequirements.put(ModBlocks.CURSED_INGOT_POT.get(), 1);
+         blockRequirements.put(ModBlocks.SHADE_STOVE.get(), 1);
+         blockRequirements.put(ModBlocks.CURSED_INGOT_POT.get(), 1);
 
         Map<Block, Integer> blockCounts = new HashMap<>();
         for (Block block : blockRequirements.keySet()) {
@@ -85,7 +85,7 @@ public class DelightRitualType implements IRitualType {
                 allMet = false;
                 int deficit = required - actual;
                 missingMessages.add(Component.translatable(
-                        "message.goetydelight.ritual.missing_block",
+                        "info.goety.ritual.structure.noBlocks",
                         block.getName(), deficit
                 ));
             }
