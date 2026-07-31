@@ -5,7 +5,7 @@
         "item": "minecraft:honey_bottle"
     },
     "craftType": "culinary",
-    "research": "vizier_cookbook",
+    "research": "viziers_cookbook",
     "soulCost": 24,
     "duration": 7,
     "ingredients": [

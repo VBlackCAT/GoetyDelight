@@ -5,7 +5,7 @@
     "item": "minecraft:cake"
   },
   "craftType": "culinary",
-  "research": "vizier_cookbook",
+  "research": "viziers_cookbook",
   "soulCost": 111,
   "duration": 10,
   "ingredients": [
