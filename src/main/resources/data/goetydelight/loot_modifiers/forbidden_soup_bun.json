@@ -1,0 +1,13 @@
+{
+  "type": "goety:add_loot",
+  "chance": 0.25,
+  "replace": false,
+  "conditions": [
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:chests/ancient_city"
+    }
+  ],
+  "count": 2,
+  "item": "goetydelight:forbidden_soup_bun"
+}

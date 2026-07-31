@@ -8,8 +8,6 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -69,9 +67,6 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
     private Player tradingPlayer;
     private long lastRestockTime = -1;
     private boolean hasRestockedToday = false;
-
-    // 添加一个集合来跟踪可疑玩家
-    private final Set<UUID> suspiciousPlayers = new HashSet<>();
 
     public final AnimationState attackAnimationState = new AnimationState();
     private int attackTick = 0;
@@ -487,8 +482,7 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
             if (!isNightTime() || !isInTargetStructure()) {
                 return false;
             }
-            this.targetPlayer = findAttackTarget();
-            return this.targetPlayer != null && !isAttacking();
+            return false;
         }
 
         @Override
@@ -521,21 +515,13 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
                 }
             }
         }
-
-        private Player findAttackTarget() {
-            AABB searchArea = new AABB(blockPosition()).inflate(16);
-            List<Player> players = level().getEntitiesOfClass(Player.class, searchArea);
-            for (Player player : players) {
-                // 检查玩家是否在结构内并且是可疑玩家
-                if (isPlayerInTargetStructure(player) && isSuspicious(player)) {
-                    return player;
-                }
-            }
-            return null;
-        }
     }
 
     private void startAttack(Player player) {
+        // 检查是否已经在攻击中，避免重复攻击
+        if (isAttacking()) {
+            return;
+        }
         teleportToPlayerFront(player);
         setAttacking(true);
         this.attackTick = 0;
@@ -557,9 +543,6 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
         dealMagicDamageToPlayer(player);
         playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
         addParticlesAroundSelf(ParticleTypes.REVERSE_PORTAL);
-
-        // 攻击后清除可疑状态
-        suspiciousPlayers.remove(player.getUUID());
     }
 
     @Override
@@ -599,62 +582,24 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
     }
 
     /**
-     * 当幽冥瓜被破坏时调用
+     * 当幽冥瓜被破坏时调用，直接在结构内攻击玩家
      */
     public void onEctoplasmicMelonBreak(Player player) {
         // 检查玩家是否在结构内
         if (isPlayerInTargetStructure(player)) {
-            markPlayerAsSuspicious(player);
-            // 如果玩家在攻击范围内，立即攻击
-            if (distanceToSqr(player) < 16.0D) {
-                startAttack(player);
-            }
+            // 直接攻击玩家
+            startAttack(player);
         }
-    }
-
-    /**
-     * 标记玩家为可疑状态
-     */
-    private void markPlayerAsSuspicious(Player player) {
-        suspiciousPlayers.add(player.getUUID());
-    }
-
-    /**
-     * 检查玩家是否为可疑状态
-     */
-    private boolean isSuspicious(Player player) {
-        return suspiciousPlayers.contains(player.getUUID());
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-
-        // 保存可疑玩家列表
-        ListTag suspiciousList = new ListTag();
-        for (UUID uuid : suspiciousPlayers) {
-            CompoundTag uuidTag = new CompoundTag();
-            uuidTag.putUUID("UUID", uuid);
-            suspiciousList.add(uuidTag);
-        }
-        compound.put("SuspiciousPlayers", suspiciousList);
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-
-        // 读取可疑玩家列表
-        suspiciousPlayers.clear();
-        if (compound.contains("SuspiciousPlayers", Tag.TAG_LIST)) {
-            ListTag suspiciousList = compound.getList("SuspiciousPlayers", Tag.TAG_COMPOUND);
-            for (int i = 0; i < suspiciousList.size(); i++) {
-                CompoundTag uuidTag = suspiciousList.getCompound(i);
-                if (uuidTag.hasUUID("UUID")) {
-                    suspiciousPlayers.add(uuidTag.getUUID("UUID"));
-                }
-            }
-        }
     }
 
     private void teleportToPlayerFront(Player player) {

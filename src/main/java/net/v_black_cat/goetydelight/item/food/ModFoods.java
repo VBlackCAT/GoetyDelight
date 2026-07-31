@@ -7,6 +7,7 @@ import net.minecraft.world.food.FoodProperties;
 import net.v_black_cat.goetydelight.init.ModEffects;
 
 import static net.v_black_cat.goetydelight.util.TickConverterUtil.minToTick;
+import static net.v_black_cat.goetydelight.util.TickConverterUtil.sToTick;
 
 public class ModFoods {
     // 饮品
@@ -50,6 +51,7 @@ public class ModFoods {
     public static final FoodProperties NETHER_WART_OMELETTE;
     public static final FoodProperties WARPED_WART_OMELETTE;
     public static final FoodProperties FULL_SPIDER_FEAST;
+    public static final FoodProperties BOWL_OF_SNAP_UNHOLY_TRIPE;
     public static final FoodProperties LICHS_CHAOS_STEW;
     public static final FoodProperties MAGIC_QUARTZ_COOKIE;
     public static final FoodProperties SNAP_UNHOLY_TRIPE;
@@ -321,6 +323,14 @@ public class ModFoods {
                 .nutrition(8).saturationModifier(0.625F).alwaysEdible()
                 .effect(() -> new MobEffectInstance(vectorwing.farmersdelight.common.registry.ModEffects.NOURISHMENT, minToTick(5), 0), 1.0F)
                 .effect(() -> new MobEffectInstance(GoetyEffects.CLIMBING, minToTick(5), 0), 1.0F)
+                .build();
+
+        BOWL_OF_SNAP_UNHOLY_TRIPE = new FoodProperties.Builder()
+                .nutrition(18).saturationModifier(1.1F).alwaysEdible()
+                .effect(() -> new MobEffectInstance(vectorwing.farmersdelight.common.registry.ModEffects.NOURISHMENT, minToTick(10), 0), 1.0F)
+                .effect(() -> new MobEffectInstance(MobEffects.SATURATION, sToTick(5), 0), 1.0F)
+                .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSENGER, minToTick(2), 0), 1.0F)
+                .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE,  minToTick(10), 0), 1.0F)
                 .build();
 
         LICHS_CHAOS_STEW = new FoodProperties.Builder()

@@ -46,7 +46,7 @@ public class ModCreativeTabs {
                         output.accept(ModItems.RUBY_SYRUP.get());
 
                         // 普通食物
-                        output.accept(ModItems.PROMOTION_HARD_CANDY.get());
+//                        output.accept(ModItems.PROMOTION_HARD_CANDY.get());
                         output.accept(ModItems.PARASITIZED_WARDEN.get());
                         output.accept(ModItems.ECTOPLASM_JELLY.get());
                         output.accept(ModItems.WHITE_SHARK_SUGAR_PACK.get());
@@ -71,6 +71,7 @@ public class ModCreativeTabs {
                         output.accept(ModItems.NETHER_WART_OMELETTE.get());
                         output.accept(ModItems.WARPED_WART_OMELETTE.get());
                         output.accept(ModItems.FULL_SPIDER_FEAST.get());
+                        output.accept(ModItems.BOWL_OF_SNAP_UNHOLY_TRIPE.get());
                         output.accept(ModItems.METAMORPHIC_SCENT_FRUIT.get());
                         output.accept(ModItems.METAMORPHIC_SCENT_GRASS.get());
                         output.accept(ModItems.SHAWARMA.get());

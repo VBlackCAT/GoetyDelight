@@ -104,6 +104,7 @@ public class ModItems {
     public static final DeferredItem<Item> WARPED_WART_OMELETTE;
     public static final DeferredItem<Item> FULL_SPIDER_FEAST;
     public static final DeferredItem<Item> LIQUID_VOID_TEA_DRINK;
+    public static final DeferredItem<Item> BOWL_OF_SNAP_UNHOLY_TRIPE;
 
     public static final DeferredItem<Item> LICHS_CHAOS_STEW;
     public static final DeferredItem<Item> MAGIC_QUARTZ_COOKIE;
@@ -450,7 +451,11 @@ public class ModItems {
         LIQUID_VOID_TEA_DRINK = ITEMS.register("liquid_void_tea_drink",
                 () -> new LiquidVoidTeaDrinkItem(basicItem().stacksTo(16)
                         .food(ModFoods.LIQUID_VOID_TEA_DRINK)));
-//
+
+        BOWL_OF_SNAP_UNHOLY_TRIPE = ITEMS.register("bowl_of_snap_unholy_tripe",
+                () -> new SnapUnholyTripeItem(basicItem().stacksTo(16).craftRemainder(Items.BOWL)
+                        .food(ModFoods.BOWL_OF_SNAP_UNHOLY_TRIPE)));
+
         LICHS_CHAOS_STEW = ITEMS.register("lichs_chaos_stew",
                 () -> new LichsChaosStewItem(basicItem().craftRemainder(Items.BOWL).stacksTo(64).rarity(Rarity.EPIC).food(
                         ModFoods.LICHS_CHAOS_STEW

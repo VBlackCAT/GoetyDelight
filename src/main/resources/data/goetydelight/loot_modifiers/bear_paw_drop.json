@@ -1,0 +1,15 @@
+{
+  "type": "goetydelight:goetydelight_loot_modifier",
+  "conditions": [
+    {
+      "condition": "goetydelight:entity_tag",
+      "tag": "goetydelight:bear"
+
+    }
+  ],
+  "itemToAdd": "goetydelight:bear_paw",
+  "chance": 0.1,
+  "min": 0,
+  "max": 4,
+  "looting_multiplier": 0.025
+}
