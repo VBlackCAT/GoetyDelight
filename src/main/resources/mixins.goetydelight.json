@@ -4,6 +4,7 @@
   "package": "net.v_black_cat.goetydelight.mixin",
   "refmap": "goetydelight.refmap.json",
   "mixins": [
+    "AnvilBlockMixin",
     "ArtificialFlowerMixin",
     "BlockFinderMixin",
     "CookingPotBlockEntityMixin",
@@ -16,7 +17,7 @@
     "RecipeManagerMixin",
     "SummonSpellMixin",
     "WightSpawnerMixin",
-    "AnvilBlockMixin"
+    "ModelBakeryMixin"
   ],
   "client": [
     "BookContentResourceListenerLoaderMixin",
