@@ -1,8 +1,5 @@
 package net.v_black_cat.goetydelight.effect;
 
-import com.Polarice3.Goety.api.items.magic.IFocus;
-import com.Polarice3.Goety.api.items.magic.IWand;
-import com.Polarice3.Goety.common.items.magic.DarkWand;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffect;
