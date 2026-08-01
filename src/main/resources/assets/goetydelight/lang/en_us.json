@@ -131,6 +131,7 @@
   "item.goetydelight.roast_laowang_feet": "Roast Pig Feet",
   "item.goetydelight.onion_pork_chop_rice": "Onion Pork Chop Rice",
   "item.goetydelight.ectoplasmic_melon_salad": "Ectoplasmic Melon Salad",
+  "item.goetydelight.ten_thousand_poison_feast": "Ten Thousand Poison Feast",
   "effect.goetydelight.spell_duration": "Spell Duration",
   "effect.goetydelight.spell_mastery": "Spell Mastery",
   "effect.goetydelight.the_pale_messenger": "The Pale Messenger",
@@ -183,6 +184,8 @@
   "item.goetydelight.metamorphic_scent_fruit": "Metamorphic Scent Fruit",
   "block.goetydelight.roast_laowang_block.use_knife": "Use a knife to cut off the ears first!",
   "block.goetydelight.feast.use_container": "Use a bowl to take a serving!",
+  "tooltip.goetydelight.custom.unknown": "Unknown Doll (Try putting wool in the stonecutter!)",
+  "tooltip.goetydelight.doll.vanilla": "Default Doll (Try putting wool in the stonecutter!)",
   "tooltip.goetydelight.doll.doll_5152": "wu1wu2's doll",
   "tooltip.goetydelight.doll.doll_p0": "Player__0's doll",
   "tooltip.goetydelight.doll.doll_p7": "Player__7's doll",
@@ -213,6 +216,8 @@
   "tooltip.goetydelight.doll.doll_htohtosgoy": "htohtosgoy's doll",
   "tooltip.goetydelight.cherry_blossom_cake_good": "Blessings from XiaoArin",
   "tooltip.goetydelight.cherry_blossom_cake_bad": "This sacred relic belongs to the blessed, not to you",
+  "tooltip.goetydelight.soul_infused": "Soul-Infused",
+  "tooltip.goetydelight.soul_energy_restore": "Restores %s Soul Energy upon consumption.",
   "message.goety.crisp_biscuit": "eaten person",
   "message.goetydelight.baklava.cooldown": "Cooling down, remaining time (seconds): %s",
   "message.goetydelight.baklava.vizierspoken": "Being able to enjoy this taste makes it all worth it shedding tears of joy",
@@ -252,5 +257,6 @@
   "goetydelight.advancement.ghost_farmer_kill_player.description": "The Melon Thief Gets Turned Tables",
   "goetydelight.advancement.ghost_farmer_kill_player.title": "Ghost Farmer's Revenge",
   "config.jade.plugin_goetydelight.doll_entity": "Doll Entity Info",
+  "config.jade.plugin_goetydelight.doll_block": "Doll Block Info",
   "subtitle.goetydelight.block.touch_doll": "Touch Doll"
 }

@@ -16,7 +16,7 @@
             "tag": "minecraft:fox_food"
         },
         {
-            "tag": "forge:ice_cube"
+            "tag": "c:ice_cube"
         },
         {
             "item": "goety:ectoplasm"

@@ -9,10 +9,10 @@
   "duration": 15,
   "ingredients": [
     {
-      "tag": "c:dough"
+      "tag": "c:foods/dough"
     },
     {
-      "tag": "c:foods/milk"
+      "tag": "c:drinks/milk"
     },
     {
       "tag": "goety:meat"

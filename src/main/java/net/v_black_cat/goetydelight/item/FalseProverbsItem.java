@@ -86,7 +86,7 @@ public class FalseProverbsItem extends SwordItem {
                         .add(Attributes.ATTACK_SPEED,
                                 new AttributeModifier(
                                         ResourceLocation.withDefaultNamespace("base_attack_speed"),
-                                        -2.4,
+                                        -2.0,
                                         AttributeModifier.Operation.ADD_VALUE
                                 ),
                                 EquipmentSlotGroup.MAINHAND)
