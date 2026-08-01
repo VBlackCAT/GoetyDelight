@@ -26,14 +26,14 @@ public class ModCreativeTabs {
                         // 武器
                         output.accept(ModItems.CURSED_INGOT_KNIFE.get());
                         output.accept(ModItems.DARK_KNIFE.get());
-                        output.accept(ModItems.APOCALYPTIUM_KNIFE.get());
-                        output.accept(ModItems.VENOMOUS_SPIDER_KNIFE.get());
-                        output.accept(ModItems.SPECTRE_KNIFE.get());
-                        output.accept(ModItems.MARBLE_OP_SWORD.get());
+//                        output.accept(ModItems.APOCALYPTIUM_KNIFE.get());
+//                        output.accept(ModItems.VENOMOUS_SPIDER_KNIFE.get());
+//                        output.accept(ModItems.SPECTRE_KNIFE.get());
+//                        output.accept(ModItems.MARBLE_OP_SWORD.get());
                         output.accept(ModItems.FALSE_PROVERBS.get());
                         output.accept(ModItems.CURSED_METAL_BRUSH.get());
                         output.accept(ModItems.DARK_BRUSH.get());
-                        output.accept(ModItems.APOCALYPTIUM_INGOT_BRUSH.get());
+//                        output.accept(ModItems.APOCALYPTIUM_INGOT_BRUSH.get());
 
                         // 图标
                       //  output.accept(ModItems.GOETYDELIGHT_ICON.get());
@@ -70,14 +70,13 @@ public class ModCreativeTabs {
                         output.accept(ModItems.QUICK_GROWING_SEED_POPCORN.get());
                         output.accept(ModItems.NETHER_STYLE_FRIED_EGG_SANDWICH.get());
                         output.accept(ModItems.EXOTIC_BREAKFAST.get());
-                        output.accept(ModItems.ASCENSION_MOONCAKE.get());
+//                        output.accept(ModItems.ASCENSION_MOONCAKE.get());
                         output.accept(ModItems.VILLAGERS_FEAST.get());
-                        output.accept(ModItems.CHERRY_BLOSSOM_CAKE.get());
+//                        output.accept(ModItems.CHERRY_BLOSSOM_CAKE.get());
                         output.accept(ModItems.NETHER_WART_OMELETTE.get());
                         output.accept(ModItems.WARPED_WART_OMELETTE.get());
                         output.accept(ModItems.FULL_SPIDER_FEAST.get());
-                        output.accept(ModItems.BOWL_OF_SNAP_UNHOLY_TRIPE.get());
-                        output.accept(ModItems.METAMORPHIC_SCENT_FRUIT.get());
+//                        output.accept(ModItems.METAMORPHIC_SCENT_FRUIT.get());
                         output.accept(ModItems.METAMORPHIC_SCENT_GRASS.get());
                         output.accept(ModItems.SHAWARMA.get());
                         output.accept(ModItems.MENEMEN_WITH_BREAD.get());
@@ -110,7 +109,7 @@ public class ModCreativeTabs {
                         output.accept(ModItems.OMINOUS_ICE_CREAM.get());
                         output.accept(ModItems.MAGIC_QUARTZ_COOKIE.get());
                         output.accept(ModItems.ROASTED_CORPSE_MAGGOTS.get());
-                        output.accept(ModItems.ROAST_LAOWANG.get());
+//                        output.accept(ModItems.ROAST_LAOWANG.get());
                         output.accept(ModItems.ANCIENT_ENCHANTED_GOLDEN_APPLE.get());
                         output.accept(ModItems.HIDDEN_PANCAKE.get());
                         output.accept(ModItems.POLARICE.get());
