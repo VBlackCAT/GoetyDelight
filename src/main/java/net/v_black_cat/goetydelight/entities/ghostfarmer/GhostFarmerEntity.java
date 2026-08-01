@@ -433,6 +433,20 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
         return structureStart != null && structureStart.isValid();
     }
 
+    /**
+     * 检查玩家是否在目标结构内
+     */
+    private boolean isPlayerInTargetStructure(Player player) {
+        BlockPos playerPos = player.blockPosition();
+        ServerLevel serverLevel = (ServerLevel) this.level();
+        Structure structure = serverLevel.registryAccess().registryOrThrow(Registries.STRUCTURE)
+                .get(ResourceKey.create(Registries.STRUCTURE,
+                        ResourceLocation.fromNamespaceAndPath("goetydelight", "ectoplasmic_melon_field")));
+        if (structure == null) return false;
+        StructureStart structureStart = serverLevel.structureManager().getStructureWithPieceAt(playerPos, structure);
+        return structureStart != null && structureStart.isValid();
+    }
+
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(1, new FloatSwimGoal(this));
@@ -468,8 +482,7 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
             if (!isNightTime() || !isInTargetStructure()) {
                 return false;
             }
-            this.targetPlayer = findAttackTarget();
-            return this.targetPlayer != null && !isAttacking();
+            return false;
         }
 
         @Override
@@ -502,20 +515,13 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
                 }
             }
         }
-
-        private Player findAttackTarget() {
-            AABB searchArea = new AABB(blockPosition()).inflate(16);
-            List<Player> players = level().getEntitiesOfClass(Player.class, searchArea);
-            for (Player player : players) {
-                if (hasStolenMelon(player) || isSuspicious(player)) {
-                    return player;
-                }
-            }
-            return null;
-        }
     }
 
     private void startAttack(Player player) {
+        // 检查是否已经在攻击中，避免重复攻击
+        if (isAttacking()) {
+            return;
+        }
         teleportToPlayerFront(player);
         setAttacking(true);
         this.attackTick = 0;
@@ -575,22 +581,15 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
         return Component.translatable("entity.goetydelight.ghost_farmer");
     }
 
+    /**
+     * 当幽冥瓜被破坏时调用，直接在结构内攻击玩家
+     */
     public void onEctoplasmicMelonBreak(Player player) {
-        markPlayerAsSuspicious(player);
-        if (distanceToSqr(player) < 16.0D) {
+        // 检查玩家是否在结构内
+        if (isPlayerInTargetStructure(player)) {
+            // 直接攻击玩家
             startAttack(player);
         }
-    }
-
-    private void markPlayerAsSuspicious(Player player) {
-    }
-
-    private boolean hasStolenMelon(Player player) {
-        return false;
-    }
-
-    private boolean isSuspicious(Player player) {
-        return false;
     }
 
     @Override

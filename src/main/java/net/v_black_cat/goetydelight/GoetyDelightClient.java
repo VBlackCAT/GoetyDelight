@@ -14,7 +14,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.v_black_cat.goetydelight.events.ClientSetupHandler;
 import net.v_black_cat.goetydelight.events.RegisterClientExtensionsEventHandler;
 import net.v_black_cat.goetydelight.render.test.ModShaderReg;
-import net.v_black_cat.goetydelight.visual.client.ClientEntityVisualEffectPackets;
 import net.v_black_cat.goetydelight.visual.client.EntityVisualEffectRenderDispatcher;
 import net.v_black_cat.goetydelight.visual.client.ScreenSpaceDepthEffectPostProcessor;
 
@@ -44,6 +43,5 @@ public class GoetyDelightClient {
                 EntityVisualEffectRenderDispatcher::onRenderLevelStage);
         NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST,
                 ScreenSpaceDepthEffectPostProcessor::onRenderLevelStage);
-        NeoForge.EVENT_BUS.addListener(ClientEntityVisualEffectPackets::onClientTick);
     }
 }

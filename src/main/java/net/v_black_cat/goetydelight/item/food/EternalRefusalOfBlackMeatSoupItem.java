@@ -84,7 +84,7 @@ public class EternalRefusalOfBlackMeatSoupItem extends RejectedDarkMeatSoupItem 
         return false;
     }
 
-    private void setCooldown(ItemStack stack, Level level, long cooldownTicks) {
+    public void setCooldown(ItemStack stack, Level level, long cooldownTicks) {
         CompoundTag tag = getCustomTag(stack);
         tag.putLong(COOLDOWN_TAG, cooldownTicks);
         tag.putLong(LAST_USED_TAG, level.getGameTime());
@@ -119,12 +119,14 @@ public class EternalRefusalOfBlackMeatSoupItem extends RejectedDarkMeatSoupItem 
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public boolean isBarVisible(ItemStack stack) {
         Level level = Minecraft.getInstance().level;
         return level != null && isOnCooldown(stack, level);
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public int getBarWidth(ItemStack stack) {
         Level level = Minecraft.getInstance().level;
         if (level == null) return 0;

@@ -53,13 +53,17 @@ public class GoetyDelight {
         ModFeatures.register(modEventBus);
         ModConfiguredFeatures.register(modEventBus);
         ModPlacedFeatures.register(modEventBus);
-        ModStructures.register(modEventBus);
         ModLootModifiers.register(modEventBus);
+        net.v_black_cat.goetydelight.loot.RegHelper.register(modEventBus);
         ModAttachments.register(modEventBus);
         ModBuffTypes.register(modEventBus);
         ModRituals.register(modEventBus);
         GDVisualEffects.register(modEventBus);
         ModAdvancementsTrigger.TRIGGERS.register(modEventBus);
+
+        ModStructures.register(modEventBus);
+        ModStructurePieceTypes.register(modEventBus);
+        ModStructureProcessorTypes.register(modEventBus);
     }
 
     /**
@@ -91,9 +95,6 @@ public class GoetyDelight {
         NeoForge.EVENT_BUS.addListener(PlayerTickEventHandler::onPlayerDeath);
         NeoForge.EVENT_BUS.addListener(PlayerTickEventHandler::onPlayerRespawn);
         NeoForge.EVENT_BUS.addListener(VisualEffectEventHandler::onLevelTick);
-        NeoForge.EVENT_BUS.addListener(VisualEffectEventHandler::onStartTracking);
-        NeoForge.EVENT_BUS.addListener(VisualEffectEventHandler::onPlayerLoggedIn);
-        NeoForge.EVENT_BUS.addListener(VisualEffectEventHandler::onPlayerClone);
         NeoForge.EVENT_BUS.addListener(GhostFarmerBlockBreakHandler::onBlockBreak);
 
     }

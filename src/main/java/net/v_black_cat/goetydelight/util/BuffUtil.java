@@ -2,6 +2,7 @@ package net.v_black_cat.goetydelight.util;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.attachment.AttachmentSync;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.v_black_cat.goetydelight.buff.ActiveBuffs;
 import net.v_black_cat.goetydelight.buff.BuffInstance;
@@ -55,6 +56,8 @@ public class BuffUtil {
         if (newEffect != null) {
             newEffect.onApply(entity, amplifier);
         }
+
+        syncToClients(entity);
     }
 
     /**
@@ -71,6 +74,8 @@ public class BuffUtil {
         if (effect != null) {
             effect.onRemove(entity, amplifier);
         }
+
+        syncToClients(entity);
     }
 
     // 以下两个方法不变（仅查询）
@@ -99,6 +104,15 @@ public class BuffUtil {
 
         // 取最后一个实例的 amplifier（通常只有一个）
         return instances.get(instances.size() - 1).getAmplifier();
+    }
+
+    /**
+     * 将 ActiveBuffs 附件同步到客户端（初始跟踪时 NeoForge 会自动同步，
+     * 这里负责运行时增删/过期后的即时同步）。
+     */
+    private static void syncToClients(LivingEntity entity) {
+        if (entity.level().isClientSide) return;
+        AttachmentSync.syncEntityUpdate(entity, ModAttachments.ACTIVE_BUFFS.get());
     }
 
 }

@@ -26,9 +26,14 @@ public class ModCreativeTabs {
                         // 武器
                         output.accept(ModItems.CURSED_INGOT_KNIFE.get());
                         output.accept(ModItems.DARK_KNIFE.get());
+                        output.accept(ModItems.APOCALYPTIUM_KNIFE.get());
+                        output.accept(ModItems.VENOMOUS_SPIDER_KNIFE.get());
+                        output.accept(ModItems.SPECTRE_KNIFE.get());
+                        output.accept(ModItems.MARBLE_OP_SWORD.get());
                         output.accept(ModItems.FALSE_PROVERBS.get());
                         output.accept(ModItems.CURSED_METAL_BRUSH.get());
                         output.accept(ModItems.DARK_BRUSH.get());
+                        output.accept(ModItems.APOCALYPTIUM_INGOT_BRUSH.get());
 
                         // 图标
                       //  output.accept(ModItems.GOETYDELIGHT_ICON.get());
@@ -46,7 +51,7 @@ public class ModCreativeTabs {
                         output.accept(ModItems.RUBY_SYRUP.get());
 
                         // 普通食物
-                        output.accept(ModItems.PROMOTION_HARD_CANDY.get());
+//                        output.accept(ModItems.PROMOTION_HARD_CANDY.get());
                         output.accept(ModItems.PARASITIZED_WARDEN.get());
                         output.accept(ModItems.ECTOPLASM_JELLY.get());
                         output.accept(ModItems.WHITE_SHARK_SUGAR_PACK.get());
@@ -71,6 +76,7 @@ public class ModCreativeTabs {
                         output.accept(ModItems.NETHER_WART_OMELETTE.get());
                         output.accept(ModItems.WARPED_WART_OMELETTE.get());
                         output.accept(ModItems.FULL_SPIDER_FEAST.get());
+                        output.accept(ModItems.BOWL_OF_SNAP_UNHOLY_TRIPE.get());
                         output.accept(ModItems.METAMORPHIC_SCENT_FRUIT.get());
                         output.accept(ModItems.METAMORPHIC_SCENT_GRASS.get());
                         output.accept(ModItems.SHAWARMA.get());

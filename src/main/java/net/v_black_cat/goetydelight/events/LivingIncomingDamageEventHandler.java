@@ -10,6 +10,7 @@ public class LivingIncomingDamageEventHandler {
         NightStoveBuffEffect.onLivingIncomingDamage(event);
         RubyHardCandyDamageReductionBuffEffect.onLivingIncomingDamage(event);
         SugarScepterImmunityBuffEffect.onLivingIncomingDamage(event);
+        WardenBuffEffect.onLivingIncomingDamage(event);
     }
 
 }

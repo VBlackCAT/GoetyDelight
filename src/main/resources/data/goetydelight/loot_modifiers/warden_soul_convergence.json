@@ -1,0 +1,17 @@
+{
+  "type": "goetydelight:goetydelight_loot_modifier",
+  "conditions": [
+    {
+      "condition": "minecraft:entity_properties",
+      "entity": "this",
+      "predicate": {
+        "type": "minecraft:warden"
+      }
+    }
+  ],
+  "itemToAdd": "goetydelight:gathering_soul_embryos",
+  "chance": 1.0,
+  "min": 1,
+  "max": 1,
+  "looting_multiplier": 0.1
+}

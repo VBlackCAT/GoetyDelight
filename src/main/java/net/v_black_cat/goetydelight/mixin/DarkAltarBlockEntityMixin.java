@@ -7,29 +7,30 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-
-import java.util.List;
 
 import static net.v_black_cat.goetydelight.item.food.MetamorphicScentGrassItem.metamorphicScentGrassAndFruitReciper;
 
 @Mixin(DarkAltarBlockEntity.class)
 public class DarkAltarBlockEntityMixin {
 
+    /**
+     * Goety 3.1.0 重构：activate 里移除了 logRitualMatchFailure 调用，
+     * "无匹配仪式"失败分支内联为 player.displayClientMessage("info.goety.ritual.itemProblem.fail", true)。
+     * 该调用是 activate 中第 10 次（ordinal=9）displayClientMessage，对应 ritualRecipe == null 分支
+     * （已用 javap 对照 3.1.0 字节码确认）。若 Goety 后续增删提示消息，需要重新核对 ordinal。
+     */
     @Inject(
             method = "activate(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;Lnet/minecraft/core/Direction;)Z",
             at = @At(
                     value = "INVOKE",
-                    target = "Lcom/Polarice3/Goety/common/blocks/entities/DarkAltarBlockEntity;logRitualMatchFailure(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/item/ItemStack;Ljava/util/List;)V",
-                    shift = At.Shift.BEFORE
+                    target = "Lnet/minecraft/world/entity/player/Player;displayClientMessage(Lnet/minecraft/network/chat/Component;Z)V",
+                    ordinal = 9
             ),
-            locals = LocalCapture.CAPTURE_FAILHARD,
             cancellable = true,
             remap = false
     )
@@ -38,14 +39,9 @@ public class DarkAltarBlockEntityMixin {
                                       Player player,
                                       InteractionHand hand,
                                       Direction face,
-                                      CallbackInfoReturnable<Boolean> cir,
-                                      ItemStack activationItem,
-                                      List<RecipeHolder<RitualRecipe>> ritualRecipes,
-                                      RecipeHolder<RitualRecipe> ritualHolder,
-                                      RitualRecipe ritualRecipe) {
-        if (ritualRecipe != null) {
-            return;
-        }
+                                      CallbackInfoReturnable<Boolean> cir) {
+        // 3.1.0 不再暴露 activationItem 局部变量给注入器，这里等价地重新取一次主手物品
+        ItemStack activationItem = player.getItemInHand(hand);
 
         RitualRecipe custom = metamorphicScentGrassAndFruitReciper(
                 world, pos, player,

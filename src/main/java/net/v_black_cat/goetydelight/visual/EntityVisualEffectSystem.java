@@ -4,19 +4,16 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.v_black_cat.goetydelight.network.SyncEntityVisualEffectsPayload;
+import net.neoforged.neoforge.attachment.AttachmentSync;
+import net.v_black_cat.goetydelight.init.ModAttachments;
 
 public final class EntityVisualEffectSystem {
     private EntityVisualEffectSystem() {
     }
 
     public static EntityVisualEffects getEffects(Entity entity) {
-        return entity instanceof IVisualEffectHolder holder
-                ? holder.goetydelight$getVisualEffects()
-                : null;
+        return entity.getExistingDataOrNull(ModAttachments.VISUAL_EFFECTS);
     }
 
     public static boolean addEffect(Entity entity, ResourceLocation effectId, int durationTicks) {
@@ -36,8 +33,12 @@ public final class EntityVisualEffectSystem {
                                     int durationTicks, CompoundTag data) {
         EntityVisualEffectType type = GDVisualEffects.get(effectId);
         if (entity.level().isClientSide || type == null) return false;
+
         EntityVisualEffects effects = getEffects(entity);
-        if (effects == null) return false;
+        if (effects == null) {
+            effects = new EntityVisualEffects();
+            entity.setData(ModAttachments.VISUAL_EFFECTS, effects);
+        }
 
         CompoundTag effectData = data.copy();
         if (!effectData.contains("StartGameTime")) {
@@ -83,22 +84,6 @@ public final class EntityVisualEffectSystem {
 
     public static void sync(Entity entity) {
         if (entity.level().isClientSide) return;
-        EntityVisualEffects effects = getEffects(entity);
-        if (effects == null) return;
-        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity,
-                new SyncEntityVisualEffectsPayload(entity.getId(), effects.serializeNBTForSync()));
-    }
-
-    public static void sendToPlayer(Entity entity, ServerPlayer player) {
-        EntityVisualEffects effects = getEffects(entity);
-        if (effects == null || effects.isEmpty()) return;
-        player.connection.send(new SyncEntityVisualEffectsPayload(
-                entity.getId(), effects.serializeNBTForSync()));
-    }
-
-    public static void sendTrackedEffectsTo(ServerPlayer player) {
-        for (Entity entity : player.serverLevel().getAllEntities()) {
-            sendToPlayer(entity, player);
-        }
+        AttachmentSync.syncEntityUpdate(entity, ModAttachments.VISUAL_EFFECTS.get());
     }
 }

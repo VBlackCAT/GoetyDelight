@@ -10,10 +10,10 @@
     "LivingEntityAccessor",
     "MobMixin",
     "SummonSpellMixin",
-    "WightSpawnerMixin",
-    "BlockStateModelLoaderMixin"
+    "WightSpawnerMixin"
   ],
   "client": [
+    "BlockStateModelLoaderMixin",
     "BookContentResourceListenerLoaderMixin",
     "ItemRendererMixin",
     "PlayerSkinMixin",
