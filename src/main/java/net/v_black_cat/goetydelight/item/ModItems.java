@@ -589,7 +589,6 @@ public class ModItems {
                         simpleFoodItemProperties(18, 20)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.SATURATION, sToTick(5), 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), minToTick(2), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE,  minToTick(10), 0), 1.0F)
                                 .build())));

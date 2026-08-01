@@ -185,6 +185,8 @@
   "item.goetydelight.metamorphic_scent_fruit": "Metamorphic Scent Fruit",
   "block.goetydelight.roast_laowang_block.use_knife": "Use a knife to cut off the ears first!",
   "block.goetydelight.feast.use_container": "Use a bowl to take a serving!",
+  "tooltip.goetydelight.custom.unknown": "Unknown Doll (Try putting wool in the stonecutter!)",
+  "tooltip.goetydelight.doll.vanilla": "Default Doll (Try putting wool in the stonecutter!)",
   "tooltip.goetydelight.doll.doll_5152": "wu1wu2's doll",
   "tooltip.goetydelight.doll.doll_p0": "Player__0's doll",
   "tooltip.goetydelight.doll.doll_p7": "Player__7's doll",
