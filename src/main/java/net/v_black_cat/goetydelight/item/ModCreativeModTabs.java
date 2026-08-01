@@ -61,7 +61,6 @@ public class ModCreativeModTabs {
          BLACKLIST.add(ModBlocks.JUNGLE_MARBLE);
          BLACKLIST.add(ModBlocks.MARBLE_TRAPDOOR);
          BLACKLIST.add(ModBlocks.RENDER_BLOCK);
-         BLACKLIST.add(ModBlocks.CUSTOM_DOLL);
 
     }
 
