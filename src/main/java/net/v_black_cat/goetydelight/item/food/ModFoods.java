@@ -243,7 +243,6 @@ public class ModFoods {
         NIGHT_HEART_PEA_SOUP = new FoodProperties.Builder()
                 .nutrition(7).saturationModifier(0.4286F).alwaysEdible()
                 .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(5), 2), 1.0F)
-                .effect(() -> new MobEffectInstance(GoetyEffects.SHADOW_WALK, 1200, 2), 1.0F)
                 .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 6000, 2), 1.0F)
                 .effect(() -> new MobEffectInstance(vectorwing.farmersdelight.common.registry.ModEffects.NOURISHMENT, 12000, 0), 1.0F)
                 .effect(() -> new MobEffectInstance(vectorwing.farmersdelight.common.registry.ModEffects.COMFORT, 12000, 0), 1.0F)
