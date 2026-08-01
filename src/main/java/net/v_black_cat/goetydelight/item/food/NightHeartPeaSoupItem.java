@@ -1,15 +1,19 @@
 package net.v_black_cat.goetydelight.item.food;
 
-import com.Polarice3.Goety.api.items.magic.IWand;
-import com.Polarice3.Goety.api.magic.SpellType;
+import com.Polarice3.Goety.common.effects.GoetyEffects;
 import com.Polarice3.Goety.common.magic.SpellStat;
 import com.Polarice3.Goety.utils.SEHelper;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.TickTask;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import com.Polarice3.Goety.utils.MathHelper;
@@ -22,7 +26,10 @@ import net.v_black_cat.goetydelight.init.ModBuffTypes;
 import net.v_black_cat.goetydelight.util.BuffUtil;
 import vectorwing.farmersdelight.common.item.DrinkableItem;
 
-public class NightHeartPeaSoupItem extends DrinkableItem implements IWand {
+import javax.annotation.Nullable;
+import java.util.List;
+
+public class NightHeartPeaSoupItem extends DrinkableItem {
 
     private static final int SOUP_BOOST_DURATION = -1;
 
@@ -71,13 +78,26 @@ public class NightHeartPeaSoupItem extends DrinkableItem implements IWand {
                 int currentAmplifier = BuffUtil.getBuffAmplifier(player, ModBuffTypes.MINION_BOOST.getId());
                 BuffUtil.applyBuff(player, ModBuffTypes.MINION_BOOST.getId(), SOUP_BOOST_DURATION, currentAmplifier + 1);
             }
+
+            // 融身入影：Goety 的 finishItemEvents 会在使用完非 IWand 物品时立即移除 SHADOW_WALK，
+            // 因此把该效果延迟到使用完成事件之后再附加，保证持续满 60 秒
+            // execute() 在服务端线程上会同步执行，必须在下一 tick 才真正附加
+            MinecraftServer server = serverLevel.getServer();
+            server.tell(new TickTask(server.getTickCount() + 1, () -> {
+                if (entity.isAlive()) {
+                    entity.addEffect(new MobEffectInstance(GoetyEffects.SHADOW_WALK.get(), 1200, 2));
+                }
+            }));
         }
 
         return result;
     }
 
     @Override
-    public SpellType getSpellType() {
-        return null;
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(stack, level, tooltip, flag);
+        // 融身入影改为延迟附加后不在食物属性里，这里手动补回 tooltip 说明
+        tooltip.add(Component.translatable("tooltip.goetydelight.night_heart_pea_soup.shadow_walk",
+                GoetyEffects.SHADOW_WALK.get().getDisplayName()));
     }
 }
