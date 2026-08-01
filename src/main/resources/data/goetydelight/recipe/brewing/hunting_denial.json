@@ -5,5 +5,6 @@
     },
     "effect": "goetydelight:hunting_denial",
     "soulCost": 50,
+    "capacityExtra": 0,
     "duration": 18000
 }

@@ -1,17 +1,18 @@
 package net.v_black_cat.goetydelight.buff;
 
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.neoforge.attachment.AttachmentSync;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.v_black_cat.goetydelight.buff.effect.BuffEffect;
 import net.v_black_cat.goetydelight.init.ModAttachments;
 import net.v_black_cat.goetydelight.init.ModBuffTypes;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class BuffEventHandler {
-
 
     // 实体 tick 事件
     public static void onEntityTick(EntityTickEvent.Post event) {
@@ -21,13 +22,15 @@ public class BuffEventHandler {
         if (activeBuffs == null) return;
 
         // 记录 tick 前的活跃类型（用于检测移除）
-        Set<ResourceLocation> beforeTick = activeBuffs.getActiveTypes();
+        Set<ResourceLocation> beforeTick = new HashSet<>(activeBuffs.getActiveTypes());
 
         activeBuffs.tickAllAndRemove(livingEntity);
 
-
-        // 对依然活跃的类型执行每 tick 效果
+        // 对仍然活跃的类型执行每 tick 效果
         Set<ResourceLocation> afterTick = activeBuffs.getActiveTypes();
+        if (!beforeTick.equals(afterTick) && !livingEntity.level().isClientSide) {
+            AttachmentSync.syncEntityUpdate(livingEntity, ModAttachments.ACTIVE_BUFFS.get());
+        }
         for (ResourceLocation typeId : afterTick) {
             int totalAmplifier = activeBuffs.getTotalAmplifier(typeId);
             BuffEffect effect = ModBuffTypes.getEffect(typeId);
@@ -36,5 +39,4 @@ public class BuffEventHandler {
             }
         }
     }
-
 }

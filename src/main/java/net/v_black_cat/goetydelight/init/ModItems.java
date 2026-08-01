@@ -7,6 +7,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -18,6 +20,7 @@ import net.v_black_cat.goetydelight.item.food.*;
 import net.v_black_cat.goetydelight.item.food.MetamorphicScentGrassItem;
 
 import static vectorwing.farmersdelight.common.registry.ModItems.basicItem;
+import vectorwing.farmersdelight.common.item.KnifeItem;
 
 public class ModItems {
     // 创建专属于物品的 DeferredRegister，使用模组主类的 MODID
@@ -37,15 +40,15 @@ public class ModItems {
     public static final DeferredItem<Item> CURSED_METAL_BRUSH;
     public static final DeferredItem<Item> DARK_BRUSH;
 //    // 刀具物品
-//    public static final DeferredItem<Item> APOCALYPTIUM_KNIFE;
-    // public static final DeferredItem<Item> VENOMOUS_SPIDER_KNIFE;
-    //  public static final DeferredItem<Item> SPECTRE_KNIFE;
+    public static final DeferredItem<Item> APOCALYPTIUM_KNIFE;
+    public static final DeferredItem<Item> VENOMOUS_SPIDER_KNIFE;
+    public static final DeferredItem<Item> SPECTRE_KNIFE;
     public static final DeferredItem<Item> CURSED_INGOT_KNIFE;
     public static final DeferredItem<Item> DARK_KNIFE;
-//    public static final DeferredItem<Item> APOCALYPTIUM_INGOT_BRUSH;
+    public static final DeferredItem<Item> APOCALYPTIUM_INGOT_BRUSH;
 //
 //    // 武器物品
-//    public static final DeferredItem<Item> MARBLE_OP_SWORD;
+    public static final DeferredItem<Item> MARBLE_OP_SWORD;
     public static final DeferredItem<Item> FALSE_PROVERBS;
     public static final DeferredItem<Item> PARASITIZED_WARDEN;
     public static final DeferredItem<Item> VIZIERS_COOKBOOK;
@@ -170,14 +173,16 @@ public class ModItems {
                         3).build())));
 //
 //        // 神金刀
-//        APOCALYPTIUM_KNIFE = registerWithTab("apocalyptium_knife",
-//                () -> new KnifeItem(Tiers.NETHERITE, basicItem().durability(1666)));
-//
-//        VENOMOUS_SPIDER_KNIFE = registerWithTab("venomous_spider_knife",
-//                () -> new KnifeItem(Tiers.IRON, basicItem()));
-//        SPECTRE_KNIFE = registerWithTab("spectre_knife",
-//                () -> new KnifeItem(Tiers.IRON, basicItem()));
-//
+        APOCALYPTIUM_KNIFE = ITEMS.register("apocalyptium_knife",
+                () -> new KnifeItem(Tiers.NETHERITE, basicItem().durability(1666)
+                        .attributes(DiggerItem.createAttributes(Tiers.NETHERITE, 4F, -2.0F))));
+
+        VENOMOUS_SPIDER_KNIFE = ITEMS.register("venomous_spider_knife",
+                () -> new KnifeItem(Tiers.IRON, basicItem()
+                        .attributes(DiggerItem.createAttributes(Tiers.IRON, 0.5F, -2.0F))));
+        SPECTRE_KNIFE = ITEMS.register("spectre_knife",
+                () -> new KnifeItem(Tiers.IRON, basicItem()
+                        .attributes(DiggerItem.createAttributes(Tiers.IRON, 0.5F, -2.0F))));
         // 诅咒金属刀
         CURSED_INGOT_KNIFE = ITEMS.register("cursed_ingot_knife",
                 () -> new CursedIngotKnifeItem(ModTiers.SPECIAL,basicItem().durability(256)));
@@ -198,12 +203,12 @@ public class ModItems {
                 () -> new DarkBrushItem(basicItem().durability(256), 3));
 //
 //        // 神金刷子
-//        APOCALYPTIUM_INGOT_BRUSH = ITEMS.register("apocalyptium_ingot_brush",
-//                () -> new DarkBrushItem(basicItem().durability(166), 4));
+        APOCALYPTIUM_INGOT_BRUSH = ITEMS.register("apocalyptium_ingot_brush",
+                () -> new DarkBrushItem(basicItem().durability(166), 4));
 //
 //        // 大理石op剑
-//        MARBLE_OP_SWORD = ITEMS.register("marble_op_sword",
-//                () -> new MarbleOpSwordItem(Tiers.WOOD, 1, 2, basicItem().rarity(Rarity.EPIC)));
+        MARBLE_OP_SWORD = ITEMS.register("marble_op_sword",
+                () -> new MarbleOpSwordItem(Tiers.WOOD, basicItem().rarity(Rarity.EPIC)));
 
         PARASITIZED_WARDEN = ITEMS.register("parasitized_warden",
                 () -> new Item(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON)));

@@ -1,0 +1,27 @@
+{
+  "type": "farmersdelight:cutting",
+  "ingredients": [
+    {
+      "item": "goetydelight:ectoplasmic_melon"
+    }
+  ],
+  "result": [
+    {
+      "item": {
+        "id": "goety:ectoplasm",
+        "count": 1
+      },
+      "chance": 1.0
+    },
+    {
+      "item": {
+        "id": "goety:ice_cube",
+        "count": 1
+      },
+      "chance": 0.5
+    }
+  ],
+  "tool": {
+    "tag": "farmersdelight:tools/knives"
+  }
+}

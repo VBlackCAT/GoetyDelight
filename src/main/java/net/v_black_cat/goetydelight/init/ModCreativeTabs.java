@@ -26,9 +26,14 @@ public class ModCreativeTabs {
                         // 武器
                         output.accept(ModItems.CURSED_INGOT_KNIFE.get());
                         output.accept(ModItems.DARK_KNIFE.get());
+                        output.accept(ModItems.APOCALYPTIUM_KNIFE.get());
+                        output.accept(ModItems.VENOMOUS_SPIDER_KNIFE.get());
+                        output.accept(ModItems.SPECTRE_KNIFE.get());
+                        output.accept(ModItems.MARBLE_OP_SWORD.get());
                         output.accept(ModItems.FALSE_PROVERBS.get());
                         output.accept(ModItems.CURSED_METAL_BRUSH.get());
                         output.accept(ModItems.DARK_BRUSH.get());
+                        output.accept(ModItems.APOCALYPTIUM_INGOT_BRUSH.get());
 
                         // 图标
                       //  output.accept(ModItems.GOETYDELIGHT_ICON.get());

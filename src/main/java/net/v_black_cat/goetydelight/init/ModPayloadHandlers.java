@@ -3,7 +3,6 @@ package net.v_black_cat.goetydelight.init;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.v_black_cat.goetydelight.network.SyncBackModelPacket;
-import net.v_black_cat.goetydelight.network.SyncEntityVisualEffectsPayload;
 import net.v_black_cat.goetydelight.network.handler.ClientClickAirPayloadHandler;
 import net.v_black_cat.goetydelight.network.payload.ClientClickAirPayload;
 
@@ -27,10 +26,5 @@ public class ModPayloadHandlers {
                 SyncBackModelPacket::handleClient
         );
 
-        registrar.playToClient(
-                SyncEntityVisualEffectsPayload.TYPE,
-                SyncEntityVisualEffectsPayload.STREAM_CODEC,
-                SyncEntityVisualEffectsPayload::handleClient
-        );
     }
 }

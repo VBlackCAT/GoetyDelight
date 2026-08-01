@@ -10,7 +10,7 @@
     },
     {
       "condition": "minecraft:entity_properties",
-      "entity": "killer",
+      "entity": "direct_attacker",
       "predicate": {
         "type": "goety:brood_mother_servant"
       }

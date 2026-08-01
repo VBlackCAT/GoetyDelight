@@ -125,7 +125,6 @@ dependencies {
     implementation "curse.maven:farmers-delight-398521:8083481"
     compileOnly "curse.maven:jade-324717:7545219"
 
-    runtimeOnly "curse.maven:ankinbt-1457040:8150024" //nbt编辑器
     runtimeOnly "curse.maven:appleskin-248787:7854442" //appleskin-neoforge-mc1.21-3.0.9.jar
     runtimeOnly "curse.maven:jei-238222:8417046"
     runtimeOnly "curse.maven:jade-324717:7545219"
