@@ -59,10 +59,7 @@ public class DarkKnifeItem extends KnifeItem {
         );
     }
 
-    /**
-     * 1.20.1 行为：手持暗刀攻击时造成 1.5 倍伤害。
-     * 1.20.1 的实现检查的是受伤实体的主手，这里按意图改为检查攻击者主手。
-     */
+    /** 1.20.1 行为：手持暗刀攻击时造成 1.5 倍伤害。 1.20.1 的实现检查的是受伤实体的主手，这里按意图改为检查攻击者主手。 */
     @SubscribeEvent
     public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
         if (event.getSource().getEntity() instanceof LivingEntity attacker
@@ -76,11 +73,4 @@ public class DarkKnifeItem extends KnifeItem {
         return true;
     }
 
-    @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        System.out.println("Repair item: " + repair.getItem());
-        System.out.println("DARK_ALLOY_INGOT: " + ModItems.DARK_ALLOY_INGOT.get());
-        System.out.println("Are they the same? " + (repair.getItem() == ModItems.DARK_ALLOY_INGOT.get()));
-        return repair.is(ModItems.DARK_ALLOY_INGOT.get());
-    }
 }
