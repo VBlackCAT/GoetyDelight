@@ -67,7 +67,12 @@ public class DarkKnifeItem extends KnifeItem {
             event.setAmount(event.getAmount() * 1.5f);
         }
     }
-
+    
+    @Override
+    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
+        return repair.is(ModItems.DARK_ALLOY_INGOT.get());
+    }
+    
     @Override
     public boolean isEnchantable(ItemStack stack) {
         return true;
