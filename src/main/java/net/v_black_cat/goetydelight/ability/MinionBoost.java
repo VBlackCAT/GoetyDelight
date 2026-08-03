@@ -2,8 +2,13 @@ package net.v_black_cat.goetydelight.ability;
 
 import com.Polarice3.Goety.api.entities.IOwned;
 import com.Polarice3.Goety.utils.LichdomHelper;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.TickTask;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -11,18 +16,28 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.init.ModConfig;
+
+import java.util.List;
+import java.util.UUID;
 
 public class MinionBoost {
     private static final String STEW_BOOST_COUNT_TAG = "LichStewBoostCount";
     private static final String SOUP_BOOST_COUNT_TAG = "NightPeaSoupBoostCount";
 
-    private static final ResourceLocation ATTACK_ID = ResourceLocation.fromNamespaceAndPath(GoetyDelight.MODID, "minion_attack");
-    private static final ResourceLocation HEALTH_ID = ResourceLocation.fromNamespaceAndPath(GoetyDelight.MODID, "minion_health");
-    private static final ResourceLocation ARMOR_ID = ResourceLocation.fromNamespaceAndPath(GoetyDelight.MODID, "minion_armor");
-    private static final ResourceLocation SPEED_ID = ResourceLocation.fromNamespaceAndPath(GoetyDelight.MODID, "minion_speed");
-    private static final ResourceLocation TOUGHNESS_ID = ResourceLocation.fromNamespaceAndPath(GoetyDelight.MODID, "minion_toughness");
+    private static final ResourceLocation ATTACK_DAMAGE_BOOST_ID = rl("attack");
+    private static final ResourceLocation MAX_HEALTH_BOOST_ID = rl("health");
+    private static final ResourceLocation ARMOR_BOOST_ID = rl("armor");
+    private static final ResourceLocation MOVEMENT_SPEED_BOOST_ID = rl("speed");
+    private static final ResourceLocation ARMOR_TOUGHNESS_BOOST_ID = rl("toughness");
 
+    private static ResourceLocation rl(String path) {
+        return ResourceLocation.fromNamespaceAndPath(GoetyDelight.MODID, "minion_" + path);
+    }
+
+    // ==================== 数据读写 ====================
     public static int getStewBoostCount(Player player) {
         return player.getPersistentData().getInt(STEW_BOOST_COUNT_TAG);
     }
@@ -31,53 +46,164 @@ public class MinionBoost {
         return player.getPersistentData().getInt(SOUP_BOOST_COUNT_TAG);
     }
 
-    public static void removeMinionBoost(LivingEntity minion) {
-        AttributeInstance ai;
-        ai = minion.getAttribute(Attributes.ATTACK_DAMAGE); if (ai != null) ai.removeModifier(ATTACK_ID);
-        ai = minion.getAttribute(Attributes.MAX_HEALTH); if (ai != null) ai.removeModifier(HEALTH_ID);
-        ai = minion.getAttribute(Attributes.ARMOR); if (ai != null) ai.removeModifier(ARMOR_ID);
-        ai = minion.getAttribute(Attributes.MOVEMENT_SPEED); if (ai != null) ai.removeModifier(SPEED_ID);
-        ai = minion.getAttribute(Attributes.ARMOR_TOUGHNESS); if (ai != null) ai.removeModifier(TOUGHNESS_ID);
+    public static void increaseStewBoostCount(Player player) {
+        int cur = getStewBoostCount(player);
+        if (cur < ModConfig.getLichStewMaxCount()) {
+            player.getPersistentData().putInt(STEW_BOOST_COUNT_TAG, cur + 1);
+            applyMinionBoosts(player);
+        }
     }
 
+    public static void increaseSoupBoostCount(Player player) {
+        int cur = getSoupBoostCount(player);
+        if (cur < ModConfig.getNightPeaSoupMaxCount()) {
+            player.getPersistentData().putInt(SOUP_BOOST_COUNT_TAG, cur + 1);
+            applyMinionBoosts(player);
+        }
+    }
+
+    public static void increaseStew(Player player) {
+        increaseStewBoostCount(player);
+    }
+
+    public static void increaseSoup(Player player) {
+        increaseSoupBoostCount(player);
+    }
+
+    // ==================== 刷新所有仆从 ====================
+    public static void applyMinionBoosts(Player player) {
+        if (player.level().isClientSide()) return;
+        int stew = getStewBoostCount(player);
+        int soup = getSoupBoostCount(player);
+        if (stew <= 0 && soup <= 0) return;
+
+        double radius = 128.0;
+        List<LivingEntity> minions = player.level().getEntitiesOfClass(
+                LivingEntity.class,
+                player.getBoundingBox().inflate(radius),
+                e -> e instanceof IOwned && ((IOwned) e).getTrueOwner() == player
+        );
+        for (LivingEntity minion : minions) {
+            applyMinionBoost(minion, player, stew, soup);
+        }
+    }
+
+    // ==================== 应用单个仆从加成 ====================
+    public static void applyMinionBoost(LivingEntity minion, Player owner, int stewCount, int soupCount) {
+        if (minion.level().isClientSide()) return;
+
+        removeMinionBoost(minion);
+
+        double stewPct = LichdomHelper.isLich(owner)
+                ? ModConfig.getLichChaosStewBoostPercentage() * stewCount
+                : 0;
+        double soupPct = ModConfig.getNightHeartPeaSoupBoostPercentage() * soupCount;
+        double total = stewPct + soupPct;
+        if (total <= 0) return;
+
+        addModifier(minion, Attributes.ATTACK_DAMAGE, ATTACK_DAMAGE_BOOST_ID, total);
+        addModifier(minion, Attributes.MAX_HEALTH, MAX_HEALTH_BOOST_ID, total);
+        addModifier(minion, Attributes.ARMOR, ARMOR_BOOST_ID, total);
+        addModifier(minion, Attributes.ARMOR_TOUGHNESS, ARMOR_TOUGHNESS_BOOST_ID, total);
+        addModifier(minion, Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED_BOOST_ID, soupPct);
+
+        if (minion.getHealth() > minion.getMaxHealth()) {
+            minion.setHealth(minion.getMaxHealth());
+        }
+    }
+
+    private static void addModifier(LivingEntity entity, Holder<Attribute> attr, ResourceLocation id, double multiplier) {
+        if (multiplier <= 0) return;
+        AttributeInstance ai = entity.getAttribute(attr);
+        if (ai == null) return;
+        ai.removeModifier(id);
+        double value = ai.getBaseValue() * multiplier;
+        ai.addPermanentModifier(new AttributeModifier(id, value, AttributeModifier.Operation.ADD_VALUE));
+    }
+
+    public static void removeMinionBoost(LivingEntity minion) {
+        removeModifier(minion, Attributes.ATTACK_DAMAGE, ATTACK_DAMAGE_BOOST_ID);
+        removeModifier(minion, Attributes.MAX_HEALTH, MAX_HEALTH_BOOST_ID);
+        removeModifier(minion, Attributes.ARMOR, ARMOR_BOOST_ID);
+        removeModifier(minion, Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED_BOOST_ID);
+        removeModifier(minion, Attributes.ARMOR_TOUGHNESS, ARMOR_TOUGHNESS_BOOST_ID);
+    }
+
+    private static void removeModifier(LivingEntity entity, Holder<Attribute> attr, ResourceLocation id) {
+        AttributeInstance ai = entity.getAttribute(attr);
+        if (ai != null) {
+            ai.removeModifier(id);
+        }
+    }
+
+    // ==================== 事件监听 ====================
     @EventBusSubscriber(modid = GoetyDelight.MODID)
     public static class MinionBoostHandler {
         @SubscribeEvent
+        public static void onPlayerClone(PlayerEvent.Clone event) {
+            Player original = event.getOriginal();
+            Player player = event.getEntity();
+            if (!event.isWasDeath()) return;
+
+            int oldStew = original.getPersistentData().getInt(STEW_BOOST_COUNT_TAG);
+            int oldSoup = original.getPersistentData().getInt(SOUP_BOOST_COUNT_TAG);
+            if (oldStew > 0 || oldSoup > 0) {
+                player.getPersistentData().putInt(STEW_BOOST_COUNT_TAG, oldStew);
+                player.getPersistentData().putInt(SOUP_BOOST_COUNT_TAG, oldSoup);
+            }
+        }
+
+        @SubscribeEvent
         public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
-            if (!event.getLevel().isClientSide() && event.getEntity() instanceof LivingEntity entity) {
-                if (entity instanceof IOwned ownedEntity) {
-                    LivingEntity owner = ownedEntity.getTrueOwner();
-                    if (owner instanceof Player player) {
-                        int soup = getSoupBoostCount(player);
-                        int stew = getStewBoostCount(player);
-                        if (soup > 0 || stew > 0) {
-                            removeMinionBoost(entity);
-                            applyMinionBoost(entity, stew, soup);
+            if (event.getLevel().isClientSide()) return;
+            if (!(event.getEntity() instanceof LivingEntity entity)) return;
+            if (!(entity instanceof IOwned owned)) return;
+
+            tryApplyBoost(entity, owned, 0);
+        }
+
+        private static void tryApplyBoost(LivingEntity entity, IOwned owned, int attempt) {
+            if (attempt > 20) return;
+
+            Player player = null;
+            UUID ownerId = owned.getOwnerId();
+            if (ownerId != null && entity.level() instanceof ServerLevel serverLevel) {
+                MinecraftServer server = serverLevel.getServer();
+                player = server.getPlayerList().getPlayer(ownerId);
+                if (player == null) {
+                    for (Player p : server.getPlayerList().getPlayers()) {
+                        if (p.getUUID().equals(ownerId)) {
+                            player = p;
+                            break;
                         }
                     }
                 }
             }
-        }
-    }
 
-    private static void applyMinionBoost(LivingEntity minion, int stewCount, int soupCount) {
-        if (minion.level().isClientSide) return;
-        double stewPct = LichdomHelper.isLich(null) ? 0.2 * stewCount : 0;
-        double soupPct = 0.15 * soupCount;
-        double mult = stewPct + soupPct;
-        addBoost(minion, Attributes.ATTACK_DAMAGE, ATTACK_ID, mult);
-        addBoost(minion, Attributes.MAX_HEALTH, HEALTH_ID, mult);
-        addBoost(minion, Attributes.ARMOR, ARMOR_ID, mult);
-        addBoost(minion, Attributes.ARMOR_TOUGHNESS, TOUGHNESS_ID, mult);
-        if (!(minion instanceof com.Polarice3.Goety.common.entities.ally.golem.RedstoneMonstrosity))
-            addBoost(minion, Attributes.MOVEMENT_SPEED, SPEED_ID, soupPct);
-    }
+            if (player == null) {
+                LivingEntity owner = owned.getTrueOwner();
+                if (owner instanceof Player) {
+                    player = (Player) owner;
+                }
+            }
 
-    private static void addBoost(LivingEntity e, net.minecraft.core.Holder<net.minecraft.world.entity.ai.attributes.Attribute> attr, ResourceLocation id, double mult) {
-        AttributeInstance ai = e.getAttribute(attr);
-        if (ai != null && mult > 0) {
-            double v = ai.getBaseValue() * mult;
-            ai.addPermanentModifier(new AttributeModifier(id, v, AttributeModifier.Operation.ADD_VALUE));
+            if (player != null) {
+                int stew = getStewBoostCount(player);
+                int soup = getSoupBoostCount(player);
+                if (stew > 0 || soup > 0) {
+                    applyMinionBoost(entity, player, stew, soup);
+                }
+                return;
+            }
+
+            if (entity.level() instanceof ServerLevel serverLevel) {
+                MinecraftServer server = serverLevel.getServer();
+                server.tell(new TickTask(server.getTickCount() + 5, () -> {
+                    if (entity.isAlive()) {
+                        tryApplyBoost(entity, owned, attempt + 1);
+                    }
+                }));
+            }
         }
     }
 }
