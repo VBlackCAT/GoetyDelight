@@ -36,8 +36,7 @@ public class SpellMasteryEffect extends MobEffect {
 
     @Override
     public double getAttributeModifierValue(int amplifier, AttributeModifier modifier) {
-        // 每级效果增加1点法术强度
-        // 公式：基础值 * (等级 + 1)
+        // 增加的强效等级为基础值 * (等级 + 1)
         return modifier.getAmount() * (amplifier + 1);
     }
 

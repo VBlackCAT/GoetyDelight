@@ -40,7 +40,6 @@ public class LichsChaosStewItem extends BowlFoodItem {
                 BuffUtil.applyBuff(player, ModBuffTypes.PERMANENT_FIRE_RESISTANCE.getId(), FIRE_RESISTANCE_DURATION, 0);
                 BuffUtil.applyBuff(player, ModBuffTypes.PERMANENT_SAVE_EFFECTS.getId(), FIRE_RESISTANCE_DURATION, 0);
 
-                // 使用 Buff 系统增加仆从增益层数
                 int currentAmplifier = BuffUtil.getBuffAmplifier(player, ModBuffTypes.MINION_BOOST.getId());
                 BuffUtil.applyBuff(player, ModBuffTypes.MINION_BOOST.getId(), FIRE_RESISTANCE_DURATION, currentAmplifier + 1);
             }
