@@ -16,7 +16,8 @@
     "MobMixin",
     "RecipeManagerMixin",
     "SummonSpellMixin",
-    "WightSpawnerMixin"
+    "WightSpawnerMixin",
+    "ModelBakeryMixin"
   ],
   "client": [
     "BookContentResourceListenerLoaderMixin",

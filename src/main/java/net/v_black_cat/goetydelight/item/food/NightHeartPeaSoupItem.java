@@ -74,7 +74,9 @@ public class NightHeartPeaSoupItem extends DrinkableItem {
                 SEHelper.setEndWalk(player, player.blockPosition(), player.level().dimension());
                 ModNetwork.sendTo(player, new SPlayPlayerSoundPacket((SoundEvent)ModSounds.END_WALK.get(), 1.0F, 1.0F));
 
-                // 使用 Buff 系统增加仆从增益层数
+                MinionBoost.increaseSoupBoostCount(player);
+                MinionBoost.applyMinionBoosts(player);
+
                 int currentAmplifier = BuffUtil.getBuffAmplifier(player, ModBuffTypes.MINION_BOOST.getId());
                 BuffUtil.applyBuff(player, ModBuffTypes.MINION_BOOST.getId(), SOUP_BOOST_DURATION, currentAmplifier + 1);
             }

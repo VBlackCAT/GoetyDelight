@@ -35,8 +35,7 @@ public class SpellDurationEffect extends MobEffect {
 
     @Override
     public double getAttributeModifierValue(int amplifier, AttributeModifier modifier) {
-        // 每级效果增加10点法术持续时间
-        // 公式：基础值 * (等级 + 1)
+        // 增加的持久等级为基础值 * (等级 + 1)
         return modifier.getAmount() * (amplifier + 1);
     }
 }

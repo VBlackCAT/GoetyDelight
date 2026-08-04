@@ -1,5 +1,8 @@
 {
   "variants": {
+    "": {
+      "model": "goetydelight:block/doll/custom_doll"
+    },
     "facing=east,waterlogged=false": {
       "model": "goetydelight:block/doll/custom_doll",
       "y": 90
