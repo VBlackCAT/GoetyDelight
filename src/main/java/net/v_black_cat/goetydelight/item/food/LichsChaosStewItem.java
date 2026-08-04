@@ -7,13 +7,13 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.v_black_cat.goetydelight.ability.MinionBoost;
 import net.v_black_cat.goetydelight.init.ModBuffTypes;
 import net.v_black_cat.goetydelight.util.BuffUtil;
 
 public class LichsChaosStewItem extends BowlFoodItem {
 
     private static final int FIRE_RESISTANCE_DURATION = -1; // -1 表示无限
-    private static final int STEW_BOOST_DURATION = -1;      // -1 表示无限
 
     public LichsChaosStewItem(Properties properties) {
         super(properties);
@@ -34,14 +34,11 @@ public class LichsChaosStewItem extends BowlFoodItem {
             ItemStack result = super.finishUsingItem(stack, level, livingEntity);
 
             if (!level.isClientSide && livingEntity instanceof Player player) {
-                // 使用 Buff 系统添加永久火焰抗性和保存效果
+            
                 BuffUtil.applyBuff(player, ModBuffTypes.PERMANENT_FIRE_RESISTANCE.getId(), FIRE_RESISTANCE_DURATION, 0);
                 BuffUtil.applyBuff(player, ModBuffTypes.PERMANENT_SAVE_EFFECTS.getId(), FIRE_RESISTANCE_DURATION, 0);
 
-                // 使用 Buff 系统增加仆从增益层数
-                // 先获取当前层数，然后 +1
-                int currentAmplifier = BuffUtil.getBuffAmplifier(player, ModBuffTypes.MINION_BOOST.getId());
-                BuffUtil.applyBuff(player, ModBuffTypes.MINION_BOOST.getId(), STEW_BOOST_DURATION, currentAmplifier + 1);
+                MinionBoost.increaseStew(player);
             }
 
             return result;
