@@ -7,7 +7,7 @@ import net.minecraft.world.level.Level;
 import net.v_black_cat.goetydelight.init.ModBuffTypes;
 import net.v_black_cat.goetydelight.util.BuffUtil;
 
-public class SnapUnholyTripeItem extends PotFoodItem {
+public class SnapUnholyTripeItem extends BowlFoodItem {
     public SnapUnholyTripeItem(Properties pProperties) {
         super(pProperties);
     }

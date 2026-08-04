@@ -58,8 +58,10 @@ public class ModCreativeTabs {
                         output.accept(ModItems.SUNSHINE_SUGAR_BUN.get());
                         output.accept(ModItems.CANDY_FISH.get());
                         output.accept(ModItems.FROG_LEG_SANDWICH.get());
+                        output.accept(ModItems.CREAMY_BERRY_FISH_PASTE_DUMPLING_WITH_CHOCOLATE_SAUCE.get());
 //                        output.accept(ModItems.SPIDER_EGG_BUBBLE_TEA_2.get());
                         output.accept(ModItems.CRYING_SHARK_SUGAR_PACK.get());
+                        output.accept(ModItems.SIBLING_SUNDAE.get());
                         output.accept(ModItems.BEAR_PAW.get());
                         output.accept(ModItems.ECTOPLASMIC_MELON.get());
                         output.accept(ModItems.BLUE_ECTOPLASMIC_SUNDAE.get());

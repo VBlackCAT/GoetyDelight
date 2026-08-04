@@ -449,7 +449,7 @@ public class ModItems {
                         ModFoods.WARPED_WART_OMELETTE
                 )));
         FULL_SPIDER_FEAST = ITEMS.register("full_spider_feast",
-                () -> new Item(basicItem().stacksTo(64).food(
+                () -> new BowlFoodItem(basicItem().stacksTo(64).food(
                         ModFoods.FULL_SPIDER_FEAST
                 )));
         LIQUID_VOID_TEA_DRINK = ITEMS.register("liquid_void_tea_drink",
@@ -530,7 +530,7 @@ public class ModItems {
                         .food(ModFoods.HIDDEN_PANCAKE)));
                         
         TEN_THOUSAND_POISON_FEAST = ITEMS.register("ten_thousand_poison_feast",
-                () -> new TenThousandPoisonFeastItem(basicItem().stacksTo(64).rarity(Rarity.UNCOMMON)
+                () -> new TenThousandPoisonFeastItem(basicItem().stacksTo(16).rarity(Rarity.UNCOMMON)
                         .food(ModFoods.TEN_THOUSAND_POISON_FEAST)));
                         
         CREAMY_BERRY_FISH_PASTE_DUMPLING_WITH_CHOCOLATE_SAUCE = ITEMS.register("creamy_berry_fish_paste_dumpling_with_chocolate_sauce",
@@ -585,15 +585,15 @@ public class ModItems {
                         .food(simpleFoodItemProperties(4, 3).build())));
 
         ROAST_LAOWANG_FEET = ITEMS.register("roast_laowang_feet",
-                () -> new Item(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
+                () -> new BowlFoodItem(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
                         .food(simpleFoodItemProperties(10, 6).build())));
 
         ROAST_LAOWANG_HEAD = ITEMS.register("roast_laowang_head",
-                () -> new Item(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
+                () -> new BowlFoodItem(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
                         .food(simpleFoodItemProperties(20, 13).build())));
 
         ROAST_LAOWANG_LEG = ITEMS.register("roast_laowang_leg",
-                () -> new Item(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
+                () -> new BowlFoodItem(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
                         .food(simpleFoodItemProperties(10, 6).build())));
 
         ONION_PORK_CHOP_RICE = ITEMS.register("onion_pork_chop_rice",

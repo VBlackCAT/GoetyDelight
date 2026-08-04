@@ -346,10 +346,10 @@ public class ModFoods {
 
         SNAP_UNHOLY_TRIPE = new FoodProperties.Builder()
                 .nutrition(18).saturationModifier(1.1111F).alwaysEdible()
-                .effect(() -> new MobEffectInstance(vectorwing.farmersdelight.common.registry.ModEffects.NOURISHMENT, minToTick(30), 0), 1.0F)
-                .effect(() -> new MobEffectInstance(MobEffects.SATURATION, 200, 0), 1.0F)
-                .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSENGER, minToTick(5), 0), 1.0F)
-                .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, minToTick(30), 0), 1.0F)
+                .effect(() -> new MobEffectInstance(vectorwing.farmersdelight.common.registry.ModEffects.NOURISHMENT, minToTick(10), 0), 1.0F)
+                .effect(() -> new MobEffectInstance(MobEffects.SATURATION, 100, 0), 1.0F)
+                .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSENGER, minToTick(2), 0), 1.0F)
+                .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, minToTick(10), 0), 1.0F)
                 .build();
 
         SUNDAE_OF_THE_PHILOSOPHERS_POTION = new FoodProperties.Builder()
