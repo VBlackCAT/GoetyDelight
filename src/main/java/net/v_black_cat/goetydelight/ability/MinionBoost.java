@@ -1,6 +1,5 @@
 package net.v_black_cat.goetydelight.ability;
 
-import com.Polarice3.Goety.Goety;
 import com.Polarice3.Goety.api.entities.IOwned;
 import com.Polarice3.Goety.utils.LichdomHelper;
 import net.minecraft.world.entity.LivingEntity;
@@ -9,20 +8,22 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.config.Config;
 
-import java.util.UUID;
+import java.util.*;
 
 @Mod.EventBusSubscriber(modid = GoetyDelight.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class MinionBoost {
+
     private static final String STEW_BOOST_COUNT_TAG = "LichStewBoostCount";
     private static final String SOUP_BOOST_COUNT_TAG = "NightPeaSoupBoostCount";
 
-    private static final String STEW_MINION_BOOST_APPLIED_TAG = "LichStewBoostApplied";
-    private static final String SOUP_MINION_BOOST_APPLIED_TAG = "NightPeaSoupBoostApplied";
+    private static final Map<UUID, Integer> stewCountMap = new HashMap<>();
+    private static final Map<UUID, Integer> soupCountMap = new HashMap<>();
 
     private static final UUID ATTACK_DAMAGE_BOOST_UUID = UUID.fromString("a90ad9a8-3776-44d1-b6c8-a464269f4bf5");
     private static final UUID MAX_HEALTH_BOOST_UUID = UUID.fromString("2d43842e-d85a-4590-8b6f-daafe15bcbcc");
@@ -31,25 +32,30 @@ public class MinionBoost {
     private static final UUID ARMOR_TOUGHNESS_BOOST_UUID = UUID.fromString("c0c0c0c0-c0c0-c0c0-c0c0-c0c0c0c0c0c0");
 
     public static int getStewBoostCount(Player player) {
-        return player.getPersistentData().getInt(STEW_BOOST_COUNT_TAG);
+        return stewCountMap.getOrDefault(player.getUUID(), 0);
     }
 
     public static int getSoupBoostCount(Player player) {
-        return player.getPersistentData().getInt(SOUP_BOOST_COUNT_TAG);
+        return soupCountMap.getOrDefault(player.getUUID(), 0);
     }
 
     public static void increaseStewBoostCount(Player player) {
         int currentCount = getStewBoostCount(player);
         if (currentCount < Config.getLichStewMaxCount()) {
-            player.getPersistentData().putInt(STEW_BOOST_COUNT_TAG, currentCount + 1);
+            stewCountMap.put(player.getUUID(), currentCount + 1);
         }
     }
 
     public static void increaseSoupBoostCount(Player player) {
         int currentCount = getSoupBoostCount(player);
         if (currentCount < Config.getNightPeaSoupMaxCount()) {
-            player.getPersistentData().putInt(SOUP_BOOST_COUNT_TAG, currentCount + 1);
+            soupCountMap.put(player.getUUID(), currentCount + 1);
         }
+    }
+
+    public static void removePlayerData(UUID playerUUID) {
+        stewCountMap.remove(playerUUID);
+        soupCountMap.remove(playerUUID);
     }
 
     public static void applyMinionBoosts(Player player) {
@@ -143,9 +149,6 @@ public class MinionBoost {
                     AttributeModifier.Operation.ADDITION
             ));
         }
-
-        minion.getPersistentData().putInt(STEW_MINION_BOOST_APPLIED_TAG, stewBoostCount);
-        minion.getPersistentData().putInt(SOUP_MINION_BOOST_APPLIED_TAG, soupBoostCount);
     }
 
     public static void removeMinionBoost(LivingEntity minion) {
@@ -175,8 +178,29 @@ public class MinionBoost {
         }
     }
 
-    @Mod.EventBusSubscriber
+    private static void migrateOldData(Player player) {
+        if (player.getPersistentData().contains(STEW_BOOST_COUNT_TAG)) {
+            int oldStewCount = player.getPersistentData().getInt(STEW_BOOST_COUNT_TAG);
+            if (oldStewCount > 0) {
+                int migratedCount = Math.min(oldStewCount, Config.getLichStewMaxCount());
+                stewCountMap.put(player.getUUID(), migratedCount);
+            }
+            player.getPersistentData().remove(STEW_BOOST_COUNT_TAG);
+        }
+
+        if (player.getPersistentData().contains(SOUP_BOOST_COUNT_TAG)) {
+            int oldSoupCount = player.getPersistentData().getInt(SOUP_BOOST_COUNT_TAG);
+            if (oldSoupCount > 0) {
+                int migratedCount = Math.min(oldSoupCount, Config.getNightPeaSoupMaxCount());
+                soupCountMap.put(player.getUUID(), migratedCount);
+            }
+            player.getPersistentData().remove(SOUP_BOOST_COUNT_TAG);
+        }
+    }
+
+    @Mod.EventBusSubscriber(modid = GoetyDelight.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
     public static class MinionBoostHandler {
+
         @SubscribeEvent
         public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
             if (!event.getLevel().isClientSide() && event.getEntity() instanceof LivingEntity entity) {
@@ -189,6 +213,19 @@ public class MinionBoost {
                             applyMinionBoost(entity, player, stewBoostCount, soupBoostCount);
                         }
                     }
+                }
+            }
+        }
+
+        @SubscribeEvent
+        public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+            if (!event.getEntity().level().isClientSide()) {
+                Player player = event.getEntity();
+                migrateOldData(player);
+                int soupBoostCount = getSoupBoostCount(player);
+                int stewBoostCount = getStewBoostCount(player);
+                if (soupBoostCount > 0 || stewBoostCount > 0) {
+                    applyMinionBoosts(player);
                 }
             }
         }
