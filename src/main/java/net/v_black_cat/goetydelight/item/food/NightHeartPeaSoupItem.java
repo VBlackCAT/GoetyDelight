@@ -22,16 +22,12 @@ import com.Polarice3.Goety.common.network.ModNetwork;
 import com.Polarice3.Goety.common.network.server.SPlayPlayerSoundPacket;
 import com.Polarice3.Goety.init.ModSounds;
 import net.v_black_cat.goetydelight.ability.MinionBoost;
-import net.v_black_cat.goetydelight.init.ModBuffTypes;
-import net.v_black_cat.goetydelight.util.BuffUtil;
 import vectorwing.farmersdelight.common.item.DrinkableItem;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class NightHeartPeaSoupItem extends DrinkableItem {
-
-    private static final int SOUP_BOOST_DURATION = -1;
 
     public NightHeartPeaSoupItem(Properties pProperties) {
         super(pProperties);
@@ -76,14 +72,8 @@ public class NightHeartPeaSoupItem extends DrinkableItem {
 
                 MinionBoost.increaseSoupBoostCount(player);
                 MinionBoost.applyMinionBoosts(player);
-
-                int currentAmplifier = BuffUtil.getBuffAmplifier(player, ModBuffTypes.MINION_BOOST.getId());
-                BuffUtil.applyBuff(player, ModBuffTypes.MINION_BOOST.getId(), SOUP_BOOST_DURATION, currentAmplifier + 1);
             }
 
-            // 融身入影：Goety 的 finishItemEvents 会在使用完非 IWand 物品时立即移除 SHADOW_WALK，
-            // 因此把该效果延迟到使用完成事件之后再附加，保证持续满 60 秒
-            // execute() 在服务端线程上会同步执行，必须在下一 tick 才真正附加
             MinecraftServer server = serverLevel.getServer();
             server.tell(new TickTask(server.getTickCount() + 1, () -> {
                 if (entity.isAlive()) {
@@ -98,7 +88,6 @@ public class NightHeartPeaSoupItem extends DrinkableItem {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, level, tooltip, flag);
-        // 融身入影改为延迟附加后不在食物属性里，这里手动补回 tooltip 说明
         tooltip.add(Component.translatable("tooltip.goetydelight.night_heart_pea_soup.shadow_walk",
                 GoetyEffects.SHADOW_WALK.get().getDisplayName()));
     }

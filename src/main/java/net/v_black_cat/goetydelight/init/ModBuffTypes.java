@@ -73,9 +73,6 @@ public class ModBuffTypes {
     public static final RegistryObject<BuffType> WARDEN_DETECTED =
             registerWithEffect("warden_detected", new BuffType(-1, 0, false), (entity, amp) -> {});
 
-    public static final RegistryObject<BuffType> MINION_BOOST =
-            registerWithEffect("minion_boost", new BuffType(-1, 1, true), new MinionBoostBuffEffect());
-
     public static void register(IEventBus modEventBus) {
         BUFF_TYPES.register(modEventBus);
     }
