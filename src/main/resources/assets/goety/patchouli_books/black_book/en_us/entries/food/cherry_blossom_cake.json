@@ -5,15 +5,11 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "Consuming this cake increases the damage of the next attack based on the consumer's luck value. The damage calculation formula is: Luck Value + 0.2%% Attack Damage.$(br2)$(br)Try using Cherry Clusters on a fox—maybe something good will happen~"
+            "text": "A piece of sakura cake infused with mystical power. Eating it seems to make you a bit luckier...?"
         },
         {
-            "type": "spotlight",
-            "title": "Cherry Blossom Cake",
-            "link_recipe": true,
-            "item": "goetydelight:cherry_blossom_cake",
-            "scale": 1.2,
-            "text": "A power beyond the event horizon, $(#FF91E2)said to be a blessing from the Kitsune God$()"
+            "type": "goety:cooking",
+            "recipe": "goetydelight:cooking/cherry_blossom_cake"
         }
     ]
 }
