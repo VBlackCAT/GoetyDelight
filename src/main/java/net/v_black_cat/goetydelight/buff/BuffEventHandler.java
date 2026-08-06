@@ -8,34 +8,61 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.v_black_cat.goetydelight.buff.effect.BuffEffect;
 import net.v_black_cat.goetydelight.init.ModAttachments;
 import net.v_black_cat.goetydelight.init.ModBuffTypes;
+import net.v_black_cat.goetydelight.util.BuffUtil;
 
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class BuffEventHandler {
 
-    // 实体 tick 事件
     public static void onEntityTick(EntityTickEvent.Post event) {
-        if (!(event.getEntity() instanceof LivingEntity livingEntity)) return;
-
-        ActiveBuffs activeBuffs = livingEntity.getData(ModAttachments.ACTIVE_BUFFS);
-        if (activeBuffs == null) return;
-
-        // 记录 tick 前的活跃类型（用于检测移除）
-        Set<ResourceLocation> beforeTick = new HashSet<>(activeBuffs.getActiveTypes());
-
-        activeBuffs.tickAllAndRemove(livingEntity);
-
-        // 对仍然活跃的类型执行每 tick 效果
-        Set<ResourceLocation> afterTick = activeBuffs.getActiveTypes();
-        if (!beforeTick.equals(afterTick) && !livingEntity.level().isClientSide) {
-            AttachmentSync.syncEntityUpdate(livingEntity, ModAttachments.ACTIVE_BUFFS.get());
+        if (!(event.getEntity() instanceof LivingEntity living) || living.level().isClientSide) {
+            return;
         }
-        for (ResourceLocation typeId : afterTick) {
-            int totalAmplifier = activeBuffs.getTotalAmplifier(typeId);
+
+        if (ActiveBuffs.ACTIVE_ENTITY_COUNT.get() == 0) {
+            return;
+        }
+
+        ActiveBuffs buffs = BuffUtil.getBuffs(living);
+        if (buffs == null || buffs.isEmpty()) {
+            return;
+        }
+
+        Map<ResourceLocation, Integer> beforeSnapshot = new HashMap<>();
+        for (ResourceLocation type : buffs.getActiveTypes()) {
+            beforeSnapshot.put(type, buffs.getTotalAmplifier(type));
+        }
+
+        buffs.tickAllAndRemove(living);
+
+        Set<ResourceLocation> afterTypes = buffs.getActiveTypes();
+        for (ResourceLocation typeId : afterTypes) {
             BuffEffect effect = ModBuffTypes.getEffect(typeId);
             if (effect != null) {
-                effect.apply(livingEntity, totalAmplifier);
+                effect.apply(living, buffs.getTotalAmplifier(typeId));
+            }
+        }
+
+        boolean changed = false;
+        if (beforeSnapshot.size() != afterTypes.size()) {
+            changed = true;
+        } else {
+            for (ResourceLocation type : afterTypes) {
+                Integer oldAmp = beforeSnapshot.get(type);
+                int newAmp = buffs.getTotalAmplifier(type);
+                if (oldAmp == null || oldAmp != newAmp) {
+                    changed = true;
+                    break;
+                }
+            }
+        }
+
+        if (changed) {
+            BuffUtil.setBuffs(living, buffs);
+            if (living instanceof ServerPlayer) {
+                AttachmentSync.syncEntityUpdate(living, ModAttachments.ACTIVE_BUFFS.get());
             }
         }
     }
