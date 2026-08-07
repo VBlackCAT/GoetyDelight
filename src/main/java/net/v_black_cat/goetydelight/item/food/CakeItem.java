@@ -84,6 +84,7 @@ public class CakeItem extends Item {
                 entityId.equals(ResourceLocation.parse("spectrum:eraser")) ||
                 entityId.equals(ResourceLocation.parse("pastel:eraser")) ||
                 entityId.equals(ResourceLocation.parse("alexsmobs:seagull"));
+                entityId.equals(ResourceLocation.parse("alexsmobs:straddler")) ||
     }
 
     private void addDeathEffects(Level level, Mob target) {

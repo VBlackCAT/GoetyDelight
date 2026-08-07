@@ -42,7 +42,7 @@ displayName="${mod_name}" #mandatory
 #credits="" #optional
 
 # The authors of the mod, displayed in the mod UI (optional)
-authors="V_BlackCAT,wu1wu2,BaiXi_a,Upharsin,Kun_Zhong,Fracsail,bai_ze_li,vanilla_haozi,Xiao_wu,Lll252"
+authors="V_BlackCAT,wu1wu2,BaiXi_a,Upharsin,Kun_Zhong,Fracsail,bai_ze_li,vanilla_haozi,Xiao_wu,Lll252,sybsysj"
 
 # The description text for the mod (multi line!) (#mandatory)
 description='''
