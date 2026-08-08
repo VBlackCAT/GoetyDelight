@@ -33,7 +33,6 @@ public class ModCreativeModTabs {
          BLACKLIST.add(ModItems.VENOMOUS_SPIDER_KNIFE);
          BLACKLIST.add(ModItems.ASCENSION_MOONCAKE);
          BLACKLIST.add(ModItems.PROMOTION_HARD_CANDY);
-         BLACKLIST.add(ModItems.CHERRY_BLOSSOM_CAKE);
          BLACKLIST.add(ModItems.NOT_ANYTHING);
          BLACKLIST.add(ModItems.ROAST_LAOWANG);
          BLACKLIST.add(ModItems.METAMORPHIC_SCENT_FRUIT);

@@ -18,15 +18,15 @@ public class NetworkHandler {
                 id++, ThrowSoupPacket.class, ThrowSoupPacket::encode, ThrowSoupPacket::decode, ThrowSoupPacket::handle);
         INSTANCE.registerMessage(
                 id++, SyncBuffPacket.class, SyncBuffPacket::encode, SyncBuffPacket::decode, SyncBuffPacket::handle);
-
-        INSTANCE.registerMessage(
-                id++,
-                SyncFoxKillCountPacket.class,
-                SyncFoxKillCountPacket::encode,
-                SyncFoxKillCountPacket::decode,
-                SyncFoxKillCountPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_CLIENT)
-        );
+//        这个没必要删，因为之后可能会用到
+//        INSTANCE.registerMessage(
+//                id++,
+//                SyncFoxKillCountPacket.class,
+//                SyncFoxKillCountPacket::encode,
+//                SyncFoxKillCountPacket::decode,
+//                SyncFoxKillCountPacket::handle,
+//                Optional.of(NetworkDirection.PLAY_TO_CLIENT)
+//        );
         INSTANCE.registerMessage(
                 id++,
                 SyncBackModelPacket.class,
@@ -52,9 +52,9 @@ public class NetworkHandler {
                 Optional.of(NetworkDirection.PLAY_TO_CLIENT)
         );
     }
-    public static void sendToClient(SyncFoxKillCountPacket packet, ServerPlayer player) {
-        INSTANCE.sendTo(packet, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
-    }
+//    public static void sendToClient(SyncFoxKillCountPacket packet, ServerPlayer player) {
+//        INSTANCE.sendTo(packet, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+//    }
 
     public static void sendToServer(ThrowSoupPacket packet) {
         INSTANCE.sendToServer(packet);

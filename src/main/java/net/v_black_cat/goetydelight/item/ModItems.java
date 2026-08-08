@@ -102,7 +102,6 @@ public class ModItems {
     public static final RegistryObject<Item> BOILING_BLOOD_BREW;
     public static final RegistryObject<Item> ASCENSION_MOONCAKE;
     public static final RegistryObject<Item> VILLAGERS_FEAST;
-    public static final RegistryObject<Item> CHERRY_BLOSSOM_CAKE;
     public static final RegistryObject<Item> NETHER_WART_OMELETTE;
     public static final RegistryObject<Item> WARPED_WART_OMELETTE;
     public static final RegistryObject<Item> FULL_SPIDER_FEAST;
@@ -544,12 +543,6 @@ public class ModItems {
                 () -> new RottenCorpseMaggotFeastItem(basicItem().stacksTo(16).food(
                         simpleFoodItemProperties(8, 5)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(2), 0), 1.0F)
-                                .build())));
-        CHERRY_BLOSSOM_CAKE = ITEMS.register("cherry_blossom_cake",
-                () -> new CherryBlossomCakeItem(basicItem().stacksTo(64).rarity(Rarity.UNCOMMON).food(
-                        simpleFoodItemProperties(12, 8)
-                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(MobEffects.LUCK, minToTick(2), 2), 1.0F)
                                 .build())));
         NETHER_WART_OMELETTE = ITEMS.register("nether_wart_omelette",
                 () -> new NetherWartOmeletteItem(basicItem().stacksTo(64).food(

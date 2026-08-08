@@ -337,7 +337,7 @@ public class DollEntity extends Entity {
                 case "doll_baka" -> soundEvent = SoundEvents.PIG_AMBIENT;
                 case "doll_bai" -> soundEvent = SoundEvents.PIG_DEATH;
                 case "doll_windis" -> soundEvent = SoundEvents.DROWNED_AMBIENT;
-                case "doll_fox", "doll_xiaoarin" -> soundEvent = SoundEvents.FOX_AMBIENT;
+                case "doll_fox" -> soundEvent = SoundEvents.FOX_AMBIENT;
                 case "doll_skillupper" -> soundEvent = SoundEvents.AXOLOTL_SPLASH;
                 case "doll_vblackcat", "doll_lamiao", "doll_sim" -> soundEvent = SoundEvents.CAT_AMBIENT;
                 case "doll_maid1" -> soundEvent = SoundEvents.PLAYER_SWIM;
