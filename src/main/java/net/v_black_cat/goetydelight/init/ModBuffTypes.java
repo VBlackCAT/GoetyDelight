@@ -81,17 +81,6 @@ public class ModBuffTypes {
             registerWithEffect("bone_lord_ash_rice",
                     new BuffType(6000, 0, false),
                     new BoneLordAshRiceEffect());
-    // 樱花蛋糕攻击力加成（持续 1200 ticks = 1 分钟）
-    public static final DeferredHolder<BuffType, BuffType> CHERRY_BLOSSOM_ATTACK_BOOST =
-            registerWithEffect("cherry_blossom_attack_boost",
-                    new BuffType(1200, 0, false),
-                    new CherryBlossomAttackBoostEffect());
-
-    // 樱花蛋糕惩罚标记（持续 80 ticks = 4 秒，足够完成 3 次闪电）
-    public static final DeferredHolder<BuffType, BuffType> CHERRY_BLOSSOM_PUNISHMENT =
-            registerWithEffect("cherry_blossom_punishment",
-                    new BuffType(80, 0, false),
-                    new CherryBlossomPunishmentEffect());
     // MinionBoost 比较特殊，使用 stackable = true，amplifier 代表累计层数
     public static final DeferredHolder<BuffType, BuffType> MINION_BOOST =
             registerWithEffect("minion_boost", new BuffType(-1, 1, true), new MinionBoostBuffEffect());
