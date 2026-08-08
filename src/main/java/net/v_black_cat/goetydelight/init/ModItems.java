@@ -102,7 +102,6 @@ public class ModItems {
     public static final DeferredItem<Item> BOILING_BLOOD_BREW;
     public static final DeferredItem<Item> ASCENSION_MOONCAKE;
     public static final DeferredItem<Item> VILLAGERS_FEAST;
-    public static final DeferredItem<Item> CHERRY_BLOSSOM_CAKE;
     public static final DeferredItem<Item> NETHER_WART_OMELETTE;
     public static final DeferredItem<Item> WARPED_WART_OMELETTE;
     public static final DeferredItem<Item> FULL_SPIDER_FEAST;
@@ -435,10 +434,6 @@ public class ModItems {
         ROTTEN_CORPSE_MAGGOT_FEAST = ITEMS.register("rotten_corpse_maggot_feast",
                 () -> new RottenCorpseMaggotFeastItem(basicItem().stacksTo(16).food(
                         ModFoods.ROTTEN_CORPSE_MAGGOT_FEAST
-                )));
-        CHERRY_BLOSSOM_CAKE = ITEMS.register("cherry_blossom_cake",
-                () -> new Item(basicItem().stacksTo(64).rarity(Rarity.COMMON).food(
-                        ModFoods.CHERRY_BLOSSOM_CAKE
                 )));
         NETHER_WART_OMELETTE = ITEMS.register("nether_wart_omelette",
                 () -> new NetherWartOmeletteItem(basicItem().stacksTo(64).food(

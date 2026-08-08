@@ -25,7 +25,7 @@ public class DollRegisterEventHandler {
             "doll_5152", "doll_p0", "doll_p7", "doll_bai", "doll_baka",
             "doll_fox", "doll_kunzhong", "doll_lamiao", "doll_lll252", "doll_m3",
             "doll_maid1", "doll_maid2", "doll_moon", "doll_skillupper", "doll_vblackcat",
-            "doll_windis", "doll_xiaoarin", "doll_zswj", "doll_yushi", "doll_sim", "doll_dwky",
+            "doll_windis","doll_zswj", "doll_yushi", "doll_sim", "doll_dwky",
             "doll_sky", "doll_dimspector","doll_haozi","doll_fish","doll_kunkun","doll_djm",
             "doll_htohtosgoy"
     };
@@ -47,7 +47,6 @@ public class DollRegisterEventHandler {
         registerVanillaTooltips("doll_skillupper", "doll_skillupper");
         registerVanillaTooltips("doll_vblackcat", "doll_vblackcat");
         registerVanillaTooltips("doll_windis", "doll_windis");
-        registerVanillaTooltips("doll_xiaoarin", "doll_xiaoarin");
         registerVanillaTooltips("doll_zswj", "doll_zswj");
         registerVanillaTooltips("doll_yushi", "doll_yushi");
         registerVanillaTooltips("doll_sim", "doll_sim");

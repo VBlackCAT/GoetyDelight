@@ -74,7 +74,6 @@ public class ModCreativeTabs {
                         output.accept(ModItems.EXOTIC_BREAKFAST.get());
 //                        output.accept(ModItems.ASCENSION_MOONCAKE.get());
                         output.accept(ModItems.VILLAGERS_FEAST.get());
-//                        output.accept(ModItems.CHERRY_BLOSSOM_CAKE.get());
                         output.accept(ModItems.NETHER_WART_OMELETTE.get());
                         output.accept(ModItems.WARPED_WART_OMELETTE.get());
                         output.accept(ModItems.FULL_SPIDER_FEAST.get());
