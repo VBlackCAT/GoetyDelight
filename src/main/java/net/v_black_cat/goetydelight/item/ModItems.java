@@ -145,6 +145,7 @@ public class ModItems {
     public static final RegistryObject<Item> ROAST_SPIDER_EGG;
     public static final RegistryObject<Item> BOAT_PLATE;
     public static final RegistryObject<Item> TEN_THOUSAND_POISON_FEAST;
+    public static final RegistryObject<Item> UNHOLY_SAUCE;
 
 
 
@@ -815,6 +816,14 @@ public class ModItems {
         TEN_THOUSAND_POISON_FEAST = ITEMS.register("ten_thousand_poison_feast",
                 () -> new TenThousandPoisonFeast(basicItem().stacksTo(16).rarity(Rarity.UNCOMMON)
                         .food(simpleFoodItemProperties(10, 6)
+                                .build())));
+
+        UNHOLY_SAUCE = ITEMS.register("unholy_sauce",
+                () -> new UnholySauceItem(basicItem().stacksTo(16).rarity(Rarity.UNCOMMON)
+                        .food(simpleFoodItemProperties(5, 4)
+                                .effect(() ->new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), minToTick(5), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(ModEffects.ZOMBIFIED_PIGLIN_BRUTE_SERVANT_SUPPORT.get(), minToTick(5), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .build())));
 
         // ==================== 种子物品 ====================

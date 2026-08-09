@@ -14,16 +14,13 @@ import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.config.Config;
 
-import java.util.*;
+import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = GoetyDelight.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class MinionBoost {
 
     private static final String STEW_BOOST_COUNT_TAG = "LichStewBoostCount";
     private static final String SOUP_BOOST_COUNT_TAG = "NightPeaSoupBoostCount";
-
-    private static final Map<UUID, Integer> stewCountMap = new HashMap<>();
-    private static final Map<UUID, Integer> soupCountMap = new HashMap<>();
 
     private static final UUID ATTACK_DAMAGE_BOOST_UUID = UUID.fromString("a90ad9a8-3776-44d1-b6c8-a464269f4bf5");
     private static final UUID MAX_HEALTH_BOOST_UUID = UUID.fromString("2d43842e-d85a-4590-8b6f-daafe15bcbcc");
@@ -32,68 +29,24 @@ public class MinionBoost {
     private static final UUID ARMOR_TOUGHNESS_BOOST_UUID = UUID.fromString("c0c0c0c0-c0c0-c0c0-c0c0-c0c0c0c0c0c0");
 
     public static int getStewBoostCount(Player player) {
-        return stewCountMap.getOrDefault(player.getUUID(), 0);
+        return player.getPersistentData().getInt(STEW_BOOST_COUNT_TAG);
     }
 
     public static int getSoupBoostCount(Player player) {
-        return soupCountMap.getOrDefault(player.getUUID(), 0);
+        return player.getPersistentData().getInt(SOUP_BOOST_COUNT_TAG);
     }
 
     public static void increaseStewBoostCount(Player player) {
         int currentCount = getStewBoostCount(player);
         if (currentCount < Config.getLichStewMaxCount()) {
-            stewCountMap.put(player.getUUID(), currentCount + 1);
-            // 立即保存到NBT
-            saveToNBT(player);
+            player.getPersistentData().putInt(STEW_BOOST_COUNT_TAG, currentCount + 1);
         }
     }
 
     public static void increaseSoupBoostCount(Player player) {
         int currentCount = getSoupBoostCount(player);
         if (currentCount < Config.getNightPeaSoupMaxCount()) {
-            soupCountMap.put(player.getUUID(), currentCount + 1);
-            // 立即保存到NBT
-            saveToNBT(player);
-        }
-    }
-
-    public static void removePlayerData(UUID playerUUID) {
-        stewCountMap.remove(playerUUID);
-        soupCountMap.remove(playerUUID);
-    }
-
-    // 保存数据到NBT
-    private static void saveToNBT(Player player) {
-        int stewCount = getStewBoostCount(player);
-        int soupCount = getSoupBoostCount(player);
-
-        if (stewCount > 0) {
-            player.getPersistentData().putInt(STEW_BOOST_COUNT_TAG, stewCount);
-        } else {
-            player.getPersistentData().remove(STEW_BOOST_COUNT_TAG);
-        }
-
-        if (soupCount > 0) {
-            player.getPersistentData().putInt(SOUP_BOOST_COUNT_TAG, soupCount);
-        } else {
-            player.getPersistentData().remove(SOUP_BOOST_COUNT_TAG);
-        }
-    }
-
-    // 从NBT加载数据到Map
-    private static void loadFromNBT(Player player) {
-        if (player.getPersistentData().contains(STEW_BOOST_COUNT_TAG)) {
-            int stewCount = player.getPersistentData().getInt(STEW_BOOST_COUNT_TAG);
-            if (stewCount > 0) {
-                stewCountMap.put(player.getUUID(), Math.min(stewCount, Config.getLichStewMaxCount()));
-            }
-        }
-
-        if (player.getPersistentData().contains(SOUP_BOOST_COUNT_TAG)) {
-            int soupCount = player.getPersistentData().getInt(SOUP_BOOST_COUNT_TAG);
-            if (soupCount > 0) {
-                soupCountMap.put(player.getUUID(), Math.min(soupCount, Config.getNightPeaSoupMaxCount()));
-            }
+            player.getPersistentData().putInt(SOUP_BOOST_COUNT_TAG, currentCount + 1);
         }
     }
 
@@ -238,16 +191,11 @@ public class MinionBoost {
             }
         }
 
-        // 2. 玩家进入游戏 - 加载NBT数据到Map并应用加成
+        // 2. 玩家进入游戏
         @SubscribeEvent
         public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
             if (!event.getEntity().level().isClientSide()) {
                 Player player = event.getEntity();
-
-                // 从NBT加载数据到Map
-                loadFromNBT(player);
-
-                // 检查是否有加成需要应用
                 int soupBoostCount = getSoupBoostCount(player);
                 int stewBoostCount = getStewBoostCount(player);
                 if (soupBoostCount > 0 || stewBoostCount > 0) {
@@ -256,14 +204,33 @@ public class MinionBoost {
             }
         }
 
-        // 玩家退出时保存数据到NBT并清理Map
+        // 3. 玩家克隆事件 - 防止数据丢失
         @SubscribeEvent
-        public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
-            Player player = event.getEntity();
-            // 保存数据到NBT
-            saveToNBT(player);
-            // 清理内存中的数据
-            removePlayerData(player.getUUID());
+        public static void onPlayerClone(PlayerEvent.Clone event) {
+            if (!event.getEntity().level().isClientSide()) {
+                Player original = event.getOriginal();
+                Player newPlayer = event.getEntity();
+
+                // 复制炖菜食用次数
+                int stewCount = original.getPersistentData().getInt(STEW_BOOST_COUNT_TAG);
+                if (stewCount > 0) {
+                    newPlayer.getPersistentData().putInt(STEW_BOOST_COUNT_TAG, stewCount);
+                }
+
+                // 复制汤食用次数
+                int soupCount = original.getPersistentData().getInt(SOUP_BOOST_COUNT_TAG);
+                if (soupCount > 0) {
+                    newPlayer.getPersistentData().putInt(SOUP_BOOST_COUNT_TAG, soupCount);
+                }
+
+                // 如果死亡复活，重新应用加成
+                if (!event.isWasDeath()) {
+                    // 非死亡克隆（如末地传送），立即应用加成
+                    if (stewCount > 0 || soupCount > 0) {
+                        applyMinionBoosts(newPlayer);
+                    }
+                }
+            }
         }
     }
 }
