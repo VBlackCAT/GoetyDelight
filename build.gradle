@@ -128,6 +128,7 @@ dependencies {
     runtimeOnly "curse.maven:appleskin-248787:7854442" //appleskin-neoforge-mc1.21-3.0.9.jar
     runtimeOnly "curse.maven:jei-238222:8417046"
     runtimeOnly "curse.maven:jade-324717:7545219"
+    runtimeOnly "curse.maven:spark-361579:6225208" //spark-1.10.124-neoforge.jar
 
 
 
