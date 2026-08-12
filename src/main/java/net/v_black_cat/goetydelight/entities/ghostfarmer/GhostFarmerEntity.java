@@ -1,4 +1,5 @@
 package net.v_black_cat.goetydelight.entities.ghostfarmer;
+
 import com.Polarice3.Goety.common.entities.ai.FloatSwimGoal;
 import com.Polarice3.Goety.common.entities.ally.Summoned;
 import com.Polarice3.Goety.common.entities.neutral.AbstractWraith;
@@ -38,30 +39,28 @@ import net.minecraft.world.level.block.StemBlock;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlocks;
 import org.jetbrains.annotations.Nullable;
+import vectorwing.farmersdelight.common.item.enchantment.BackstabbingEnchantment;
 import vectorwing.farmersdelight.common.block.RichSoilFarmlandBlock;
 
-import java.util.OptionalInt;
 import java.util.*;
 
 import static com.Polarice3.Goety.common.items.ModItems.ECTOPLASM;
 
 public class GhostFarmerEntity extends AbstractWraith implements Merchant {
-    
-    
+
     private static final int MAX_GROWTH_STAGE = 7;
     private static final double PLANT_CHANCE = 0.05;
     private static final int SCAN_RADIUS = 15;
-    private static final String PLANTED_STEMS_TAG = "PlantedStems";
     private static final Component TRADE_TITLE = Component.translatable("entity.goetydelight.ghost_farmer.trade");
     private static final Component NOT_NIGHT_MESSAGE = Component.translatable("entity.goetydelight.ghost_farmer.not_night");
 
-    
     public final AnimationState idleAnimationState = new AnimationState();
     private final Set<BlockPos> plantStemsPos = new HashSet<>();
     private final Set<BlockPos> attachedStems = new HashSet<>();
@@ -76,59 +75,60 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
 
     public final AnimationState attackAnimationState = new AnimationState();
     private int attackTick = 0;
-    private static final int ATTACK_DURATION = 38; 
+    private static final int ATTACK_DURATION = 38;
     private Player attackTarget;
     private int idleAnimationTimeout = 0;
     private int attackAnimationTimeout = 0;
     private static final EntityDataAccessor<Boolean> ATTACKING =
             SynchedEntityData.defineId(GhostFarmerEntity.class, EntityDataSerializers.BOOLEAN);
 
-
     public GhostFarmerEntity(EntityType<? extends Summoned> entityType, Level level) {
         super(entityType, level);
     }
+
     @Override
     protected boolean isSunSensitive() {
         return false;
     }
-    
+
+    @Override
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(ATTACKING, false);
+    }
+
     @Override
     public void tick() {
         super.tick();
 
         if (this.level().isClientSide()) {
-            setupAnimationStates(); 
+            setupAnimationStates();
         } else {
             checkMidnightRestock();
 
-            
             if (isAttacking()) {
                 attackTick++;
-
                 if (attackTick == ATTACK_DURATION / 2 && attackTarget != null) {
                     executePlayer(attackTarget);
                 }
-
                 if (attackTick >= ATTACK_DURATION) {
                     resetAttack();
                 }
             }
             if (isNightTime() && isInTargetStructure()) {
-                if(tickCount%20==0){
+                if (tickCount % 20 == 0) {
                     checkAndRemoveInvalidPlantingSites();
                     melonStemWithered();
                     acceleratingStemsGrowth();
                 }
-
-                if(tickCount%100==0){
+                if (tickCount % 100 == 0) {
                     scanForSuitablePlantingLocations();
                     plantMelonStems();
                 }
-
             }
-            
-            if(!isNightTime()){
-                if (!plantStemsPos.isEmpty() || !attachedStems.isEmpty()){
+
+            if (!isNightTime()) {
+                if (!plantStemsPos.isEmpty() || !attachedStems.isEmpty()) {
                     plantStemsPos.clear();
                     attachedStems.clear();
                     plantedPos.clear();
@@ -136,33 +136,25 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
             }
         }
     }
-    
+
     public boolean isAttacking() {
         return this.entityData.get(ATTACKING);
     }
 
-    
     public void setAttacking(boolean attacking) {
         this.entityData.set(ATTACKING, attacking);
     }
-    @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(ATTACKING, false);
-    }
-    
+
     private void setupAnimationStates() {
-        
         if (this.idleAnimationTimeout <= 0 && !isAttacking()) {
-            this.idleAnimationTimeout = 60; 
+            this.idleAnimationTimeout = 60;
             this.idleAnimationState.start(this.tickCount);
         } else {
             --this.idleAnimationTimeout;
         }
 
-        
         if (isAttacking() && attackAnimationTimeout <= 0) {
-            attackAnimationTimeout = ATTACK_DURATION; 
+            attackAnimationTimeout = ATTACK_DURATION;
             attackAnimationState.start(this.tickCount);
         } else if (attackAnimationTimeout > 0) {
             --this.attackAnimationTimeout;
@@ -171,13 +163,10 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
             }
         }
 
-        
         if (!isAttacking()) {
             attackAnimationState.stop();
         }
     }
-
-
 
     @Nullable
     @Override
@@ -227,7 +216,6 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
 
     @Override
     public void overrideXp(int xp) {
-        
     }
 
     @Override
@@ -247,9 +235,8 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
 
     @Override
     public void openTradingScreen(Player player, Component displayName, int level) {
-        OptionalInt optionalint = player.openMenu(new SimpleMenuProvider((containerId, playerInventory, playerEntity) -> {
-            return new GhostFarmerMerchantMenu(containerId, playerInventory, this);
-        }, this.getCustomTradeTitle()));
+        var optionalint = player.openMenu(new SimpleMenuProvider((containerId, playerInventory, playerEntity) ->
+                new GhostFarmerMerchantMenu(containerId, playerInventory, this), this.getCustomTradeTitle()));
 
         if (optionalint.isPresent()) {
             MerchantOffers merchantoffers = this.getOffers();
@@ -274,7 +261,7 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
                 0,
                 0.0f
         ));
-        
+
         this.offers.add(new MerchantOffer(
                 new ItemStack(ECTOPLASM.get(), 18),
                 new ItemStack(Items.MELON, 1),
@@ -306,7 +293,6 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
                 player.displayClientMessage(NOT_NIGHT_MESSAGE, true);
                 return InteractionResult.sidedSuccess(false);
             }
-
             if (this.level().isClientSide) {
                 return InteractionResult.SUCCESS;
             } else {
@@ -314,7 +300,6 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
                 return InteractionResult.SUCCESS;
             }
         }
-
         return super.mobInteract(player, hand);
     }
 
@@ -327,24 +312,25 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
         return isNightTime();
     }
 
-    
     private void melonStemWithered() {
-        for (BlockPos stemPos : attachedStems){
+        for (BlockPos stemPos : attachedStems) {
             Block block = this.level().getBlockState(stemPos).getBlock();
             if (block instanceof AttachedStemBlock) {
                 BlockPos pos = stemPos.below();
                 Block blockBelow = this.level().getBlockState(pos).getBlock();
                 if (blockBelow instanceof RichSoilFarmlandBlock) {
-                    this.level().setBlockAndUpdate(stemPos, ModBlocks.ECTOPLASMIC_MELON_STEM.get().defaultBlockState().setValue(StemBlock.AGE, MAX_GROWTH_STAGE));
+                    this.level().setBlockAndUpdate(stemPos,
+                            ModBlocks.ECTOPLASMIC_MELON_STEM.get().defaultBlockState()
+                                    .setValue(StemBlock.AGE, MAX_GROWTH_STAGE));
                 }
             } else if (block instanceof StemBlock) {
                 BlockPos pos = stemPos.below();
                 Block blockBelow = this.level().getBlockState(pos).getBlock();
-
                 if (blockBelow instanceof RichSoilFarmlandBlock) {
                     int currentAge = this.level().getBlockState(stemPos).getValue(StemBlock.AGE);
                     if (currentAge > 0) {
-                        this.level().setBlockAndUpdate(stemPos, this.level().getBlockState(stemPos).setValue(StemBlock.AGE, currentAge - 1));
+                        this.level().setBlockAndUpdate(stemPos,
+                                this.level().getBlockState(stemPos).setValue(StemBlock.AGE, currentAge - 1));
                     } else {
                         this.level().removeBlock(stemPos, false);
                     }
@@ -356,38 +342,29 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
     private void checkAndRemoveInvalidPlantingSites() {
         plantStemsPos.removeIf(pos -> {
             Block block = this.level().getBlockState(pos).getBlock();
-
-            if (!(block instanceof StemBlock)) {
-                return true;
-            }
-
-
-            if (attachedStems.contains(pos)) {
-                return true;
-            }
-            
+            if (!(block instanceof StemBlock)) return true;
+            if (attachedStems.contains(pos)) return true;
             return false;
         });
     }
 
     private void acceleratingStemsGrowth() {
-        for (BlockPos stemPos : plantStemsPos){
-            if (!attachedStems.contains(stemPos)){
+        for (BlockPos stemPos : plantStemsPos) {
+            if (!attachedStems.contains(stemPos)) {
                 Block block = this.level().getBlockState(stemPos).getBlock();
                 if (block instanceof StemBlock) {
                     int age = this.level().getBlockState(stemPos).getValue(StemBlock.AGE);
                     if (age < MAX_GROWTH_STAGE) {
-                        this.level().setBlockAndUpdate(stemPos, this.level().getBlockState(stemPos).setValue(StemBlock.AGE, age + 1));
+                        this.level().setBlockAndUpdate(stemPos,
+                                this.level().getBlockState(stemPos).setValue(StemBlock.AGE, age + 1));
                     }
-                    
                     if (age >= MAX_GROWTH_STAGE) {
-                        for (int i=0; i < 10; i++){
+                        for (int i = 0; i < 10; i++) {
                             Block stemBlock = this.level().getBlockState(stemPos).getBlock();
                             stemBlock.randomTick(this.level().getBlockState(stemPos), (ServerLevel) this.level(), stemPos, this.level().random);
                         }
                     }
-                    
-                    if(this.level().getBlockState(stemPos).getBlock() instanceof AttachedStemBlock){
+                    if (this.level().getBlockState(stemPos).getBlock() instanceof AttachedStemBlock) {
                         attachedStems.add(stemPos);
                     }
                 }
@@ -397,11 +374,12 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
 
     private void plantMelonStems() {
         for (BlockPos stemPos : plantStemsPos) {
-            if(!attachedStems.contains(stemPos)){
+            if (!attachedStems.contains(stemPos)) {
                 Block block = this.level().getBlockState(stemPos).getBlock();
-                if (!(block instanceof StemBlock)&&!plantedPos.contains(stemPos)) {
+                if (!(block instanceof StemBlock) && !plantedPos.contains(stemPos)) {
                     if (this.random.nextDouble() < PLANT_CHANCE) {
-                        this.level().setBlockAndUpdate(stemPos, ModBlocks.ECTOPLASMIC_MELON_STEM.get().defaultBlockState());
+                        this.level().setBlockAndUpdate(stemPos,
+                                ModBlocks.ECTOPLASMIC_MELON_STEM.get().defaultBlockState());
                         plantedPos.add(stemPos);
                     }
                 }
@@ -428,15 +406,12 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
         }
     }
 
-    
     private void checkMidnightRestock() {
         long currentTime = this.level().getDayTime();
         long currentDay = currentTime / 24000;
-
         if (lastRestockTime / 24000 < currentDay) {
             hasRestockedToday = false;
         }
-
         long timeOfDay = currentTime % 24000;
         if (timeOfDay >= 0 && timeOfDay < 1000 && !hasRestockedToday) {
             restockTrades();
@@ -461,17 +436,26 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
     private boolean isInTargetStructure() {
         BlockPos currentPos = this.blockPosition();
         ServerLevel serverLevel = (ServerLevel) this.level();
-        ResourceKey<Structure> structure = ResourceKey.create(Registries.STRUCTURE, new ResourceLocation("goetydelight", "ectoplasmic_melon_field"));
-
+        ResourceKey<Structure> structure = ResourceKey.create(Registries.STRUCTURE,
+                new ResourceLocation("goetydelight", "ectoplasmic_melon_field"));
         StructureStart structureStart = serverLevel.structureManager().getStructureWithPieceAt(currentPos, structure);
         return structureStart != null && structureStart.isValid();
     }
 
+    private boolean isPlayerInTargetStructure(Player player) {
+        BlockPos playerPos = player.blockPosition();
+        ServerLevel serverLevel = (ServerLevel) this.level();
+        ResourceKey<Structure> structure = ResourceKey.create(Registries.STRUCTURE,
+                new ResourceLocation("goetydelight", "ectoplasmic_melon_field"));
+        StructureStart structureStart = serverLevel.structureManager().getStructureWithPieceAt(playerPos, structure);
+        return structureStart != null && structureStart.isValid();
+    }
 
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(1, new FloatSwimGoal(this));
-        this.goalSelector.addGoal(2, new AttackPlayerGoal()); 
+        // 移除主动攻击AI - 不再自动索敌
+        // this.goalSelector.addGoal(2, new AttackPlayerGoal());
         this.goalSelector.addGoal(3, new RestrictSunGoal(this));
         this.goalSelector.addGoal(4, new FleeSunGoal(this, 1.0));
         this.goalSelector.addGoal(9, new WraithLookGoal(this, Player.class, 3.0F, 1.0F));
@@ -486,7 +470,11 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
         return null;
     }
 
-    
+    /**
+     * 攻击玩家目标 - 已禁用主动索敌
+     * 保留此类以供参考，但不会在AI中使用
+     */
+    @Deprecated
     class AttackPlayerGoal extends Goal {
         private Player targetPlayer;
         private int cooldown = 0;
@@ -497,75 +485,41 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
 
         @Override
         public boolean canUse() {
-            if (cooldown > 0) {
-                cooldown--;
-                return false;
-            }
-            if (!isNightTime() || !isInTargetStructure()) {
-                return false;
-            }
-            this.targetPlayer = findAttackTarget();
-            return this.targetPlayer != null && !isAttacking();
+            return false; // 永久禁用
         }
 
         @Override
         public boolean canContinueToUse() {
-            return isAttacking() || (targetPlayer != null && targetPlayer.isAlive() &&
-                    distanceToSqr(targetPlayer) < 256.0D); 
+            return false;
         }
 
         @Override
         public void start() {
-            if (targetPlayer != null) {
-                startAttack(targetPlayer);
-                cooldown = 100;
-                
-                setAttacking(true);
-            }
+            // 不会执行
         }
 
         @Override
         public void stop() {
-            resetAttack();
-            this.targetPlayer = null;
+            // 不会执行
         }
 
         @Override
         public void tick() {
-            if (targetPlayer != null && !isAttacking()) {
-                
-                getLookControl().setLookAt(targetPlayer, 30.0F, 30.0F);
-
-                
-                if (distanceToSqr(targetPlayer) < 16.0D) { 
-                    startAttack(targetPlayer);
-                }
-            }
-        }
-
-        private Player findAttackTarget() {
-            AABB searchArea = new AABB(blockPosition()).inflate(16); 
-            List<Player> players = level().getEntitiesOfClass(Player.class, searchArea);
-
-            for (Player player : players) {
-                if (hasStolenMelon(player) || isSuspicious(player)) {
-                    return player;
-                }
-            }
-            return null;
+            // 不会执行
         }
     }
 
     private void startAttack(Player player) {
+        if (isAttacking()) {
+            return;
+        }
         teleportToPlayerFront(player);
         setAttacking(true);
         this.attackTick = 0;
         this.attackTarget = player;
         this.attackAnimationState.start(this.tickCount);
         this.getNavigation().stop();
-
     }
-
 
     private void resetAttack() {
         setAttacking(false);
@@ -574,17 +528,14 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
         this.attackAnimationState.stop();
     }
 
-
     private void executePlayer(Player player) {
         if (!player.isAlive()) return;
-
         player.addTag("ghost_farmer_attack");
-
         dealMagicDamageToPlayer(player);
         playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
         addParticlesAroundSelf(ParticleTypes.REVERSE_PORTAL);
     }
-    
+
     @Override
     public void die(DamageSource cause) {
         super.die(cause);
@@ -603,7 +554,8 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
             double d0 = this.random.nextGaussian() * 0.02;
             double d1 = this.random.nextGaussian() * 0.02;
             double d2 = this.random.nextGaussian() * 0.02;
-            this.level().addParticle(particleOption, this.getRandomX(1.0), this.getRandomY() + 1.0, this.getRandomZ(1.0), d0, d1, d2);
+            this.level().addParticle(particleOption, this.getRandomX(1.0), this.getRandomY() + 1.0,
+                    this.getRandomZ(1.0), d0, d1, d2);
         }
     }
 
@@ -620,195 +572,153 @@ public class GhostFarmerEntity extends AbstractWraith implements Merchant {
         return Component.translatable("entity.goetydelight.ghost_farmer");
     }
 
-
-    
-    public void onEctoplasmicMelonBreak(Player player) {
-        
-        markPlayerAsSuspicious(player);
-
-        
-        if (distanceToSqr(player) < 16.0D) {
-            startAttack(player);
+    /**
+     * 当幽冥瓜被破坏时调用
+     * 攻击条件：
+     * 1. 玩家在结构内
+     * 2. 被破坏的瓜在幽灵农夫面前 OR 幽灵农夫面对玩家
+     * 3. 玩家在16格范围内
+     */
+    public void onEctoplasmicMelonBreak(Player player, BlockPos breakPos) {
+        // 检查玩家是否在结构内
+        if (!isPlayerInTargetStructure(player)) {
+            return;
         }
+
+        // 检查被破坏的瓜是否在幽灵农夫面前
+        boolean isMelonInFront = isBlockInFront(breakPos);
+        // 判断幽灵农夫是否面对玩家
+        boolean isFacingPlayer = !BackstabbingEnchantment.isLookingBehindTarget(this, player.getEyePosition());
+
+        // 两个条件都不满足则不攻击
+        if (!isMelonInFront && !isFacingPlayer) {
+            return;
+        }
+
+        // 检查玩家是否在攻击范围内（16格）
+        if (this.distanceToSqr(player) > 256.0D) {
+            return;
+        }
+
+        // 发起攻击
+        startAttack(player);
     }
 
-    
-    private void markPlayerAsSuspicious(Player player) {
-        
+    /**
+     * 检查指定位置是否在幽灵农夫面前（前方扇形区域）
+     * @param pos 要检查的位置（方块位置）
+     * @return true 如果位置在幽灵农夫面前
+     */
+    private boolean isBlockInFront(BlockPos pos) {
+        if (pos == null) return false;
+
+        // 获取幽灵农夫的视线方向（水平方向）
+        Vec3 lookVec = this.getViewVector(1.0F);
+        lookVec = new Vec3(lookVec.x, 0.0F, lookVec.z).normalize();
+
+        // 获取从幽灵农夫到目标位置的方向（水平方向）
+        // 使用方块中心点 (pos.getX() + 0.5, pos.getZ() + 0.5)
+        Vec3 toPos = new Vec3(
+                pos.getX() + 0.5 - this.getX(),
+                0,
+                pos.getZ() + 0.5 - this.getZ()
+        ).normalize();
+
+        // 计算点积
+        // 点积 > 0.5 表示在面前约60度扇形范围内
+        // 点积 > 0.7 表示在面前约45度扇形范围内（更严格）
+        // 点积 > 0.0 表示在前方半圆范围内（180度）
+        return lookVec.dot(toPos) > 0.5;
     }
 
-    private boolean hasStolenMelon(Player player) {
-        
-        
-        return false;
-    }
-
-    private boolean isSuspicious(Player player) {
-        
-        return false;
-    }
-
-    
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        
     }
 
     private void teleportToPlayerFront(Player player) {
-        
-        double distance = 2.0; 
+        double distance = 2.0;
         double yaw = Math.toRadians(player.getYHeadRot());
-        
-        
+
         double x = player.getX() - Math.sin(yaw) * distance;
         double y = player.getY();
         double z = player.getZ() + Math.cos(yaw) * distance;
-        
-        
+
         x += (this.random.nextDouble() - 0.5) * 0.5;
         z += (this.random.nextDouble() - 0.5) * 0.5;
-        
-        
+
         double dx = player.getX() - x;
         double dz = player.getZ() - z;
         float yawToPlayer = (float) Math.toDegrees(Math.atan2(dz, dx)) - 90.0F;
-        
-        
+
         this.moveTo(x, y, z, yawToPlayer, this.getXRot());
-        
-        
+
         this.level().addParticle(ParticleTypes.REVERSE_PORTAL,
-                this.getX(), this.getY() + 1.0, this.getZ(), 
-                0.0, 0.1, 0.0);
+                this.getX(), this.getY() + 1.0, this.getZ(), 0.0, 0.1, 0.0);
     }
+
     private void dealMagicDamageToPlayer(Player player) {
         float damage = player.getMaxHealth();
         DamageSource magicDamage = new DamageSource(this.damageSources().magic().typeHolder(), this);
         player.sendSystemMessage(Component.translatable("entity.goetydelight.ghost_farmer.attack_message"));
         player.hurt(magicDamage, damage);
     }
-//    private void dealMagicDamageToPlayer(Player player) {
-//        float damage = Float.MAX_VALUE;
-//        DamageSource mobAttack = this.damageSources().mobAttack(this);
-//        Holder<DamageType> damageTypeHolder = mobAttack.typeHolder();
-//        if(damageTypeHolder instanceof Holder.Reference<DamageType> reference)
-//            reference.bindTags(Set.of(DamageTypeTags.BYPASSES_ARMOR,DamageTypeTags.BYPASSES_ENCHANTMENTS,DamageTypeTags.BYPASSES_RESISTANCE));
-//        player.sendSystemMessage(Component.translatable("entity.goetydelight.ghost_farmer.attack_message"));
-//        player.hurt(mobAttack, damage);
-//    }
-//    无视护甲,附魔,抗性
 
     public static class GhostFarmerMerchantMenu extends MerchantMenu {
-        public GhostFarmerMerchantMenu(int containerId, net.minecraft.world.entity.player.Inventory playerInventory, Merchant merchant) {
+        public GhostFarmerMerchantMenu(int containerId, net.minecraft.world.entity.player.Inventory playerInventory,
+                                       Merchant merchant) {
             super(containerId, playerInventory, merchant);
         }
     }
 
-    
+    @Override
+    public void remove(RemovalReason reason) {
+        if ((reason == RemovalReason.DISCARDED || reason == RemovalReason.KILLED) && this.tradingPlayer != null) {
+            this.stopTrading();
+        }
+        super.setRemoved(reason);
+    }
+
+    /**
+     * 事件处理器 - 监听方块破坏事件
+     */
     @Mod.EventBusSubscriber(modid = GoetyDelight.MODID)
     public static class EventHandler {
         @SubscribeEvent
         public static void onBlockBreak(BlockEvent.BreakEvent event) {
-            
+            // 检查是否破坏了幽冥瓜
             if (event.getState().getBlock() == ModBlocks.ECTOPLASMIC_MELON_BLOCK.get()) {
                 Player player = event.getPlayer();
                 Level level = player.level();
-
-                
                 BlockPos breakPos = event.getPos();
+
+                // 检查破坏位置是否在结构内
                 if (level instanceof ServerLevel) {
                     ServerLevel serverLevel = (ServerLevel) level;
-                    ResourceKey<Structure> structure = ResourceKey.create(Registries.STRUCTURE, new ResourceLocation("goetydelight", "ectoplasmic_melon_field"));
+                    ResourceKey<Structure> structure = ResourceKey.create(Registries.STRUCTURE,
+                            new ResourceLocation("goetydelight", "ectoplasmic_melon_field"));
                     StructureStart structureStart = serverLevel.structureManager().getStructureWithPieceAt(breakPos, structure);
                     if (structureStart == null || !structureStart.isValid()) {
-                        return; 
+                        return;
                     }
                 }
 
-                
-                AABB searchArea = new AABB(event.getPos()).inflate(16); 
+                // 查找16格内的幽灵农夫
+                AABB searchArea = new AABB(event.getPos()).inflate(16);
                 List<GhostFarmerEntity> ghostFarmers = level.getEntitiesOfClass(
-                    GhostFarmerEntity.class, searchArea
+                        GhostFarmerEntity.class, searchArea
                 );
 
-                
+                // 通知所有找到的幽灵农夫，传入破坏位置
                 for (GhostFarmerEntity ghostFarmer : ghostFarmers) {
-                    ghostFarmer.onEctoplasmicMelonBreak(player);
+                    ghostFarmer.onEctoplasmicMelonBreak(player, breakPos);
                 }
             }
         }
-
-    }
-//    反伤机制
-//    @Override
-//    public boolean hurt(DamageSource source, float amount) {
-//        // 先调用父类的 hurt 方法
-//        boolean hurtResult = super.hurt(source, amount);
-//
-//        // 如果成功受到伤害且伤害来源是实体攻击
-//        if (hurtResult && source.getEntity() != null) {
-//            Entity attacker = source.getEntity();
-//            // 确保攻击者是玩家且不是自己
-//            if (attacker instanceof Player && attacker != this) {
-//                Player attackingPlayer = (Player) attacker;
-//                // 调用 dealMagicDamageToPlayer 方法进行反伤
-//                this.dealMagicDamageToPlayer(attackingPlayer);
-//            }
-//        }
-//
-//        return hurtResult;
-//    }
-//    限制伤害(hurt层)
-//    @Override
-//    public boolean hurt(DamageSource source, float amount) {
-//        float limitedAmount = Math.min(amount, 1.0f);
-//        return super.hurt(source, limitedAmount);
-//    }
-//    限制伤害(set层)
-//    private long lastSetHealthTime = 0;
-//    private static final long SET_HEALTH_COOLDOWN = 20; // 1秒冷却时间(20 ticks)
-//
-//    @Override
-//    public void setHealth(float health) {
-//        long currentTime = this.level().getGameTime();
-//        float currentHealth = this.getHealth();
-//        float damage = currentHealth - health; // 注意这里是反向计算，health < currentHealth 时为正数伤害
-//        float maxHealth = this.getMaxHealth();
-//        // 伤害值超过Float.MAX_VALUE时无视
-//        if(damage > Float.MAX_VALUE){
-//            return;
-//        }
-//        if (currentTime - lastSetHealthTime < SET_HEALTH_COOLDOWN) {
-//            if(currentHealth+damage*0.5f > maxHealth){
-//                super.setHealth(maxHealth);
-//            }
-//            super.setHealth((currentHealth+damage*0.5f)); // 在冷却时间内，回复部分生命值
-//            lastSetHealthTime = currentTime;
-//            return;
-//        }
-//        // 只有当伤害值超过最大生命值的10%与5之间的较小值时才限制
-//        if (damage > Math.min(5,maxHealth * 0.1f)) {
-//            // 限制伤害最多为最大生命值的10%与5之间的较小值
-//            super.setHealth(currentHealth - Math.min(5,maxHealth * 0.1f));
-//        } else {
-//            // 正常设置生命值
-//            super.setHealth(health);
-//        }
-//        lastSetHealthTime = currentTime;
-//    }
-//    被清除时停止交易
-    @Override
-    public void remove(RemovalReason reason) {
-        if (reason == RemovalReason.DISCARDED || reason == RemovalReason.KILLED && this.tradingPlayer != null) {
-            this.stopTrading();
-        }
-        super.setRemoved(reason);
     }
 }
