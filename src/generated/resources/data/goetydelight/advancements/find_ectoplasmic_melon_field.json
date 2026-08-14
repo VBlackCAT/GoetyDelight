@@ -1,0 +1,41 @@
+{
+  "parent": "goetydelight:root",
+  "criteria": {
+    "ectoplasmic_melon_field": {
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "structure": "goetydelight:ectoplasmic_melon_field"
+              }
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:location"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "goetydelight.advancement.find_ectoplasmic_melon_field.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "goetydelight:ectoplasmic_melon_block"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "goetydelight.advancement.find_ectoplasmic_melon_field.title"
+    }
+  },
+  "requirements": [
+    [
+      "ectoplasmic_melon_field"
+    ]
+  ]
+}
