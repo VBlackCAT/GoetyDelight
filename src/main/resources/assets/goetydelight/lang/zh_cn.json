@@ -218,6 +218,7 @@
   "message.goetydelight.baklava.vizierspoken": "能吃上这一口，值啦*老泪纵横*",
   "message.goetydelight.baklava.successs": "已对目标喂食蜜糖果仁千层酥",
   "message.goetydelight.ten_thousand_poison_feast.vizier": "我的胃，早已无所畏惧",
+  "message.goetydelight.vizier_feed": "汝之砒霜，吾之蜜糖",
   "goetydelight.advancement.root.desc": "踏上独属于黑魔法师的厨神之路",
   "goetydelight.advancement.root": "黑暗料理之章",
   "goetydelight.advancements.viziers_cookbook.description": "阅读维齐尔菜谱，参悟异域美食的独家秘方",
@@ -248,6 +249,8 @@
   "goetydelight.advancement.get_night_stove.title": "全年无休",
   "goetydelight.advancement.ghost_farmer_kill_player.description": "郝哥反杀华强(异世界版)",
   "goetydelight.advancement.ghost_farmer_kill_player.title": "瓜农复仇",
+  "goetydelight.advancement.find_ectoplasmic_melon_field.description": "瓜农警戒中",
+  "goetydelight.advancement.find_ectoplasmic_melon_field.title": "有一个人前来偷瓜",
   "config.jade.plugin_goetydelight.doll_entity": "玩偶实体信息",
   "subtitle.goetydelight.block.touch_doll": "摸摸玩偶"
 }

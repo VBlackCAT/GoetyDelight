@@ -710,16 +710,12 @@ public class ModItems {
                                 .build())));
 
         CREAMY_BERRY_FISH_PASTE_DUMPLING_WITH_CHOCOLATE_SAUCE = ITEMS.register("creamy_berry_fish_paste_dumpling_with_chocolate_sauce",
-                () -> new Item(basicItem().stacksTo(64)
+                () -> new CreamyBerryFishPasteDumplingWithChocolateSauceItem(basicItem().stacksTo(64)
                         .food(simpleFoodItemProperties(20, 10)
                                 .effect(() ->new MobEffectInstance(MobEffects.WITHER, minToTick(1), 4), 1.0F)
                                 .effect(() ->new MobEffectInstance(MobEffects.CONFUSION, minToTick(2), 9), 1.0F)
                                 .effect(() ->new MobEffectInstance(SENSE_LOSS.get(), minToTick(1), 0), 1.0F)
-                                .build()))
-                {@Override
-                public int getUseDuration(ItemStack stack) {
-                    return (int) (32 * 4);
-                }});
+                                .build())));
 
         OBSIDIAN_THICK_SOUP = ITEMS.register("obsidian_thick_soup",
                 () -> new BowlFoodItem(basicItem().stacksTo(64).rarity(Rarity.EPIC)
@@ -819,11 +815,12 @@ public class ModItems {
                                 .build())));
 
         UNHOLY_SAUCE = ITEMS.register("unholy_sauce",
-                () -> new UnholySauceItem(basicItem().stacksTo(16).rarity(Rarity.UNCOMMON)
+                () -> new GlassBottleFoodItem(basicItem().stacksTo(16).rarity(Rarity.UNCOMMON)
                         .food(simpleFoodItemProperties(5, 4)
                                 .effect(() ->new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), minToTick(5), 0), 1.0F)
                                 .effect(() ->new MobEffectInstance(ModEffects.ZOMBIFIED_PIGLIN_BRUTE_SERVANT_SUPPORT.get(), minToTick(5), 0), 1.0F)
                                 .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(ModEffects.INFERNO.get(), minToTick(5), 0), 1.0F)
                                 .build())));
 
         // ==================== 种子物品 ====================

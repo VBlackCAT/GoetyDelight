@@ -218,6 +218,7 @@
   "message.goetydelight.baklava.vizierspoken": "Being able to enjoy this taste makes it all worth it shedding tears of joy",
   "message.goetydelight.baklava.successs": "Fed baklava to the target",
   "message.goetydelight.ten_thousand_poison_feast.vizier": "My stomach has long been fearless!",
+  "message.goetydelight.vizier_feed": "What is poison to you is honey to me",
   "goetydelight.advancement.root.desc": "Embark on the exclusive path to culinary mastery belonging to the Black Mage alone",
   "goetydelight.advancement.root": "The Chapter of Dark Cuisine",
   "goetydelight.advancements.viziers_cookbook.description": "Read the Vizier's Cookbook and comprehend the exclusive recipes of exotic cuisine.",
@@ -248,6 +249,8 @@
   "goetydelight.advancement.get_night_stove.title": "Open All Year Round",
   "goetydelight.advancement.ghost_farmer_kill_player.description": "The Melon Thief Gets Turned Tables",
   "goetydelight.advancement.ghost_farmer_kill_player.title": "Ghost Farmer's Revenge",
+  "goetydelight.advancement.find_ectoplasmic_melon_field.description": "The Melon Farmer is Now On Guard.",
+  "goetydelight.advancement.find_ectoplasmic_melon_field.title": "A Person Has Come To Steal Melons.",
   "config.jade.plugin_goetydelight.doll_entity": "Doll Entity Info",
   "subtitle.goetydelight.block.touch_doll": "Touch Doll"
 }

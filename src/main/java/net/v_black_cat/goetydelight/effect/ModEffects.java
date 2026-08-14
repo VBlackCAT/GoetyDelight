@@ -39,6 +39,8 @@ public class ModEffects {
             EFFECTS.register("tingling", TinglingEffect::new);
     public static final RegistryObject<MobEffect> WARDEN =
             EFFECTS.register("warden", WardenEffect::new);
+    public static final RegistryObject<MobEffect> INFERNO =
+            EFFECTS.register("inferno", InfernoEffect::new);
 
     public static void register(IEventBus bus) {
         EFFECTS.register(bus);
