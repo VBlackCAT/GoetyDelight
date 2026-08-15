@@ -278,6 +278,12 @@ public class RoastLaowangBlock extends HorizontalDirectionalBlock {
             return InteractionResult.PASS;
         }
 
+        // 客户端只返回结果，服务端执行真正的取餐/切耳/破坏逻辑，
+        // 避免客户端预测改动背包与方块状态，从而消除 "特殊角度不消耗" 的复制漏洞。
+        if (level.isClientSide) {
+            return InteractionResult.SUCCESS;
+        }
+
         int servings = state.getValue(SERVINGS);
         ItemStack heldItem = player.getItemInHand(hand);
 
@@ -313,11 +319,7 @@ public class RoastLaowangBlock extends HorizontalDirectionalBlock {
         }
 
         // 情况4: 持有其他物品，提示使用碗
-        if (!isBowl) {
-            player.displayClientMessage(getUseBowlMessage(new ItemStack(Items.BOWL)), true);
-            return InteractionResult.SUCCESS;
-        }
-
+        player.displayClientMessage(getUseBowlMessage(new ItemStack(Items.BOWL)), true);
         return InteractionResult.SUCCESS;
     }
 
