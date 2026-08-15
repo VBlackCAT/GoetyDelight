@@ -216,11 +216,16 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
           // 定义四个基本朝向
           Direction[] facings = {Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
 
+          // 将碰撞/轮廓箱限制在服务端交互校验允许的范围内（距离方块中心不超过 1 格），
+          // 避免命中点落在越界外沿时被 handleUseItemOn 拒绝。
+          VoxelShape BOUNDS = Shapes.box(-0.5, -1.0, -0.5, 1.5, 2.0, 1.5);
+
           for (int servings = 0; servings < 11; servings++) {
                for (int i = 0; i < facings.length; i++) {
                     Direction facing = facings[i];
                     VoxelShape originalShape = SHAPES[servings];
-                    ROTATED_SHAPES[servings][i] = new VoxelShape[]{rotateVoxelShapeStatic(originalShape, facing)};
+                    VoxelShape boundedShape = Shapes.join(originalShape, BOUNDS, BooleanOp.AND);
+                    ROTATED_SHAPES[servings][i] = new VoxelShape[]{rotateVoxelShapeStatic(boundedShape, facing)};
                }
           }
      }
