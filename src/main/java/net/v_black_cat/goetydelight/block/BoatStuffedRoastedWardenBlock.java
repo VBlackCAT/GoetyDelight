@@ -3,8 +3,13 @@ package net.v_black_cat.goetydelight.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -22,11 +27,14 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import vectorwing.farmersdelight.common.block.FeastBlock;
+import vectorwing.farmersdelight.common.registry.ModSounds;
+import vectorwing.farmersdelight.common.utility.TextUtils;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -111,6 +119,73 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
 
      private BlockPos getCenterPos(BlockPos pos, Part part) {
           return pos.offset(-part.dx, 0, -part.dz); 
+     }
+
+     @Override
+     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+          // Only the CENTER part serves food. The 8 surrounding parts are invisible marker blocks used
+          // solely for structure integrity; they must never serve independently, otherwise every one of
+          // them behaves as its own full 10-serving feast (the source of the "infinite warden head" bug).
+          if (state.getValue(PART) != Part.CENTER) {
+               return InteractionResult.PASS;
+          }
+
+          // Follow Farmer's Delight FeastBlock gating: predict on the client, execute on the server.
+          if (level.isClientSide) {
+               if (this.takeServing(level, pos, state, player, hand).consumesAction()) {
+                    return InteractionResult.SUCCESS;
+               }
+          }
+          return this.takeServing(level, pos, state, player, hand);
+     }
+
+     @Override
+     protected InteractionResult takeServing(Level level, BlockPos pos, BlockState state, Player player, InteractionHand hand) {
+          int servings = state.getValue(SERVINGS);
+
+          if (servings == 0) {
+               level.playSound(null, pos, SoundEvents.WOOD_BREAK, SoundSource.PLAYERS, 0.8F, 0.8F);
+               breakEntireStructure(level, pos, state, null);
+               return InteractionResult.SUCCESS;
+          }
+
+          ItemStack serving = this.getServingItem(state);
+          ItemStack heldStack = player.getItemInHand(hand);
+
+          if (servings > 0) {
+               if (!serving.hasCraftingRemainingItem() || ItemStack.isSameItem(heldStack, serving.getCraftingRemainingItem())) {
+                    setServingsAcrossStructure(level, pos, servings - 1);
+                    player.awardStat(Stats.ITEM_USED.get(heldStack.getItem()));
+                    if (!player.getAbilities().instabuild && serving.hasCraftingRemainingItem()) {
+                         heldStack.shrink(1);
+                    }
+                    if (!player.getInventory().add(serving)) {
+                         player.drop(serving, false);
+                    }
+                    if (servings - 1 == 0 && !this.hasLeftovers) {
+                         breakEntireStructure(level, pos, state, null);
+                    }
+                    level.playSound(null, pos, ModSounds.BLOCK_FOOD_TAKE_PORTION.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                    return InteractionResult.SUCCESS;
+               } else {
+                    player.displayClientMessage(TextUtils.block("feast.use_container", serving.getCraftingRemainingItem().getHoverName()), true);
+               }
+          }
+          return InteractionResult.PASS;
+     }
+
+     private void setServingsAcrossStructure(Level level, BlockPos pos, int servings) {
+          Part part = level.getBlockState(pos).getValue(PART);
+          BlockPos centerPos = getCenterPos(pos, part);
+          for (int dx = -1; dx <= 1; dx++) {
+               for (int dz = -1; dz <= 1; dz++) {
+                    BlockPos partPos = centerPos.offset(dx, 0, dz);
+                    BlockState partState = level.getBlockState(partPos);
+                    if (partState.getBlock() instanceof BoatStuffedRoastedWardenBlock) {
+                         level.setBlock(partPos, partState.setValue(SERVINGS, servings), 3);
+                    }
+               }
+          }
      }
 
      @Override
