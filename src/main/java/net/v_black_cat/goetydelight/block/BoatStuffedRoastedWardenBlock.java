@@ -46,6 +46,9 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
      public static final EnumProperty<Part> PART = EnumProperty.create("part", Part.class);
      // 预先计算所有朝向的碰撞箱
      private static final VoxelShape[][][] ROTATED_SHAPES = new VoxelShape[11][4][]; // [servings][facing]
+     // 幽灵方块（8 个外围隐形方块）各自的交互/轮廓箱：仅覆盖其所在格子内盘子托盘的高度，
+     // 保证命中点落在该方块自身格子内，从而通过服务端交互校验。
+     private static final VoxelShape GHOST_SHAPE = Block.box(0, 0, 0, 16, 6, 16);
      private final List<Supplier<Item>> servingItems;
 
      private Part getPartFromOffset(int dx, int dz) {
@@ -126,7 +129,14 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
           // Only the CENTER part serves food. The 8 surrounding parts are invisible marker blocks used
           // solely for structure integrity; they must never serve independently, otherwise every one of
           // them behaves as its own full 10-serving feast (the source of the "infinite warden head" bug).
+          // 外围幽灵方块本身不可独立取餐，而是把交互重定向到中心方块；
+          // 这样点盘子边缘也能正确取餐，且不会各自当成独立的一盘盛宴。
           if (state.getValue(PART) != Part.CENTER) {
+               BlockPos centerPos = getCenterPos(pos, state.getValue(PART));
+               BlockState centerState = level.getBlockState(centerPos);
+               if (centerState.getBlock() == this && centerState.getValue(PART) == Part.CENTER) {
+                    return this.use(centerState, level, centerPos, player, hand, hit);
+               }
                return InteractionResult.PASS;
           }
 
@@ -279,7 +289,7 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
      }
      @Override
      public VoxelShape getInteractionShape(BlockState state, BlockGetter level, BlockPos pos) {
-          return state.getValue(PART) == Part.CENTER ? getShape(state, level, pos, CollisionContext.empty()) : Shapes.empty();
+          return state.getValue(PART) == Part.CENTER ? getShape(state, level, pos, CollisionContext.empty()) : GHOST_SHAPE;
      }
 
      @Override
@@ -347,7 +357,7 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
      @Override
      public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
           if (state.getValue(PART) != Part.CENTER) {
-               return Shapes.empty();
+               return GHOST_SHAPE;
           }
 
           int servings = state.getValue(SERVINGS);
@@ -360,6 +370,11 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
 
           // 直接从预计算数组中获取
           return ROTATED_SHAPES[servings][facingIndex][0];
+     }
+     @Override
+     public VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+          // 幽灵方块保持无碰撞（不可站立/阻挡实体），仅提供可点击的轮廓箱。
+          return state.getValue(PART) == Part.CENTER ? getShape(state, level, pos, context) : Shapes.empty();
      }
      @Override
      public VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
