@@ -3,8 +3,13 @@ package net.v_black_cat.goetydelight.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -22,11 +27,14 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import vectorwing.farmersdelight.common.block.FeastBlock;
+import vectorwing.farmersdelight.common.registry.ModSounds;
+import vectorwing.farmersdelight.common.utility.TextUtils;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -38,6 +46,9 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
      public static final EnumProperty<Part> PART = EnumProperty.create("part", Part.class);
      // 预先计算所有朝向的碰撞箱
      private static final VoxelShape[][][] ROTATED_SHAPES = new VoxelShape[11][4][]; // [servings][facing]
+     // 幽灵方块（8 个外围隐形方块）各自的交互/轮廓箱：仅覆盖其所在格子内盘子托盘的高度，
+     // 保证命中点落在该方块自身格子内，从而通过服务端交互校验。
+     private static final VoxelShape GHOST_SHAPE = Block.box(0, 0, 0, 16, 6, 16);
      private final List<Supplier<Item>> servingItems;
 
      private Part getPartFromOffset(int dx, int dz) {
@@ -114,6 +125,80 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
      }
 
      @Override
+     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+          // Only the CENTER part serves food. The 8 surrounding parts are invisible marker blocks used
+          // solely for structure integrity; they must never serve independently, otherwise every one of
+          // them behaves as its own full 10-serving feast (the source of the "infinite warden head" bug).
+          // 外围幽灵方块本身不可独立取餐，而是把交互重定向到中心方块；
+          // 这样点盘子边缘也能正确取餐，且不会各自当成独立的一盘盛宴。
+          if (state.getValue(PART) != Part.CENTER) {
+               BlockPos centerPos = getCenterPos(pos, state.getValue(PART));
+               BlockState centerState = level.getBlockState(centerPos);
+               if (centerState.getBlock() == this && centerState.getValue(PART) == Part.CENTER) {
+                    return this.use(centerState, level, centerPos, player, hand, hit);
+               }
+               return InteractionResult.PASS;
+          }
+
+          // Follow Farmer's Delight FeastBlock gating: predict on the client, execute on the server.
+          if (level.isClientSide) {
+               if (this.takeServing(level, pos, state, player, hand).consumesAction()) {
+                    return InteractionResult.SUCCESS;
+               }
+          }
+          return this.takeServing(level, pos, state, player, hand);
+     }
+
+     @Override
+     protected InteractionResult takeServing(Level level, BlockPos pos, BlockState state, Player player, InteractionHand hand) {
+          int servings = state.getValue(SERVINGS);
+
+          if (servings == 0) {
+               level.playSound(null, pos, SoundEvents.WOOD_BREAK, SoundSource.PLAYERS, 0.8F, 0.8F);
+               breakEntireStructure(level, pos, state, null);
+               return InteractionResult.SUCCESS;
+          }
+
+          ItemStack serving = this.getServingItem(state);
+          ItemStack heldStack = player.getItemInHand(hand);
+
+          if (servings > 0) {
+               if (!serving.hasCraftingRemainingItem() || ItemStack.isSameItem(heldStack, serving.getCraftingRemainingItem())) {
+                    setServingsAcrossStructure(level, pos, servings - 1);
+                    player.awardStat(Stats.ITEM_USED.get(heldStack.getItem()));
+                    if (!player.getAbilities().instabuild && serving.hasCraftingRemainingItem()) {
+                         heldStack.shrink(1);
+                    }
+                    if (!player.getInventory().add(serving)) {
+                         player.drop(serving, false);
+                    }
+                    if (servings - 1 == 0 && !this.hasLeftovers) {
+                         breakEntireStructure(level, pos, state, null);
+                    }
+                    level.playSound(null, pos, ModSounds.BLOCK_FOOD_TAKE_PORTION.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+                    return InteractionResult.SUCCESS;
+               } else {
+                    player.displayClientMessage(TextUtils.block("feast.use_container", serving.getCraftingRemainingItem().getHoverName()), true);
+               }
+          }
+          return InteractionResult.PASS;
+     }
+
+     private void setServingsAcrossStructure(Level level, BlockPos pos, int servings) {
+          Part part = level.getBlockState(pos).getValue(PART);
+          BlockPos centerPos = getCenterPos(pos, part);
+          for (int dx = -1; dx <= 1; dx++) {
+               for (int dz = -1; dz <= 1; dz++) {
+                    BlockPos partPos = centerPos.offset(dx, 0, dz);
+                    BlockState partState = level.getBlockState(partPos);
+                    if (partState.getBlock() instanceof BoatStuffedRoastedWardenBlock) {
+                         level.setBlock(partPos, partState.setValue(SERVINGS, servings), 3);
+                    }
+               }
+          }
+     }
+
+     @Override
      public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
           if (state.getValue(PART) == Part.CENTER) {
                super.playerDestroy(level, player, pos, state, blockEntity, tool);
@@ -141,11 +226,16 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
           // 定义四个基本朝向
           Direction[] facings = {Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
 
+          // 将碰撞/轮廓箱限制在服务端交互校验允许的范围内（距离方块中心不超过 1 格），
+          // 避免命中点落在越界外沿时被 handleUseItemOn 拒绝。
+          VoxelShape BOUNDS = Shapes.box(-0.5, -1.0, -0.5, 1.5, 2.0, 1.5);
+
           for (int servings = 0; servings < 11; servings++) {
                for (int i = 0; i < facings.length; i++) {
                     Direction facing = facings[i];
                     VoxelShape originalShape = SHAPES[servings];
-                    ROTATED_SHAPES[servings][i] = new VoxelShape[]{rotateVoxelShapeStatic(originalShape, facing)};
+                    VoxelShape boundedShape = Shapes.join(originalShape, BOUNDS, BooleanOp.AND);
+                    ROTATED_SHAPES[servings][i] = new VoxelShape[]{rotateVoxelShapeStatic(boundedShape, facing)};
                }
           }
      }
@@ -199,7 +289,7 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
      }
      @Override
      public VoxelShape getInteractionShape(BlockState state, BlockGetter level, BlockPos pos) {
-          return state.getValue(PART) == Part.CENTER ? getShape(state, level, pos, CollisionContext.empty()) : Shapes.empty();
+          return state.getValue(PART) == Part.CENTER ? getShape(state, level, pos, CollisionContext.empty()) : GHOST_SHAPE;
      }
 
      @Override
@@ -267,7 +357,7 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
      @Override
      public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
           if (state.getValue(PART) != Part.CENTER) {
-               return Shapes.empty();
+               return GHOST_SHAPE;
           }
 
           int servings = state.getValue(SERVINGS);
@@ -280,6 +370,11 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
 
           // 直接从预计算数组中获取
           return ROTATED_SHAPES[servings][facingIndex][0];
+     }
+     @Override
+     public VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+          // 幽灵方块保持无碰撞（不可站立/阻挡实体），仅提供可点击的轮廓箱。
+          return state.getValue(PART) == Part.CENTER ? getShape(state, level, pos, context) : Shapes.empty();
      }
      @Override
      public VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
