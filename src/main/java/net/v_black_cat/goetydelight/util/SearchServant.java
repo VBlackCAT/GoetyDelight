@@ -343,11 +343,14 @@ public class SearchServant {
 
         if (currentLevel == null) {
             currentLevel = levelIterator.next();
-            List<LivingEntity> entities = currentLevel.getEntitiesOfClass(
-                    LivingEntity.class,
-                    net.minecraft.world.phys.AABB.ofSize(Vec3.ZERO, 30000000, 30000000, 30000000),
-                    entity -> true
-            );
+            List<LivingEntity> entities = new ArrayList<>();
+
+            currentLevel.getEntities().getAll().forEach(entity -> {
+                if (entity instanceof LivingEntity livingEntity) {
+                    entities.add(livingEntity);
+                }
+            });
+
             entityIterator = entities.iterator();
         }
 
