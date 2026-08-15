@@ -133,6 +133,10 @@ public class Config
             .comment("Disable Soul Affix enchantment entirely\n完全禁用灵魂附加附魔")
             .define("disableSoulAffix", false);
 
+    private static final ForgeConfigSpec.BooleanValue SKELETON_RED_EYE_EFFECT_ENABLED = BUILDER
+            .comment("Whether to enable the skeleton red-eye effect (red eye flash when a skeleton targets a low-health player)\n是否启用骷髅红眼特效（骷髅锁定低血量玩家时触发的红眼闪光特效）")
+            .define("skeletonRedEyeEffectEnabled", true);
+
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SOUL_MENDING_BLACKLIST = BUILDER
             .comment("A list of items that cannot be enchanted with Soul Mending\n无法附魔灵魂修补的物品列表")
             .defineListAllowEmpty("soulRepairBlacklist", List.of(), Config::NoValidateItemName);
@@ -332,6 +336,10 @@ public class Config
 
     public static boolean isSoulAffixDisabled() {
         return DISABLE_SOUL_AFFIX.get();
+    }
+
+    public static boolean isSkeletonRedEyeEffectEnabled() {
+        return SKELETON_RED_EYE_EFFECT_ENABLED.get();
     }
 
     public static int getSoulAffixSoulCostPerLevel() {

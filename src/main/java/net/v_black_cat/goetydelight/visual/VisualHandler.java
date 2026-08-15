@@ -15,6 +15,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.config.Config;
 
 import static net.v_black_cat.goetydelight.visual.GDVisualEffects.RED_EYE_FLASH_KEY;
 
@@ -24,8 +25,11 @@ public final class VisualHandler {
 
     @SubscribeEvent
     public static void onSkeletonChangeTarget(LivingChangeTargetEvent event) {
-        
-        
+
+        if (!Config.isSkeletonRedEyeEffectEnabled()) {
+            return;
+        }
+
         if (event.getEntity() instanceof AbstractSkeleton skeleton) {
 
             
