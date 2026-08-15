@@ -87,11 +87,16 @@ public class RoastLaowangBlock extends HorizontalDirectionalBlock {
     static {
         Direction[] facings = {Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
 
+        // 将碰撞/轮廓箱限制在服务端交互校验允许的范围内（距离方块中心不超过 1 格），
+        // 避免命中点落在越界外沿时被 handleUseItemOn 拒绝。
+        VoxelShape BOUNDS = Shapes.box(-0.5, -1.0, -0.5, 1.5, 2.0, 1.5);
+
         for (int servings = 0; servings < 14; servings++) {
             for (int i = 0; i < facings.length; i++) {
                 Direction facing = facings[i];
                 VoxelShape originalShape = getShapeForServings(servings);
-                ROTATED_SHAPES[servings][i] = new VoxelShape[]{rotateVoxelShapeStatic(originalShape, facing)};
+                VoxelShape boundedShape = Shapes.join(originalShape, BOUNDS, BooleanOp.AND);
+                ROTATED_SHAPES[servings][i] = new VoxelShape[]{rotateVoxelShapeStatic(boundedShape, facing)};
             }
         }
     }
@@ -258,6 +263,12 @@ public class RoastLaowangBlock extends HorizontalDirectionalBlock {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
+        // 客户端只返回结果，服务端执行真正的取餐/切耳/破坏逻辑，
+        // 避免客户端预测改动背包与方块状态，从而消除 "特殊角度不消耗" 的复制漏洞。
+        if (level.isClientSide) {
+            return ItemInteractionResult.SUCCESS;
+        }
+
         int servings = state.getValue(SERVINGS);
         ItemStack heldItem = player.getItemInHand(hand);
 
@@ -288,11 +299,7 @@ public class RoastLaowangBlock extends HorizontalDirectionalBlock {
             return takeServing(level, pos, state, player, hand);
         }
 
-        if (!isBowl) {
-            player.displayClientMessage(getUseBowlMessage(new ItemStack(Items.BOWL)), true);
-            return ItemInteractionResult.SUCCESS;
-        }
-
+        player.displayClientMessage(getUseBowlMessage(new ItemStack(Items.BOWL)), true);
         return ItemInteractionResult.SUCCESS;
     }
 
