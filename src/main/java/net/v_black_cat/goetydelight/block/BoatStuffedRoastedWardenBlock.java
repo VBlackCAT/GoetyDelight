@@ -44,11 +44,9 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
 
     public static final IntegerProperty SERVINGS = IntegerProperty.create("servings", 0, 10);
     public static final EnumProperty<Part> PART = EnumProperty.create("part", Part.class);
-    // 预先计算所有朝向的碰撞箱
-    private static final VoxelShape[][][] ROTATED_SHAPES = new VoxelShape[11][4][]; // [servings][facing]
-    // 幽灵方块（8 个外围隐形方块）各自的交互/轮廓箱：仅覆盖其所在格子内盘子托盘的高度，
-    // 保证命中点落在该方块自身格子内，从而通过服务端交互校验。
-    private static final VoxelShape GHOST_SHAPE = Block.box(0, 0, 0, 16, 6, 16);
+    // 每个方块（中心 + 8 个外围）各自独立的碰撞/轮廓箱，均不越出自身格子 [0,1]：
+    // [part][servings][facing]
+    private static final VoxelShape[][][] PART_SHAPES = new VoxelShape[Part.values().length][11][4];
     private final List<Supplier<Item>> servingItems;
 
     private Part getPartFromOffset(int dx, int dz) {
@@ -223,24 +221,26 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
             makeShape10()
     };
 
-    // 静态初始化块，在类加载时预计算所有旋转
+    // 静态初始化块：把整盘（中心局部坐标系下的完整形状）按朝向旋转后，
+    // 逐个裁剪到每个方块自己的格子，并平移到该方块的局部坐标。
     static {
-        // 定义四个基本朝向
         Direction[] facings = {Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
-
-        // 将碰撞/轮廓箱限制在服务端交互校验允许的范围内（距离方块中心不超过 1 格），
-        // 避免命中点落在越界外沿时被 handleUseItemOn 拒绝。
-        VoxelShape BOUNDS = Shapes.box(-0.5, -1.0, -0.5, 1.5, 2.0, 1.5);
 
         for (int servings = 0; servings < 11; servings++) {
             for (int i = 0; i < facings.length; i++) {
                 Direction facing = facings[i];
-                VoxelShape originalShape = SHAPES[servings];
-                VoxelShape boundedShape = Shapes.join(originalShape, BOUNDS, BooleanOp.AND);
-                ROTATED_SHAPES[servings][
-                i] = new VoxelShape[]{rotateVoxelShapeStatic(boundedShape, facing)};
+                VoxelShape rotated = rotateVoxelShapeStatic(SHAPES[servings], facing);
+                for (Part part : Part.values()) {
+                    PART_SHAPES[part.ordinal()][servings][i] = clipToCell(rotated, part.dx, part.dz);
+                }
             }
         }
+    }
+
+    // 把（中心局部坐标系下的）完整形状裁剪到 [dx,dx+1]×[dz,dz+1] 的格子，并平移到该格子的局部坐标。
+    private static VoxelShape clipToCell(VoxelShape shape, int dx, int dz) {
+        VoxelShape cell = Shapes.box(dx, -1.0, dz, dx + 1, 2.0, dz + 1);
+        return Shapes.join(shape, cell, BooleanOp.AND).move(-dx, 0, -dz);
     }
 
     public BoatStuffedRoastedWardenBlock(Properties properties, List<
@@ -293,7 +293,7 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
 
     @Override
     public VoxelShape getInteractionShape(BlockState state, BlockGetter level, BlockPos pos) {
-        return state.getValue(PART) == Part.CENTER ? getShape(state, level, pos, CollisionContext.empty()) : GHOST_SHAPE;
+        return getShape(state, level, pos, CollisionContext.empty());
     }
 
     @Override
@@ -363,26 +363,15 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        if (state.getValue(PART) != Part.CENTER) {
-            return GHOST_SHAPE;
-        }
+        Part part = state.getValue(PART);
 
         int servings = state.getValue(SERVINGS);
         if (servings < 0 || servings >= SHAPES.length) {
             servings = 0;
         }
 
-        Direction facing = state.getValue(FACING);
-        int facingIndex = getFacingIndex(facing);
-
-        // 直接从预计算数组中获取
-        return ROTATED_SHAPES[servings][facingIndex][0];
-    }
-
-    @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        // 幽灵方块保持无碰撞（不可站立/阻挡实体），仅提供可点击的轮廓箱。
-        return state.getValue(PART) == Part.CENTER ? getShape(state, level, pos, context) : Shapes.empty();
+        int facingIndex = getFacingIndex(state.getValue(FACING));
+        return PART_SHAPES[part.ordinal()][servings][facingIndex];
     }
 
     @Override
