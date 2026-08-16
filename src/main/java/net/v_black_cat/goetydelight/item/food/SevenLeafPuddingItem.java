@@ -1,6 +1,7 @@
 package net.v_black_cat.goetydelight.item.food;
 
-import net.minecraft.nbt.CompoundTag;
+import net.v_black_cat.goetydelight.capability.FoodStateCapability;
+import net.v_black_cat.goetydelight.util.FoodState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -24,10 +25,6 @@ public class SevenLeafPuddingItem extends BowlFoodItem {
     private static final UUID ATTACK_DAMAGE_BONUS_UUID = UUID.fromString("d3b1a8c2-4e5f-6a7b-8c9d-0e1f2a3b4c5d");
     private static final UUID MOVEMENT_SPEED_BONUS_UUID = UUID.fromString("a5b4c3d2-1f0e-9a8b-7c6d-5e4f3a2b1c0d");
 
-    // Persistent data tags
-    private static final String BONUS_ACTIVE_TAG = "SevenLeafPuddingActive";
-    private static final String ACTIVATION_TIME_TAG = "SevenLeafPuddingActivationTime";
-
     // Duration in ticks (5 minutes)
     private static final int DURATION_TICKS = 20 * 60 * 5;  // 20 ticks/second * 60 seconds * 5 minutes
 
@@ -40,19 +37,20 @@ public class SevenLeafPuddingItem extends BowlFoodItem {
         ItemStack resultStack = super.finishUsingItem(stack, level, entity);
 
         if (!level.isClientSide && entity instanceof Player player) {
-            CompoundTag persistentData = player.getPersistentData();
+            FoodState state = FoodStateCapability.get(player);
+            if (state != null) {
+                // Remove existing bonuses if active
+                if (state.isSevenLeafPuddingActive()) {
+                    removeBonusAttributes(player);
+                }
 
-            // Remove existing bonuses if active
-            if (persistentData.getBoolean(BONUS_ACTIVE_TAG)) {
-                removeBonusAttributes(player);
+                // Add new bonuses
+                addBonusAttributes(player);
+
+                // Set activation data
+                state.setSevenLeafPuddingActive(true);
+                state.setSevenLeafPuddingActivationTime(level.getGameTime());
             }
-
-            // Add new bonuses
-            addBonusAttributes(player);
-
-            // Set activation data
-            persistentData.putBoolean(BONUS_ACTIVE_TAG, true);
-            persistentData.putLong(ACTIVATION_TIME_TAG, level.getGameTime());
 
             // Notify player
             //player.displayClientMessage(Component.literal("甜浆果布丁的效果被激活！获得3点攻击力和5%移动速度加成，持续5分钟。"), true);
@@ -102,9 +100,12 @@ public class SevenLeafPuddingItem extends BowlFoodItem {
             movementSpeed.removeModifier(MOVEMENT_SPEED_BONUS_UUID);
         }
 
-        // Clear persistent data
-        player.getPersistentData().remove(BONUS_ACTIVE_TAG);
-        player.getPersistentData().remove(ACTIVATION_TIME_TAG);
+        // Clear state
+        FoodState state = FoodStateCapability.get(player);
+        if (state != null) {
+            state.setSevenLeafPuddingActive(false);
+            state.setSevenLeafPuddingActivationTime(0);
+        }
     }
 
     // Check if bonus duration has expired
@@ -119,10 +120,9 @@ public class SevenLeafPuddingItem extends BowlFoodItem {
             // 过期检查降频为每 20 tick（1秒）一次，避免每 tick 读 NBT
             if (player.tickCount % 20 != 0) return;
 
-            CompoundTag persistentData = player.getPersistentData();
-
-            if (persistentData.getBoolean(BONUS_ACTIVE_TAG)) {
-                long activationTime = persistentData.getLong(ACTIVATION_TIME_TAG);
+            FoodState state = FoodStateCapability.get(player);
+            if (state != null && state.isSevenLeafPuddingActive()) {
+                long activationTime = state.getSevenLeafPuddingActivationTime();
                 long currentTime = level.getGameTime();
 
                 // Check if duration has expired
@@ -143,7 +143,8 @@ public class SevenLeafPuddingItem extends BowlFoodItem {
     public static void onPlayerDeath(net.minecraftforge.event.entity.living.LivingDeathEvent event) {
         if (!event.isCanceled() && event.getEntity() instanceof Player player) {
             SevenLeafPuddingItem item = (SevenLeafPuddingItem) net.v_black_cat.goetydelight.item.ModItems.SEVEN_LEAF_PUDDING.get();
-            if (player.getPersistentData().getBoolean(BONUS_ACTIVE_TAG)) {
+            FoodState state = FoodStateCapability.get(player);
+            if (state != null && state.isSevenLeafPuddingActive()) {
                 item.removeBonusAttributes(player);
             }
         }
@@ -153,7 +154,10 @@ public class SevenLeafPuddingItem extends BowlFoodItem {
     @SubscribeEvent
     public static void onPlayerRespawn(net.minecraftforge.event.entity.player.PlayerEvent.PlayerRespawnEvent event) {
         Player player = event.getEntity();
-        player.getPersistentData().remove(BONUS_ACTIVE_TAG);
-        player.getPersistentData().remove(ACTIVATION_TIME_TAG);
+        FoodState state = FoodStateCapability.get(player);
+        if (state != null) {
+            state.setSevenLeafPuddingActive(false);
+            state.setSevenLeafPuddingActivationTime(0);
+        }
     }
 }
