@@ -42,7 +42,11 @@ public class ActiveBuffs {
     public int getTotalAmplifier(ResourceLocation typeId) {
         List<BuffInstance> list = buffs.get(typeId);
         if (list == null || list.isEmpty()) return 0;
-        return list.stream().mapToInt(BuffInstance::getAmplifier).sum();
+        int sum = 0;
+        for (BuffInstance inst : list) {
+            sum += inst.getAmplifier();
+        }
+        return sum;
     }
 
     public Set<ResourceLocation> getActiveTypes() {
