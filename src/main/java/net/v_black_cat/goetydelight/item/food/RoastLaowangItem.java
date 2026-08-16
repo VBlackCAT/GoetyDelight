@@ -1,6 +1,5 @@
 package net.v_black_cat.goetydelight.item.food;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
@@ -12,14 +11,14 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.block.ModBlocks;
-import net.minecraft.util.RandomSource;
+import net.v_black_cat.goetydelight.capability.FoodStateCapability;
 import net.v_black_cat.goetydelight.item.ModItems;
+import net.v_black_cat.goetydelight.util.FoodState;
 
 @Mod.EventBusSubscriber(modid = "goetydelight")
 public class RoastLaowangItem extends Item{
@@ -28,16 +27,6 @@ public class RoastLaowangItem extends Item{
     }
     @Override
     public boolean isFoil(ItemStack pStack) {return true;}
-
-    private static final String BAKATAG = "bakatag";
-    static Float bakatime= 0.0f;
-    static Boolean bakatime_flag=false;
-
-    public static void randomFlag(Float bakatime) {
-        if (bakatime != null && bakatime > 0.0f) {
-            bakatime_flag = RandomSource.create().nextBoolean();
-        }
-    }
 
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
@@ -68,10 +57,13 @@ public class RoastLaowangItem extends Item{
     @SubscribeEvent
     public static void onItemUseFinish(LivingEntityUseItemEvent.Finish event) {
         if (event.getItem().getItem() instanceof RoastLaowangItem) {
-            bakatime = 200.0f;
             LivingEntity entity = event.getEntity();
-            CompoundTag tag = entity.getPersistentData();
-            tag.putFloat(BAKATAG, bakatime);
+            FoodState state = FoodStateCapability.get(entity);
+            if (state != null) {
+                state.setRoastLaowangActive(true);
+                state.setRoastLaowangStartTime(entity.level().getGameTime());
+                state.setRoastLaowangDuration(200);
+            }
         }
     }
 
@@ -81,29 +73,12 @@ public class RoastLaowangItem extends Item{
         Player player = event.player;
         Level level = player.level();
         if (!level.isClientSide) {
-            CompoundTag persistentData = player.getPersistentData();
-            if (persistentData.getBoolean(BAKATAG)) {
-                long activationTime = persistentData.getLong(BAKATAG);
+            FoodState state = FoodStateCapability.get(player);
+            if (state != null && state.isRoastLaowangActive()) {
                 long currentTime = level.getGameTime();
-                if (currentTime - activationTime >=bakatime) {
-                    persistentData.remove(BAKATAG);
+                if (currentTime - state.getRoastLaowangStartTime() >= state.getRoastLaowangDuration()) {
+                    state.setRoastLaowangActive(false);
                 }
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public static void DamageEvent(LivingDamageEvent event) {
-        // 检查受伤实体是否有BAKATAG标签
-        if (event.getEntity().getPersistentData().contains(BAKATAG) && bakatime_flag == true) {
-            event.setCanceled(true); // 取消伤害事件，使实体免疫伤害
-            return;
-        }
-        // 或者检查攻击者是否有BAKATAG标签（防止造成伤害）
-        if (event.getSource().getEntity() instanceof LivingEntity) {
-            LivingEntity attacker = (LivingEntity) event.getSource().getEntity();
-            if (attacker.getPersistentData().contains(BAKATAG) && bakatime_flag == true) {
-                event.setCanceled(true); // 取消伤害事件，攻击者无法造成伤害
             }
         }
     }
