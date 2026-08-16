@@ -52,11 +52,10 @@ public class MinionBoostBuffEffect implements BuffEffect {
         // 遍历附近仆从，重新应用属性
         for (LivingEntity minion : player.level().getEntitiesOfClass(
                 LivingEntity.class,
-                player.getBoundingBox().inflate(64.0D)
+                player.getBoundingBox().inflate(64.0D),
+                minion -> isPlayerMinion(minion, player)
         )) {
-            if (isPlayerMinion(minion, player)) {
-                applySingleMinionBoost(minion, totalAmplifier);
-            }
+            applySingleMinionBoost(minion, totalAmplifier);
         }
     }
 
