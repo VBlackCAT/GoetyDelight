@@ -2,7 +2,6 @@ package net.v_black_cat.goetydelight.item.food;
 
 import com.Polarice3.Goety.api.entities.IOwned;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -19,9 +18,11 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.v_black_cat.goetydelight.init.ModAttachments;
 import net.v_black_cat.goetydelight.init.ModConfig;
 import net.v_black_cat.goetydelight.init.ModItems;
 import net.minecraft.util.RandomSource;
+import net.v_black_cat.goetydelight.util.FoodState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,8 +34,6 @@ public class PolariceItem extends BowlFoodItem {
         super(properties);
     }
 
-    private static final String POLARICE_TAG = "polarice_tag";
-    static float polarice_time = 0.0f;
     static int polarice_count;
     private long lastEatTime = 0;
 
@@ -43,10 +42,8 @@ public class PolariceItem extends BowlFoodItem {
     @SubscribeEvent
     public static void onItemUseFinish(LivingEntityUseItemEvent.Finish event) {
         if (event.getItem().getItem() instanceof PolariceItem) {
-            polarice_time = 1200.0f;
             LivingEntity entity = event.getEntity();
-            CompoundTag tag = entity.getPersistentData();
-            tag.putFloat(POLARICE_TAG, polarice_time);
+            entity.getData(ModAttachments.FOOD_STATE).setPolariceTime(1200.0f);
             polarice_count = ModConfig.getPolariceCount();
         }
     }
@@ -72,16 +69,16 @@ public class PolariceItem extends BowlFoodItem {
             Level level = player.level();
             if (level.isClientSide) continue;
 
-            CompoundTag persistentData = player.getPersistentData();
-            if (persistentData.contains(POLARICE_TAG)) {
-                float remainingTime = persistentData.getFloat(POLARICE_TAG);
-                if (remainingTime > 0) {
-                    persistentData.putFloat(POLARICE_TAG, remainingTime - 1);
-                } else {
-                    persistentData.remove(POLARICE_TAG);
-                }
+            FoodState state = player.getData(ModAttachments.FOOD_STATE);
+            if (state.getPolariceTime() > 0) {
+                state.setPolariceTime(state.getPolariceTime() - 1);
             }
         }
+    }
+
+    private static boolean hasActivePolarice(Entity attacker) {
+        if (!(attacker instanceof LivingEntity living)) return false;
+        return living.getData(ModAttachments.FOOD_STATE).getPolariceTime() > 0;
     }
 
     @SubscribeEvent
@@ -112,7 +109,7 @@ public class PolariceItem extends BowlFoodItem {
         }
         if (targetEntity instanceof com.Polarice3.Goety.common.entities.boss.Apostle) {
             if ((targetEntity.level() instanceof ServerLevel level)) {
-                if (attacker != null && polarice_time > 0 && attacker.getPersistentData().contains(POLARICE_TAG)) {
+                if (hasActivePolarice(attacker)) {
                     targetEntity.remove(Entity.RemovalReason.DISCARDED);
                     Villager villager = EntityType.VILLAGER.create(level);
                     if (villager != null) {
@@ -136,7 +133,7 @@ public class PolariceItem extends BowlFoodItem {
         } else if (isBanEntity) {
             isAffectedByPolarice = false;
         } else if ((targetEntity.level() instanceof ServerLevel level && isAffectedByPolarice && whetherchange)) {
-            if (attacker != null && polarice_time > 0 && attacker.getPersistentData().contains(POLARICE_TAG)) {
+            if (hasActivePolarice(attacker)) {
                 String entityTypeName = EntityType.getKey(targetEntity.getType()).toString();
                 String entityName = entityTypeName.substring(entityTypeName.indexOf(":") + 1);
                 String servantTypeName_1 = "entity.goety." + entityName + "_servant";
