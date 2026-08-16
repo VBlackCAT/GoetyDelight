@@ -12,8 +12,27 @@ public final class EntityVisualEffectSystem {
     private EntityVisualEffectSystem() {
     }
 
+    /**
+     * 获取实体的视觉特效容器。
+     * <p>
+     * 服务端：优先读取 mixin 接口缓存（{@link IVisualEffectHolder}），未命中时从附件惰性加载并回填缓存，
+     * 之后每 tick 都是纯字段访问，避免像之前那样每 tick 都做附件 Map 查找。
+     * <p>
+     * 客户端：附件同步会用新对象覆盖旧对象，混入缓存会过期，因此直接读附件。
+     */
     public static EntityVisualEffects getEffects(Entity entity) {
-        return entity.getExistingDataOrNull(ModAttachments.VISUAL_EFFECTS);
+        if (entity.level().isClientSide) {
+            return entity.getExistingDataOrNull(ModAttachments.VISUAL_EFFECTS);
+        }
+        if (entity instanceof IVisualEffectHolder holder) {
+            EntityVisualEffects effects = holder.goetydelight$getVisualEffects();
+            if (effects == null) {
+                effects = entity.getData(ModAttachments.VISUAL_EFFECTS.get());
+                holder.goetydelight$setVisualEffects(effects);
+            }
+            return effects;
+        }
+        return null;
     }
 
     public static boolean addEffect(Entity entity, ResourceLocation effectId, int durationTicks) {
@@ -35,10 +54,7 @@ public final class EntityVisualEffectSystem {
         if (entity.level().isClientSide || type == null) return false;
 
         EntityVisualEffects effects = getEffects(entity);
-        if (effects == null) {
-            effects = new EntityVisualEffects();
-            entity.setData(ModAttachments.VISUAL_EFFECTS, effects);
-        }
+        if (effects == null) return false;
 
         CompoundTag effectData = data.copy();
         if (!effectData.contains("StartGameTime")) {
