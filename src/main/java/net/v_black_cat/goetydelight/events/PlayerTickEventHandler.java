@@ -15,6 +15,9 @@ public class PlayerTickEventHandler {
         Player player = event.getEntity();
         if (player.level().isClientSide) return;
 
+        // 过期检查降频为每 20 tick（1秒）一次，避免每 tick 读 NBT
+        if (player.tickCount % 20 != 0) return;
+
         // 七叶布丁过期检查
         SevenLeafPuddingItem.checkAndRemoveExpired(player, player.level());
     }
