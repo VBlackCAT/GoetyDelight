@@ -33,6 +33,9 @@ public class ModItems {
     public static final DeferredRegister<Item> ITEMS =
             DeferredRegister.create(ForgeRegistries.ITEMS, GoetyDelight.MODID);
 
+    // 食物效果供应商在食用时于服务端调用，无 Level 上下文，使用共享 Random 避免每次 new Random()
+    private static final Random FOOD_EFFECT_RANDOM = new Random();
+
     // ==================== 物品声明区域 ====================
     // 块物品
     public static final RegistryObject<Item> METAMORPHIC_SCENT_GRASS;
@@ -265,7 +268,7 @@ public class ModItems {
                         simpleFoodItemProperties(10, 4)
                                 .effect(() -> new MobEffectInstance(MobEffects.CONFUSION, 600, 0), 1.0F)
                                 .effect(() -> {
-                                    int randomAmplifier = new Random().nextInt(5);
+                                    int randomAmplifier = FOOD_EFFECT_RANDOM.nextInt(5);
                                     return new MobEffectInstance(MobEffects.POISON, 600, randomAmplifier, false, true);
                                 }, 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.WEAKNESS, 600, 1), 1.0F)
@@ -276,7 +279,7 @@ public class ModItems {
                         simpleFoodItemProperties(10, 4)
                                 .effect(() -> new MobEffectInstance(MobEffects.CONFUSION, 600, 0), 1.0F)
                                 .effect(() -> {
-                                    int randomAmplifier = new Random().nextInt(5);
+                                    int randomAmplifier = FOOD_EFFECT_RANDOM.nextInt(5);
                                     return new MobEffectInstance(MobEffects.POISON, 600, randomAmplifier, false, true);
                                 }, 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.WEAKNESS, 600, 1), 1.0F)

@@ -18,9 +18,8 @@ import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.block.ModBlocks;
+import net.minecraft.util.RandomSource;
 import net.v_black_cat.goetydelight.item.ModItems;
-
-import java.util.Random;
 
 @Mod.EventBusSubscriber(modid = "goetydelight")
 public class RoastLaowangItem extends Item{
@@ -33,11 +32,10 @@ public class RoastLaowangItem extends Item{
     private static final String BAKATAG = "bakatag";
     static Float bakatime= 0.0f;
     static Boolean bakatime_flag=false;
-    private static final Random random = new Random();
 
     public static void randomFlag(Float bakatime) {
         if (bakatime != null && bakatime > 0.0f) {
-            bakatime_flag = random.nextBoolean();
+            bakatime_flag = RandomSource.create().nextBoolean();
         }
     }
 
@@ -47,7 +45,7 @@ public class RoastLaowangItem extends Item{
             if (event.getSource().typeHolder().unwrapKey().isPresent()) {
                 String damageTypeName = event.getSource().typeHolder().unwrapKey().get().location().toString();
                 if (damageTypeName.contains("lightning") || damageTypeName.contains("shock")) {
-                    if (random.nextFloat() < 0.50f) {
+                    if (event.getEntity().getRandom().nextFloat() < 0.50f) {
                         ItemStack roastLaowang = new ItemStack(ModItems.ROAST_LAOWANG.get());
                         event.getEntity().spawnAtLocation(roastLaowang);
                     }

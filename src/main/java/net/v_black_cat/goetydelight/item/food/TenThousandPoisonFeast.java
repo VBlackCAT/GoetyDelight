@@ -13,6 +13,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.util.RandomSource;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -145,10 +146,12 @@ public class TenThousandPoisonFeast extends BowlFoodItem {
         double defaultMinDuration = Config.getTenThousandPoisonFeastDefaultMinDuration();
         double defaultMaxDuration = Config.getTenThousandPoisonFeastDefaultMaxDuration();
 
-        Random random = new Random();
+        RandomSource random = entity.getRandom();
 
         List<MobEffect> shuffledDebuffs = new ArrayList<>(debuffs);
-        Collections.shuffle(shuffledDebuffs, random);
+        for (int i = shuffledDebuffs.size() - 1; i > 0; i--) {
+            Collections.swap(shuffledDebuffs, i, random.nextInt(i + 1));
+        }
 
         int appliedCount = 0;
         for (MobEffect effect : shuffledDebuffs) {

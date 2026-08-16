@@ -18,7 +18,7 @@ public class ForbiddenSoupBunItem extends Item {
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         ItemStack result = super.finishUsingItem(stack, level, entity);
         if (entity instanceof Player player) {
-            ItemStack rewardItem = getRandomReward();
+            ItemStack rewardItem = getRandomReward(level);
             if (!player.getInventory().add(rewardItem)) {
                 player.drop(rewardItem, false);
             }
@@ -31,8 +31,8 @@ public class ForbiddenSoupBunItem extends Item {
         return result;
     }
 
-    private ItemStack getRandomReward() {
-        if (Math.random() < 0.1) {
+    private ItemStack getRandomReward(Level level) {
+        if (level.random.nextDouble() < 0.1) {
             return new ItemStack(ModItems.FORBIDDEN_FRAGMENT.get());
         } else {
             return new ItemStack(ModItems.FORBIDDEN_PIECE.get());

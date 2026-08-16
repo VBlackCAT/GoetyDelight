@@ -20,10 +20,9 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.v_black_cat.goetydelight.config.Config;
+import net.minecraft.util.RandomSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Random;
 
 @Mod.EventBusSubscriber(modid = "goetydelight")
 public class PolariceItem extends BowlFoodItem {
@@ -90,8 +89,8 @@ public class PolariceItem extends BowlFoodItem {
 
     @SubscribeEvent
     public static void onAttackEvent(LivingAttackEvent event) {
-        Random random = new Random();
         LivingEntity targetEntity = event.getEntity();
+        RandomSource random = targetEntity.getRandom();
         Entity attacker = event.getSource().getEntity();
         boolean ischange = false;
         boolean isAffectedByPolarice = true;
@@ -101,7 +100,7 @@ public class PolariceItem extends BowlFoodItem {
         double targetHealth = targetEntity.getHealth();
         float randomchange = (float) (1.1f - targetHealth/targetMaxHealth);
         ResourceLocation entityId = ForgeRegistries.ENTITY_TYPES.getKey(targetEntity.getType());
-        if (random.nextFloat(0,1.0f) < randomchange) {
+        if (random.nextFloat() < randomchange) {
             whetherchange = true;
         }
         if (

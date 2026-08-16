@@ -21,10 +21,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.fml.ModList;
+import net.minecraft.util.RandomSource;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class SiblingSundaeItem extends GlassBottleFoodItem {
     public SiblingSundaeItem(Properties pProperties) {
@@ -61,7 +61,7 @@ public class SiblingSundaeItem extends GlassBottleFoodItem {
             // roll等级：每3点幸运多1次roll，最多4次，取5次最高
             int rollTimes = 1 + Math.min(luck / 3, 4);
             int bestLevel = 0;
-            Random random = new Random();
+            RandomSource random = level.random;
             for (int i = 0; i < rollTimes; i++) {
                 int level1 = rollLevel(weights, random);
                 if (level1 > bestLevel) bestLevel = level1;
@@ -136,7 +136,7 @@ public class SiblingSundaeItem extends GlassBottleFoodItem {
     }
 
     // 权重抽卡池等级
-    private int rollLevel(double[] weights, Random random) {
+    private int rollLevel(double[] weights, RandomSource random) {
         double total = 0;
         for (double w : weights) total += w;
         double r = random.nextDouble() * total;

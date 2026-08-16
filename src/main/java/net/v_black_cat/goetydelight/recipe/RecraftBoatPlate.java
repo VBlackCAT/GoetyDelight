@@ -18,11 +18,9 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.v_black_cat.goetydelight.item.ModItems;
 
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 public class RecraftBoatPlate extends CustomRecipe {
-    private static final Random RANDOM = new Random();
     private static List<Item> LOG_ITEMS = null;
 
     public RecraftBoatPlate(ResourceLocation pId, CraftingBookCategory pCategory) {

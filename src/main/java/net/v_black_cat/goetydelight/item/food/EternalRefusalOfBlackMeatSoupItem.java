@@ -26,7 +26,6 @@ import net.v_black_cat.goetydelight.network.NetworkHandler;
 import net.v_black_cat.goetydelight.network.ThrowSoupPacket;
 
 import java.util.Arrays;
-import java.util.Random;
 
 import static net.v_black_cat.goetydelight.util.TimeConverter.sToTick;
 
@@ -133,8 +132,7 @@ public class EternalRefusalOfBlackMeatSoupItem extends RejectedDarkMeatSoupItem 
     }
 
     private void applyConsumeEffects(Player player) {
-        Random random = new Random();
-        int randomAmplifier = Math.min(random.nextInt(6), 5);
+        int randomAmplifier = Math.min(player.getRandom().nextInt(6), 5);
 
 
         player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, sToTick(15)));
