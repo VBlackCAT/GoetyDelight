@@ -2,11 +2,18 @@ package net.v_black_cat.goetydelight.ability;
 
 import com.Polarice3.Goety.api.entities.IOwned;
 import com.Polarice3.Goety.utils.LichdomHelper;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -19,8 +26,11 @@ import java.util.UUID;
 @Mod.EventBusSubscriber(modid = GoetyDelight.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class MinionBoost {
 
-    private static final String STEW_BOOST_COUNT_TAG = "LichStewBoostCount";
-    private static final String SOUP_BOOST_COUNT_TAG = "NightPeaSoupBoostCount";
+    public static final Capability<MinionBoostData> DATA_CAP =
+            CapabilityManager.get(new CapabilityToken<>() {});
+    private static final ResourceLocation CAP_ID =
+            new ResourceLocation(GoetyDelight.MODID, "minion_boost_data");
+
 
     private static final UUID ATTACK_DAMAGE_BOOST_UUID = UUID.fromString("a90ad9a8-3776-44d1-b6c8-a464269f4bf5");
     private static final UUID MAX_HEALTH_BOOST_UUID = UUID.fromString("2d43842e-d85a-4590-8b6f-daafe15bcbcc");
@@ -28,25 +38,35 @@ public class MinionBoost {
     private static final UUID MOVEMENT_SPEED_BOOST_UUID = UUID.fromString("dc658e47-9850-4675-b940-f1caa5501dc5");
     private static final UUID ARMOR_TOUGHNESS_BOOST_UUID = UUID.fromString("c0c0c0c0-c0c0-c0c0-c0c0-c0c0c0c0c0c0");
 
+    private static MinionBoostData getData(Player player) {
+        return player.getCapability(DATA_CAP).resolve().orElse(null);
+    }
+
     public static int getStewBoostCount(Player player) {
-        return player.getPersistentData().getInt(STEW_BOOST_COUNT_TAG);
+        MinionBoostData data = getData(player);
+        return data == null ? 0 : data.getStewCount();
     }
 
     public static int getSoupBoostCount(Player player) {
-        return player.getPersistentData().getInt(SOUP_BOOST_COUNT_TAG);
+        MinionBoostData data = getData(player);
+        return data == null ? 0 : data.getSoupCount();
     }
 
     public static void increaseStewBoostCount(Player player) {
-        int currentCount = getStewBoostCount(player);
+        MinionBoostData data = getData(player);
+        if (data == null) return;
+        int currentCount = data.getStewCount();
         if (currentCount < Config.getLichStewMaxCount()) {
-            player.getPersistentData().putInt(STEW_BOOST_COUNT_TAG, currentCount + 1);
+            data.setStewCount(currentCount + 1);
         }
     }
 
     public static void increaseSoupBoostCount(Player player) {
-        int currentCount = getSoupBoostCount(player);
+        MinionBoostData data = getData(player);
+        if (data == null) return;
+        int currentCount = data.getSoupCount();
         if (currentCount < Config.getNightPeaSoupMaxCount()) {
-            player.getPersistentData().putInt(SOUP_BOOST_COUNT_TAG, currentCount + 1);
+            data.setSoupCount(currentCount + 1);
         }
     }
 
@@ -213,26 +233,40 @@ public class MinionBoost {
                 Player original = event.getOriginal();
                 Player newPlayer = event.getEntity();
 
-                // 复制炖菜食用次数
-                int stewCount = original.getPersistentData().getInt(STEW_BOOST_COUNT_TAG);
-                if (stewCount > 0) {
-                    newPlayer.getPersistentData().putInt(STEW_BOOST_COUNT_TAG, stewCount);
+                MinionBoostData oldData = getData(original);
+                MinionBoostData newData = getData(newPlayer);
+                if (oldData != null && newData != null) {
+                    newData.deserializeNBT(oldData.serializeNBT());
                 }
 
-                // 复制汤食用次数
-                int soupCount = original.getPersistentData().getInt(SOUP_BOOST_COUNT_TAG);
-                if (soupCount > 0) {
-                    newPlayer.getPersistentData().putInt(SOUP_BOOST_COUNT_TAG, soupCount);
-                }
-
-                // 如果死亡复活，重新应用加成
+                // 非死亡克隆（如末地传送），立即应用加成
                 if (!event.isWasDeath()) {
-                    // 非死亡克隆（如末地传送），立即应用加成
+                    int stewCount = getStewBoostCount(newPlayer);
+                    int soupCount = getSoupBoostCount(newPlayer);
                     if (stewCount > 0 || soupCount > 0) {
                         applyMinionBoosts(newPlayer);
                     }
                 }
             }
+        }
+    }
+
+    // ========== 能力附加与注册 ==========
+
+    @SubscribeEvent
+    public static void onAttachCapabilities(AttachCapabilitiesEvent<Entity> event) {
+        if (event.getObject() instanceof Player) {
+            MinionBoostDataProvider provider = new MinionBoostDataProvider();
+            event.addCapability(CAP_ID, provider);
+            event.addListener(provider::invalidate);
+        }
+    }
+
+    @Mod.EventBusSubscriber(modid = GoetyDelight.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+    public static final class ModEvents {
+        @SubscribeEvent
+        public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+            event.register(MinionBoostData.class);
         }
     }
 }
