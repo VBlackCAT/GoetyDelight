@@ -302,6 +302,9 @@ dependencies {
     modImplementation  "curse.maven:jade-324717:6855440"//Jade-1.20.1-Forge-11.13.2.jar
     modRuntimeOnly  "curse.maven:l2library-620203:6806000" //l2library-2.5.3.jar
 
+    //森罗玩偶
+    modRuntimeOnly "curse.maven:kaleidoscope-doll-1233277:8196009"
+
     //nbt编辑器
     modRuntimeOnly  "curse.maven:ibe-editor-256822:4994072"
     //性能检测spark
