@@ -38,6 +38,9 @@ public class PlayerLookHandler {
         // 粒子与提示均为纯客户端表现，服务端直接跳过，避免每 tick 无谓的射线检测
         if (!player.level().isClientSide()) return;
 
+        // 射线检测降频为每 4 tick 一次，进一步降低客户端开销
+        if (player.tickCount % 4 != 0) return;
+
         long currentTime = player.level().getGameTime();
 
 
