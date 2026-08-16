@@ -5,17 +5,13 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.v_black_cat.goetydelight.api.GetSpellAttributeFactory;
+import net.v_black_cat.goetydelight.capability.FoodStateCapability;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class SpellPotencyUtil {
-
-    // 使用旧的NBT标签
-    public static final String CANDY_POTENCY_LEVEL_TAG = "RubyCandyPotencyLevel";
-    public static final String CANDY_POTENCY_VALUE_TAG = "RubyCandyPotencyValue";
-    public static final String EFFECT_BONUS_TAG = "SpellMasteryEffectBonus";
 
     // 统一的属性修改器UUID（每个属性一个）
     private static final Map<Attribute, UUID> ATTRIBUTE_UUIDS = new HashMap<>();
@@ -54,30 +50,36 @@ public class SpellPotencyUtil {
      * 获取硬糖的强效等级
      */
     public static int getCandyPotencyLevel(Player player) {
-        return player.getPersistentData().getInt(CANDY_POTENCY_LEVEL_TAG);
+        FoodState state = FoodStateCapability.get(player);
+        return state == null ? 0 : state.getCandyPotencyLevel();
     }
 
     /**
      * 设置硬糖的强效等级
      */
     public static void setCandyPotencyLevel(Player player, int level) {
-        player.getPersistentData().putInt(CANDY_POTENCY_LEVEL_TAG, level);
-        // 同步更新旧的值标签
-        player.getPersistentData().putDouble(CANDY_POTENCY_VALUE_TAG, level * 1.0);
+        FoodState state = FoodStateCapability.get(player);
+        if (state != null) {
+            state.setCandyPotencyLevel(level);
+        }
     }
 
     /**
      * 获取效果的临时加成值
      */
     public static double getEffectBonus(Player player) {
-        return player.getPersistentData().getDouble(EFFECT_BONUS_TAG);
+        FoodState state = FoodStateCapability.get(player);
+        return state == null ? 0 : state.getEffectBonus();
     }
 
     /**
      * 设置效果的临时加成值
      */
     public static void setEffectBonus(Player player, double bonus) {
-        player.getPersistentData().putDouble(EFFECT_BONUS_TAG, bonus);
+        FoodState state = FoodStateCapability.get(player);
+        if (state != null) {
+            state.setEffectBonus(bonus);
+        }
     }
 
     /**
