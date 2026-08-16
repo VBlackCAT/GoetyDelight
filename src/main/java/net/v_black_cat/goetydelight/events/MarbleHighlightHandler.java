@@ -28,11 +28,17 @@ import net.v_black_cat.goetydelight.init.ModBlocks;
 @EventBusSubscriber(modid = GoetyDelight.MODID)
 public class MarbleHighlightHandler {
     private static final long COOLDOWN_TICKS = 100;
+    // 仅客户端本地玩家会访问此字段（服务端已在 onPlayerTick 中提前返回），
+    // 因此 static 即可，不存在跨玩家/跨端共享问题。
     private static long lastSendTime = 0;
 
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
+
+        // 粒子与提示均为纯客户端表现，服务端直接跳过，避免每 tick 无谓的射线检测
+        if (!player.level().isClientSide()) return;
+
         long currentTime = player.level().getGameTime();
 
         ItemStack mainHandItem = player.getMainHandItem();
@@ -50,10 +56,8 @@ public class MarbleHighlightHandler {
         highlightMarbleBlock(level, pos);
 
         if (currentTime - lastSendTime > COOLDOWN_TICKS) {
-            if (level.isClientSide()) {
-                player.sendSystemMessage(Component.literal("哈！！！！！！！"));
-                lastSendTime = currentTime;
-            }
+            player.sendSystemMessage(Component.literal("哈！！！！！！！"));
+            lastSendTime = currentTime;
         }
     }
 
