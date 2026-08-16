@@ -16,6 +16,7 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.buff.ActiveBuffs;
 import net.v_black_cat.goetydelight.buff.BuffInstance;
+import net.v_black_cat.goetydelight.util.FoodState;
 import net.v_black_cat.goetydelight.visual.EntityVisualEffects;
 
 import java.util.ArrayList;
@@ -79,6 +80,15 @@ public class ModAttachments {
                     .build()
     );
 
+    public static final Supplier<
+            AttachmentType<
+                    FoodState>> FOOD_STATE = ATTACHMENT_TYPES.register("food_state",
+            () -> AttachmentType.builder(FoodState::new)
+                    .serialize(new FoodStateSerializer())
+                    .copyOnDeath()
+                    .build()
+    );
+
     // ==================== MinionBoost 层数附件（循环注册） ====================
 
     /** 使用枚举或循环注册多个类似的整数附件，避免重复代码。 */
@@ -111,6 +121,23 @@ public class ModAttachments {
 
     public static void register(IEventBus modEventBus) {
         ATTACHMENT_TYPES.register(modEventBus);
+    }
+
+    private static final class FoodStateSerializer
+            implements IAttachmentSerializer<CompoundTag, FoodState> {
+
+        @Override
+        public FoodState read(IAttachmentHolder holder, CompoundTag tag,
+                HolderLookup.Provider provider) {
+            FoodState state = new FoodState();
+            state.fromTag(tag);
+            return state;
+        }
+
+        @Override
+        public CompoundTag write(FoodState attachment, HolderLookup.Provider provider) {
+            return attachment.toTag();
+        }
     }
 
     private static final class VisualEffectsSerializer
