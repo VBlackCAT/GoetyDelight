@@ -1,7 +1,6 @@
 package net.v_black_cat.goetydelight.item.food;
 
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.animal.Cat;
@@ -19,16 +18,16 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.init.ModAttachments;
 import net.v_black_cat.goetydelight.init.ModItems;
+import net.v_black_cat.goetydelight.util.FoodState;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @EventBusSubscriber(modid = GoetyDelight.MODID)
 public class BiscatItem extends Item {
 
-    private static final String BISCUIT_EFFECT_TAG = "BiscatEffectTime";
-    private static final String BISCUIT_AFFECTED_PLAYERS_TAG = "BiscatAffectedPlayers";
     private static final int EFFECT_DURATION_TICKS = 20 * 60 * 5;
 
     public BiscatItem(Properties properties) {
@@ -39,34 +38,26 @@ public class BiscatItem extends Item {
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         ItemStack resultStack = super.finishUsingItem(stack, level, entity);
         if (!level.isClientSide && entity instanceof Player player) {
-            CompoundTag persistentData = player.getPersistentData();
-            persistentData.putLong(BISCUIT_EFFECT_TAG, level.getGameTime() + EFFECT_DURATION_TICKS);
-            markAffectedMobs(player, persistentData);
+            FoodState state = player.getData(ModAttachments.FOOD_STATE);
+            state.setBiscatEffectEndTime(level.getGameTime() + EFFECT_DURATION_TICKS);
+            markAffectedMobs(player, state.getBiscatEffectEndTime());
         }
         return resultStack;
     }
 
-    private void markAffectedMobs(Player player, CompoundTag playerData) {
+    private void markAffectedMobs(Player player, long effectEndTime) {
         List<Creeper> creepers = player.level().getEntitiesOfClass(Creeper.class,
                 player.getBoundingBox().inflate(50), entity -> true);
         for (Creeper creeper : creepers) {
-            CompoundTag creeperData = creeper.getPersistentData();
-            CompoundTag affectedPlayers = creeperData.contains(BISCUIT_AFFECTED_PLAYERS_TAG)
-                    ? creeperData.getCompound(BISCUIT_AFFECTED_PLAYERS_TAG)
-                    : new CompoundTag();
-            affectedPlayers.putLong(player.getStringUUID(), playerData.getLong(BISCUIT_EFFECT_TAG));
-            creeperData.put(BISCUIT_AFFECTED_PLAYERS_TAG, affectedPlayers);
+            creeper.getData(ModAttachments.FOOD_STATE).getBiscatAffectedPlayers()
+                    .put(player.getStringUUID(), effectEndTime);
         }
 
         List<Phantom> phantoms = player.level().getEntitiesOfClass(Phantom.class,
                 player.getBoundingBox().inflate(50), entity -> true);
         for (Phantom phantom : phantoms) {
-            CompoundTag phantomData = phantom.getPersistentData();
-            CompoundTag affectedPlayers = phantomData.contains(BISCUIT_AFFECTED_PLAYERS_TAG)
-                    ? phantomData.getCompound(BISCUIT_AFFECTED_PLAYERS_TAG)
-                    : new CompoundTag();
-            affectedPlayers.putLong(player.getStringUUID(), playerData.getLong(BISCUIT_EFFECT_TAG));
-            phantomData.put(BISCUIT_AFFECTED_PLAYERS_TAG, affectedPlayers);
+            phantom.getData(ModAttachments.FOOD_STATE).getBiscatAffectedPlayers()
+                    .put(player.getStringUUID(), effectEndTime);
         }
     }
 
@@ -75,10 +66,10 @@ public class BiscatItem extends Item {
         Player player = event.getEntity();
         Level level = player.level();
         if (level.isClientSide) return;
-        CompoundTag playerData = player.getPersistentData();
-        long effectEndTime = playerData.getLong(BISCUIT_EFFECT_TAG);
+        FoodState state = player.getData(ModAttachments.FOOD_STATE);
+        long effectEndTime = state.getBiscatEffectEndTime();
         if (effectEndTime > 0 && level.getGameTime() >= effectEndTime) {
-            playerData.remove(BISCUIT_EFFECT_TAG);
+            state.setBiscatEffectEndTime(0);
         }
     }
 
@@ -99,8 +90,8 @@ public class BiscatItem extends Item {
             return;
         }
 
-        CompoundTag playerData = player.getPersistentData();
-        long effectEndTime = playerData.getLong(BISCUIT_EFFECT_TAG);
+        FoodState playerState = player.getData(ModAttachments.FOOD_STATE);
+        long effectEndTime = playerState.getBiscatEffectEndTime();
         long currentTime = player.level().getGameTime();
         if (effectEndTime > 0 && currentTime < effectEndTime) {
             // 取消目标设定
@@ -116,32 +107,22 @@ public class BiscatItem extends Item {
         Level level = creeper.level();
         if (level.isClientSide) return;
 
-        CompoundTag creeperData = creeper.getPersistentData();
-        if (!creeperData.contains(BISCUIT_AFFECTED_PLAYERS_TAG)) {
+        FoodState creeperState = creeper.getData(ModAttachments.FOOD_STATE);
+        Map<String, Long> affectedPlayers = creeperState.getBiscatAffectedPlayers();
+        if (affectedPlayers.isEmpty()) {
             creeper.goalSelector.getAvailableGoals().removeIf(goal ->
                     goal.getPriority() == 1 && goal.getGoal() instanceof AvoidEntityGoal<?>);
             return;
         }
 
-        CompoundTag affectedPlayers = creeperData.getCompound(BISCUIT_AFFECTED_PLAYERS_TAG);
         long currentTime = level.getGameTime();
-
-        List<String> toRemove = new ArrayList<>();
-        for (String uuid : affectedPlayers.getAllKeys()) {
-            if (currentTime >= affectedPlayers.getLong(uuid)) {
-                toRemove.add(uuid);
-            }
-        }
-        toRemove.forEach(affectedPlayers::remove);
+        affectedPlayers.entrySet().removeIf(entry -> currentTime >= entry.getValue());
 
         if (affectedPlayers.isEmpty()) {
-            creeperData.remove(BISCUIT_AFFECTED_PLAYERS_TAG);
             creeper.goalSelector.getAvailableGoals().removeIf(goal ->
                     goal.getPriority() == 1 && goal.getGoal() instanceof AvoidEntityGoal<?>);
             return;
         }
-
-        creeperData.put(BISCUIT_AFFECTED_PLAYERS_TAG, affectedPlayers);
 
         boolean hasAvoidGoal = creeper.goalSelector.getAvailableGoals().stream()
                 .anyMatch(goal -> goal.getPriority() == 1 && goal.getGoal() instanceof AvoidEntityGoal<?>);
@@ -152,7 +133,7 @@ public class BiscatItem extends Item {
                     8.0F,
                     1.5D,
                     1.5D,
-                    entity -> entity != null && entity.isAlive() && affectedPlayers.contains(entity.getStringUUID())
+                    entity -> entity != null && entity.isAlive() && affectedPlayers.containsKey(entity.getStringUUID())
             ));
         }
     }
