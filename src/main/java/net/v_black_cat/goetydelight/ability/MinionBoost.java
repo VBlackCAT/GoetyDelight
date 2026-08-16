@@ -16,16 +16,14 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.init.ModAttachments;
 import net.v_black_cat.goetydelight.init.ModConfig;
 
 import java.util.List;
 import java.util.UUID;
 
 public class MinionBoost {
-    private static final String STEW_BOOST_COUNT_TAG = "LichStewBoostCount";
-    private static final String SOUP_BOOST_COUNT_TAG = "NightPeaSoupBoostCount";
 
     private static final ResourceLocation ATTACK_DAMAGE_BOOST_ID = rl("attack");
     private static final ResourceLocation MAX_HEALTH_BOOST_ID = rl("health");
@@ -39,17 +37,17 @@ public class MinionBoost {
 
     // ==================== 数据读写 ====================
     public static int getStewBoostCount(Player player) {
-        return player.getPersistentData().getInt(STEW_BOOST_COUNT_TAG);
+        return player.getData(ModAttachments.MINION_STEW_BOOST_COUNT);
     }
 
     public static int getSoupBoostCount(Player player) {
-        return player.getPersistentData().getInt(SOUP_BOOST_COUNT_TAG);
+        return player.getData(ModAttachments.MINION_SOUP_BOOST_COUNT);
     }
 
     public static void increaseStewBoostCount(Player player) {
         int cur = getStewBoostCount(player);
         if (cur < ModConfig.getLichStewMaxCount()) {
-            player.getPersistentData().putInt(STEW_BOOST_COUNT_TAG, cur + 1);
+            player.setData(ModAttachments.MINION_STEW_BOOST_COUNT, cur + 1);
             applyMinionBoosts(player);
         }
     }
@@ -57,7 +55,7 @@ public class MinionBoost {
     public static void increaseSoupBoostCount(Player player) {
         int cur = getSoupBoostCount(player);
         if (cur < ModConfig.getNightPeaSoupMaxCount()) {
-            player.getPersistentData().putInt(SOUP_BOOST_COUNT_TAG, cur + 1);
+            player.setData(ModAttachments.MINION_SOUP_BOOST_COUNT, cur + 1);
             applyMinionBoosts(player);
         }
     }
@@ -139,19 +137,8 @@ public class MinionBoost {
     // ==================== 事件监听 ====================
     @EventBusSubscriber(modid = GoetyDelight.MODID)
     public static class MinionBoostHandler {
-        @SubscribeEvent
-        public static void onPlayerClone(PlayerEvent.Clone event) {
-            Player original = event.getOriginal();
-            Player player = event.getEntity();
-            if (!event.isWasDeath()) return;
-
-            int oldStew = original.getPersistentData().getInt(STEW_BOOST_COUNT_TAG);
-            int oldSoup = original.getPersistentData().getInt(SOUP_BOOST_COUNT_TAG);
-            if (oldStew > 0 || oldSoup > 0) {
-                player.getPersistentData().putInt(STEW_BOOST_COUNT_TAG, oldStew);
-                player.getPersistentData().putInt(SOUP_BOOST_COUNT_TAG, oldSoup);
-            }
-        }
+        // 附件 MINION_STEW_BOOST_COUNT / MINION_SOUP_BOOST_COUNT 已配置 copyOnDeath，
+        // 死亡复活时会自动复制层数，无需手动 onPlayerClone 拷贝。
 
         @SubscribeEvent
         public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
