@@ -19,18 +19,9 @@ import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.v_black_cat.goetydelight.util.ToolUtils;
 
-import java.util.*;
-import java.util.function.Supplier;
-
 @Mod.EventBusSubscriber(modid = GoetyDelight.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class PlayerLookHandler {
 
-
-    private static final Supplier<Block> MARBLE_BLOCK_SUPPLIER = ModBlocks.SILT_MARBLE_HEAVY;
-
-    private static final List<Supplier<Block>> MARBLE_BLOCKS = Collections.singletonList(
-            MARBLE_BLOCK_SUPPLIER
-    );
 
     private static final long COOLDOWN_TICKS = 100; // 冷却
 
@@ -60,15 +51,7 @@ public class PlayerLookHandler {
                     BlockPos pos = blockHitResult.getBlockPos();
                     Block block = level.getBlockState(pos).getBlock();
 
-                    boolean isMarble = false;
-                    for (Supplier<Block> marbleBlock : MARBLE_BLOCKS) {
-                        Block marbleBlockInstance = marbleBlock.get();
-
-                        if (block == marbleBlockInstance) {
-                            isMarble = true;
-                            break;
-                        }
-                    }
+                    boolean isMarble = block == ModBlocks.SILT_MARBLE_HEAVY.get();
 
                     if(isMarble){
                         highlightMarbleBlock(level, pos);
