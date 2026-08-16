@@ -56,10 +56,12 @@ public class MinionBoost {
 
         if (stewCount <= 0 && soupCount <= 0) return;
 
-        for (LivingEntity entity : player.level().getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(64.0D))) {
-            if (isPlayerMinion(entity, player)) {
-                applyMinionBoost(entity, player, stewCount, soupCount);
-            }
+        for (LivingEntity entity : player.level().getEntitiesOfClass(
+                LivingEntity.class,
+                player.getBoundingBox().inflate(64.0D),
+                entity -> isPlayerMinion(entity, player)
+        )) {
+            applyMinionBoost(entity, player, stewCount, soupCount);
         }
     }
 
