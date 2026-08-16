@@ -23,14 +23,13 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.v_black_cat.goetydelight.init.ModAttachments;
 import net.v_black_cat.goetydelight.util.EntityTagChecker;
+import net.v_black_cat.goetydelight.util.FoodState;
 import org.jetbrains.annotations.NotNull;
 
 @EventBusSubscriber(modid = "goetydelight")
 public class OminousIceCreamItem extends Item {
-
-    public static final String OMINOUS_ACTIVE_TAG = "OminousIceCreamActive";
-    public static final String HAS_CONSUMED_TAG = "HasConsumedOminousIceCream";
 
     private static final TagKey<EntityType<?>> BOSSES_TAG =
             TagKey.create(BuiltInRegistries.ENTITY_TYPE.key(), ResourceLocation.parse("forge:bosses"));
@@ -45,8 +44,9 @@ public class OminousIceCreamItem extends Item {
 
         if (!level.isClientSide && entity instanceof Player player) {
             if (player.hasEffect(MobEffects.BAD_OMEN)) {
-                player.getPersistentData().putBoolean(OMINOUS_ACTIVE_TAG, true);
-                player.getPersistentData().putBoolean(HAS_CONSUMED_TAG, true);
+                FoodState state = player.getData(ModAttachments.FOOD_STATE);
+                state.setOminousIceCreamActive(true);
+                state.setOminousIceCreamConsumed(true);
                 level.playSound(null, player.getX(), player.getY(), player.getZ(),
                         SoundEvents.EVOKER_PREPARE_SUMMON,
                         SoundSource.PLAYERS, 1.0F, 1.0F);
@@ -79,7 +79,7 @@ public class OminousIceCreamItem extends Item {
             return;
         }
 
-        if (player.getPersistentData().getBoolean(OMINOUS_ACTIVE_TAG)) {
+        if (player.getData(ModAttachments.FOOD_STATE).isOminousIceCreamActive()) {
             if (mob.getLastHurtByMob() != player) {
                 if (event.getTargetType() == LivingChangeTargetEvent.LivingTargetType.MOB_TARGET) {
                     event.setNewAboutToBeSetTarget(null);
@@ -100,7 +100,7 @@ public class OminousIceCreamItem extends Item {
                 if (EntityTagChecker.isEntityInTag(mob, "minecraft:raiders") &&
                         !mob.getType().is(BOSSES_TAG)) {
 
-                    if (player.getPersistentData().getBoolean(OMINOUS_ACTIVE_TAG)) {
+                    if (player.getData(ModAttachments.FOOD_STATE).isOminousIceCreamActive()) {
                         if (mob.getLastHurtByMob() != player) {
                             event.setCanceled(true);
 
@@ -128,8 +128,9 @@ public class OminousIceCreamItem extends Item {
         if (effect == null) return;
 
         if (entity instanceof Player player && effect.getEffect().value() == MobEffects.BAD_OMEN) {
-            if (player.getPersistentData().getBoolean(OMINOUS_ACTIVE_TAG)) {
-                player.getPersistentData().remove(OMINOUS_ACTIVE_TAG);
+            FoodState state = player.getData(ModAttachments.FOOD_STATE);
+            if (state.isOminousIceCreamActive()) {
+                state.setOminousIceCreamActive(false);
                 player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                         SoundEvents.EVOKER_CAST_SPELL,
                         SoundSource.PLAYERS, 1.0F, 0.5F);
@@ -144,8 +145,9 @@ public class OminousIceCreamItem extends Item {
         if (effect == null) return;
 
         if (entity instanceof Player player && effect.getEffect().value() == MobEffects.BAD_OMEN) {
-            if (player.getPersistentData().getBoolean(OMINOUS_ACTIVE_TAG)) {
-                player.getPersistentData().remove(OMINOUS_ACTIVE_TAG);
+            FoodState state = player.getData(ModAttachments.FOOD_STATE);
+            if (state.isOminousIceCreamActive()) {
+                state.setOminousIceCreamActive(false);
                 player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                         SoundEvents.WITHER_SPAWN,
                         SoundSource.PLAYERS, 0.8F, 1.2F);
@@ -156,15 +158,17 @@ public class OminousIceCreamItem extends Item {
     @SubscribeEvent
     public static void onPlayerDeath(LivingDeathEvent event) {
         if (!event.isCanceled() && event.getEntity() instanceof Player player) {
-            player.getPersistentData().remove(OMINOUS_ACTIVE_TAG);
-            player.getPersistentData().remove(HAS_CONSUMED_TAG);
+            FoodState state = player.getData(ModAttachments.FOOD_STATE);
+            state.setOminousIceCreamActive(false);
+            state.setOminousIceCreamConsumed(false);
         }
     }
 
     @SubscribeEvent
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         Player player = event.getEntity();
-        player.getPersistentData().remove(OMINOUS_ACTIVE_TAG);
-        player.getPersistentData().remove(HAS_CONSUMED_TAG);
+        FoodState state = player.getData(ModAttachments.FOOD_STATE);
+        state.setOminousIceCreamActive(false);
+        state.setOminousIceCreamConsumed(false);
     }
 }
