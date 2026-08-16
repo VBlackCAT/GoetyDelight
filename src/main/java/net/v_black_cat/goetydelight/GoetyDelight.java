@@ -24,6 +24,7 @@ import net.v_black_cat.goetydelight.block.ModBlockEntities;
 import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.v_black_cat.goetydelight.block.RenderBlockRenderer;
 import net.v_black_cat.goetydelight.config.Config;
+import net.v_black_cat.goetydelight.config.GoetyDelightConfigScreen;
 import net.v_black_cat.goetydelight.effect.ModEffects;
 import net.v_black_cat.goetydelight.enchantments.ModEnchantments;
 import net.v_black_cat.goetydelight.entities.ghostfarmer.GhostFarmerRenderer;
@@ -148,6 +149,8 @@ public class GoetyDelight
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event)
         {
+            // Register a config screen for the Mods list (Forge 1.20.1 has no built-in config GUI).
+            MinecraftForge.registerConfigScreen(GoetyDelightConfigScreen::new);
             MinecraftForge.EVENT_BUS.addListener(RotationEffectHandler::onRenderTick);
             MinecraftForge.EVENT_BUS.addListener(RotationEffectHandler::onRenderLivingEvent);
             MenuScreens.register(ModMenuTypes.CURSED_INGOT_POT.get(), CursedIngotPotScreen::new);
