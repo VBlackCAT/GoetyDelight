@@ -3,7 +3,6 @@ package net.v_black_cat.goetydelight.item.food;
 import com.Polarice3.Goety.common.entities.boss.Vizier;
 import com.Polarice3.Goety.common.items.ModItems;
 import com.Polarice3.Goety.init.ModSounds;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
@@ -15,6 +14,8 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.v_black_cat.goetydelight.capability.FoodStateCapability;
+import net.v_black_cat.goetydelight.util.FoodState;
 import org.jetbrains.annotations.NotNull;
 
 import static net.v_black_cat.goetydelight.item.ModItems.COMFORT_EFFECT_SUPPLIER;
@@ -23,7 +24,6 @@ import static net.v_black_cat.goetydelight.util.TimeConverter.sToTick;
 
 public class BaklavaItem extends Item {
     private static final long VIZIER_COOLDOWN = 36000L;
-    private static final String COOLDOWN_KEY = "baklava_vizier_cooldown";
 
     public BaklavaItem(Properties properties) {
         super(properties);
@@ -37,13 +37,13 @@ public class BaklavaItem extends Item {
     @Override
     public @NotNull InteractionResult interactLivingEntity(@NotNull ItemStack stack, Player player, @NotNull LivingEntity target, @NotNull InteractionHand hand) {
         if (!player.level().isClientSide) {
-            CompoundTag persistentData = player.getPersistentData();
-            long lastUseTime = persistentData.getLong(COOLDOWN_KEY);
+            FoodState state = FoodStateCapability.get(player);
+            long lastUseTime = state.getBaklavaCooldown();
             long currentTime = player.level().getGameTime();
 
             if (currentTime - lastUseTime < 0) {
                 lastUseTime = 0;
-                persistentData.putLong(COOLDOWN_KEY, lastUseTime);
+                state.setBaklavaCooldown(lastUseTime);
             }
 
             if (currentTime - lastUseTime < VIZIER_COOLDOWN) {
@@ -67,8 +67,8 @@ public class BaklavaItem extends Item {
                 }
                 player.displayClientMessage(Component.translatable("message.goetydelight.baklava.vizierspoken"), true);
 
-                // 更新冷却时间到 PersistentData
-                persistentData.putLong(COOLDOWN_KEY, currentTime);
+                // 更新冷却时间
+                state.setBaklavaCooldown(currentTime);
                 return InteractionResult.SUCCESS;
             } else {
                 // 对非 Vizier 目标添加常规效果
