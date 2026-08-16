@@ -116,6 +116,9 @@ public class SevenLeafPuddingItem extends BowlFoodItem {
         Level level = player.level();
 
         if (!level.isClientSide) {
+            // 过期检查降频为每 20 tick（1秒）一次，避免每 tick 读 NBT
+            if (player.tickCount % 20 != 0) return;
+
             CompoundTag persistentData = player.getPersistentData();
 
             if (persistentData.getBoolean(BONUS_ACTIVE_TAG)) {
