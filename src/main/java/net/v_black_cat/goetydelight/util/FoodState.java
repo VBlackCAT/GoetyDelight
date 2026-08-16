@@ -2,6 +2,9 @@ package net.v_black_cat.goetydelight.util;
 
 import net.minecraft.nbt.CompoundTag;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 玩家/实体食物相关状态的统一存储，替代原先散落在 {@code getPersistentData()} 中的标签。
  * Forge 侧通过 capability（FoodStateCapability）附加，NeoForge 侧通过 attachment（ModAttachments.FOOD_STATE）附加。
@@ -35,6 +38,13 @@ public class FoodState {
     private boolean falseProverbsShift;
     // 极地冰剩余时间
     private float polariceTime;
+    // 饼干猫（Biscat）
+    private long biscatEffectEndTime;
+    private final Map<String, Long> biscatAffectedPlayers = new HashMap<>();
+    // 烤老王（RoastLaowang）
+    private boolean roastLaowangActive;
+    private long roastLaowangStartTime;
+    private long roastLaowangDuration;
 
     public boolean isSevenLeafPuddingActive() {
         return sevenLeafPuddingActive;
@@ -164,6 +174,42 @@ public class FoodState {
         this.polariceTime = polariceTime;
     }
 
+    public long getBiscatEffectEndTime() {
+        return biscatEffectEndTime;
+    }
+
+    public void setBiscatEffectEndTime(long biscatEffectEndTime) {
+        this.biscatEffectEndTime = biscatEffectEndTime;
+    }
+
+    public Map<String, Long> getBiscatAffectedPlayers() {
+        return biscatAffectedPlayers;
+    }
+
+    public boolean isRoastLaowangActive() {
+        return roastLaowangActive;
+    }
+
+    public void setRoastLaowangActive(boolean roastLaowangActive) {
+        this.roastLaowangActive = roastLaowangActive;
+    }
+
+    public long getRoastLaowangStartTime() {
+        return roastLaowangStartTime;
+    }
+
+    public void setRoastLaowangStartTime(long roastLaowangStartTime) {
+        this.roastLaowangStartTime = roastLaowangStartTime;
+    }
+
+    public long getRoastLaowangDuration() {
+        return roastLaowangDuration;
+    }
+
+    public void setRoastLaowangDuration(long roastLaowangDuration) {
+        this.roastLaowangDuration = roastLaowangDuration;
+    }
+
     public CompoundTag toTag() {
         CompoundTag tag = new CompoundTag();
         tag.putBoolean("sevenLeafPuddingActive", sevenLeafPuddingActive);
@@ -182,6 +228,15 @@ public class FoodState {
         tag.putBoolean("crimsonMemories", crimsonMemories);
         tag.putBoolean("falseProverbsShift", falseProverbsShift);
         tag.putFloat("polariceTime", polariceTime);
+        tag.putLong("biscatEffectEndTime", biscatEffectEndTime);
+        CompoundTag affectedPlayers = new CompoundTag();
+        for (Map.Entry<String, Long> e : biscatAffectedPlayers.entrySet()) {
+            affectedPlayers.putLong(e.getKey(), e.getValue());
+        }
+        tag.put("biscatAffectedPlayers", affectedPlayers);
+        tag.putBoolean("roastLaowangActive", roastLaowangActive);
+        tag.putLong("roastLaowangStartTime", roastLaowangStartTime);
+        tag.putLong("roastLaowangDuration", roastLaowangDuration);
         return tag;
     }
 
@@ -202,5 +257,14 @@ public class FoodState {
         crimsonMemories = tag.getBoolean("crimsonMemories");
         falseProverbsShift = tag.getBoolean("falseProverbsShift");
         polariceTime = tag.getFloat("polariceTime");
+        biscatEffectEndTime = tag.getLong("biscatEffectEndTime");
+        biscatAffectedPlayers.clear();
+        CompoundTag affectedPlayers = tag.getCompound("biscatAffectedPlayers");
+        for (String key : affectedPlayers.getAllKeys()) {
+            biscatAffectedPlayers.put(key, affectedPlayers.getLong(key));
+        }
+        roastLaowangActive = tag.getBoolean("roastLaowangActive");
+        roastLaowangStartTime = tag.getLong("roastLaowangStartTime");
+        roastLaowangDuration = tag.getLong("roastLaowangDuration");
     }
 }

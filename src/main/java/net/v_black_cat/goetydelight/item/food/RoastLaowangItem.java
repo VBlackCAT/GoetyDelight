@@ -1,6 +1,5 @@
 package net.v_black_cat.goetydelight.item.food;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -13,9 +12,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.v_black_cat.goetydelight.init.ModAttachments;
 import net.v_black_cat.goetydelight.init.ModItems;
+import net.v_black_cat.goetydelight.util.FoodState;
 
 @EventBusSubscriber(modid = "goetydelight")
 public class RoastLaowangItem extends Item {
@@ -28,10 +28,6 @@ public class RoastLaowangItem extends Item {
     public boolean isFoil(ItemStack stack) {
         return true;
     }
-
-    private static final String BAKATAG = "bakatag";
-    private static final String BAKA_TIME_TAG = "bakatime";
-    private static final String BAKA_START_TAG = "bakatime_start";
 
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
@@ -53,10 +49,10 @@ public class RoastLaowangItem extends Item {
     public static void onItemUseFinish(LivingEntityUseItemEvent.Finish event) {
         if (event.getItem().getItem() instanceof RoastLaowangItem) {
             LivingEntity entity = event.getEntity();
-            CompoundTag tag = entity.getPersistentData();
-            tag.putBoolean(BAKATAG, true);
-            tag.putLong(BAKA_TIME_TAG, 200);
-            tag.putLong(BAKA_START_TAG, entity.level().getGameTime());
+            FoodState state = entity.getData(ModAttachments.FOOD_STATE);
+            state.setRoastLaowangActive(true);
+            state.setRoastLaowangStartTime(entity.level().getGameTime());
+            state.setRoastLaowangDuration(200);
         }
     }
 
@@ -64,33 +60,13 @@ public class RoastLaowangItem extends Item {
     public static void onServerTickPost(ServerTickEvent.Post event) {
         MinecraftServer server = event.getServer();
         for (Player player : server.getPlayerList().getPlayers()) {
-            CompoundTag tag = player.getPersistentData();
-            if (tag.getBoolean(BAKATAG)) {
-                long start = tag.getLong(BAKA_START_TAG);
-                long duration = tag.getLong(BAKA_TIME_TAG);
-                if (player.level().getGameTime() - start >= duration) {
-                    tag.remove(BAKATAG);
-                    tag.remove(BAKA_TIME_TAG);
-                    tag.remove(BAKA_START_TAG);
+            FoodState state = player.getData(ModAttachments.FOOD_STATE);
+            if (state.isRoastLaowangActive()) {
+                if (player.level().getGameTime() - state.getRoastLaowangStartTime() >= state.getRoastLaowangDuration()) {
+                    state.setRoastLaowangActive(false);
                 }
             }
         }
     }
 
-    @SubscribeEvent
-    public static void onLivingDamage(LivingIncomingDamageEvent event) {
-        boolean flag = false; // 原逻辑中始终 false，保留
-        if (!flag) return;
-
-        LivingEntity entity = event.getEntity();
-        if (entity.getPersistentData().getBoolean(BAKATAG)) {
-            event.setCanceled(true);
-            return;
-        }
-        if (event.getSource().getEntity() instanceof LivingEntity attacker) {
-            if (attacker.getPersistentData().getBoolean(BAKATAG)) {
-                event.setCanceled(true);
-            }
-        }
-    }
 }
