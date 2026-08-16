@@ -8,7 +8,6 @@ import com.Polarice3.Goety.utils.MathHelper;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -31,14 +30,14 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.init.ModAttachments;
 import net.v_black_cat.goetydelight.init.ModConfig;
 import net.v_black_cat.goetydelight.item.FalseProverbsItem;
 import net.v_black_cat.goetydelight.network.SyncBackModelPacket;
+import net.v_black_cat.goetydelight.util.FoodState;
 import vectorwing.farmersdelight.common.item.enchantment.BackstabbingEnchantment;
 
 import java.util.UUID;
-
-import static net.v_black_cat.goetydelight.item.FalseProverbsItem.SHIFT_KEY_TAG;
 
 @EventBusSubscriber(modid = GoetyDelight.MODID)
 public class FalseProverbsEvents {
@@ -55,13 +54,13 @@ public class FalseProverbsEvents {
             UUID playerUUID = player.getUUID();
 
             if (player.getMainHandItem().getItem() instanceof FalseProverbsItem) {
-                CompoundTag persistentData = player.getPersistentData();
+                FoodState state = player.getData(ModAttachments.FOOD_STATE);
 
                 if (player.isShiftKeyDown()) {
-                    if (!persistentData.getBoolean(SHIFT_KEY_TAG)) {
+                    if (!state.isFalseProverbsShift()) {
                         // 第一次按下Shift
                         addBonusAttributes(player);
-                        persistentData.putBoolean(SHIFT_KEY_TAG, true);
+                        state.setFalseProverbsShift(true);
 
                         FalseProverbsItem.setOriginalPosition(playerUUID, player.position());
                         FalseProverbsItem.setWorldLevel(playerUUID, player.level());
@@ -81,14 +80,14 @@ public class FalseProverbsEvents {
                     }
                 } else {
                     // Shift释放时的处理
-                    if (persistentData.getBoolean(SHIFT_KEY_TAG)) {
-                        resetShiftState(player, persistentData);
+                    if (state.isFalseProverbsShift()) {
+                        resetShiftState(player);
                     }
                 }
             } else {
                 // 主手不是FalseProverbsItem，但仍有Shift状态
-                if (player.getPersistentData().getBoolean(SHIFT_KEY_TAG)) {
-                    resetShiftState(player, player.getPersistentData());
+                if (player.getData(ModAttachments.FOOD_STATE).isFalseProverbsShift()) {
+                    resetShiftState(player);
                 }
             }
 
@@ -112,9 +111,9 @@ public class FalseProverbsEvents {
         }
     }
 
-    private static void resetShiftState(Player player, CompoundTag persistentData) {
+    private static void resetShiftState(Player player) {
         UUID playerUUID = player.getUUID();
-        persistentData.remove(SHIFT_KEY_TAG);
+        player.getData(ModAttachments.FOOD_STATE).setFalseProverbsShift(false);
         removeBonusAttributes(player);
         FalseProverbsItem.setOriginalPosition(playerUUID, null);
         FalseProverbsItem.setPlayerTeleportStatus(playerUUID, false);

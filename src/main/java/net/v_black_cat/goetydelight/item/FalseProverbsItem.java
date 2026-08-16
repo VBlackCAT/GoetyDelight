@@ -28,8 +28,6 @@ import java.util.stream.IntStream;
 
 public class FalseProverbsItem extends SwordItem {
 
-    public static final String SHIFT_KEY_TAG = "IsShift";
-
     // 优化的玩家数据管理
     private static final Map<UUID, PlayerFalseProverbsData> playerDataMap = new ConcurrentHashMap<>();
     private static final Map<UUID, CachedInventoryResult> inventoryCache = new ConcurrentHashMap<>();
