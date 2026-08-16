@@ -26,12 +26,20 @@ public enum BedrockVersion {
     }
 
     public static boolean isNewVersion(BedrockModelPOJO bedrockModel) {
-        DefaultArtifactVersion inputVersion = new DefaultArtifactVersion(bedrockModel.getFormatVersion());
+        String formatVersion = bedrockModel.getFormatVersion();
+        if (formatVersion == null) {
+            return false;
+        }
+        DefaultArtifactVersion inputVersion = new DefaultArtifactVersion(formatVersion);
         return NEW.versionRange.containsVersion(inputVersion);
     }
 
     public static boolean isLegacyVersion(BedrockModelPOJO bedrockModel) {
-        DefaultArtifactVersion inputVersion = new DefaultArtifactVersion(bedrockModel.getFormatVersion());
+        String formatVersion = bedrockModel.getFormatVersion();
+        if (formatVersion == null) {
+            return false;
+        }
+        DefaultArtifactVersion inputVersion = new DefaultArtifactVersion(formatVersion);
         return LEGACY.versionRange.containsVersion(inputVersion);
     }
 
