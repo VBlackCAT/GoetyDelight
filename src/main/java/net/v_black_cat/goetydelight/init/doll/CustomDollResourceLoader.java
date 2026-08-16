@@ -11,6 +11,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.bedrock.BedrockModel;
 import net.v_black_cat.goetydelight.bedrock.BedrockModelUtil;
+import net.v_black_cat.goetydelight.bedrock.pojo.BedrockModelPOJO;
 import net.v_black_cat.goetydelight.init.doll.Md5Utils;
 
 import java.io.IOException;
@@ -38,15 +39,16 @@ public class CustomDollResourceLoader {
         LANGUAGES.clear();
         TEXTURES.clear();
 
-        manager.listResources(MODELS_PATH, path -> path.getPath().endsWith(JSON)).forEach((name, resource) -> {
+        // 只扫描 goetydelight 命名空间自己的资源，避免误读其它模组（如森罗玩偶）放在相同路径下的资源
+        manager.listResources(MODELS_PATH, path -> GoetyDelight.MODID.equals(path.getNamespace()) && path.getPath().endsWith(JSON)).forEach((name, resource) -> {
             try (InputStream stream = resource.open()) {
-                readModel(stream);
+                readModel(name, stream);
             } catch (IOException e) {
                 GoetyDelight.LOGGER.error("Failed to load model resource: {}", name, e);
             }
         });
 
-        manager.listResources(LANGUAGES_PATH, path -> path.getPath().endsWith(JSON)).forEach((name, resource) -> {
+        manager.listResources(LANGUAGES_PATH, path -> GoetyDelight.MODID.equals(path.getNamespace()) && path.getPath().endsWith(JSON)).forEach((name, resource) -> {
             String langName = name.getPath().substring(LANGUAGES_PATH.length() + 1, name.getPath().length() - JSON.length());
             try (InputStream stream = resource.open()) {
                 readLanguage(langName, stream);
@@ -55,7 +57,7 @@ public class CustomDollResourceLoader {
             }
         });
 
-        manager.listResources(TEXTURES_PATH, path -> path.getPath().endsWith(PNG)).forEach((name, resource) -> {
+        manager.listResources(TEXTURES_PATH, path -> GoetyDelight.MODID.equals(path.getNamespace()) && path.getPath().endsWith(PNG)).forEach((name, resource) -> {
             String textureName = name.getPath().substring(TEXTURES_PATH.length() + 1, name.getPath().length() - PNG.length());
             try (InputStream stream = resource.open()) {
                 readTexture(textureName, stream);
@@ -77,17 +79,24 @@ public class CustomDollResourceLoader {
         return Collections.unmodifiableMap(TEXTURES);
     }
 
-    private static void readModel(InputStream stream) {
+    private static void readModel(ResourceLocation name, InputStream stream) {
         try {
-            BedrockModel model = new BedrockModel(stream);
+            BedrockModelPOJO pojo = BedrockModelUtil.GSON.fromJson(
+                    new InputStreamReader(stream, StandardCharsets.UTF_8), BedrockModelPOJO.class);
+            // 只有真正的基岩版模型才包含 format_version 与 minecraft:geometry 字段；
+            // 若某个资源包在 goetydelight 命名空间下放置了非基岩版文件，则跳过以免解析出错。
+            if (pojo.getFormatVersion() == null || pojo.getFirstGeometryModel() == null) {
+                return;
+            }
+            BedrockModel model = new BedrockModel(pojo);
             String identifier = model.getIdentifier();
             if (identifier != null) {
                 MODELS.put(identifier, model);
             } else {
-                GoetyDelight.LOGGER.error("Model identifier is null");
+                GoetyDelight.LOGGER.error("Model identifier is null: {}", name);
             }
         } catch (Exception e) {
-            GoetyDelight.LOGGER.error("Failed to read model", e);
+            GoetyDelight.LOGGER.error("Failed to read model: {}", name, e);
         }
     }
 
