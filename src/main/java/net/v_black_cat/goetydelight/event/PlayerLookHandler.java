@@ -34,6 +34,8 @@ public class PlayerLookHandler {
 
     private static final long COOLDOWN_TICKS = 100; // 冷却
 
+    // 仅客户端本地玩家会访问此字段（服务端已在 onPlayerTick 中提前返回），
+    // 因此 static 即可，不存在跨玩家/跨端共享问题。
     private static long lastSendTime=0;
 
     @SubscribeEvent
@@ -41,6 +43,10 @@ public class PlayerLookHandler {
         if (event.phase != TickEvent.Phase.END) return;
 
         Player player = event.player;
+
+        // 粒子与提示均为纯客户端表现，服务端直接跳过，避免每 tick 无谓的射线检测
+        if (!player.level().isClientSide()) return;
+
         long currentTime = player.level().getGameTime();
 
 
@@ -68,10 +74,8 @@ public class PlayerLookHandler {
                         highlightMarbleBlock(level, pos);
 
                         if (currentTime-lastSendTime > COOLDOWN_TICKS) {
-                            if (level.isClientSide()) {
-                                player.sendSystemMessage(net.minecraft.network.chat.Component.literal("💦"));
-                                lastSendTime=currentTime;
-                            }
+                            player.sendSystemMessage(net.minecraft.network.chat.Component.literal("💦"));
+                            lastSendTime=currentTime;
                         }
                     }
 
