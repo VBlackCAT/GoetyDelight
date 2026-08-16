@@ -1,6 +1,5 @@
 package net.v_black_cat.goetydelight.item.food;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -9,14 +8,13 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.v_black_cat.goetydelight.init.ModAttachments;
+import net.v_black_cat.goetydelight.util.FoodState;
 
 public class SevenLeafPuddingItem extends BowlFoodItem {
 
     private static final ResourceLocation ATTACK_DAMAGE_BONUS_ID = ResourceLocation.fromNamespaceAndPath("goetydelight", "seven_leaf_pudding_attack_bonus");
     private static final ResourceLocation MOVEMENT_SPEED_BONUS_ID = ResourceLocation.fromNamespaceAndPath("goetydelight", "seven_leaf_pudding_speed_bonus");
-
-    private static final String BONUS_ACTIVE_TAG = "SevenLeafPuddingActive";
-    private static final String ACTIVATION_TIME_TAG = "SevenLeafPuddingActivationTime";
 
     // 持续时间（5分钟）
     private static final int DURATION_TICKS = 20 * 60 * 5;
@@ -30,10 +28,10 @@ public class SevenLeafPuddingItem extends BowlFoodItem {
         ItemStack resultStack = super.finishUsingItem(stack, level, entity);
 
         if (!level.isClientSide && entity instanceof Player player) {
-            CompoundTag persistentData = player.getPersistentData();
+            FoodState state = player.getData(ModAttachments.FOOD_STATE);
 
             // 如果已有活跃加成，先移除
-            if (persistentData.getBoolean(BONUS_ACTIVE_TAG)) {
+            if (state.isSevenLeafPuddingActive()) {
                 removeBonusAttributes(player);
             }
 
@@ -41,8 +39,8 @@ public class SevenLeafPuddingItem extends BowlFoodItem {
             addBonusAttributes(player);
 
             // 记录激活数据
-            persistentData.putBoolean(BONUS_ACTIVE_TAG, true);
-            persistentData.putLong(ACTIVATION_TIME_TAG, level.getGameTime());
+            state.setSevenLeafPuddingActive(true);
+            state.setSevenLeafPuddingActivationTime(level.getGameTime());
         }
 
         return resultStack;
@@ -79,8 +77,9 @@ public class SevenLeafPuddingItem extends BowlFoodItem {
             movementSpeed.removeModifier(MOVEMENT_SPEED_BONUS_ID);
         }
 
-        player.getPersistentData().remove(BONUS_ACTIVE_TAG);
-        player.getPersistentData().remove(ACTIVATION_TIME_TAG);
+        FoodState state = player.getData(ModAttachments.FOOD_STATE);
+        state.setSevenLeafPuddingActive(false);
+        state.setSevenLeafPuddingActivationTime(0);
     }
 
     /**
@@ -88,9 +87,9 @@ public class SevenLeafPuddingItem extends BowlFoodItem {
      * 由 PlayerTick 事件处理器调用。
      */
     public static boolean checkAndRemoveExpired(Player player, Level level) {
-        CompoundTag persistentData = player.getPersistentData();
-        if (persistentData.getBoolean(BONUS_ACTIVE_TAG)) {
-            long activationTime = persistentData.getLong(ACTIVATION_TIME_TAG);
+        FoodState state = player.getData(ModAttachments.FOOD_STATE);
+        if (state.isSevenLeafPuddingActive()) {
+            long activationTime = state.getSevenLeafPuddingActivationTime();
             if (level.getGameTime() - activationTime >= DURATION_TICKS) {
                 var item = (SevenLeafPuddingItem) net.v_black_cat.goetydelight.init.ModItems.SEVEN_LEAF_PUDDING.get();
                 item.removeBonusAttributes(player);
@@ -104,7 +103,8 @@ public class SevenLeafPuddingItem extends BowlFoodItem {
      * 玩家死亡时移除加成
      */
     public static void onPlayerDeath(Player player) {
-        if (player.getPersistentData().getBoolean(BONUS_ACTIVE_TAG)) {
+        FoodState state = player.getData(ModAttachments.FOOD_STATE);
+        if (state.isSevenLeafPuddingActive()) {
             var item = (SevenLeafPuddingItem) net.v_black_cat.goetydelight.init.ModItems.SEVEN_LEAF_PUDDING.get();
             item.removeBonusAttributes(player);
         }

@@ -3,8 +3,10 @@ package net.v_black_cat.goetydelight.events;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.v_black_cat.goetydelight.init.ModAttachments;
 import net.v_black_cat.goetydelight.item.food.SevenLeafPuddingItem;
 import net.v_black_cat.goetydelight.item.food.SundaeOfThePhilosophersPotionItem;
+import net.v_black_cat.goetydelight.util.FoodState;
 
 public class PlayerTickEventHandler {
 
@@ -47,7 +49,8 @@ public class PlayerTickEventHandler {
      */
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         Player player = event.getEntity();
-        player.getPersistentData().remove("SevenLeafPuddingActive");
-        player.getPersistentData().remove("SevenLeafPuddingActivationTime");
+        FoodState state = player.getData(ModAttachments.FOOD_STATE);
+        state.setSevenLeafPuddingActive(false);
+        state.setSevenLeafPuddingActivationTime(0);
     }
 }
