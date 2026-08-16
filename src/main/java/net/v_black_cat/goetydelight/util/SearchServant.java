@@ -1,52 +1,40 @@
 package net.v_black_cat.goetydelight.util;
 
 import com.Polarice3.Goety.api.entities.IOwned;
-import net.minecraft.core.Holder;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.OwnableEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.v_black_cat.goetydelight.GoetyDelight;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 public class SearchServant {
-    // 缓存
     private static final Map<UUID, ServantData> PLAYER_SERVANT_CACHE = new ConcurrentHashMap<>();
-    private static final Map<UUID, EnhancedServantData> ENHANCED_PLAYER_CACHE = new ConcurrentHashMap<>();
-
-    // 扫描配置常量
-    private static final int SCAN_INTERVAL_TICKS = 7200; // 6分钟（20 ticks/秒 * 60秒 * 6）
-    private static final int MAX_ENTITIES_PER_FRAME = 500;
-    private static final double PLAYER_SCAN_RANGE = 100.0;
-    private static final double WORLD_SCAN_RANGE = 30000000.0;
-
+    private static final int SCAN_INTERVAL_TICKS = 7200;
     private static int globalTickCounter = 0;
 
-    // 扫描状态管理
     private static volatile boolean isScanning = false;
     private static Iterator<ServerLevel> levelIterator = null;
     private static Iterator<LivingEntity> entityIterator = null;
     private static ServerLevel currentLevel = null;
-    private static final Map<UUID, Set<UUID>> scanningPlayerServants = new ConcurrentHashMap<>();
+    private static Map<UUID, Set<UUID>> scanningPlayerServants = new HashMap<>();
 
-
-    // ==================== 数据类定义 ====================
 
     public static class ServantData {
         public final UUID playerUUID;
@@ -56,7 +44,7 @@ public class SearchServant {
 
         public ServantData(UUID playerUUID) {
             this.playerUUID = playerUUID;
-            this.servantUUIDs = ConcurrentHashMap.newKeySet();
+            this.servantUUIDs = new HashSet<>();
             this.maxServants = 512;
             this.lastScanTick = 0;
         }
@@ -97,18 +85,10 @@ public class SearchServant {
         }
 
         public void updateFromEntity(LivingEntity entity) {
-            if (entity == null || entity.isRemoved()) {
-                return;
-            }
-
-            try {
-                this.entityType = entity.getType().getDescriptionId();
-                this.equipment.updateFromEntity(entity);
-                this.attributes.updateFromEntity(entity);
-                this.lastUpdateTime = System.currentTimeMillis();
-            } catch (Exception e) {
-                GoetyDelight.LOGGER.error("Failed to update servant data for UUID: {}", servantUUID, e);
-            }
+            this.entityType = entity.getType().getDescriptionId();
+            this.equipment.updateFromEntity(entity);
+            this.attributes.updateFromEntity(entity);
+            this.lastUpdateTime = System.currentTimeMillis();
         }
 
         public static class EquipmentData {
@@ -120,18 +100,39 @@ public class SearchServant {
             public ItemStack offHand = ItemStack.EMPTY;
 
             public void updateFromEntity(LivingEntity entity) {
-                if (entity == null) return;
+                ItemStack newHelmet = entity.getItemBySlot(EquipmentSlot.HEAD);
+                if (!ItemStack.matches(this.helmet, newHelmet)) {
+                    this.helmet = newHelmet.copy();
+                }
 
-                this.helmet = entity.getItemBySlot(EquipmentSlot.HEAD).copy();
-                this.chestplate = entity.getItemBySlot(EquipmentSlot.CHEST).copy();
-                this.leggings = entity.getItemBySlot(EquipmentSlot.LEGS).copy();
-                this.boots = entity.getItemBySlot(EquipmentSlot.FEET).copy();
-                this.mainHand = entity.getMainHandItem().copy();
-                this.offHand = entity.getOffhandItem().copy();
+                ItemStack newChestplate = entity.getItemBySlot(EquipmentSlot.CHEST);
+                if (!ItemStack.matches(this.chestplate, newChestplate)) {
+                    this.chestplate = newChestplate.copy();
+                }
+
+                ItemStack newLeggings = entity.getItemBySlot(EquipmentSlot.LEGS);
+                if (!ItemStack.matches(this.leggings, newLeggings)) {
+                    this.leggings = newLeggings.copy();
+                }
+
+                ItemStack newBoots = entity.getItemBySlot(EquipmentSlot.FEET);
+                if (!ItemStack.matches(this.boots, newBoots)) {
+                    this.boots = newBoots.copy();
+                }
+
+                ItemStack newMainHand = entity.getMainHandItem();
+                if (!ItemStack.matches(this.mainHand, newMainHand)) {
+                    this.mainHand = newMainHand.copy();
+                }
+
+                ItemStack newOffHand = entity.getOffhandItem();
+                if (!ItemStack.matches(this.offHand, newOffHand)) {
+                    this.offHand = newOffHand.copy();
+                }
             }
 
             public Map<String, Object> toMap() {
-                Map<String, Object> map = new LinkedHashMap<>();
+                Map<String, Object> map = new HashMap<>();
                 map.put("helmet", serializeItemStack(helmet));
                 map.put("chestplate", serializeItemStack(chestplate));
                 map.put("leggings", serializeItemStack(leggings));
@@ -145,16 +146,11 @@ public class SearchServant {
                 if (stack.isEmpty()) {
                     return Map.of();
                 }
-                Map<String, Object> itemData = new LinkedHashMap<>();
+                Map<String, Object> itemData = new HashMap<>();
                 itemData.put("item", stack.getItem().toString());
                 itemData.put("count", stack.getCount());
                 itemData.put("damage", stack.getDamageValue());
                 itemData.put("maxDamage", stack.getMaxDamage());
-                if (!stack.getComponentsPatch().isEmpty()) {
-                    itemData.put("customData", stack.getComponentsPatch().toString());
-                }
-                itemData.put("hasCustomComponents", !stack.getComponentsPatch().isEmpty());
-
                 return itemData;
             }
         }
@@ -168,28 +164,27 @@ public class SearchServant {
             public double knockbackResistance;
 
             public void updateFromEntity(LivingEntity entity) {
-                if (entity == null) return;
-
                 this.currentHealth = entity.getHealth();
-                this.maxHealth = getMaxAttributeValue(entity, Attributes.MAX_HEALTH);
-                this.attackDamage = getBaseAttributeValue(entity, Attributes.ATTACK_DAMAGE);
-                this.armor = getBaseAttributeValue(entity, Attributes.ARMOR);
-                this.movementSpeed = getBaseAttributeValue(entity, Attributes.MOVEMENT_SPEED);
-                this.knockbackResistance = getBaseAttributeValue(entity, Attributes.KNOCKBACK_RESISTANCE);
-            }
 
-            private double getBaseAttributeValue(LivingEntity entity, Holder<Attribute> attribute) {
-                AttributeInstance instance = entity.getAttribute(attribute);
-                return instance != null ? instance.getBaseValue() : 0.0;
-            }
+                // 直接获取属性值
+                AttributeInstance maxHealthAttr = entity.getAttribute(Attributes.MAX_HEALTH);
+                this.maxHealth = maxHealthAttr != null ? maxHealthAttr.getValue() : 0.0;
 
-            private double getMaxAttributeValue(LivingEntity entity, Holder<Attribute> attribute) {
-                AttributeInstance instance = entity.getAttribute(attribute);
-                return instance != null ? instance.getValue() : 0.0;
+                AttributeInstance attackDamageAttr = entity.getAttribute(Attributes.ATTACK_DAMAGE);
+                this.attackDamage = attackDamageAttr != null ? attackDamageAttr.getBaseValue() : 0.0;
+
+                AttributeInstance armorAttr = entity.getAttribute(Attributes.ARMOR);
+                this.armor = armorAttr != null ? armorAttr.getBaseValue() : 0.0;
+
+                AttributeInstance movementSpeedAttr = entity.getAttribute(Attributes.MOVEMENT_SPEED);
+                this.movementSpeed = movementSpeedAttr != null ? movementSpeedAttr.getBaseValue() : 0.0;
+
+                AttributeInstance knockbackResistanceAttr = entity.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
+                this.knockbackResistance = knockbackResistanceAttr != null ? knockbackResistanceAttr.getBaseValue() : 0.0;
             }
 
             public Map<String, Double> toMap() {
-                Map<String, Double> map = new LinkedHashMap<>();
+                Map<String, Double> map = new HashMap<>();
                 map.put("maxHealth", maxHealth);
                 map.put("currentHealth", currentHealth);
                 map.put("attackDamage", attackDamage);
@@ -201,7 +196,7 @@ public class SearchServant {
         }
 
         public Map<String, Object> toMap() {
-            Map<String, Object> map = new LinkedHashMap<>();
+            Map<String, Object> map = new HashMap<>();
             map.put("servantUUID", servantUUID.toString());
             map.put("entityType", entityType);
             map.put("equipment", equipment.toMap());
@@ -225,8 +220,6 @@ public class SearchServant {
         }
 
         public void addOrUpdateServant(LivingEntity entity) {
-            if (entity == null) return;
-
             ServantDetailData detail = servantDetails.computeIfAbsent(
                     entity.getUUID(),
                     uuid -> new ServantDetailData(uuid)
@@ -255,7 +248,7 @@ public class SearchServant {
         }
 
         public Map<String, Object> toMap() {
-            Map<String, Object> map = new LinkedHashMap<>();
+            Map<String, Object> map = new HashMap<>();
             map.put("playerUUID", playerUUID.toString());
             map.put("maxServants", maxServants);
             map.put("lastScanTick", lastScanTick);
@@ -270,172 +263,139 @@ public class SearchServant {
         }
     }
 
-
-    // ==================== 公共API方法 ====================
+    private static final Map<UUID, EnhancedServantData> ENHANCED_PLAYER_CACHE = new ConcurrentHashMap<>();
 
     public static Optional<EnhancedServantData> getEnhancedServantData(Player player) {
-        if (player == null) return Optional.empty();
         return Optional.ofNullable(ENHANCED_PLAYER_CACHE.get(player.getUUID()));
     }
 
     public static Optional<ServantData> getServantData(Player player) {
-        if (player == null) return Optional.empty();
         return Optional.ofNullable(PLAYER_SERVANT_CACHE.get(player.getUUID()));
     }
 
-    public static void onServantJoin(Player player, LivingEntity servant) {
-        if (player == null || servant == null) return;
-
-        getServantData(player).ifPresent(data -> data.addServant(servant.getUUID()));
-        getEnhancedServantData(player).ifPresent(data -> data.addOrUpdateServant(servant));
-    }
-
-    public static void onServantDeath(Player player, UUID servantUUID) {
-        if (player == null || servantUUID == null) return;
-
-        getServantData(player).ifPresent(data -> data.removeServant(servantUUID));
-        getEnhancedServantData(player).ifPresent(data -> data.removeServant(servantUUID));
-    }
-
-    public static void updateServantData(LivingEntity servant) {
-        if (servant instanceof IOwned owned) {
-            if (owned.getTrueOwner() instanceof Player ownerPlayer) {
-                getEnhancedServantData(ownerPlayer).ifPresent(data -> data.addOrUpdateServant(servant));
-            }
-        }
-    }
-
-
-    // ==================== 扫描方法 ====================
-
-    /**
-     * 为特定玩家扫描其仆人
-     */
     public static void scanServantsForPlayer(MinecraftServer server, ServerPlayer player) {
-        if (server == null || player == null || !player.isAlive()) {
-            return;
-        }
-
         ServantData data = PLAYER_SERVANT_CACHE.computeIfAbsent(player.getUUID(), ServantData::new);
         EnhancedServantData enhancedData = ENHANCED_PLAYER_CACHE.computeIfAbsent(player.getUUID(), EnhancedServantData::new);
 
         Set<UUID> currentServants = new HashSet<>();
 
         for (ServerLevel level : server.getAllLevels()) {
-            try {
-                List<LivingEntity> entities = level.getEntitiesOfClass(
-                        LivingEntity.class,
-                        AABB.ofSize(player.position(), PLAYER_SCAN_RANGE, PLAYER_SCAN_RANGE, PLAYER_SCAN_RANGE),
-                        entity -> entity != null && entity.isAlive()
-                );
+            List<LivingEntity> entities = level.getEntitiesOfClass(
+                    LivingEntity.class,
+                    net.minecraft.world.phys.AABB.ofSize(player.position(), 100, 100, 100),
+                    entity -> true
+            );
 
-                for (LivingEntity livingEntity : entities) {
-                    UUID ownerUUID = getOwnerUUID(livingEntity);
-                    if (ownerUUID != null && ownerUUID.equals(player.getUUID())) {
-                        currentServants.add(livingEntity.getUUID());
-                        updateServantCache(data, enhancedData, livingEntity);
+            for (LivingEntity livingEntity : entities) {
+                UUID ownerUUID = null;
+
+                if (livingEntity instanceof OwnableEntity ownableEntity) {
+                    ownerUUID = ownableEntity.getOwnerUUID();
+                } else if (livingEntity instanceof IOwned iOwned) {
+                    if (iOwned.getTrueOwner() != null) {
+                        ownerUUID = iOwned.getTrueOwner().getUUID();
                     }
                 }
-            } catch (Exception e) {
-                GoetyDelight.LOGGER.warn("Error scanning level {} for player {}",
-                        level.dimension().location(), player.getName().getString(), e);
+
+                if (ownerUUID != null && ownerUUID.equals(player.getUUID())) {
+                    currentServants.add(livingEntity.getUUID());
+
+                    if (!data.hasServant(livingEntity.getUUID())) {
+                        data.addServant(livingEntity.getUUID());
+                        enhancedData.addOrUpdateServant(livingEntity);
+                    } else {
+                        enhancedData.addOrUpdateServant(livingEntity);
+                    }
+                }
             }
         }
 
-        removeStaleServants(data, enhancedData, currentServants);
+        Set<UUID> removedServants = new HashSet<>(data.servantUUIDs);
+        removedServants.removeAll(currentServants);
+
+        for (UUID removedUUID : removedServants) {
+            data.removeServant(removedUUID);
+            enhancedData.removeServant(removedUUID);
+        }
+
         data.lastScanTick = globalTickCounter;
         enhancedData.lastScanTick = globalTickCounter;
     }
 
-    /**
-     * 扫描所有在线玩家的仆人（一次性）
-     */
-    public static void scanAllPlayers(MinecraftServer server) {
-        if (server == null) return;
-
-        for (ServerLevel level : server.getAllLevels()) {
-            for (ServerPlayer player : level.players()) {
-                scanServantsForPlayer(server, player);
-            }
-        }
-    }
-
-    /**
-     * 分帧优化的全服扫描
-     */
     public static void scanAllPlayersOptimized(MinecraftServer server) {
-        if (server == null || isScanning) {
+        if (isScanning) {
             return;
         }
 
         isScanning = true;
-        levelIterator = server.getAllLevels().iterator();
-        scanningPlayerServants.clear();
+        List<ServerLevel> levels = new ArrayList<>();
+        for (ServerLevel level : server.getAllLevels()) {
+            levels.add(level);
+        }
+        levelIterator = levels.iterator();
+        scanningPlayerServants = new HashMap<>();
+
         processNextFrame();
     }
 
-    /**
-     * 处理下一帧的扫描任务
-     */
     private static void processNextFrame() {
         if (levelIterator == null || !levelIterator.hasNext()) {
             finishScanning();
             return;
         }
 
-        try {
-            if (currentLevel == null) {
-                currentLevel = levelIterator.next();
-                if (currentLevel == null) {
-                    processNextFrame();
-                    return;
+        if (currentLevel == null) {
+            currentLevel = levelIterator.next();
+            List<LivingEntity> entities = new ArrayList<>();
+
+            currentLevel.getEntities().getAll().forEach(entity -> {
+                if (entity instanceof LivingEntity livingEntity) {
+                    entities.add(livingEntity);
                 }
+            });
 
-                List<LivingEntity> entities = currentLevel.getEntitiesOfClass(
-                        LivingEntity.class,
-                        AABB.ofSize(Vec3.ZERO, WORLD_SCAN_RANGE, WORLD_SCAN_RANGE, WORLD_SCAN_RANGE),
-                        entity -> entity != null && entity.isAlive()
-                );
-                entityIterator = entities.iterator();
-            }
+            entityIterator = entities.iterator();
+        }
 
-            int processedCount = 0;
+        int processedCount = 0;
+        int maxPerFrame = 500;
 
-            while (entityIterator != null && entityIterator.hasNext() && processedCount < MAX_ENTITIES_PER_FRAME) {
-                LivingEntity livingEntity = entityIterator.next();
-                processedCount++;
+        while (entityIterator != null && entityIterator.hasNext() && processedCount < maxPerFrame) {
+            LivingEntity livingEntity = entityIterator.next();
+            processedCount++;
 
-                UUID ownerUUID = getOwnerUUID(livingEntity);
-                if (ownerUUID != null) {
-                    scanningPlayerServants
-                            .computeIfAbsent(ownerUUID, k -> ConcurrentHashMap.newKeySet())
-                            .add(livingEntity.getUUID());
+            UUID ownerUUID = null;
 
-                    ServantData data = PLAYER_SERVANT_CACHE.computeIfAbsent(ownerUUID, ServantData::new);
-                    EnhancedServantData enhancedData = ENHANCED_PLAYER_CACHE.computeIfAbsent(ownerUUID, EnhancedServantData::new);
-
-                    updateServantCache(data, enhancedData, livingEntity);
+            if (livingEntity instanceof OwnableEntity ownableEntity) {
+                ownerUUID = ownableEntity.getOwnerUUID();
+            } else if (livingEntity instanceof IOwned iOwned) {
+                if (iOwned.getTrueOwner() != null) {
+                    ownerUUID = iOwned.getTrueOwner().getUUID();
                 }
             }
 
-            if (entityIterator == null || !entityIterator.hasNext()) {
-                currentLevel = null;
-                entityIterator = null;
+            if (ownerUUID != null) {
+                scanningPlayerServants.computeIfAbsent(ownerUUID, k -> new HashSet<>())
+                        .add(livingEntity.getUUID());
+
+                ServantData data = PLAYER_SERVANT_CACHE.computeIfAbsent(ownerUUID, ServantData::new);
+                EnhancedServantData enhancedData = ENHANCED_PLAYER_CACHE.computeIfAbsent(ownerUUID, EnhancedServantData::new);
+
+                if (!data.hasServant(livingEntity.getUUID())) {
+                    data.addServant(livingEntity.getUUID());
+                    enhancedData.addOrUpdateServant(livingEntity);
+                } else {
+                    enhancedData.addOrUpdateServant(livingEntity);
+                }
             }
-        } catch (Exception e) {
-            GoetyDelight.LOGGER.error("Error during optimized scan frame processing", e);
-            // 出错时安全退出扫描
-            isScanning = false;
-            levelIterator = null;
+        }
+
+        if (entityIterator == null || !entityIterator.hasNext()) {
             currentLevel = null;
             entityIterator = null;
-            scanningPlayerServants.clear();
         }
     }
 
-    /**
-     * 完成扫描，清理过期数据
-     */
     private static void finishScanning() {
         for (Map.Entry<UUID, Set<UUID>> entry : scanningPlayerServants.entrySet()) {
             UUID playerUUID = entry.getKey();
@@ -445,7 +405,14 @@ public class SearchServant {
             EnhancedServantData enhancedData = ENHANCED_PLAYER_CACHE.get(playerUUID);
 
             if (data != null && enhancedData != null) {
-                removeStaleServants(data, enhancedData, currentServants);
+                Set<UUID> removedServants = new HashSet<>(data.servantUUIDs);
+                removedServants.removeAll(currentServants);
+
+                for (UUID removedUUID : removedServants) {
+                    data.removeServant(removedUUID);
+                    enhancedData.removeServant(removedUUID);
+                }
+
                 data.lastScanTick = globalTickCounter;
                 enhancedData.lastScanTick = globalTickCounter;
             }
@@ -459,51 +426,49 @@ public class SearchServant {
     }
 
 
-    // ==================== 辅助方法 ====================
-
-    /**
-     * 获取实体的主人UUID
-     */
-    private static UUID getOwnerUUID(LivingEntity entity) {
-        if (entity instanceof OwnableEntity ownableEntity) {
-            return ownableEntity.getOwnerUUID();
-        } else if (entity instanceof IOwned iOwned) {
-            return iOwned.getTrueOwner() != null ? iOwned.getTrueOwner().getUUID() : null;
-        }
-        return null;
-    }
-
-    /**
-     * 更新仆人缓存
-     */
-    private static void updateServantCache(ServantData data, EnhancedServantData enhancedData, LivingEntity entity) {
-        if (!data.hasServant(entity.getUUID())) {
-            data.addServant(entity.getUUID());
-        }
-        enhancedData.addOrUpdateServant(entity);
-    }
-
-    /**
-     * 移除已不存在的仆人
-     */
-    private static void removeStaleServants(ServantData data, EnhancedServantData enhancedData, Set<UUID> currentServants) {
-        Set<UUID> removedServants = new HashSet<>(data.servantUUIDs);
-        removedServants.removeAll(currentServants);
-
-        for (UUID removedUUID : removedServants) {
-            data.removeServant(removedUUID);
-            enhancedData.removeServant(removedUUID);
+    public static void scanAllPlayers(MinecraftServer server) {
+        for (ServerLevel level : server.getAllLevels()) {
+            for (ServerPlayer player : level.players()) {
+                scanServantsForPlayer(server, player);
+            }
         }
     }
 
+    public static void onServantJoin(Player player, LivingEntity servant) {
+        getServantData(player).ifPresent(data -> {
+            data.addServant(servant.getUUID());
+        });
 
-    // ==================== 事件处理 ====================
+        getEnhancedServantData(player).ifPresent(data -> {
+            data.addOrUpdateServant(servant);
+        });
+    }
+
+    public static void onServantDeath(Player player, UUID servantUUID) {
+        getServantData(player).ifPresent(data -> {
+            data.removeServant(servantUUID);
+        });
+
+        getEnhancedServantData(player).ifPresent(data -> {
+            data.removeServant(servantUUID);
+        });
+    }
+
+    public static void updateServantData(LivingEntity servant) {
+        if (servant instanceof IOwned owned) {
+            if (owned.getTrueOwner() instanceof Player ownerPlayer) {
+                getEnhancedServantData(ownerPlayer).ifPresent(data -> {
+                    data.addOrUpdateServant(servant);
+                });
+            }
+        }
+    }
 
     @EventBusSubscriber(modid = GoetyDelight.MODID)
     public static class EventHandler {
 
         @SubscribeEvent
-        public static void onServerTick(ServerTickEvent.Post event) {
+        public static void onServerTick(ServerTickEvent.Pre event) {
             globalTickCounter++;
 
             if (isScanning) {
@@ -514,7 +479,7 @@ public class SearchServant {
         }
 
         @SubscribeEvent
-        public static void onPlayerLoggedIn(net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent event) {
+        public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
             if (!event.getEntity().level().isClientSide() && event.getEntity() instanceof ServerPlayer player) {
                 PLAYER_SERVANT_CACHE.computeIfAbsent(player.getUUID(), ServantData::new);
                 ENHANCED_PLAYER_CACHE.computeIfAbsent(player.getUUID(), EnhancedServantData::new);
@@ -523,10 +488,9 @@ public class SearchServant {
         }
 
         @SubscribeEvent
-        public static void onPlayerLoggedOut(net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent event) {
-            UUID playerUUID = event.getEntity().getUUID();
-            PLAYER_SERVANT_CACHE.remove(playerUUID);
-            ENHANCED_PLAYER_CACHE.remove(playerUUID);
+        public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+            PLAYER_SERVANT_CACHE.remove(event.getEntity().getUUID());
+            ENHANCED_PLAYER_CACHE.remove(event.getEntity().getUUID());
         }
 
         @SubscribeEvent
