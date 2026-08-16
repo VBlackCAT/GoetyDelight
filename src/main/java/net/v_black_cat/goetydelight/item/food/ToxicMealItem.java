@@ -1,6 +1,5 @@
 package net.v_black_cat.goetydelight.item.food;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -14,13 +13,12 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.v_black_cat.goetydelight.capability.FoodStateCapability;
+import net.v_black_cat.goetydelight.util.FoodState;
 import org.jetbrains.annotations.NotNull;
 
 @Mod.EventBusSubscriber(modid = "goetydelight")
 public class ToxicMealItem extends BowlFoodItem {
-
-    // 只保留食用次数标签
-    private static final String TOXIC_MEAL_COUNT = "ToxicMealCount";
 
     // 效果持续时间
     private static final int EFFECT_DURATION = 20 * 100;
@@ -48,10 +46,10 @@ public class ToxicMealItem extends BowlFoodItem {
 
     private static void playerEat(@NotNull Level level, @NotNull LivingEntity entity) {
         if (!level.isClientSide && entity instanceof Player player) {
-            CompoundTag persistentData = player.getPersistentData();
-            int count = persistentData.getInt(TOXIC_MEAL_COUNT);
+            FoodState state = FoodStateCapability.get(player);
+            int count = state.getToxicMealCount();
             count++;
-            persistentData.putInt(TOXIC_MEAL_COUNT, count);
+            state.setToxicMealCount(count);
 
 //            // 根据食用次数判断是否获得免疫
 //            if (count == NAUSEA_IMMUNE_THRESHOLD) {
@@ -69,10 +67,11 @@ public class ToxicMealItem extends BowlFoodItem {
     }
 
     private static void otherEntityEat(@NotNull Level level, @NotNull LivingEntity entity) {
-        CompoundTag persistentData = entity.getPersistentData();
-        int count = persistentData.getInt(TOXIC_MEAL_COUNT);
+        FoodState state = FoodStateCapability.get(entity);
+        if (state == null) return;
+        int count = state.getToxicMealCount();
         count++;
-        persistentData.putInt(TOXIC_MEAL_COUNT, count);
+        state.setToxicMealCount(count);
     }
 
     @Override
@@ -105,10 +104,10 @@ public class ToxicMealItem extends BowlFoodItem {
     @SubscribeEvent
     public static void onEffectApplied(MobEffectEvent.Applicable event) {
         LivingEntity entity = event.getEntity();
-        CompoundTag persistentData = entity.getPersistentData();
         MobEffectInstance effect = event.getEffectInstance();
 
-        int toxicMealCount = persistentData.getInt(TOXIC_MEAL_COUNT);
+        FoodState state = FoodStateCapability.get(entity);
+        int toxicMealCount = state == null ? 0 : state.getToxicMealCount();
 
         // 根据食用次数判断免疫状态
         boolean immuneNausea = toxicMealCount >= NAUSEA_IMMUNE_THRESHOLD;
@@ -129,16 +128,17 @@ public class ToxicMealItem extends BowlFoodItem {
     @SubscribeEvent
     public static void onPlayerDeath(net.minecraftforge.event.entity.living.LivingDeathEvent event) {
         if (!event.isCanceled() && event.getEntity() instanceof Player player) {
-            CompoundTag persistentData = player.getPersistentData();
+            FoodState state = FoodStateCapability.get(player);
             // 清除食用次数
-            persistentData.remove(TOXIC_MEAL_COUNT);
+            state.setToxicMealCount(0);
         }
     }
 
 
     // 获取食用次数
     public static int getToxicMealCount(Player player) {
-        return player.getPersistentData().getInt(TOXIC_MEAL_COUNT);
+        FoodState state = FoodStateCapability.get(player);
+        return state == null ? 0 : state.getToxicMealCount();
     }
 
     // 检查免疫状态（根据食用次数动态判断）
