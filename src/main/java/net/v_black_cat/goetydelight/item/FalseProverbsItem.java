@@ -9,7 +9,6 @@ import com.Polarice3.Goety.utils.MathHelper;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -34,8 +33,10 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.v_black_cat.goetydelight.capability.FoodStateCapability;
 import net.v_black_cat.goetydelight.config.Config;
 import net.v_black_cat.goetydelight.network.NetworkHandler;
+import net.v_black_cat.goetydelight.util.FoodState;
 import net.v_black_cat.goetydelight.network.SyncBackModelPacket;
 
 import java.lang.ref.WeakReference;
@@ -47,7 +48,6 @@ import java.util.stream.IntStream;
 @Mod.EventBusSubscriber
 public class FalseProverbsItem extends SwordItem {
     private static final UUID IS_SHIFT_KEY_UUID = UUID.fromString("4f5f5f5f-5f5f-5f5f-5f5f-5f5f5f5f5f5f");
-    public static final String SHIFT_KEY_TAG = "IsShift";
 
     // 优化后的玩家数据管理
     private static final Map<UUID, PlayerFalseProverbsData> playerDataMap = new ConcurrentHashMap<>();
@@ -231,13 +231,13 @@ public class FalseProverbsItem extends SwordItem {
         PlayerFalseProverbsData data = getPlayerData(playerUUID);
 
         if (player.getMainHandItem().getItem() instanceof FalseProverbsItem) {
-            CompoundTag persistentData = player.getPersistentData();
+            FoodState state = FoodStateCapability.get(player);
 
             if (player.isShiftKeyDown()) {
-                if (!persistentData.getBoolean(SHIFT_KEY_TAG)) {
+                if (!state.isFalseProverbsShift()) {
                     // 添加属性加成
                     addBonusAttributes(player);
-                    persistentData.putBoolean(SHIFT_KEY_TAG, true);
+                    state.setFalseProverbsShift(true);
 
                     // 设置传送状态
                     data.originalPosition = player.position();
@@ -256,13 +256,13 @@ public class FalseProverbsItem extends SwordItem {
                     data.clearPosition();
                 }
             } else {
-                if (persistentData.getBoolean(SHIFT_KEY_TAG)) {
-                    resetShiftState(player, persistentData, data);
+                if (state.isFalseProverbsShift()) {
+                    resetShiftState(player, data);
                 }
             }
         } else {
-            if (player.getPersistentData().getBoolean(SHIFT_KEY_TAG)) {
-                resetShiftState(player, player.getPersistentData(), data);
+            if (FoodStateCapability.get(player).isFalseProverbsShift()) {
+                resetShiftState(player, data);
             }
         }
 
@@ -270,8 +270,8 @@ public class FalseProverbsItem extends SwordItem {
         syncBackModelStatus(player, playerUUID);
     }
 
-    private static void resetShiftState(Player player, CompoundTag persistentData, PlayerFalseProverbsData data) {
-        player.getPersistentData().remove(SHIFT_KEY_TAG);
+    private static void resetShiftState(Player player, PlayerFalseProverbsData data) {
+        FoodStateCapability.get(player).setFalseProverbsShift(false);
         removeBonusAttributes(player);
         data.clearPosition();
         data.teleportStatus = false;
