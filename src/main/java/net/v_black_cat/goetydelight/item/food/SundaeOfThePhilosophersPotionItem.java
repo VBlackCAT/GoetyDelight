@@ -14,12 +14,10 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.v_black_cat.goetydelight.capability.FoodStateCapability;
+import net.v_black_cat.goetydelight.util.FoodState;
 
 public class SundaeOfThePhilosophersPotionItem extends Item {
-
-    
-    private static final String MINING_SPEED_BOOST_TAG = "PhilosopherSundaeMiningSpeedBoost";
-    private static final String MAGIC_RESISTANCE_BOOST_TAG = "PhilosopherSundaeMagicResistanceBoost";
 
     
     private static final int MAX_MINING_BOOST_COUNT = 3;
@@ -68,29 +66,31 @@ public class SundaeOfThePhilosophersPotionItem extends Item {
     
     private void applyMiningSpeedBoost(Player player) {
         int currentCount = getMiningSpeedBoostCount(player);
-        if (currentCount < MAX_MINING_BOOST_COUNT) {
-            
-            player.getPersistentData().putInt(MINING_SPEED_BOOST_TAG, currentCount + 1);
+        FoodState state = FoodStateCapability.get(player);
+        if (state != null && currentCount < MAX_MINING_BOOST_COUNT) {
+            state.setPhilosopherMiningBoost(currentCount + 1);
         }
     }
 
     
     private void applyMagicResistanceBoost(Player player) {
         int currentCount = getMagicResistanceBoostCount(player);
-        if (currentCount < MAX_MAGIC_RESISTANCE_COUNT) {
-            
-            player.getPersistentData().putInt(MAGIC_RESISTANCE_BOOST_TAG, currentCount + 1);
+        FoodState state = FoodStateCapability.get(player);
+        if (state != null && currentCount < MAX_MAGIC_RESISTANCE_COUNT) {
+            state.setPhilosopherMagicResistance(currentCount + 1);
         }
     }
 
     
     public static int getMiningSpeedBoostCount(Player player) {
-        return player.getPersistentData().getInt(MINING_SPEED_BOOST_TAG);
+        FoodState state = FoodStateCapability.get(player);
+        return state == null ? 0 : state.getPhilosopherMiningBoost();
     }
 
     
     public static int getMagicResistanceBoostCount(Player player) {
-        return player.getPersistentData().getInt(MAGIC_RESISTANCE_BOOST_TAG);
+        FoodState state = FoodStateCapability.get(player);
+        return state == null ? 0 : state.getPhilosopherMagicResistance();
     }
 
     
