@@ -511,7 +511,7 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
                 if (recipe instanceof CookingPotRecipe cookingRecipe) {
                     int expTotal = Mth.floor(entry.getIntValue() * cookingRecipe.getExperience());
                     float expFraction = Mth.frac(entry.getIntValue() * cookingRecipe.getExperience());
-                    if (expFraction != 0.0F && Math.random() < expFraction) expTotal++;
+                    if (expFraction != 0.0F && level.random.nextDouble() < expFraction) expTotal++;
                     if (level instanceof ServerLevel serverLevel) {
                         ExperienceOrb.award(serverLevel, pos, expTotal);
                     }

@@ -10,6 +10,9 @@ import static net.v_black_cat.goetydelight.util.TickConverterUtil.minToTick;
 import static net.v_black_cat.goetydelight.util.TickConverterUtil.sToTick;
 
 public class ModFoods {
+    // 食物效果供应商在食用时于服务端调用，无 Level 上下文，使用共享 Random 避免每次 new Random()
+    private static final java.util.Random FOOD_EFFECT_RANDOM = new java.util.Random();
+
     // 饮品
     public static final FoodProperties TAINTED_DRINK;
     public static final FoodProperties PURE_DRINK;
@@ -535,7 +538,7 @@ public class ModFoods {
         REJECTED_DARK_MEAT_SOUP = new FoodProperties.Builder()
                 .nutrition(10).saturationModifier(0.4F).alwaysEdible()
                 .effect(() -> new MobEffectInstance(MobEffects.CONFUSION, 600, 0), 1.0F)
-                .effect(() -> new MobEffectInstance(MobEffects.POISON, 600, new java.util.Random().nextInt(5)), 1.0F)
+                .effect(() -> new MobEffectInstance(MobEffects.POISON, 600, FOOD_EFFECT_RANDOM.nextInt(5)), 1.0F)
                 .effect(() -> new MobEffectInstance(MobEffects.WEAKNESS, 600, 1), 1.0F)
                 .build();
 

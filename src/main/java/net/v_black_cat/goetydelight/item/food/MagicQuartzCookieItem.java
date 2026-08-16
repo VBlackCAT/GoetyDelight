@@ -11,10 +11,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.util.RandomSource;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 public class MagicQuartzCookieItem extends Item {
@@ -64,7 +64,7 @@ public class MagicQuartzCookieItem extends Item {
             availableEffects.remove(MobEffects.DAMAGE_RESISTANCE);  // 避免重复
 
             if (availableEffects.size() >= 2) {
-                Random random = new Random();
+                RandomSource random = level.random;
 
                 int firstIndex = random.nextInt(availableEffects.size());
                 Holder<MobEffect> firstEffect = availableEffects.get(firstIndex);

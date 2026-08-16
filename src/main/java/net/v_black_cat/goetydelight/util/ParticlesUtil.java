@@ -10,7 +10,7 @@ import net.minecraft.world.phys.Vec3;
 public class ParticlesUtil {
     public static void spawnItemParticles(ItemStack stack, int amount, LivingEntity entity) {
         for(int i = 0; i < amount; ++i) {
-            Vec3 vec3 = new Vec3(((double)entity.getRandom().nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
+            Vec3 vec3 = new Vec3(((double)entity.getRandom().nextFloat() - 0.5D) * 0.1D, entity.getRandom().nextDouble() * 0.1D + 0.1D, 0.0D);
             vec3 = vec3.xRot(-entity.getXRot() * ((float)Math.PI / 180F));
             vec3 = vec3.yRot(-entity.getYRot() * ((float)Math.PI / 180F));
             double d0 = (double)(-entity.getRandom().nextFloat()) * 0.6D - 0.3D;

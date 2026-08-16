@@ -21,10 +21,9 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.v_black_cat.goetydelight.init.ModConfig;
 import net.v_black_cat.goetydelight.init.ModItems;
+import net.minecraft.util.RandomSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Random;
 
 @EventBusSubscriber(modid = "goetydelight")
 public class PolariceItem extends BowlFoodItem {
@@ -87,8 +86,8 @@ public class PolariceItem extends BowlFoodItem {
 
     @SubscribeEvent
     public static void onIncomingDamage(LivingIncomingDamageEvent event) {
-        Random random = new Random();
         LivingEntity targetEntity = event.getEntity();
+        RandomSource random = targetEntity.getRandom();
         Entity attacker = event.getSource().getEntity();
         boolean ischange = false;
         boolean isAffectedByPolarice = true;
@@ -98,7 +97,7 @@ public class PolariceItem extends BowlFoodItem {
         double targetHealth = targetEntity.getHealth();
         float randomchange = (float) (1.1f - targetHealth / targetMaxHealth);
         ResourceLocation entityId = BuiltInRegistries.ENTITY_TYPE.getKey(targetEntity.getType());
-        if (random.nextFloat(0, 1.0f) < randomchange) {
+        if (random.nextFloat() < randomchange) {
             whetherchange = true;
         }
         if (

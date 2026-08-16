@@ -17,8 +17,6 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.v_black_cat.goetydelight.init.ModItems;
 
-import java.util.Random;
-
 @EventBusSubscriber(modid = "goetydelight")
 public class RoastLaowangItem extends Item {
 
@@ -34,7 +32,6 @@ public class RoastLaowangItem extends Item {
     private static final String BAKATAG = "bakatag";
     private static final String BAKA_TIME_TAG = "bakatime";
     private static final String BAKA_START_TAG = "bakatime_start";
-    private static final Random random = new Random();
 
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
@@ -42,7 +39,7 @@ public class RoastLaowangItem extends Item {
         if (entity.getType() == EntityType.PIG && !entity.isBaby()) {
             DamageSource source = event.getSource();
             if (source.is(DamageTypes.LIGHTNING_BOLT) || source.getMsgId().contains("lightning")) {
-                if (random.nextFloat() < 0.50f) {
+                if (entity.getRandom().nextFloat() < 0.50f) {
                     entity.spawnAtLocation(new ItemStack(ModItems.ROAST_LAOWANG.get()));
                 }
             }
