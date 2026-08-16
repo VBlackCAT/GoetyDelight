@@ -78,7 +78,6 @@ public class GoetyDelight {
 
         // 游戏总线事件
         NeoForge.EVENT_BUS.addListener(ServerStartingHandler::onServerStarting);
-        NeoForge.EVENT_BUS.addListener(ServerTickEventHandler::onServerTick);
         NeoForge.EVENT_BUS.addListener(LivingEntityUseItemEventHandler::onItemUseFinish);
         NeoForge.EVENT_BUS.addListener(EntityTickEventHandler::onEntityTick);
         NeoForge.EVENT_BUS.addListener(RegisterCommandsEventHandler::onRegisterCommands);
