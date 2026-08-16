@@ -10,10 +10,6 @@ import net.v_black_cat.goetydelight.init.ModAttachments;
 import net.v_black_cat.goetydelight.init.ModBuffTypes;
 import net.v_black_cat.goetydelight.util.BuffUtil;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 public class BuffEventHandler {
 
     public static void onEntityTick(EntityTickEvent.Post event) {
@@ -30,32 +26,13 @@ public class BuffEventHandler {
             return;
         }
 
-        Map<ResourceLocation, Integer> beforeSnapshot = new HashMap<>();
-        for (ResourceLocation type : buffs.getActiveTypes()) {
-            beforeSnapshot.put(type, buffs.getTotalAmplifier(type));
-        }
+        // tickAllAndRemove 内部已追踪是否发生变化，无需再额外做快照对比（避免每 tick 分配 HashMap）
+        boolean changed = buffs.tickAllAndRemove(living);
 
-        buffs.tickAllAndRemove(living);
-
-        Set<ResourceLocation> afterTypes = buffs.getActiveTypes();
-        for (ResourceLocation typeId : afterTypes) {
+        for (ResourceLocation typeId : buffs.getActiveTypes()) {
             BuffEffect effect = ModBuffTypes.getEffect(typeId);
             if (effect != null) {
                 effect.apply(living, buffs.getTotalAmplifier(typeId));
-            }
-        }
-
-        boolean changed = false;
-        if (beforeSnapshot.size() != afterTypes.size()) {
-            changed = true;
-        } else {
-            for (ResourceLocation type : afterTypes) {
-                Integer oldAmp = beforeSnapshot.get(type);
-                int newAmp = buffs.getTotalAmplifier(type);
-                if (oldAmp == null || oldAmp != newAmp) {
-                    changed = true;
-                    break;
-                }
             }
         }
 
