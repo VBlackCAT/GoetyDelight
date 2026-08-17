@@ -6,7 +6,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -38,6 +37,7 @@ public class CursedIngotPotBlock extends CookingPotBlock {
             return ItemInteractionResult.SUCCESS;
         }
         
+        // 【修复1】：空手潜行直接走父类逻辑取出食物，并立刻返回，防止后续触发打开GUI菜单
         if (stack.isEmpty() && player.isShiftKeyDown()) {
             return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
         }
@@ -57,7 +57,7 @@ public class CursedIngotPotBlock extends CookingPotBlock {
         return ItemInteractionResult.SUCCESS;
     }
 
-    //爆物品
+    // 破坏方块时爆出物品与经验
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
@@ -91,8 +91,5 @@ public class CursedIngotPotBlock extends CookingPotBlock {
         }
     }
 
-    @Override
-    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        super.setPlacedBy(level, pos, state, placer, stack);
-    }
+    // 【修复2】：删除了完全继承自父类且无额外操作的 setPlacedBy 方法，保持代码整洁高效
 }

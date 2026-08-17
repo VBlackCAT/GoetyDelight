@@ -67,14 +67,26 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
     public static final int INVENTORY_SIZE = 10;
     public static final Map<Item, Item> INGREDIENT_REMAINDER_OVERRIDES;
 
-    private final ItemStackHandler inventory = new ItemStackHandler(INVENTORY_SIZE);
+    // 【优化1】自动触发内部变化的 Handler
+    private final ItemStackHandler inventory = new ItemStackHandler(INVENTORY_SIZE) {
+        @Override
+        protected void onContentsChanged(int slot) {
+            CursedIngotPotBlockEntity.this.inventoryChanged();
+        }
+    };
+
     private float cookTime;
     private int cookTimeTotal;
     private ItemStack mealContainerStack = ItemStack.EMPTY;
     private Component customName;
     protected final ContainerData cookingPotData;
-    private final Object2IntOpenHashMap<
-            ResourceLocation> usedRecipeTracker = new Object2IntOpenHashMap<>();
+    private final Object2IntOpenHashMap<ResourceLocation> usedRecipeTracker = new Object2IntOpenHashMap<>();
+
+    @Nullable
+    private RecipeHolder<CookingPotRecipe> cachedRecipe = null;
+    
+    // 【优化2】缓存输入状态
+    private boolean hasInputCache = false;
 
     public CursedIngotPotBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CURSED_INGOT_POT_BE.get(), pos, state);
@@ -152,6 +164,7 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
                 this.usedRecipeTracker.put(ResourceLocation.parse(key), recipesTag.getInt(key));
             }
         }
+        this.refreshCurrentRecipe();
     }
 
     @Override
@@ -195,11 +208,14 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
         return compound;
     }
 
+    // ======================== 灵魂系统（最终 NBT 优化版） ========================
+    
+    // 【优化终版】使用 getUnsafe() 避免 NBT 深度拷贝，只读操作极其安全且省性能
     public boolean hasSoulEnergy() {
         ItemStack soulSource = this.inventory.getStackInSlot(SOUL_SOURCE_SLOT);
         if (soulSource.isEmpty()) return false;
         var customData = soulSource.get(DataComponents.CUSTOM_DATA);
-        CompoundTag tag = customData != null ? customData.copyTag() : null;
+        CompoundTag tag = customData != null ? customData.getUnsafe() : null;
         if (soulSource.getItem() == SOUL_TRANSFER.get()) {
             if (tag != null && tag.contains("owner")) {
                 UUID ownerUuid = tag.getUUID("owner");
@@ -214,18 +230,20 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
         return false;
     }
 
+    // 【优化终版】只读取 NBT，绝对安全使用 getUnsafe()
     private boolean isSoulInfused(ItemStack stack) {
         if (stack.isEmpty()) return false;
         var customData = stack.get(DataComponents.CUSTOM_DATA);
-        CompoundTag tag = customData != null ? customData.copyTag() : null;
+        CompoundTag tag = customData != null ? customData.getUnsafe() : null;
         return tag != null && tag.getBoolean("SoulInfused");
     }
 
-    private int getRemainingSoulEnergy() {
+    // 【优化终版】只读取 NBT，绝对安全使用 getUnsafe()
+    public int getRemainingSoulEnergy() {
         ItemStack soulSource = this.inventory.getStackInSlot(SOUL_SOURCE_SLOT);
         if (soulSource.isEmpty()) return 0;
         var customData = soulSource.get(DataComponents.CUSTOM_DATA);
-        CompoundTag tag = customData != null ? customData.copyTag() : null;
+        CompoundTag tag = customData != null ? customData.getUnsafe() : null;
         if (soulSource.getItem() == SOUL_TRANSFER.get()) {
             if (tag != null && tag.contains("owner")) {
                 UUID ownerUuid = tag.getUUID("owner");
@@ -242,11 +260,11 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
         return 0;
     }
 
+    // 注：需要修改 NBT，保留原 copyTag() 代码
     private boolean consumeSoulEnergy(int amount) {
         if (amount <= 0) return false;
         ItemStack soulSource = this.inventory.getStackInSlot(SOUL_SOURCE_SLOT);
-        if (soulSource.isEmpty()) return false;
-        if (this.level == null) return false;
+        if (soulSource.isEmpty() || this.level == null) return false;
         var customData = soulSource.get(DataComponents.CUSTOM_DATA);
         CompoundTag tag = customData != null ? customData.copyTag() : null;
         if (soulSource.getItem() == SOUL_TRANSFER.get()) {
@@ -283,10 +301,48 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
         }
     }
 
-    // ======================== 核心修复 ========================
+    // 性能优化重载方法：直接读取已提取好的物品，内部同样使用 getUnsafe()
+    private boolean hasSoulEnergy(ItemStack soulSource) {
+        if (soulSource.isEmpty()) return false;
+        var customData = soulSource.get(DataComponents.CUSTOM_DATA);
+        CompoundTag tag = customData != null ? customData.getUnsafe() : null;
+        if (soulSource.getItem() == SOUL_TRANSFER.get()) {
+            if (tag != null && tag.contains("owner")) {
+                UUID ownerUuid = tag.getUUID("owner");
+                Player owner = this.level != null ? this.level.getPlayerByUUID(ownerUuid) : null;
+                return owner != null && SEHelper.getSEActive(owner) && SEHelper.getSESouls(owner) > 0;
+            }
+        } else if (soulSource.getItem() instanceof ITotem) {
+            if (tag != null && tag.contains("Souls")) {
+                return tag.getInt("Souls") > 0;
+            }
+        }
+        return false;
+    }
+
+    private int getRemainingSoulEnergy(ItemStack soulSource) {
+        if (soulSource.isEmpty()) return 0;
+        var customData = soulSource.get(DataComponents.CUSTOM_DATA);
+        CompoundTag tag = customData != null ? customData.getUnsafe() : null;
+        if (soulSource.getItem() == SOUL_TRANSFER.get()) {
+            if (tag != null && tag.contains("owner")) {
+                UUID ownerUuid = tag.getUUID("owner");
+                Player owner = this.level != null ? this.level.getPlayerByUUID(ownerUuid) : null;
+                if (owner != null && SEHelper.getSEActive(owner)) {
+                    return (int) SEHelper.getSESouls(owner);
+                }
+            }
+        } else if (soulSource.getItem() instanceof ITotem) {
+            if (tag != null && tag.contains("Souls")) {
+                return tag.getInt("Souls");
+            }
+        }
+        return 0;
+    }
+
+    // ======================== 核心Tick逻辑 ========================
     public static void cookingTick(Level level, BlockPos pos, BlockState state, CursedIngotPotBlockEntity cookingPot) {
         boolean isHeated = cookingPot.isHeated(level, pos);
-        boolean hasSoulEnergy = cookingPot.hasSoulEnergy();
         boolean didInventoryChange = false;
 
         ItemStack currentMeal = cookingPot.getMeal();
@@ -295,19 +351,17 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
 
         boolean canCook = false;
         float speedMultiplier = 1.0f;
-        RecipeHolder<CookingPotRecipe> currentRecipe = null;
+        RecipeHolder<CookingPotRecipe> currentRecipe = cookingPot.cachedRecipe;
 
-        if (cookingPot.hasInput()) {
-            RecipeWrapper wrapper = new RecipeWrapper(cookingPot.inventory);
-            RecipeManager recipeManager = level.getRecipeManager();
-            var recipeHolder = recipeManager.getRecipeFor(ModRecipeTypes.COOKING.get(), wrapper, level).orElse(null);
-            if (recipeHolder != null && cookingPot.canCook(recipeHolder.value())) {
-                currentRecipe = recipeHolder;
-                ItemStack resultStack = recipeHolder.value().getResultItem(level.registryAccess());
+        if (cookingPot.hasInput() && currentRecipe != null) {
+            if (cookingPot.canCook(currentRecipe.value())) {
+                ItemStack resultStack = currentRecipe.value().getResultItem(level.registryAccess());
                 int estimatedCost = cookingPot.calculateSoulCost(resultStack);
-                int remainingSoul = cookingPot.getRemainingSoulEnergy();
 
-                // 决定是否需要灵魂
+                ItemStack soulSource = cookingPot.inventory.getStackInSlot(SOUL_SOURCE_SLOT);
+                boolean hasSoulEnergy = cookingPot.hasSoulEnergy(soulSource);
+                int remainingSoul = hasSoulEnergy ? cookingPot.getRemainingSoulEnergy(soulSource) : 0;
+
                 boolean needSoul;
                 if (currentMeal.isEmpty() && outputStack.isEmpty()) {
                     needSoul = hasSoulEnergy && (remainingSoul >= estimatedCost);
@@ -317,7 +371,6 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
 
                 boolean soulAvailable = hasSoulEnergy && (remainingSoul >= estimatedCost);
 
-                // 有标记但灵魂不足 → 停止并重置
                 if (anyHasMark && !soulAvailable) {
                     canCook = false;
                     cookingPot.cookTime = 0;
@@ -337,6 +390,8 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
                     }
                 }
             }
+        } else if (cookingPot.cookTime > 0) {
+            cookingPot.cookTime = Mth.clamp(cookingPot.cookTime - 1.0f, 0.0f, cookingPot.cookTimeTotal);
         }
 
         if (canCook && cookingPot.hasInput() && currentRecipe != null) {
@@ -351,7 +406,6 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
             cookingPot.cookTime = Mth.clamp(cookingPot.cookTime - 1.0f, 0.0f, cookingPot.cookTimeTotal);
         }
 
-        // 自动输出与容器处理（不变）
         ItemStack mealStack = cookingPot.getMeal();
         if (!mealStack.isEmpty()) {
             if (!cookingPot.doesMealHaveContainer(mealStack)) {
@@ -388,11 +442,39 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
         }
     }
 
-    private boolean hasInput() {
+    // ======================== 配方、缓存与辅助方法 ========================
+    
+    private boolean hasInputInternal() {
         for (int i = 0; i < 6; i++) {
             if (!this.inventory.getStackInSlot(i).isEmpty()) return true;
         }
         return false;
+    }
+
+    private boolean hasInput() {
+        return this.hasInputCache;
+    }
+
+    private void refreshCurrentRecipe() {
+        if (this.level == null || this.level.isClientSide) {
+            this.cachedRecipe = null;
+            return;
+        }
+        if (this.hasInputCache) { 
+            RecipeWrapper wrapper = new RecipeWrapper(this.inventory);
+            this.cachedRecipe = this.level.getRecipeManager().getRecipeFor(ModRecipeTypes.COOKING.get(), wrapper, this.level).orElse(null);
+            if (this.cachedRecipe != null) {
+                this.cookTimeTotal = this.cachedRecipe.value().getCookTime();
+                if (this.cookTime > this.cookTimeTotal) {
+                    this.cookTime = this.cookTimeTotal;
+                }
+            }
+        } else {
+            this.cachedRecipe = null;
+        }
+        if (this.cachedRecipe == null && this.cookTime > 0) {
+            this.cookTime = 0;
+        }
     }
 
     private boolean canCook(CookingPotRecipe recipe) {
@@ -427,26 +509,21 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
         boolean anyHasMark = isSoulInfused(currentMeal) || isSoulInfused(outputStack);
         ItemStack resultStack = recipe.getResultItem(this.level.registryAccess());
 
-        // 【关键】强制清除可能残留的标记
         resultStack.remove(DataComponents.CUSTOM_DATA);
 
         int soulCost = calculateSoulCost(resultStack);
         ItemStack soulSource = this.inventory.getStackInSlot(SOUL_SOURCE_SLOT);
         boolean hasSoulSource = !soulSource.isEmpty();
-        int remainingSoul = getRemainingSoulEnergy();
+        int remainingSoul = getRemainingSoulEnergy(soulSource);
 
-        // 决定是否使用灵魂
         boolean shouldUseSoul;
         if (currentMeal.isEmpty() && outputStack.isEmpty()) {
-            // 空锅时：只有灵魂源存在且灵魂足够，才使用灵魂
             shouldUseSoul = hasSoulSource && (remainingSoul >= soulCost);
         } else {
-            // 非空锅：必须与当前标记一致，且灵魂充足
             shouldUseSoul = anyHasMark && hasSoulSource && (remainingSoul >= soulCost);
         }
 
         if (shouldUseSoul) {
-            // 双重验证：灵魂源必须存在且足够
             if (hasSoulSource && remainingSoul >= soulCost) {
                 boolean soulInfused = this.consumeSoulEnergy(soulCost);
                 if (soulInfused) {
@@ -462,9 +539,7 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
                 return false;
             }
         }
-        // 若 shouldUseSoul 为 false，则 resultStack 已清除标记，不会附加
 
-        // 将结果放入暂存槽
         if (currentMeal.isEmpty()) {
             this.inventory.setStackInSlot(MEAL_DISPLAY_SLOT, resultStack.copy());
         } else if (ItemStack.isSameItem(currentMeal, resultStack)) {
@@ -477,7 +552,6 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
         this.mealContainerStack = recipe.getOutputContainer();
         this.usedRecipeTracker.addTo(holder.id(), 1);
 
-        // 消耗原料
         for (int i = 0; i < 6; i++) {
             ItemStack slotStack = this.inventory.getStackInSlot(i);
             if (slotStack.hasCraftingRemainingItem()) {
@@ -503,8 +577,7 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
 
     public List<Recipe<?>> getUsedRecipesAndPopExperience(Level level, Vec3 pos) {
         List<Recipe<?>> list = Lists.newArrayList();
-        for (Object2IntMap.Entry<
-                ResourceLocation> entry : this.usedRecipeTracker.object2IntEntrySet()) {
+        for (Object2IntMap.Entry<ResourceLocation> entry : this.usedRecipeTracker.object2IntEntrySet()) {
             level.getRecipeManager().byKey(entry.getKey()).ifPresent(holder -> {
                 Recipe<?> recipe = holder.value();
                 list.add(recipe);
@@ -626,6 +699,7 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
 
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
+        this.refreshCurrentRecipe();
         return new CursedIngotPotMenu(id, inv, this, this.cookingPotData);
     }
 
@@ -635,6 +709,8 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
         if (this.level != null) {
             this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
         }
+        this.hasInputCache = this.hasInputInternal();
+        this.refreshCurrentRecipe();
     }
 
     public boolean isHeated() {
