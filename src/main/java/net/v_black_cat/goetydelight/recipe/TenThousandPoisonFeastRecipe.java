@@ -46,9 +46,6 @@ public class TenThousandPoisonFeastRecipe extends CustomRecipe {
 
         // 检查物品数量是否达到最小要求
         int minItemCount = Config.getTenThousandPoisonFeastMinItemCount();
-        GoetyDelight.LOGGER.info("TenThousandPoisonFeast: Item count check - current: {}, required: {}",
-                inputItems.size(), minItemCount);
-
         if (inputItems.size() < minItemCount) {
             return false;
         }
