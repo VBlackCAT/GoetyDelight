@@ -1,6 +1,7 @@
 package net.v_black_cat.goetydelight.item;
 
 import com.Polarice3.Goety.common.items.ModTiers;
+import com.mega.revelationfix.common.item.ModItemTiers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -19,6 +20,7 @@ import net.v_black_cat.goetydelight.entities.ModEntities;
 import net.v_black_cat.goetydelight.item.food.*;
 import net.v_black_cat.goetydelight.item.food.BaklavaItem;
 import net.v_black_cat.goetydelight.item.food.BowlFoodItem;
+import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompat;
 import vectorwing.farmersdelight.common.item.KnifeItem;
 
 import java.util.Random;
@@ -41,9 +43,6 @@ public class ModItems {
     public static final RegistryObject<Item> CURSED_METAL_BRUSH;
     public static final RegistryObject<Item> DARK_BRUSH;
     // 刀具物品
-    public static final RegistryObject<Item> APOCALYPTIUM_KNIFE;
-    public static final RegistryObject<Item> VENOMOUS_SPIDER_KNIFE;
-    public static final RegistryObject<Item> SPECTRE_KNIFE;
     public static final RegistryObject<Item> CURSED_INGOT_KNIFE;
     public static final RegistryObject<Item> DARK_KNIFE;
     public static final RegistryObject<Item> APOCALYPTIUM_INGOT_BRUSH;
@@ -155,6 +154,11 @@ public class ModItems {
 
 //    public static final RegistryObject<Item> MENU;
     public static final RegistryObject<Item> DOLL_ITEM;
+
+    //联动物品
+    public static RegistryObject<Item> APOCALYPTIUM_KNIFE = null;
+    public static RegistryObject<Item> VENOMOUS_SPIDER_KNIFE = null;
+    public static RegistryObject<Item> SPECTRE_KNIFE = null;
     // ==================== 效果供应商常量 ====================
     public static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
     public static final Supplier<MobEffect> NOURISHMENT_EFFECT_SUPPLIER = farmersDelightBuff("nourishment");
@@ -189,16 +193,6 @@ public class ModItems {
 
         METAMORPHIC_SCENT_GRASS = ITEMS.register("metamorphic_scent_grass",
             () -> new MetamorphicScentGrassItem(basicItem().stacksTo(64).food(simpleFoodItemProperties(2,3).build())));
-
-        //神金刀
-        APOCALYPTIUM_KNIFE = registerWithTab("apocalyptium_knife",
-                () -> new KnifeItem(Tiers.NETHERITE, 4F, -2.0F, basicItem().durability(1666)));
-
-        VENOMOUS_SPIDER_KNIFE = registerWithTab("venomous_spider_knife",
-                () -> new KnifeItem(Tiers.IRON, 0.5F, -2.0F, basicItem()));
-        SPECTRE_KNIFE = registerWithTab("spectre_knife",
-                () -> new KnifeItem(Tiers.IRON, 0.5F, -2.0F, basicItem()));
-
 
         //诅咒金属刀
         CURSED_INGOT_KNIFE = registerWithTab("cursed_ingot_knife",
@@ -840,6 +834,19 @@ public class ModItems {
 //        MENU = registerWithTab("menu", () -> new MenuItem(new Item.Properties()));
 
         DOLL_ITEM = registerWithTab("doll_item", DollEntityItem::new);
+
+        if (RevelationCompat.IS_REVELATION_LOADED) {
+            APOCALYPTIUM_KNIFE = ITEMS.register("apocalyptium_knife",
+                    () -> new KnifeItem(ModItemTiers.APOCALYPTIUM, 4F, -2.0F,
+                            basicItem().durability(1666)));
+
+            VENOMOUS_SPIDER_KNIFE = registerWithTab("venomous_spider_knife",
+                    () -> new KnifeItem(Tiers.IRON, 0.5F, -2.0F, basicItem()));
+
+            SPECTRE_KNIFE = registerWithTab("spectre_knife",
+                    () -> new KnifeItem(Tiers.IRON, 0.5F, -2.0F, basicItem()));
+        }
+
     }
 
 
