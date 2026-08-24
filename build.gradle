@@ -280,7 +280,10 @@ dependencies {
 
 //    modImplementation "curse.maven:goety-revelation-1236817:6892481"
 
-     compileOnly "blank:[Forge]RevelationFix-1.20.1-4.0"
+    compileOnly "blank:[Forge]RevelationFix-1.20.1-4.4"//启示录内置的jar，单独弄出来是因为直接用启示录会导致工作区被肘击
+    compileOnly "blank:goety-2.5.55.2"//我没活了，真连不上cf库
+    compileOnly "blank:FarmersDelight-1.20.1-1.3.1"//理由同上
+    compileOnly "curse.maven:jade-324717:6855440"
     modImplementation "curse.maven:curios-309927:6418456"//5.14.1
 
     //帕秋莉
@@ -299,8 +302,10 @@ dependencies {
     modRuntimeOnly "curse.maven:xaeros-world-map-317780:8424481"//xaeroworldmap-forge-1.20.1-1.43.0.jar
     modRuntimeOnly  "curse.maven:mmmmmmmmmmmm-225738:6237015" //dummmmmmy-1.20-2.0.12-forge.jar
     modRuntimeOnly  "curse.maven:selene-499980:8261419" //moonlight-1.20-2.16.34-forge.jar
-    modImplementation  "curse.maven:jade-324717:6855440"//Jade-1.20.1-Forge-11.13.2.jar
+    modRuntimeOnly  "curse.maven:jade-324717:6855440"//Jade-1.20.1-Forge-11.13.2.jar
     modRuntimeOnly  "curse.maven:l2library-620203:6806000" //l2library-2.5.3.jar
+    modRuntimeOnly  "curse.maven:goety-revelation-1236817:8311906" //goety_revelation_2.3.3fix(1)
+    modRuntimeOnly  "curse.maven:endinglibrary-1471165:8292038" //endinglibrary-1.20.1-2.0.3.jar
 
     //森罗玩偶
     modRuntimeOnly "curse.maven:kaleidoscope-doll-1233277:8196009"
