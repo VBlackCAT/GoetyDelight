@@ -15,6 +15,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlocks;
+import net.v_black_cat.goetydelight.compat.goety_revelation.item.ApocalyptiumKnifeItem;
 import net.v_black_cat.goetydelight.effect.ModEffects;
 import net.v_black_cat.goetydelight.entities.ModEntities;
 import net.v_black_cat.goetydelight.item.food.*;
@@ -837,8 +838,8 @@ public class ModItems {
 
         if (RevelationCompat.IS_REVELATION_LOADED) {
             APOCALYPTIUM_KNIFE = ITEMS.register("apocalyptium_knife",
-                    () -> new KnifeItem(ModItemTiers.APOCALYPTIUM, 4F, -2.0F,
-                            basicItem().durability(1666)));
+                    () -> new ApocalyptiumKnifeItem(ModItemTiers.APOCALYPTIUM, -5.0F, -2.0F,
+                            basicItem().durability(666)));
 
             VENOMOUS_SPIDER_KNIFE = registerWithTab("venomous_spider_knife",
                     () -> new KnifeItem(Tiers.IRON, 0.5F, -2.0F, basicItem()));

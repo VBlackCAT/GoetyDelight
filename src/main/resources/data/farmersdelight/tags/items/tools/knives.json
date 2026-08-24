@@ -3,6 +3,10 @@
       "goety:philosophers_mace",
       "goetydelight:dark_knife",
       "goetydelight:cursed_ingot_knife",
-      "goetydelight:false_proverbs"
+      "goetydelight:false_proverbs",
+    {
+      "id": "goetydelight:apocalyptium_knife",
+      "required": false
+    }
   ]
 }

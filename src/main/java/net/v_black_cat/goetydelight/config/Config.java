@@ -150,16 +150,16 @@ public class Config
             .defineListAllowEmpty("soulAffixBlacklist", List.of(), Config::NoValidateItemName);
 
     private static final ForgeConfigSpec.DoubleValue LICH_CHAOS_STEW_BOOST_PERCENTAGE = BUILDER
-            .comment("Boost percentage per stack of Lich's Chaos Stew for minions (0.15 = 15%)\n巫妖乱炖每层为仆从提供的加成百分比（0.15 = 15%）")
-            .defineInRange("lichChaosStewBoostPercentage", 0.15, 0.0, 1.0);
+            .comment("Boost percentage per stack of Lich's Chaos Stew for minions (0.1 = 10%)\n巫妖乱炖每层为仆从提供的加成百分比（0.1 = 10%）")
+            .defineInRange("lichChaosStewBoostPercentage", 0.1, 0.0, 1.0);
 
     private static final ForgeConfigSpec.IntValue LICH_STEW_MAX_COUNT = BUILDER
             .comment("Maximum stack count for Lich's Chaos Stew effect\n巫妖乱炖效果的最大叠加层数")
             .defineInRange("lichStewMaxCount", 6, 1, 20);
 
     private static final ForgeConfigSpec.DoubleValue NIGHT_HEART_PEA_SOUP_BOOST_PERCENTAGE = BUILDER
-            .comment("Boost percentage per stack of Night Heart Pea Soup for minions (0.05 = 5%)\n暗夜之心豌豆汤每层为仆从提供的加成百分比（0.05 = 5%）")
-            .defineInRange("nightHeartPeaSoupBoostPercentage", 0.05, 0.0, 1.0);
+            .comment("Boost percentage per stack of Night Heart Pea Soup for minions (0.02 = 2%)\n暗夜之心豌豆汤每层为仆从提供的加成百分比（0.02 = 2%）")
+            .defineInRange("nightHeartPeaSoupBoostPercentage", 0.02, 0.0, 1.0);
 
     private static final ForgeConfigSpec.IntValue NIGHT_PEA_SOUP_MAX_COUNT = BUILDER
             .comment("Maximum stack count for Night Heart Pea Soup effect\n暗夜之心豌豆汤效果的最大叠加层数")
