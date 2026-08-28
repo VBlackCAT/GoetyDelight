@@ -92,9 +92,10 @@ public final class EntityVisualEffectSystem {
     }
 
     public static void tick(ServerLevel level) {
+        // 【优化】空特效实体直接跳过：避免为每个无特效实体每 tick 创建迭代器/遍历空容器
         for (Entity entity : level.getAllEntities()) {
             EntityVisualEffects effects = getEffects(entity);
-            if (effects != null && effects.tick()) sync(entity);
+            if (effects != null && !effects.isEmpty() && effects.tick()) sync(entity);
         }
     }
 

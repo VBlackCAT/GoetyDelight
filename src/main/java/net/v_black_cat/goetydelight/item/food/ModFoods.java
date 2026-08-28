@@ -58,6 +58,7 @@ public class ModFoods {
     public static final FoodProperties LICHS_CHAOS_STEW;
     public static final FoodProperties MAGIC_QUARTZ_COOKIE;
     public static final FoodProperties SNAP_UNHOLY_TRIPE;
+    public static final FoodProperties UNHOLY_SAUCE;
     public static final FoodProperties SUNDAE_OF_THE_PHILOSOPHERS_POTION;
     public static final FoodProperties THE_BOX_OF_THE_DEAD;
     public static final FoodProperties RING_PACKED_VOID_GEL_JELLY;
@@ -353,6 +354,15 @@ public class ModFoods {
                 .effect(() -> new MobEffectInstance(MobEffects.SATURATION, 100, 0), 1.0F)
                 .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSENGER, minToTick(2), 0), 1.0F)
                 .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, minToTick(10), 0), 1.0F)
+                .build();
+
+        UNHOLY_SAUCE = new FoodProperties.Builder()
+                .nutrition(5)
+                .saturationModifier(0.4F)
+                .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSENGER, minToTick(5), 0), 1.0F)
+                .effect(() -> new MobEffectInstance(ModEffects.ZOMBIFIED_PIGLIN_BRUTE_SERVANT_SUPPORT, minToTick(5), 0), 1.0F)
+                .effect(() -> new MobEffectInstance(vectorwing.farmersdelight.common.registry.ModEffects.NOURISHMENT, minToTick(5), 0), 1.0F)
+                .effect(() -> new MobEffectInstance(ModEffects.INFERNO, minToTick(5), 0), 1.0F)
                 .build();
 
         SUNDAE_OF_THE_PHILOSOPHERS_POTION = new FoodProperties.Builder()

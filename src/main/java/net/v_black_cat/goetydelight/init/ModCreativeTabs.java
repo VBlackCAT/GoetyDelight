@@ -97,6 +97,7 @@ public class ModCreativeTabs {
                         output.accept(ModItems.CORPSE_MAGGOT.get());
                         output.accept(ModItems.LICHS_CHAOS_STEW.get());
                         output.accept(ModItems.SNAP_UNHOLY_TRIPE.get());
+                        output.accept(ModItems.UNHOLY_SAUCE.get());
                         output.accept(ModItems.THE_BOX_OF_THE_DEAD.get());
                         output.accept(ModItems.STUFFED_TALL_SKULL_RICE.get());
                         output.accept(ModItems.NIGHT_HEART_PEA_SOUP.get());

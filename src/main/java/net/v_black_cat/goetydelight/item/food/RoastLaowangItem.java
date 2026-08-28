@@ -59,6 +59,8 @@ public class RoastLaowangItem extends Item {
     @SubscribeEvent
     public static void onServerTickPost(ServerTickEvent.Post event) {
         MinecraftServer server = event.getServer();
+        // 【优化】每 20 tick 检查一次过期（时效判定基于游戏时间，最大延迟 1 秒可忽略）
+        if (server.getTickCount() % 20 != 0) return;
         for (Player player : server.getPlayerList().getPlayers()) {
             FoodState state = player.getData(ModAttachments.FOOD_STATE);
             if (state.isRoastLaowangActive()) {

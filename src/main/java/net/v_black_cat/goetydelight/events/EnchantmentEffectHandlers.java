@@ -73,9 +73,12 @@ public class EnchantmentEffectHandlers {
         net.minecraft.core.Holder<Enchantment> holder = getHolder(registryAccess, ModEnchantments.SOUL_MENDING);
 
         for (ItemStack stack : player.getAllSlots()) {
-            int level = stack.getEnchantmentLevel(holder);
-            if (level > 0 && stack.isDamageableItem() && stack.getDamageValue() > 0) {
-                repairItemWithSoulEnergy(player, stack, level);
+            // 【优化】先做廉价的耐久检查，再查附魔等级（避免对每格物品都做注册表/组件查询）
+            if (stack.isDamageableItem() && stack.getDamageValue() > 0) {
+                int level = stack.getEnchantmentLevel(holder);
+                if (level > 0) {
+                    repairItemWithSoulEnergy(player, stack, level);
+                }
             }
         }
     }
@@ -145,11 +148,12 @@ public class EnchantmentEffectHandlers {
 
                     if (owner != null) {
                         for (ItemStack stack : servant.getAllSlots()) {
-                            if (stack.getEnchantmentLevel(holder) > 0 &&
-                                    stack.isDamageableItem() &&
-                                    stack.getDamageValue() > 0) {
-                                repairItemWithSoulEnergy(owner, stack,
-                                        stack.getEnchantmentLevel(holder));
+                            // 【优化】廉价耐久检查前置，且只查一次附魔等级
+                            if (stack.isDamageableItem() && stack.getDamageValue() > 0) {
+                                int enchantLevel = stack.getEnchantmentLevel(holder);
+                                if (enchantLevel > 0) {
+                                    repairItemWithSoulEnergy(owner, stack, enchantLevel);
+                                }
                             }
                         }
                     }

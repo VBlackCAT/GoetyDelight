@@ -10,6 +10,8 @@ public class MobEffectEventHandler {
     }
 
     public static void onEffectApplicable(MobEffectEvent.Applicable event) {
+        // 【优化】仅服务端裁决：客户端重复执行既浪费，也可能与服务端结果不一致（影响显示）
+        if (event.getEntity().level().isClientSide) return;
         TaintedDrinkEffect.onEffectApplicable(event);
     }
 }

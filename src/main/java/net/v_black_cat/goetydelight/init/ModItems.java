@@ -110,6 +110,7 @@ public class ModItems {
     public static final DeferredItem<Item> LICHS_CHAOS_STEW;
     public static final DeferredItem<Item> MAGIC_QUARTZ_COOKIE;
     public static final DeferredItem<Item> SNAP_UNHOLY_TRIPE;
+    public static final DeferredItem<Item> UNHOLY_SAUCE;
     public static final DeferredItem<Item> SUNDAE_OF_THE_PHILOSOPHERS_POTION;
     public static final DeferredItem<Item> THE_BOX_OF_THE_DEAD;
     public static final DeferredItem<Item> RING_PACKED_VOID_GEL_JELLY;
@@ -463,6 +464,9 @@ public class ModItems {
                 () -> new SnapUnholyTripeItem(basicItem().stacksTo(16).rarity(Rarity.RARE).food(
                         ModFoods.SNAP_UNHOLY_TRIPE
                 )));
+        UNHOLY_SAUCE = ITEMS.register("unholy_sauce",
+                () -> new Item(basicItem().stacksTo(16).rarity(Rarity.UNCOMMON)
+                        .food(ModFoods.UNHOLY_SAUCE)));
         SUNDAE_OF_THE_PHILOSOPHERS_POTION = ITEMS.register("sundae_of_the_philosophers_potion",
                 () -> new SundaeOfThePhilosophersPotionItem(basicItem().stacksTo(16).rarity(Rarity.EPIC).food(
                         ModFoods.SUNDAE_OF_THE_PHILOSOPHERS_POTION

@@ -83,6 +83,8 @@ public class ToxicMealItem extends BowlFoodItem {
 
     @SubscribeEvent
     public static void onEffectApplied(MobEffectEvent.Applicable event) {
+        // 【优化】仅服务端裁决；客户端附件数据未同步（count 恒为 0），重复判定无意义
+        if (event.getEntity().level().isClientSide) return;
         LivingEntity entity = event.getEntity();
         MobEffectInstance effect = event.getEffectInstance();
 

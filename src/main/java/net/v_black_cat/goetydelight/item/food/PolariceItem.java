@@ -65,13 +65,15 @@ public class PolariceItem extends BowlFoodItem {
     @SubscribeEvent
     public static void onServerTickPost(ServerTickEvent.Post event) {
         MinecraftServer server = event.getServer();
+        // 【优化】每 20 tick 批量衰减 20，避免每 tick 遍历全部玩家（衰减速率不变）
+        if (server.getTickCount() % 20 != 0) return;
         for (Player player : server.getPlayerList().getPlayers()) {
             Level level = player.level();
             if (level.isClientSide) continue;
 
             FoodState state = player.getData(ModAttachments.FOOD_STATE);
             if (state.getPolariceTime() > 0) {
-                state.setPolariceTime(state.getPolariceTime() - 1);
+                state.setPolariceTime(state.getPolariceTime() - 20);
             }
         }
     }

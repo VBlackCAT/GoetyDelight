@@ -454,11 +454,11 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
             cookingPot.deferInventoryEvents = true;
             try {
                 if (!cookingPot.doesMealHaveContainer(mealStack)) {
-                    cookingPot.moveMealToOutput();
-                    didInventoryChange = true;
+                    // 【修复】仅在真正移动了物品时才标记变更：输出槽满/物品不同时 moveMealToOutput 是空操作，
+                    // 此前每 tick 都会 inventoryChanged → 完整配方扫描 + 置脏（spark 采样证实占据 ~3% 服务端时间）
+                    didInventoryChange = cookingPot.moveMealToOutput();
                 } else if (!cookingPot.inventory.getStackInSlot(CONTAINER_SLOT).isEmpty()) {
-                    cookingPot.useStoredContainersOnMeal();
-                    didInventoryChange = true;
+                    didInventoryChange = cookingPot.useStoredContainersOnMeal();
                 }
             } finally {
                 cookingPot.deferInventoryEvents = false;
@@ -677,34 +677,42 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
         return (int) Math.floor((double) outputStack.getCount() / outputStack.getMaxStackSize() * 15.0);
     }
 
-    private void moveMealToOutput() {
+    private boolean moveMealToOutput() {
         ItemStack mealStack = this.inventory.getStackInSlot(MEAL_DISPLAY_SLOT);
         ItemStack outputStack = this.inventory.getStackInSlot(OUTPUT_SLOT);
         int mealCount = Math.min(mealStack.getCount(), mealStack.getMaxStackSize() - outputStack.getCount());
+        if (mealCount <= 0) return false;
         if (outputStack.isEmpty()) {
             this.inventory.setStackInSlot(OUTPUT_SLOT, mealStack.split(mealCount));
+            return true;
         } else if (ItemStack.isSameItem(outputStack, mealStack)) {
             mealStack.shrink(mealCount);
             outputStack.grow(mealCount);
+            return true;
         }
+        return false;
     }
 
-    private void useStoredContainersOnMeal() {
+    private boolean useStoredContainersOnMeal() {
         ItemStack mealStack = this.inventory.getStackInSlot(MEAL_DISPLAY_SLOT);
         ItemStack containerInput = this.inventory.getStackInSlot(CONTAINER_SLOT);
         ItemStack outputStack = this.inventory.getStackInSlot(OUTPUT_SLOT);
         if (isContainerValid(containerInput) && outputStack.getCount() < outputStack.getMaxStackSize()) {
             int smaller = Math.min(mealStack.getCount(), containerInput.getCount());
             int mealCount = Math.min(smaller, mealStack.getMaxStackSize() - outputStack.getCount());
+            if (mealCount <= 0) return false;
             if (outputStack.isEmpty()) {
                 containerInput.shrink(mealCount);
                 this.inventory.setStackInSlot(OUTPUT_SLOT, mealStack.split(mealCount));
+                return true;
             } else if (ItemStack.isSameItem(outputStack, mealStack)) {
                 mealStack.shrink(mealCount);
                 containerInput.shrink(mealCount);
                 outputStack.grow(mealCount);
+                return true;
             }
         }
+        return false;
     }
 
     public ItemStack useHeldItemOnMeal(ItemStack container) {
@@ -758,7 +766,7 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
 
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
-        this.refreshCurrentRecipe();
+        // 【优化】不再在打开菜单时做完整配方匹配：缓存已由 inventoryChanged / 每 5 秒自愈刷新维护
         return new CursedIngotPotMenu(id, inv, this, this.cookingPotData);
     }
 

@@ -91,8 +91,10 @@ public class FalseProverbsEvents {
                 }
             }
 
-            // 优化的背部模型同步
-            syncBackModelStatus(player, playerUUID);
+            // 优化的背部模型同步（每 5 tick 一次；背包扫描/状态对比无需每 tick，250ms 延迟不可感知）
+            if (player.tickCount % 5 == 0) {
+                syncBackModelStatus(player, playerUUID);
+            }
         }
     }
 
