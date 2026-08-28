@@ -1,0 +1,28 @@
+{
+  "values": {
+    "goetydelight:metamorphic_scent_grass": {
+      "chance": 0.2,
+      "can_villager_compost": true
+    },
+    "goetydelight:metamorphic_scent_fruit": {
+      "chance": 0.75,
+      "can_villager_compost": true
+    },
+    "goetydelight:metamorphic_scent_grass_seeds": {
+      "chance": 0.05,
+      "can_villager_compost": true
+    },
+    "goetydelight:ectoplasmic_melon": {
+      "chance": 0.5,
+      "can_villager_compost": true
+    },
+    "goetydelight:ectoplasmic_melon_seeds": {
+      "chance": 0.09,
+      "can_villager_compost": true
+    },
+    "goetydelight:ectoplasmic_melon_block": {
+      "chance": 0.95,
+      "can_villager_compost": true
+    }
+  }
+}

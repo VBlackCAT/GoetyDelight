@@ -105,11 +105,12 @@ public class CursedIngotPotMenu extends RecipeBookMenu<RecipeWrapper, CookingPot
         throw new IllegalStateException("Tile entity is not correct! " + be);
     }
 
-    // 【优化2】 终极性能修复：仅保留距离检查，移除冗余的 getBlockState 检查，彻底消灭 0.16% 的 CPU 消耗
+    // 【修复】恢复方块校验：仅距离检查时，方块被破坏后仍能操作"幽灵"库存（物品丢失/疑似复制风险）
     @Override
     public boolean stillValid(Player player) {
         return this.canInteractWithCallable.evaluate((level, pos) ->
-                player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= 64.0, true);
+                level.getBlockState(pos).is(ModBlocks.CURSED_INGOT_POT.get()) &&
+                        player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= 64.0, true);
     }
 
     @Override
@@ -180,7 +181,8 @@ public class CursedIngotPotMenu extends RecipeBookMenu<RecipeWrapper, CookingPot
 
     @Override
     public int getResultSlotIndex() {
-        return 7;
+        // 成品显示槽(6)才是食谱书对应用的结果槽（此前写 7 指向容器输入槽）
+        return 6;
     }
 
     @Override

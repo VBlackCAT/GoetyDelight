@@ -9,7 +9,7 @@
         },
         {
             "type": "goety:ritual",
-            "recipe": "goetydelight:ritual/bowl_of_snap_unholy_tripe"
+            "recipe": "goetydelight:ritual/snap_unholy_tripe_block"
         }
     ]
 }

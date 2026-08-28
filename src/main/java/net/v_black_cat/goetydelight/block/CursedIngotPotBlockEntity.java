@@ -68,9 +68,14 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
     public static final Map<Item, Item> INGREDIENT_REMAINDER_OVERRIDES;
 
     // 【优化1】自动触发内部变化的 Handler
+    // 【优化3】批量修改库存时挂起逐槽事件：避免一次烹饪/加载触发多次配方查询与发包
     private final ItemStackHandler inventory = new ItemStackHandler(INVENTORY_SIZE) {
         @Override
         protected void onContentsChanged(int slot) {
+            if (CursedIngotPotBlockEntity.this.deferInventoryEvents) {
+                CursedIngotPotBlockEntity.this.setChanged();
+                return;
+            }
             CursedIngotPotBlockEntity.this.inventoryChanged();
         }
     };
@@ -84,9 +89,15 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
 
     @Nullable
     private RecipeHolder<CookingPotRecipe> cachedRecipe = null;
-    
+
     // 【优化2】缓存输入状态
     private boolean hasInputCache = false;
+
+    // 【优化3】配方缓存衍生结果：与 cachedRecipe 一起刷新，避免每 tick 拷贝结果栈/重复计算灵魂消耗
+    private ItemStack cachedResultStack = ItemStack.EMPTY;
+    private int cachedSoulCost = 0;
+    // 【优化3】批量修改挂起标志（加载 / 一次烹饪完成时只刷新一次）
+    private boolean deferInventoryEvents = false;
 
     public CursedIngotPotBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.CURSED_INGOT_POT_BE.get(), pos, state);
@@ -147,8 +158,14 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
     @Override
     protected void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
         super.loadAdditional(compound, registries);
-        if (compound.contains("Inventory")) {
-            this.inventory.deserializeNBT(registries, compound.getCompound("Inventory"));
+        // 【优化3】加载期间挂起逐槽刷新，反序列化完成后统一刷新一次
+        this.deferInventoryEvents = true;
+        try {
+            if (compound.contains("Inventory")) {
+                this.inventory.deserializeNBT(registries, compound.getCompound("Inventory"));
+            }
+        } finally {
+            this.deferInventoryEvents = false;
         }
         this.cookTime = compound.getFloat("CookTime");
         this.cookTimeTotal = compound.getInt("CookTimeTotal");
@@ -164,6 +181,8 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
                 this.usedRecipeTracker.put(ResourceLocation.parse(key), recipesTag.getInt(key));
             }
         }
+        // 加载期间逐槽事件被挂起，这里显式重建输入缓存后再刷新配方
+        this.hasInputCache = this.hasInputInternal();
         this.refreshCurrentRecipe();
     }
 
@@ -340,6 +359,28 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
         return 0;
     }
 
+    // 【优化3】合并每 tick 的灵魂查询：一次调用同时完成"是否有可用灵魂"与"剩余数量"判定
+    private int getSoulEnergyAvailable() {
+        ItemStack soulSource = this.inventory.getStackInSlot(SOUL_SOURCE_SLOT);
+        if (soulSource.isEmpty()) return 0;
+        var customData = soulSource.get(DataComponents.CUSTOM_DATA);
+        CompoundTag tag = customData != null ? customData.getUnsafe() : null;
+        if (soulSource.getItem() == SOUL_TRANSFER.get()) {
+            if (tag != null && tag.contains("owner")) {
+                UUID ownerUuid = tag.getUUID("owner");
+                Player owner = this.level != null ? this.level.getPlayerByUUID(ownerUuid) : null;
+                if (owner != null && SEHelper.getSEActive(owner)) {
+                    return (int) SEHelper.getSESouls(owner);
+                }
+            }
+        } else if (soulSource.getItem() instanceof ITotem) {
+            if (tag != null && tag.contains("Souls")) {
+                return tag.getInt("Souls");
+            }
+        }
+        return 0;
+    }
+
     // ======================== 核心Tick逻辑 ========================
     public static void cookingTick(Level level, BlockPos pos, BlockState state, CursedIngotPotBlockEntity cookingPot) {
         boolean isHeated = cookingPot.isHeated(level, pos);
@@ -353,45 +394,45 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
         float speedMultiplier = 1.0f;
         RecipeHolder<CookingPotRecipe> currentRecipe = cookingPot.cachedRecipe;
 
-        if (cookingPot.hasInput() && currentRecipe != null) {
-            if (cookingPot.canCook(currentRecipe.value())) {
-                ItemStack resultStack = currentRecipe.value().getResultItem(level.registryAccess());
-                int estimatedCost = cookingPot.calculateSoulCost(resultStack);
+        // 【优化4】配方缓存自愈：每 5 秒重新匹配一次（仅在有原料时执行），避免数据包重载后缓存过期
+        if (level.getGameTime() % 100 == 0) {
+            cookingPot.refreshCurrentRecipe();
+            currentRecipe = cookingPot.cachedRecipe;
+        }
 
-                ItemStack soulSource = cookingPot.inventory.getStackInSlot(SOUL_SOURCE_SLOT);
-                boolean hasSoulEnergy = cookingPot.hasSoulEnergy(soulSource);
-                int remainingSoul = hasSoulEnergy ? cookingPot.getRemainingSoulEnergy(soulSource) : 0;
+        if (cookingPot.hasInput() && currentRecipe != null && cookingPot.canCook(currentRecipe.value())) {
+            // 【优化3】灵魂消耗与结果栈均为缓存值，不再每 tick 拷贝结果栈/查食物属性
+            int estimatedCost = cookingPot.cachedSoulCost;
+            int remainingSoul = cookingPot.getSoulEnergyAvailable();
+            boolean hasSoulEnergy = remainingSoul > 0;
 
-                boolean needSoul;
-                if (currentMeal.isEmpty() && outputStack.isEmpty()) {
-                    needSoul = hasSoulEnergy && (remainingSoul >= estimatedCost);
+            boolean needSoul;
+            if (currentMeal.isEmpty() && outputStack.isEmpty()) {
+                needSoul = hasSoulEnergy && (remainingSoul >= estimatedCost);
+            } else {
+                needSoul = anyHasMark;
+            }
+
+            boolean soulAvailable = hasSoulEnergy && (remainingSoul >= estimatedCost);
+
+            if (anyHasMark && !soulAvailable) {
+                canCook = false;
+                cookingPot.cookTime = 0;
+            } else {
+                if (isHeated && needSoul && soulAvailable) {
+                    canCook = true;
+                    speedMultiplier = 2.0f;
+                } else if (isHeated && !needSoul) {
+                    canCook = true;
+                    speedMultiplier = 1.0f;
+                } else if (needSoul && soulAvailable) {
+                    canCook = true;
+                    speedMultiplier = 1.2f;
                 } else {
-                    needSoul = anyHasMark;
-                }
-
-                boolean soulAvailable = hasSoulEnergy && (remainingSoul >= estimatedCost);
-
-                if (anyHasMark && !soulAvailable) {
                     canCook = false;
-                    cookingPot.cookTime = 0;
-                } else {
-                    if (isHeated && needSoul && soulAvailable) {
-                        canCook = true;
-                        speedMultiplier = 2.0f;
-                    } else if (isHeated && !needSoul) {
-                        canCook = true;
-                        speedMultiplier = 1.0f;
-                    } else if (needSoul && soulAvailable) {
-                        canCook = true;
-                        speedMultiplier = 1.2f;
-                    } else {
-                        canCook = false;
-                        speedMultiplier = 0f;
-                    }
+                    speedMultiplier = 0f;
                 }
             }
-        } else if (cookingPot.cookTime > 0) {
-            cookingPot.cookTime = Mth.clamp(cookingPot.cookTime - 1.0f, 0.0f, cookingPot.cookTimeTotal);
         }
 
         if (canCook && cookingPot.hasInput() && currentRecipe != null) {
@@ -403,17 +444,24 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
                 }
             }
         } else if (cookingPot.cookTime > 0) {
+            // 【优化3】未烹饪时降温，每 tick 恰好一次（修复此前空锅/无配方时双倍衰减）
             cookingPot.cookTime = Mth.clamp(cookingPot.cookTime - 1.0f, 0.0f, cookingPot.cookTimeTotal);
         }
 
         ItemStack mealStack = cookingPot.getMeal();
         if (!mealStack.isEmpty()) {
-            if (!cookingPot.doesMealHaveContainer(mealStack)) {
-                cookingPot.moveMealToOutput();
-                didInventoryChange = true;
-            } else if (!cookingPot.inventory.getStackInSlot(CONTAINER_SLOT).isEmpty()) {
-                cookingPot.useStoredContainersOnMeal();
-                didInventoryChange = true;
+            // 【优化3】批量取餐处理：挂起逐槽事件，结束时统一刷新一次
+            cookingPot.deferInventoryEvents = true;
+            try {
+                if (!cookingPot.doesMealHaveContainer(mealStack)) {
+                    cookingPot.moveMealToOutput();
+                    didInventoryChange = true;
+                } else if (!cookingPot.inventory.getStackInSlot(CONTAINER_SLOT).isEmpty()) {
+                    cookingPot.useStoredContainersOnMeal();
+                    didInventoryChange = true;
+                }
+            } finally {
+                cookingPot.deferInventoryEvents = false;
             }
         }
 
@@ -456,21 +504,24 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
     }
 
     private void refreshCurrentRecipe() {
+        // 【优化3】缓存结果与配方一同刷新/失效
+        this.cachedRecipe = null;
+        this.cachedResultStack = ItemStack.EMPTY;
+        this.cachedSoulCost = 0;
         if (this.level == null || this.level.isClientSide) {
-            this.cachedRecipe = null;
             return;
         }
         if (this.hasInputCache) { 
             RecipeWrapper wrapper = new RecipeWrapper(this.inventory);
             this.cachedRecipe = this.level.getRecipeManager().getRecipeFor(ModRecipeTypes.COOKING.get(), wrapper, this.level).orElse(null);
             if (this.cachedRecipe != null) {
+                this.cachedResultStack = this.cachedRecipe.value().getResultItem(this.level.registryAccess());
+                this.cachedSoulCost = this.calculateSoulCost(this.cachedResultStack);
                 this.cookTimeTotal = this.cachedRecipe.value().getCookTime();
                 if (this.cookTime > this.cookTimeTotal) {
                     this.cookTime = this.cookTimeTotal;
                 }
             }
-        } else {
-            this.cachedRecipe = null;
         }
         if (this.cachedRecipe == null && this.cookTime > 0) {
             this.cookTime = 0;
@@ -479,7 +530,8 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
 
     private boolean canCook(CookingPotRecipe recipe) {
         if (!hasInput() || this.level == null) return false;
-        ItemStack resultStack = recipe.getResultItem(this.level.registryAccess());
+        // 【优化3】使用缓存的配方结果栈，避免每 tick 拷贝
+        ItemStack resultStack = this.cachedResultStack;
         if (resultStack.isEmpty()) return false;
         ItemStack storedMeal = this.inventory.getStackInSlot(MEAL_DISPLAY_SLOT);
         if (storedMeal.isEmpty()) return true;
@@ -512,9 +564,9 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
         resultStack.remove(DataComponents.CUSTOM_DATA);
 
         int soulCost = calculateSoulCost(resultStack);
-        ItemStack soulSource = this.inventory.getStackInSlot(SOUL_SOURCE_SLOT);
-        boolean hasSoulSource = !soulSource.isEmpty();
-        int remainingSoul = getRemainingSoulEnergy(soulSource);
+        // 【优化3】合并灵魂查询：一次调用同时判断"是否有可用灵魂源"与"剩余数量"
+        int remainingSoul = getSoulEnergyAvailable();
+        boolean hasSoulSource = remainingSoul > 0;
 
         boolean shouldUseSoul;
         if (currentMeal.isEmpty() && outputStack.isEmpty()) {
@@ -540,29 +592,36 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
             }
         }
 
-        if (currentMeal.isEmpty()) {
-            this.inventory.setStackInSlot(MEAL_DISPLAY_SLOT, resultStack.copy());
-        } else if (ItemStack.isSameItem(currentMeal, resultStack)) {
-            currentMeal.grow(resultStack.getCount());
-        } else {
-            return false;
-        }
-
-        this.cookTime = 0.0f;
-        this.mealContainerStack = recipe.getOutputContainer();
-        this.usedRecipeTracker.addTo(holder.id(), 1);
-
-        for (int i = 0; i < 6; i++) {
-            ItemStack slotStack = this.inventory.getStackInSlot(i);
-            if (slotStack.hasCraftingRemainingItem()) {
-                ejectIngredientRemainder(slotStack.getCraftingRemainingItem().copy().split(1));
-            } else if (INGREDIENT_REMAINDER_OVERRIDES.containsKey(slotStack.getItem())) {
-                ejectIngredientRemainder(INGREDIENT_REMAINDER_OVERRIDES.get(slotStack.getItem()).getDefaultInstance());
+        // 【优化3】批量修改库存：挂起逐槽事件，最后统一刷新一次配方缓存并同步
+        this.deferInventoryEvents = true;
+        try {
+            if (currentMeal.isEmpty()) {
+                this.inventory.setStackInSlot(MEAL_DISPLAY_SLOT, resultStack.copy());
+            } else if (ItemStack.isSameItem(currentMeal, resultStack)) {
+                currentMeal.grow(resultStack.getCount());
+            } else {
+                return false;
             }
-            if (!slotStack.isEmpty()) {
-                slotStack.shrink(1);
+
+            this.cookTime = 0.0f;
+            this.mealContainerStack = recipe.getOutputContainer();
+            this.usedRecipeTracker.addTo(holder.id(), 1);
+
+            for (int i = 0; i < 6; i++) {
+                ItemStack slotStack = this.inventory.getStackInSlot(i);
+                if (slotStack.hasCraftingRemainingItem()) {
+                    ejectIngredientRemainder(slotStack.getCraftingRemainingItem().copy().split(1));
+                } else if (INGREDIENT_REMAINDER_OVERRIDES.containsKey(slotStack.getItem())) {
+                    ejectIngredientRemainder(INGREDIENT_REMAINDER_OVERRIDES.get(slotStack.getItem()).getDefaultInstance());
+                }
+                if (!slotStack.isEmpty()) {
+                    slotStack.shrink(1);
+                }
             }
+        } finally {
+            this.deferInventoryEvents = false;
         }
+        this.inventoryChanged();
         return true;
     }
 

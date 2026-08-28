@@ -49,12 +49,8 @@ public class CursedPotResultSlot extends SlotItemHandler {
 
     protected void checkTakeAchievements(ItemStack stack) {
         stack.onCraftedBy(this.player.level(), this.player, this.removeCount);
-        if (!this.player.level().isClientSide) {
-            // 临时注释掉 awardUsedRecipes，待 blockEntity 实现此方法
-            // this.tileEntity.awardUsedRecipes(this.player, this.tileEntity.getDroppableInventory());
-            // 或者调用现有方法
-            this.tileEntity.getUsedRecipesAndPopExperience(this.player.level(), this.player.position());
-        }
+        // 【修复】移除 getUsedRecipesAndPopExperience 调用：它按 usedRecipeTracker 发放经验但不清空，
+        // 每次取走输出都会重复发放全部累计经验（经验刷取漏洞）。经验仅在方块破坏时统一发放一次。
         this.removeCount = 0;
     }
 }
