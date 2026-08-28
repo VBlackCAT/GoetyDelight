@@ -16,22 +16,57 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModList;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.v_black_cat.goetydelight.init.ModBlocks;
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import static com.Polarice3.Goety.common.items.ModItems.*;
 
+/**
+ * 「美食」仪式类型：需求祭坛 8 格范围内有 2 个烟熏炉、1 个幽影炉、1 个诅咒金属锅。
+ *
+ * <p>性能优化（对照 Goety 原版 {@code RitualRequirements} 的 BlockFinder 风格）：
+ * 原实现每次调用都做 17³ = 4913 次 {@code getBlockState} 且每次 {@code pos.offset} 分配一个 BlockPos，
+ * spark 采样显示占服务端约 1.1%。现在：
+ * 1) 需求表提为 static final，消除每次调用的 Map 分配；
+ * 2) 复用 {@link BlockPos.MutableBlockPos} 零分配扫描，并跳过空气方块；
+ * 3) 按祭坛实体做 20 tick 结果缓存（结构需求短期内不会变化，最多滞后 1 秒）。
+ */
 public class DelightRitualType implements IRitualType {
 
     public static final String CULINARY = "culinary";
+
+    private static final int RANGE = 8;
+    private static final int CACHE_TICKS = 20;
+
+    // 需求方块与数量（静态表，避免每次调用构建 HashMap；类在 common setup 时才加载，注册表已就绪）
+    private static final Block[] REQUIRED_BLOCKS = {
+            Blocks.SMOKER,
+            ModBlocks.SHADE_STOVE.get(),
+            ModBlocks.CURSED_INGOT_POT.get()
+    };
+    private static final int[] REQUIRED_COUNTS = {2, 1, 1};
+
+    // 需求结果缓存：WeakHashMap 键随祭坛方块实体生命周期自动回收，避免长期持有
+    private static final Map<RitualBlockEntity, RequirementCache> REQUIREMENT_CACHE =
+            Collections.synchronizedMap(new WeakHashMap<>());
+
+    private static final class RequirementCache {
+        final long lastTick;
+        final boolean result;
+
+        RequirementCache(long lastTick, boolean result) {
+            this.lastTick = lastTick;
+            this.result = result;
+        }
+    }
 
     @Override
     public String getName() {
@@ -45,30 +80,38 @@ public class DelightRitualType implements IRitualType {
 
     @Override
     public boolean getRequirement(RitualBlockEntity tileEntity, @Nullable Player player, BlockPos pos, Level level) {
-        return checkDelightRequirements(pos, level, player);
+        return checkDelightRequirements(tileEntity, pos, level, player);
     }
 
-    private boolean checkDelightRequirements(BlockPos pos, Level level, @Nullable Player player) {
-        final int RANGE = 8;
-        Map<Block, Integer> blockRequirements = new HashMap<>();
-        blockRequirements.put(Blocks.SMOKER, 2);
-         blockRequirements.put(ModBlocks.SHADE_STOVE.get(), 1);
-         blockRequirements.put(ModBlocks.CURSED_INGOT_POT.get(), 1);
+    private boolean checkDelightRequirements(@Nullable RitualBlockEntity tileEntity, BlockPos pos, Level level,
+                                             @Nullable Player player) {
+        long now = level.getGameTime();
 
-        Map<Block, Integer> blockCounts = new HashMap<>();
-        for (Block block : blockRequirements.keySet()) {
-            blockCounts.put(block, 0);
+        // 缓存命中：20 tick 内直接返回上次结果，避免每 tick 做 4913 次方块扫描
+        if (tileEntity != null) {
+            RequirementCache cache = REQUIREMENT_CACHE.get(tileEntity);
+            if (cache != null && now - cache.lastTick < CACHE_TICKS) {
+                return cache.result;
+            }
         }
 
-        // 统计范围内方块数量
+        int[] found = new int[REQUIRED_BLOCKS.length];
+        int baseX = pos.getX(), baseY = pos.getY(), baseZ = pos.getZ();
+        BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
+
+        // 统计范围内方块数量（复用 MutableBlockPos，零分配；空气方块直接跳过）
         for (int i = -RANGE; i <= RANGE; ++i) {
             for (int j = -RANGE; j <= RANGE; ++j) {
                 for (int k = -RANGE; k <= RANGE; ++k) {
-                    BlockPos checkPos = pos.offset(i, j, k);
-                    BlockState state = level.getBlockState(checkPos);
+                    mutable.set(baseX + i, baseY + j, baseZ + k);
+                    BlockState state = level.getBlockState(mutable);
+                    if (state.isAir()) continue;
                     Block block = state.getBlock();
-                    if (blockRequirements.containsKey(block)) {
-                        blockCounts.put(block, blockCounts.get(block) + 1);
+                    for (int r = 0; r < REQUIRED_BLOCKS.length; r++) {
+                        if (block == REQUIRED_BLOCKS[r]) {
+                            found[r]++;
+                            break;
+                        }
                     }
                 }
             }
@@ -77,21 +120,19 @@ public class DelightRitualType implements IRitualType {
         boolean allMet = true;
         List<Component> missingMessages = new ArrayList<>();
 
-        for (Map.Entry<Block, Integer> entry : blockRequirements.entrySet()) {
-            Block block = entry.getKey();
-            int required = entry.getValue();
-            int actual = blockCounts.get(block);
+        for (int r = 0; r < REQUIRED_BLOCKS.length; r++) {
+            int required = REQUIRED_COUNTS[r];
+            int actual = found[r];
             if (actual < required) {
                 allMet = false;
-                int deficit = required - actual;
                 missingMessages.add(Component.translatable(
                         "info.goety.ritual.structure.noBlocks",
-                        block.getName(), deficit
+                        REQUIRED_BLOCKS[r].getName(), required - actual
                 ));
             }
         }
 
-        // 如果有缺失且玩家在线，发送提示消息
+        // 如果有缺失且玩家在线，发送提示消息（随缓存降频，不再每 tick 刷屏）
         if (!allMet && player != null) {
             player.sendSystemMessage(Component.translatable("message.goetydelight.ritual.missing_header"));
             for (Component msg : missingMessages) {
@@ -99,6 +140,9 @@ public class DelightRitualType implements IRitualType {
             }
         }
 
+        if (tileEntity != null) {
+            REQUIREMENT_CACHE.put(tileEntity, new RequirementCache(now, allMet));
+        }
         return allMet;
     }
 
