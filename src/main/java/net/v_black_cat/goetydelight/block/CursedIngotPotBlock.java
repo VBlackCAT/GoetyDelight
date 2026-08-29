@@ -9,6 +9,7 @@ import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -57,20 +58,31 @@ public class CursedIngotPotBlock extends CookingPotBlock {
         return ItemInteractionResult.SUCCESS;
     }
 
-    // 破坏方块时爆出物品与经验
+    // 破坏方块时爆出物品与经验（与农夫乐事原版一致：松散物品走 dropContents，
+    // 锅方块物品走原版战利品表掉落，暂存餐数据组件随之保留在掉落物品上）
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
             BlockEntity tileEntity = level.getBlockEntity(pos);
             if (tileEntity instanceof CursedIngotPotBlockEntity cookingPotEntity) {
-                
+
                 Containers.dropContents(level, pos, cookingPotEntity.getDroppableInventory());
-                
+
                 cookingPotEntity.getUsedRecipesAndPopExperience(level, Vec3.atCenterOf(pos));
                 level.updateNeighbourForOutputSignal(pos, this);
             }
             super.onRemove(state, level, pos, newState, isMoving);
         }
+    }
+
+    // 创意模式拾取时保留暂存数据（农夫乐事原版同款）
+    @Override
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
+        ItemStack stack = super.getCloneItemStack(level, pos, state);
+        if (level.getBlockEntity(pos) instanceof CursedIngotPotBlockEntity cookingPot) {
+            stack = cookingPot.getAsItem();
+        }
+        return stack;
     }
 
     @Nullable

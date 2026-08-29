@@ -15,6 +15,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.*;
+import net.v_black_cat.goetydelight.item.CursedIngotPotItem;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.BlockItem;
@@ -25,6 +26,7 @@ import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.sounds.SoundEvents;
 
 import java.util.Arrays;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 
@@ -152,7 +154,8 @@ public class ModBlocks {
         () -> new CursedIngotPotBlock(BlockBehaviour.Properties.of()
                 .mapColor(MapColor.METAL)
                 .strength(0.5F, 6.0F)
-                .sound(SoundType.LANTERN)));
+                .sound(SoundType.LANTERN)),
+        CursedIngotPotItem::new);
 
         ROTTEN_CORPSE_MAGGOT_FEAST_BLOCK = registerBlock("rotten_corpse_maggot_feast_block",
         () -> new RottenCorpseMaggotFeastBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CAKE),
@@ -303,6 +306,14 @@ public class ModBlocks {
                     T> block) {
         DeferredBlock<T> toReturn = BLOCKS.register(name, block);
         registerBlockItem(name, toReturn);
+        return toReturn;
+    }
+
+    // 支持自定义方块物品（如诅咒金属锅：占用条显示 + 暂存数据保留）
+    private static <T extends Block> DeferredBlock<T> registerBlock(String name, Supplier<T> block,
+            BiFunction<Block, Item.Properties, BlockItem> itemFactory) {
+        DeferredBlock<T> toReturn = BLOCKS.register(name, block);
+        ModItems.ITEMS.register(name, () -> itemFactory.apply(toReturn.get(), new Item.Properties()));
         return toReturn;
     }
 

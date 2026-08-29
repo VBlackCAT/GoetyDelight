@@ -40,6 +40,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 import net.v_black_cat.goetydelight.init.ModBlockEntities;
+import net.v_black_cat.goetydelight.init.ModBlocks;
 import net.v_black_cat.goetydelight.screen.CursedIngotPotMenu;
 import net.v_black_cat.goetydelight.util.TextUtils;
 import vectorwing.farmersdelight.common.block.CookingPotBlock;
@@ -153,6 +154,21 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
         if (this.customName != null) {
             components.set(DataComponents.CUSTOM_NAME, this.customName);
         }
+    }
+
+    /** 从携带数据组件的锅物品中读取暂存餐（与农夫乐事 CookingPotItem 同款机制） */
+    public static ItemStack getMealFromItem(ItemStack cookingPotStack) {
+        if (!cookingPotStack.is(ModBlocks.CURSED_INGOT_POT.get().asItem())) {
+            return ItemStack.EMPTY;
+        }
+        return cookingPotStack.getOrDefault(ModDataComponents.MEAL.get(), ItemStackWrapper.EMPTY).getStack();
+    }
+
+    /** 将方块实体（含暂存餐/容器）转成带组件的锅物品，用于创意拾取保留数据 */
+    public ItemStack getAsItem() {
+        ItemStack stack = new ItemStack(ModBlocks.CURSED_INGOT_POT.get().asItem());
+        stack.applyComponents(this.collectComponents());
+        return stack;
     }
 
     @Override
