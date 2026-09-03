@@ -134,6 +134,11 @@ public class ModCreativeTabs {
                         output.accept(ModItems.ECTOPLASMIC_MELON_SEEDS.get());
                         output.accept(ModItems.METAMORPHIC_SCENT_GRASS_SEEDS.get());
 
+                        // 聚晶（法杖 Focus）
+                        output.accept(ModItems.GRASS_CUTTING_FOCUS.get());
+                        output.accept(ModItems.HOE_FOCUS.get());
+                        output.accept(ModItems.MARBLE_FOCUS.get());
+
                         // 人偶
                         CustomDollItem.addCreativeTab(output);
 

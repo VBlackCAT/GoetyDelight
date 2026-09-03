@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:short_grass",
+    "minecraft:tall_grass",
+    "minecraft:fern",
+    "minecraft:large_fern",
+    "goety:sienna_grass",
+    "goety:tall_sienna_grass",
+    "goety:sienna_fern",
+    "goety:large_sienna_fern",
+    "farmersdelight:sandy_shrub"
+  ]
+}

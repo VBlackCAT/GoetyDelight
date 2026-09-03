@@ -50,52 +50,54 @@ public class FalseProverbsEvents {
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
-        if (!player.level().isClientSide) {
-            UUID playerUUID = player.getUUID();
+        if (player.level().isClientSide) return;
 
-            if (player.getMainHandItem().getItem() instanceof FalseProverbsItem) {
-                FoodState state = player.getData(ModAttachments.FOOD_STATE);
+        // 【优化】状态机检测整体降频为每 5 tick：shift 按下/松开、维度检查、背部模型同步
+        // 全部走 5 tick 粒度，切换延迟 ≤250ms 不可感知（伤害倍率走事件，不受影响）
+        if (player.tickCount % 5 != 0) return;
 
-                if (player.isShiftKeyDown()) {
-                    if (!state.isFalseProverbsShift()) {
-                        // 第一次按下Shift
-                        addBonusAttributes(player);
-                        state.setFalseProverbsShift(true);
+        UUID playerUUID = player.getUUID();
 
-                        FalseProverbsItem.setOriginalPosition(playerUUID, player.position());
-                        FalseProverbsItem.setWorldLevel(playerUUID, player.level());
-                        FalseProverbsItem.setPlayerTeleportStatus(playerUUID, true);
+        if (player.getMainHandItem().getItem() instanceof FalseProverbsItem) {
+            FoodState state = player.getData(ModAttachments.FOOD_STATE);
 
-                        player.setInvisible(true);
+            if (player.isShiftKeyDown()) {
+                if (!state.isFalseProverbsShift()) {
+                    // 第一次按下Shift
+                    addBonusAttributes(player);
+                    state.setFalseProverbsShift(true);
 
-                        // 优化粒子效果
-                        spawnShiftParticles(player);
-                        ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(ModSounds.END_WALK.get(), 0.5F, 1.0F));
-                    }
+                    FalseProverbsItem.setOriginalPosition(playerUUID, player.position());
+                    FalseProverbsItem.setWorldLevel(playerUUID, player.level());
+                    FalseProverbsItem.setPlayerTeleportStatus(playerUUID, true);
 
-                    // 检查维度变化
-                    Level storedLevel = FalseProverbsItem.getWorldLevel(playerUUID);
-                    if (storedLevel != null && player.level() != storedLevel) {
-                        FalseProverbsItem.setOriginalPosition(playerUUID, null);
-                    }
-                } else {
-                    // Shift释放时的处理
-                    if (state.isFalseProverbsShift()) {
-                        resetShiftState(player);
-                    }
+                    player.setInvisible(true);
+
+                    // 优化粒子效果
+                    spawnShiftParticles(player);
+                    ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(ModSounds.END_WALK.get(), 0.5F, 1.0F));
+                }
+
+                // 检查维度变化
+                Level storedLevel = FalseProverbsItem.getWorldLevel(playerUUID);
+                if (storedLevel != null && player.level() != storedLevel) {
+                    FalseProverbsItem.setOriginalPosition(playerUUID, null);
                 }
             } else {
-                // 主手不是FalseProverbsItem，但仍有Shift状态
-                if (player.getData(ModAttachments.FOOD_STATE).isFalseProverbsShift()) {
+                // Shift释放时的处理
+                if (state.isFalseProverbsShift()) {
                     resetShiftState(player);
                 }
             }
-
-            // 优化的背部模型同步（每 5 tick 一次；背包扫描/状态对比无需每 tick，250ms 延迟不可感知）
-            if (player.tickCount % 5 == 0) {
-                syncBackModelStatus(player, playerUUID);
+        } else {
+            // 主手不是FalseProverbsItem，但仍有Shift状态
+            if (player.getData(ModAttachments.FOOD_STATE).isFalseProverbsShift()) {
+                resetShiftState(player);
             }
         }
+
+        // 背部模型同步（与状态机同一 5 tick 粒度）
+        syncBackModelStatus(player, playerUUID);
     }
 
     private static void spawnShiftParticles(Player player) {

@@ -1,5 +1,6 @@
 package net.v_black_cat.goetydelight.init;
 
+import com.Polarice3.Goety.common.items.magic.MagicFocus;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemNameBlockItem;
@@ -18,6 +19,9 @@ import net.v_black_cat.goetydelight.item.*;
 import net.v_black_cat.goetydelight.item.CustomDrinkItem;
 import net.v_black_cat.goetydelight.item.food.*;
 import net.v_black_cat.goetydelight.item.food.MetamorphicScentGrassItem;
+import net.v_black_cat.goetydelight.spell.GrassCuttingSpell;
+import net.v_black_cat.goetydelight.spell.HoeHarvestSpell;
+import net.v_black_cat.goetydelight.spell.MarbleWaterSpell;
 
 import static vectorwing.farmersdelight.common.registry.ModItems.basicItem;
 import vectorwing.farmersdelight.common.item.KnifeItem;
@@ -155,6 +159,11 @@ public class ModItems {
 //    //    public static final DeferredItem<Item> MENU;
     public static final DeferredItem<Item> DOLL_ITEM;
     public static final DeferredItem<Item> BOAT_PLATE;
+
+    // 聚晶（法杖 Focus）
+    public static final DeferredItem<Item> GRASS_CUTTING_FOCUS;
+    public static final DeferredItem<Item> HOE_FOCUS;
+    public static final DeferredItem<Item> MARBLE_FOCUS;
 
     //    // ==================== 静态初始化块：物品定义区域 ====================
     static {
@@ -615,6 +624,14 @@ public class ModItems {
         // ==================== 杂项物品 ====================
         DOLL_ITEM = ITEMS.register("doll_item", DollEntityItem::new);
         CUSTOM_DOLL = ITEMS.register("custom_doll", () -> new CustomDollItem(ModBlocks.CUSTOM_DOLL.get()));
+
+        // ==================== 聚晶（法杖 Focus，复用 Goety MagicFocus） ====================
+        GRASS_CUTTING_FOCUS = ITEMS.register("grass_cutting_focus",
+                () -> new MagicFocus(new GrassCuttingSpell()));
+        HOE_FOCUS = ITEMS.register("hoe_focus",
+                () -> new MagicFocus(new HoeHarvestSpell()));
+        MARBLE_FOCUS = ITEMS.register("marble_focus",
+                () -> new MagicFocus(new MarbleWaterSpell()));
     }
 
     // ==================== 辅助方法 ====================
