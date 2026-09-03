@@ -17,6 +17,7 @@ import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.v_black_cat.goetydelight.compat.goety_revelation.item.ApocalyptiumBrushItem;
 import net.v_black_cat.goetydelight.compat.goety_revelation.item.ApocalyptiumKnifeItem;
+import net.v_black_cat.goetydelight.compat.goety_revelation.item.StoneSwordSkewerItem;
 import net.v_black_cat.goetydelight.effect.ModEffects;
 import net.v_black_cat.goetydelight.entities.ModEntities;
 import net.v_black_cat.goetydelight.item.food.*;
@@ -161,6 +162,7 @@ public class ModItems {
     public static RegistryObject<Item> VENOMOUS_SPIDER_KNIFE = null;
     public static RegistryObject<Item> SPECTRE_KNIFE = null;
     public static RegistryObject<Item> APOCALYPTIUM_INGOT_BRUSH = null;
+    public static RegistryObject<Item> STONE_SWORD_SKEWER = null;
     // ==================== 效果供应商常量 ====================
     public static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
     public static final Supplier<MobEffect> NOURISHMENT_EFFECT_SUPPLIER = farmersDelightBuff("nourishment");
@@ -847,6 +849,11 @@ public class ModItems {
             //神金刷子
             APOCALYPTIUM_INGOT_BRUSH = ITEMS.register("apocalyptium_ingot_brush",
                     () -> new ApocalyptiumBrushItem(basicItem().durability(166)));
+
+            STONE_SWORD_SKEWER = ITEMS.register("stone_sword_skewer",
+                    () -> new StoneSwordSkewerItem(basicItem().stacksTo(1).food(
+                            simpleFoodItemProperties(8, 4)
+                                 .build())));
         }
 
     }
