@@ -33,15 +33,15 @@ import com.Polarice3.Goety.utils.ItemHelper;
 @Mod.EventBusSubscriber(modid = GoetyDelight.MODID)
 public class DarkBrushItem extends BrushItem implements ISoulRepair {
 
-    private int ACCELERATION_FACTOR = 10;
-    private static final String ACCUMULATED_OFFSET_TAG = "AccumulatedOffset";
+    public int ACCELERATION_FACTOR = 10;
+    public static final String ACCUMULATED_OFFSET_TAG = "AccumulatedOffset";
 
     public DarkBrushItem(Properties pProperties, int acceleration_factor) {
         super(pProperties);
         this.ACCELERATION_FACTOR = acceleration_factor;
     }
 
-    private static final double MAX_BRUSH_DISTANCE;
+    public static final double MAX_BRUSH_DISTANCE;
     static {
         MAX_BRUSH_DISTANCE = Math.sqrt(ServerGamePacketListenerImpl.MAX_INTERACTION_DISTANCE) - 1.0;
     }
@@ -53,7 +53,7 @@ public void repairTick(ItemStack stack, Entity entityIn, boolean isSelected) {
     }
 }
 
-    private HitResult calculateHitResult(LivingEntity entity) {
+    public HitResult calculateHitResult(LivingEntity entity) {
         return ProjectileUtil.getHitResultOnViewVector(entity, (p_281111_) -> {
             return !p_281111_.isSpectator() && p_281111_.isPickable();
         }, MAX_BRUSH_DISTANCE);
