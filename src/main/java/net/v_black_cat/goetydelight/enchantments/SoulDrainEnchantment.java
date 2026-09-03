@@ -121,7 +121,8 @@ public class SoulDrainEnchantment extends Enchantment {
 
         int targetSouls = SEHelper.getSoulGiven(target);
         float maxBonusDamage = baseDamage * enchantmentLevel;
-        float damageBonus = Math.min((float) targetSouls, maxBonusDamage);
+        float souldamageBonus = (float) (0.2 * enchantmentLevel * (float) targetSouls);
+        float damageBonus = Math.min(souldamageBonus, maxBonusDamage);
 
         event.setAmount(event.getAmount() + damageBonus);
 
