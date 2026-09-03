@@ -15,6 +15,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlocks;
+import net.v_black_cat.goetydelight.compat.goety_revelation.item.ApocalyptiumBrushItem;
 import net.v_black_cat.goetydelight.compat.goety_revelation.item.ApocalyptiumKnifeItem;
 import net.v_black_cat.goetydelight.effect.ModEffects;
 import net.v_black_cat.goetydelight.entities.ModEntities;
@@ -46,7 +47,6 @@ public class ModItems {
     // 刀具物品
     public static final RegistryObject<Item> CURSED_INGOT_KNIFE;
     public static final RegistryObject<Item> DARK_KNIFE;
-    public static final RegistryObject<Item> APOCALYPTIUM_INGOT_BRUSH;
 
     // 武器物品
     public static final RegistryObject<Item> MARBLE_OP_SWORD;
@@ -160,6 +160,7 @@ public class ModItems {
     public static RegistryObject<Item> APOCALYPTIUM_KNIFE = null;
     public static RegistryObject<Item> VENOMOUS_SPIDER_KNIFE = null;
     public static RegistryObject<Item> SPECTRE_KNIFE = null;
+    public static RegistryObject<Item> APOCALYPTIUM_INGOT_BRUSH = null;
     // ==================== 效果供应商常量 ====================
     public static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
     public static final Supplier<MobEffect> NOURISHMENT_EFFECT_SUPPLIER = farmersDelightBuff("nourishment");
@@ -214,10 +215,6 @@ public class ModItems {
         //黑暗金属刷子
         DARK_BRUSH = ITEMS.register("dark_brush",
                 () -> new DarkBrushItem(basicItem().durability(64),3));
-
-        //神金刷子
-        APOCALYPTIUM_INGOT_BRUSH = ITEMS.register("apocalyptium_ingot_brush",
-                () -> new DarkBrushItem(basicItem().durability(166),4));
 
         //大理石op剑
         MARBLE_OP_SWORD = ITEMS.register("marble_op_sword",
@@ -846,6 +843,10 @@ public class ModItems {
 
             SPECTRE_KNIFE = registerWithTab("spectre_knife",
                     () -> new KnifeItem(Tiers.IRON, 0.5F, -2.0F, basicItem()));
+
+            //神金刷子
+            APOCALYPTIUM_INGOT_BRUSH = ITEMS.register("apocalyptium_ingot_brush",
+                    () -> new ApocalyptiumBrushItem(basicItem().durability(166)));
         }
 
     }
