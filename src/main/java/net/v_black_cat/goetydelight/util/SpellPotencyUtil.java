@@ -100,18 +100,11 @@ public class SpellPotencyUtil {
         }
     }
 
-    /**
-     * 计算总加成值（硬糖永久加成 + 效果临时加成）
-     */
     private static double calculateTotalBonus(Player player) {
         int candyLevel = getCandyPotencyLevel(player);
         double effectBonus = getEffectBonus(player);
-
-        // 硬糖：每级+1
         double candyBonus = candyLevel * 1.0;
-
-        // 总加成 = 硬糖加成 + 效果加成
-        return candyBonus + effectBonus;
+        return Math.max(candyBonus, effectBonus);
     }
 
     /**
@@ -135,19 +128,5 @@ public class SpellPotencyUtil {
                 AttributeModifier.Operation.ADDITION
         );
         attrInstance.addPermanentModifier(modifier);
-    }
-
-    /**
-     * 获取当前总加成值
-     */
-    public static double getTotalBonus(Player player, Attribute attribute) {
-        UUID uuid = ATTRIBUTE_UUIDS.get(attribute);
-        if (uuid == null) return 0;
-
-        AttributeInstance attrInstance = player.getAttribute(attribute);
-        if (attrInstance == null) return 0;
-
-        AttributeModifier modifier = attrInstance.getModifier(uuid);
-        return modifier != null ? modifier.getAmount() : 0;
     }
 }

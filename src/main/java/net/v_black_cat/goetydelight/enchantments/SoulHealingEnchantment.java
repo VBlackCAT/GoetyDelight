@@ -116,7 +116,7 @@ public class SoulHealingEnchantment extends Enchantment {
     private static void healPlayerWithSoulEnergy(Player player, int enchantmentLevel) {
         if (player.getHealth() < player.getMaxHealth()) {
             float maxHealth = player.getMaxHealth();
-            float healAmount = (1.0F+0.01F*maxHealth) * enchantmentLevel;
+            float healAmount = (0.5F+0.005F*maxHealth) * enchantmentLevel;
             int soulEnergyCost = 5 * enchantmentLevel;
 
             if (healAmount > 0.5F*maxHealth){
