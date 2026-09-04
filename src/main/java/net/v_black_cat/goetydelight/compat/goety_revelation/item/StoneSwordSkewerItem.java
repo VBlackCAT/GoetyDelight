@@ -6,8 +6,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
@@ -23,15 +22,15 @@ import org.jetbrains.annotations.NotNull;
 import java.util.UUID;
 
 @Mod.EventBusSubscriber
-public class StoneSwordSkewerItem extends Item {
+public class StoneSwordSkewerItem extends SwordItem {
     private static final UUID ATTACK_DAMAGE_MODIFIER_UUID = UUID.fromString("a1b2c3d4-e5f6-7890-abcd-ef1234567890");
     private static final UUID MAX_HEALTH_MODIFIER_UUID = UUID.fromString("b2c3d4e5-f6a7-8901-bcde-f23456789012");
     private static final String EFFECT_DURATION_TAG = "StoneSwordSkewerEffectDuration";
     private static final String DEATH_IMMUNITY_TAG = "StoneSwordSkewerDeathImmunity";
     private static final int EFFECT_DURATION = 10 * 60 * 20;
 
-    public StoneSwordSkewerItem(Properties properties) {
-        super(properties);
+    public StoneSwordSkewerItem(Tier tier, int attackDamageModifier, float attackSpeedModifier, Properties properties) {
+        super(tier, attackDamageModifier, attackSpeedModifier, properties);
         MinecraftForge.EVENT_BUS.register(this);
     }
 
