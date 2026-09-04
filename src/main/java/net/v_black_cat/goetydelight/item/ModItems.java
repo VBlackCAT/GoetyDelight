@@ -17,6 +17,7 @@ import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.v_black_cat.goetydelight.compat.goety_revelation.item.ApocalyptiumBrushItem;
 import net.v_black_cat.goetydelight.compat.goety_revelation.item.ApocalyptiumKnifeItem;
+import net.v_black_cat.goetydelight.compat.goety_revelation.item.PiPieItem;
 import net.v_black_cat.goetydelight.compat.goety_revelation.item.StoneSwordSkewerItem;
 import net.v_black_cat.goetydelight.effect.ModEffects;
 import net.v_black_cat.goetydelight.entities.ModEntities;
@@ -163,6 +164,7 @@ public class ModItems {
     public static RegistryObject<Item> SPECTRE_KNIFE = null;
     public static RegistryObject<Item> APOCALYPTIUM_INGOT_BRUSH = null;
     public static RegistryObject<Item> STONE_SWORD_SKEWER = null;
+    public static RegistryObject<Item> PI_PIE = null;
     // ==================== 效果供应商常量 ====================
     public static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
     public static final Supplier<MobEffect> NOURISHMENT_EFFECT_SUPPLIER = farmersDelightBuff("nourishment");
@@ -851,9 +853,21 @@ public class ModItems {
                     () -> new ApocalyptiumBrushItem(basicItem().durability(166)));
 
             STONE_SWORD_SKEWER = ITEMS.register("stone_sword_skewer",
-                    () -> new StoneSwordSkewerItem(basicItem().stacksTo(1).food(
-                            simpleFoodItemProperties(8, 4)
-                                 .build())));
+                    () -> new StoneSwordSkewerItem(
+                            Tiers.STONE,
+                            4,
+                            -2.4f,
+                            basicItem().stacksTo(1).rarity(Rarity.EPIC).food(
+                                    simpleFoodItemProperties(8, 4).build()
+                            )
+                    )
+            );
+
+            PI_PIE = ITEMS.register("pi_pie",
+                    () -> new PiPieItem(basicItem().stacksTo(1).rarity(Rarity.EPIC)
+                            .food(simpleFoodItemProperties(15, 10)
+                                    .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(20), 0), 1.0F)
+                                    .build())));
         }
 
     }
