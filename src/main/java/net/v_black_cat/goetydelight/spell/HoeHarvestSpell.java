@@ -43,9 +43,9 @@ import java.util.List;
 
 public class HoeHarvestSpell extends Spell {
 
-    private static final double BASE_RADIUS = 2.0D;   // 5×5
-    private static final double MAX_RADIUS = 12.0D;   // 25×25
-    private static final int COOLDOWN_TICKS = 25 * 20; // 25 秒
+    private static final double BASE_RADIUS = 2.0D;
+    private static final double MAX_RADIUS = 12.0D;
+    private static final int COOLDOWN_TICKS = 25 * 20;
 
     @Override
     public SpellStat defaultStats() {
@@ -87,6 +87,10 @@ public class HoeHarvestSpell extends Spell {
         if (focus.isEmpty()) {
             focus = WandUtil.findFocus(caster);
         }
+        if (focus.isEmpty()) {
+            focus = caster.getMainHandItem(); // 兜底
+        }
+
         int rangeLevel = getEnchantLevel(focus, caster, ModEnchantments.RANGE);
 
         double radius = Math.max(BASE_RADIUS, spellStat.getRadius() + spellStat.getPotency());
@@ -97,13 +101,20 @@ public class HoeHarvestSpell extends Spell {
         BlockPos center = caster.blockPosition();
         int harvested = 0;
         int tilled = 0;
+
+        // ===== 核心修改：只有按住 Shift 才允许耕地 =====
+        boolean shouldTill = caster.isShiftKeyDown();
+
         for (int y = -2; y <= 2; ++y) {
             for (int dx = -r; dx <= r; ++dx) {
                 for (int dz = -r; dz <= r; ++dz) {
                     BlockPos pos = center.offset(dx, y, dz);
-                    if (harvestCrop(worldIn, pos, caster)) {
+                    // 先尝试收割（传入 focus 使附魔生效）
+                    if (harvestCrop(worldIn, pos, caster, focus)) {
                         harvested++;
-                    } else if (tillBlock(worldIn, pos, caster)) {
+                    } 
+                    // 仅当按住 Shift 且当前方块不可收割时才尝试耕地
+                    else if (shouldTill && tillBlock(worldIn, pos, caster)) {
                         tilled++;
                     }
                 }
@@ -120,82 +131,75 @@ public class HoeHarvestSpell extends Spell {
         }
     }
 
-    /** 直接从物品栈读取附魔等级；注册表/物品缺失时返回 0（不抛异常） */
-    private static int getEnchantLevel(ItemStack stack, LivingEntity caster, ResourceKey<Enchantment> enchantment) {
+    /**
+     * 获取附魔等级 - 使用 getHolder 以兼容 1.21.1 的 Holder 系统
+     */
+    private static int getEnchantLevel(ItemStack stack, LivingEntity caster, ResourceKey<Enchantment> enchantmentKey) {
         if (stack.isEmpty()) {
             return 0;
         }
-        return caster.registryAccess().registryOrThrow(Registries.ENCHANTMENT)
-                .getHolder(enchantment)
-                .map(stack::getEnchantmentLevel)
+        return caster.registryAccess()
+                .registryOrThrow(Registries.ENCHANTMENT)
+                .getHolder(enchantmentKey)           // 返回 Optional<Holder<Enchantment>>
+                .map(stack::getEnchantmentLevel)     // 方法引用接受 Holder，完美匹配
                 .orElse(0);
     }
 
     /**
-     * 收割单个位置（参考 FTB Ultimine 的 VanillaCropLikeHandler：不枚举方块，按类判定成熟）。
-     * 只摘果不破坏植株：原地把 age 退回幼苗阶段实现自动补种；仅成熟作物可收；瓜茎永不触碰。
+     * 收割单个作物，自动补种
+     * @param tool 传入法杖/焦点物品，用于计算时运/精准采集
      */
-    private boolean harvestCrop(ServerLevel world, BlockPos pos, LivingEntity caster) {
+    private boolean harvestCrop(ServerLevel world, BlockPos pos, LivingEntity caster, ItemStack tool) {
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
 
-        // 瓜茎（原版 + 继承 StemBlock/AttachedStemBlock 的模组瓜茎，含本模组灵质瓜茎）永不收割
         if (block instanceof StemBlock || block instanceof AttachedStemBlock) {
             return false;
         }
-        // 双格作物（瓶子草作物等）整株破坏式收割会破坏结构，跳过
         if (state.hasProperty(BlockStateProperties.HALF)) {
             return false;
         }
-        // 瓜果实体（无 age，非植株）：整体敲掉采收
         if (block == Blocks.MELON || block == Blocks.PUMPKIN) {
             world.destroyBlock(pos, true);
             return true;
         }
 
-        // 1) 原版 CropBlock 及其所有子类（含其它模组继承 CropBlock 的作物，如 FD 卷心菜/洋葱/番茄）
         if (block instanceof CropBlock crop) {
             if (!crop.isMaxAge(state)) {
                 return false;
             }
-            // getAgeProperty() 是 protected（FTBU 能调是它自己的依赖情况），复位阶段统一走通用
-            // "age" 属性查找；CropBlock 体系约定 age 属性名即为 "age"，效果等同
             IntegerProperty ageProperty = findAgeProperty(state);
             if (ageProperty == null) {
                 return false;
             }
-            return harvestAndRegrow(world, pos, state, caster, ageProperty, 0);
+            return harvestAndRegrow(world, pos, state, caster, ageProperty, 0, tool);
         }
-        // 2) 甜浆果：成熟(age>=3)后采果，保留 age=1 以便继续挂果
         if (block instanceof SweetBerryBushBlock) {
             if (state.getValue(SweetBerryBushBlock.AGE) < 3) {
                 return false;
             }
-            return harvestAndRegrow(world, pos, state, caster, SweetBerryBushBlock.AGE, 1);
+            return harvestAndRegrow(world, pos, state, caster, SweetBerryBushBlock.AGE, 1, tool);
         }
-        // 3) 可可豆：成熟(age>=2)后采收，age 归 0
         if (block instanceof CocoaBlock) {
             if (state.getValue(CocoaBlock.AGE) < 2) {
                 return false;
             }
-            return harvestAndRegrow(world, pos, state, caster, CocoaBlock.AGE, 0);
+            return harvestAndRegrow(world, pos, state, caster, CocoaBlock.AGE, 0, tool);
         }
-        // 4) 通用回退：非 CropBlock 但带 "age" 属性的植株类作物（如下界疣及同类模组作物）
-        //    甘蔗除外——它的 age 只是生长阶段，不是"成熟可摘"语义（FTBU 亦不将其视为可摘作物）
         if (block instanceof BushBlock && !(block instanceof SugarCaneBlock)) {
             IntegerProperty ageProperty = findAgeProperty(state);
             if (ageProperty != null
                     && state.getValue(ageProperty) >= Collections.max(ageProperty.getPossibleValues())) {
-                return harvestAndRegrow(world, pos, state, caster, ageProperty, 0);
+                return harvestAndRegrow(world, pos, state, caster, ageProperty, 0, tool);
             }
         }
         return false;
     }
 
-    /** 掉落原版收获物并原地把 age 退回幼苗阶段（植株不破坏，自动补种） */
     private boolean harvestAndRegrow(ServerLevel world, BlockPos pos, BlockState state, LivingEntity caster,
-                                     IntegerProperty ageProperty, int newAge) {
-        List<ItemStack> drops = Block.getDrops(state, world, pos, null, caster, ItemStack.EMPTY);
+                                     IntegerProperty ageProperty, int newAge, ItemStack tool) {
+        // 传入 tool 使附魔生效
+        List<ItemStack> drops = Block.getDrops(state, world, pos, null, caster, tool);
         for (ItemStack drop : drops) {
             if (!drop.isEmpty()) {
                 Block.popResource(world, pos, drop);
@@ -205,7 +209,6 @@ public class HoeHarvestSpell extends Spell {
         return true;
     }
 
-    /** 在方块状态里找名为 "age" 的整数属性（模组作物通用识别） */
     private static IntegerProperty findAgeProperty(BlockState state) {
         for (Property<?> property : state.getProperties()) {
             if (property instanceof IntegerProperty integerProperty
@@ -216,6 +219,9 @@ public class HoeHarvestSpell extends Spell {
         return null;
     }
 
+    /**
+     * 耕地逻辑 - 完全依赖 getToolModifiedState，无硬编码列表
+     */
     private boolean tillBlock(ServerLevel world, BlockPos pos, LivingEntity caster) {
         BlockState state = world.getBlockState(pos);
         if (!world.getBlockState(pos.above()).isAir()) {
@@ -227,23 +233,12 @@ public class HoeHarvestSpell extends Spell {
                 InteractionHand.MAIN_HAND,
                 ItemStack.EMPTY,
                 new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false));
-        BlockState tilled = state.getToolModifiedState(context, ItemAbilities.HOE_TILL, false);
-        if (tilled == null || tilled == state) {
-            if (!isHoeTillable(state.getBlock())) {
-                return false;
-            }
-            tilled = Blocks.FARMLAND.defaultBlockState();
-        }
-        world.setBlock(pos, tilled, 3);
-        return true;
-    }
 
-    private static boolean isHoeTillable(Block block) {
-        return block == Blocks.DIRT
-                || block == Blocks.GRASS_BLOCK
-                || block == Blocks.COARSE_DIRT
-                || block == Blocks.PODZOL
-                || block == Blocks.MYCELIUM
-                || block == Blocks.DIRT_PATH;
+        BlockState tilled = state.getToolModifiedState(context, ItemAbilities.HOE_TILL, false);
+        if (tilled != null && tilled != state) {
+            world.setBlock(pos, tilled, 3);
+            return true;
+        }
+        return false;
     }
 }

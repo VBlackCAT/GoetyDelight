@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "goetydelight:item/marble_focus"
+    "layer0": "goetydelight:item/focus/marble_focus"
   }
 }

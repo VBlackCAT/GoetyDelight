@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "goetydelight:item/hoe_focus"
+    "layer0": "goetydelight:item/focus/hoe_focus"
   }
 }
