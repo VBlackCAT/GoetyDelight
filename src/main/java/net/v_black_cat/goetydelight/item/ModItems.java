@@ -15,10 +15,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlocks;
-import net.v_black_cat.goetydelight.compat.goety_revelation.item.ApocalyptiumBrushItem;
-import net.v_black_cat.goetydelight.compat.goety_revelation.item.ApocalyptiumKnifeItem;
-import net.v_black_cat.goetydelight.compat.goety_revelation.item.PiPieItem;
-import net.v_black_cat.goetydelight.compat.goety_revelation.item.StoneSwordSkewerItem;
+import net.v_black_cat.goetydelight.compat.goety_revelation.item.*;
 import net.v_black_cat.goetydelight.effect.ModEffects;
 import net.v_black_cat.goetydelight.entities.ModEntities;
 import net.v_black_cat.goetydelight.item.food.*;
@@ -165,6 +162,7 @@ public class ModItems {
     public static RegistryObject<Item> APOCALYPTIUM_INGOT_BRUSH = null;
     public static RegistryObject<Item> STONE_SWORD_SKEWER = null;
     public static RegistryObject<Item> PI_PIE = null;
+    public static RegistryObject<Item> SHARK_GUMMY = null;
     // ==================== 效果供应商常量 ====================
     public static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
     public static final Supplier<MobEffect> NOURISHMENT_EFFECT_SUPPLIER = farmersDelightBuff("nourishment");
@@ -866,8 +864,15 @@ public class ModItems {
             PI_PIE = ITEMS.register("pi_pie",
                     () -> new PiPieItem(basicItem().stacksTo(1).rarity(Rarity.EPIC)
                             .food(simpleFoodItemProperties(15, 10)
-                                    .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(20), 0), 1.0F)
+                                    .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
                                     .build())));
+
+            SHARK_GUMMY = ITEMS.register("shark_gummy",
+                    () -> new SharkGummyItem(basicItem().stacksTo(1).rarity(Rarity.EPIC)
+                            .food(simpleFoodItemProperties(10, 7)
+                                    .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
+                                    .build())));
+
         }
 
     }
