@@ -125,13 +125,12 @@ public class PiPieItem extends Item {
     private static DamageSource createPlayerAttackDamageSource(Player shooter) {
         DamageSource damageSource = shooter.damageSources().playerAttack(shooter);
 
-        // 修改伤害类型标签以绕过无敌帧
-        Holder<DamageType> damageTypeHolder = damageSource.typeHolder();
-        if (damageTypeHolder instanceof Holder.Reference<DamageType> reference) {
-            reference.bindTags(Set.of(
-                    DamageTypeTags.BYPASSES_INVULNERABILITY
-            ));
-        }
+//        Holder<DamageType> damageTypeHolder = damageSource.typeHolder();
+//        if (damageTypeHolder instanceof Holder.Reference<DamageType> reference) {
+//            reference.bindTags(Set.of(
+//                    DamageTypeTags.BYPASSES_INVULNERABILITY
+//            ));
+//        }
 
         return damageSource;
     }
@@ -152,7 +151,7 @@ public class PiPieItem extends Item {
                         arrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, velocity, 1.0F);
                         arrow.setCritArrow(true);
                         arrow.setOwner(player);
-                        arrow.pickup = AbstractArrow.Pickup.DISALLOWED; // 禁止拾取
+                        arrow.pickup = AbstractArrow.Pickup.DISALLOWED;
 
                         CompoundTag tag = arrow.getPersistentData();
                         tag.putBoolean(RAIN_ARROW_TAG, false);
@@ -191,37 +190,50 @@ public class PiPieItem extends Item {
                         trackedArrows.remove(arrow);
                         return;
                     }
+
                     boolean isRainArrow = tag.getBoolean(RAIN_ARROW_TAG);
+
                     if (hitResult instanceof EntityHitResult entityHitResult) {
                         Entity target = entityHitResult.getEntity();
                         if (target instanceof LivingEntity livingTarget) {
+                            if (livingTarget == shooter) {
+                                arrow.discard();
+                                trackedArrows.remove(arrow);
+                                return;
+                            }
                             if (livingTarget instanceof Player targetPlayer &&
                                     (targetPlayer.isCreative() || targetPlayer.isSpectator())) {
                                 arrow.discard();
                                 trackedArrows.remove(arrow);
                                 return;
                             }
+
                             float actualDamage = calculateArrowDamage(arrow, livingTarget);
                             event.setImpactResult(ProjectileImpactEvent.ImpactResult.STOP_AT_CURRENT_NO_DAMAGE);
                             DamageSource damageSource = createPlayerAttackDamageSource(shooter);
+
+                            // 重置无敌帧，让箭雨箭矢能够无视无敌帧
+                            if (isRainArrow) {
+                                livingTarget.invulnerableTime = 0;
+                            }
+
                             livingTarget.hurt(damageSource, actualDamage);
+
                             if (shooter.isAlive() && isPlayerActive(shooter)) {
                                 float healAmount = isRainArrow ? actualDamage * 0.5f : actualDamage;
                                 shooter.heal(healAmount);
                             }
-                            if (!isRainArrow) {
-                                createArrowRainTasks((ServerLevel) arrow.level(), impactPos, shooter);
-                            }
-                            arrow.discard();
-                            trackedArrows.remove(arrow);
                         }
-                    } else {
-                        if (!isRainArrow) {
-                            createArrowRainTasks((ServerLevel) arrow.level(), impactPos, shooter);
-                        }
-                        arrow.discard();
-                        trackedArrows.remove(arrow);
                     }
+
+                    // 无论击中什么，非箭雨箭矢都触发箭雨
+                    if (!isRainArrow) {
+                        createArrowRainTasks((ServerLevel) arrow.level(), impactPos, shooter);
+                    }
+
+                    // 确保箭矢被清除
+                    arrow.discard();
+                    trackedArrows.remove(arrow);
                 }
             }
         }
@@ -246,9 +258,9 @@ public class PiPieItem extends Item {
             int currentTick = level.getServer().getTickCount();
             UUID shooterId = shooter.getUUID();
 
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 15; i++) {
                 tasks.add(new ArrowRainTask(
-                        currentTick + i * 10,
+                        currentTick + i * 5,
                         center,
                         shooterId,
                         level
@@ -259,15 +271,15 @@ public class PiPieItem extends Item {
         }
 
         private static void spawnArrowBatch(ServerLevel level, Vec3 center, Player shooter) {
-            int arrowCount = 15 + level.random.nextInt(6);
+            int arrowCount = 5 + level.random.nextInt(6);
 
             for (int j = 0; j < arrowCount; j++) {
                 double angle = level.random.nextDouble() * 360 * Math.PI / 180;
-                double radius = level.random.nextDouble() * 2;
+                double radius = level.random.nextDouble() * 1.5;
 
                 Vec3 spawnPos = new Vec3(
                         center.x + Math.cos(angle) * radius,
-                        center.y + 25,
+                        center.y + 15,
                         center.z + Math.sin(angle) * radius
                 );
 
@@ -278,7 +290,7 @@ public class PiPieItem extends Item {
                         (level.random.nextDouble() - 0.5) * 0.5
                 );
                 rainArrow.setOwner(shooter);
-                rainArrow.pickup = AbstractArrow.Pickup.DISALLOWED; // 禁止拾取
+                rainArrow.pickup = AbstractArrow.Pickup.DISALLOWED;
 
                 CompoundTag tag = rainArrow.getPersistentData();
                 tag.putUUID(SHOOTER_TAG, shooter.getUUID());
@@ -294,28 +306,24 @@ public class PiPieItem extends Item {
 
         @SubscribeEvent
         public static void onLivingAttack(LivingAttackEvent event) {
-            if (event.getEntity() instanceof Player targetPlayer &&
-                    (targetPlayer.isCreative() || targetPlayer.isSpectator())) {
-                event.setCanceled(true);
-                return;
-            }
-
             if (event.getSource().getDirectEntity() instanceof AbstractArrow arrow) {
                 CompoundTag tag = arrow.getPersistentData();
                 if (tag.hasUUID(SHOOTER_TAG)) {
-                    Player shooter = null;
-                    if (arrow.getOwner() instanceof Player p) {
-                        shooter = p;
-                    } else {
-                        UUID shooterId = tag.getUUID(SHOOTER_TAG);
-                        shooter = arrow.level().getPlayerByUUID(shooterId);
+                    UUID shooterId = tag.getUUID(SHOOTER_TAG);
+                    if (event.getEntity().getUUID().equals(shooterId)) {
+                        event.setCanceled(true);
+                        return;
                     }
-
-                    if (shooter != null && event.getEntity() == shooter) {
+                    if (arrow.getOwner() != null && arrow.getOwner().getUUID().equals(event.getEntity().getUUID())) {
                         event.setCanceled(true);
                         return;
                     }
                 }
+            }
+
+            if (event.getEntity() instanceof Player targetPlayer &&
+                    (targetPlayer.isCreative() || targetPlayer.isSpectator())) {
+                event.setCanceled(true);
             }
         }
 
@@ -368,14 +376,8 @@ public class PiPieItem extends Item {
                 }
                 boolean shouldRemove = arrow.inGround;
                 if (!shouldRemove && arrow.getPersistentData().hasUUID(SHOOTER_TAG)) {
-                    if (arrow.getPersistentData().getBoolean(RAIN_ARROW_TAG)) {
-                        if (arrow.tickCount > 100) {
-                            shouldRemove = true;
-                        }
-                    } else {
-                        if (arrow.tickCount > 100) {
-                            shouldRemove = true;
-                        }
+                    if (arrow.tickCount > 100) {
+                        shouldRemove = true;
                     }
                 }
 
