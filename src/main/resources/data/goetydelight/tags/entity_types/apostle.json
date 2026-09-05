@@ -1,0 +1,13 @@
+{
+  "values": [
+    "goety:apostle",
+    {
+      "id": "revelationfix:apostle_servant",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:apostle_servant",
+      "required": false
+    }
+  ]
+}

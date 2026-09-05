@@ -1,0 +1,33 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "minecraft:trident"
+  },
+  "craftType": "culinary",
+  "entity_to_sacrifice": {
+    "tag": "goetydelight:apostle",
+    "display_name": "entity.goety.apostle"
+  },
+  "soulCost": 2000,
+  "duration": 10,
+  "ingredients": [
+    {
+      "item": "goety:entangling_focus"
+    },
+    {
+      "type": "forge:nbt",
+      "item": "goety:unholy_blood",
+      "nbt": "{\"Pure\": 1b}"
+    },
+    {
+      "item": "goety:iceology_focus"
+    },
+    {
+      "item": "minecraft:honey_bottle"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:shark_gummy"
+  }
+}
