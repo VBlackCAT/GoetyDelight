@@ -1,0 +1,30 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "minecraft:stone_sword"
+  },
+  "craftType": "culinary",
+  "entity_to_sacrifice": {
+    "tag": "goetydelight:apostle",
+    "display_name": "entity.goety.apostle"
+  },
+  "soulCost": 2000,
+  "duration": 10,
+  "ingredients": [
+    {
+      "item": "goety:tall_skull"
+    },
+    {
+      "type": "forge:nbt",
+      "item": "goety:unholy_blood",
+      "nbt": "{\"Pure\": 1b}"
+    },
+    {
+      "tag": "goety:meat"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:stone_sword_skewer"
+  }
+}

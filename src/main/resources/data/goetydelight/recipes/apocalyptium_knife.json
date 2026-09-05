@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "goety_revelation:apocalyptium_ingot"
+  },
+  "base": {
+    "item": "goetydelight:dark_knife"
+  },
+  "result": {
+    "item": "goetydelight:apocalyptium_knife"
+  },
+  "template": {
+    "item": "goety_revelation:apocalyptium_upgrade_smithing_template"
+  }
+}

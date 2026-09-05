@@ -1,0 +1,28 @@
+{
+  "type": "farmersdelight:cooking",
+  "ingredients": [
+    {
+      "item": "goety_revelation:atonement_voucher"
+    },
+    {
+      "item": "minecraft:honey_bottle"
+    },
+    {
+      "item": "minecraft:cod"
+    },
+    {
+      "type": "forge:nbt",
+      "item": "goety:unholy_blood",
+      "nbt": "{\"Pure\": 1b}"
+    },
+    {
+      "item": "goety:mystic_core"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:atonement_voucher_wraped_cod",
+    "count": 1
+  },
+  "experience": 666,
+  "cookingtime": 300
+}

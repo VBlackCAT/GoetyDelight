@@ -164,6 +164,8 @@ public class ModItems {
     public static RegistryObject<Item> PI_PIE = null;
     public static RegistryObject<Item> SHARK_GUMMY = null;
     public static RegistryObject<Item> APOCALYPTIUM_COD = null;
+    public static RegistryObject<Item> DOOM_COOKIE = null;
+    public static RegistryObject<Item> ATONEMENT_VOUCHER_WRAPED_COD = null;
     // ==================== 效果供应商常量 ====================
     public static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
     public static final Supplier<MobEffect> NOURISHMENT_EFFECT_SUPPLIER = farmersDelightBuff("nourishment");
@@ -841,14 +843,15 @@ public class ModItems {
                     () -> new ApocalyptiumKnifeItem(ModItemTiers.APOCALYPTIUM, -5.0F, -2.0F,
                             basicItem().durability(666)));
 
-            APOCALYPTIUM_INGOT_BRUSH = ITEMS.register("apocalyptium_ingot_brush",
-                    () -> new ApocalyptiumBrushItem(basicItem().durability(166)));
-
             VENOMOUS_SPIDER_KNIFE = registerWithTab("venomous_spider_knife",
                     () -> new KnifeItem(Tiers.IRON, 0.5F, -2.0F, basicItem()));
 
             SPECTRE_KNIFE = registerWithTab("spectre_knife",
                     () -> new KnifeItem(Tiers.IRON, 0.5F, -2.0F, basicItem()));
+
+
+            APOCALYPTIUM_INGOT_BRUSH = ITEMS.register("apocalyptium_ingot_brush",
+                    () -> new ApocalyptiumBrushItem(basicItem().durability(166)));
 
             STONE_SWORD_SKEWER = ITEMS.register("stone_sword_skewer",
                     () -> new StoneSwordSkewerItem(
@@ -877,6 +880,18 @@ public class ModItems {
                     () -> new ApocalyptiumCodItem(basicItem().stacksTo(1).rarity(Rarity.EPIC)
                             .food(simpleFoodItemProperties(12, 8)
                                     .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(6), 0), 1.0F)
+                                    .build())));
+
+            DOOM_COOKIE = ITEMS.register("doom_cookie",
+                    () -> new DoomCookieItem(basicItem().stacksTo(16).rarity(Rarity.UNCOMMON)
+                            .food(simpleFoodItemProperties(6, 4)
+                                    .effect(() ->new MobEffectInstance(DOOM.get(), minToTick(1), 14), 1.0F)
+                                    .build())));
+
+            ATONEMENT_VOUCHER_WRAPED_COD = ITEMS.register("atonement_voucher_wraped_cod",
+                    () -> new AtonementVoucherWrapedCodItem(basicItem().stacksTo(16).rarity(Rarity.UNCOMMON)
+                            .food(simpleFoodItemProperties(10, 7)
+                                    .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
                                     .build())));
 
         }

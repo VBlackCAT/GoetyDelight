@@ -284,6 +284,7 @@ dependencies {
     compileOnly "blank:goety-2.5.55.2"//我没活了，真连不上cf库
     compileOnly "blank:FarmersDelight-1.20.1-1.3.1"//理由同上
     compileOnly "curse.maven:jade-324717:6855440"
+//    compileOnly "curse.maven:goety-revelation-1236817:8311906"//编译时加载启示录
     modImplementation "curse.maven:curios-309927:6418456"//5.14.1
 
     //帕秋莉

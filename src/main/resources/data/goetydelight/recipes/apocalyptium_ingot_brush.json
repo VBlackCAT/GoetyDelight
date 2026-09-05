@@ -1,0 +1,17 @@
+{
+  "type": "crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "goety_revelation:apocalyptium_ingot"
+    },
+    {
+      "item": "goety_revelation:gold_feather"
+    },
+    {
+      "tag": "minecraft:logs"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:apocalyptium_ingot_brush"
+  }
+}
