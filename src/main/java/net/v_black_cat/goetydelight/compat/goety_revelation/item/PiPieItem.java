@@ -212,15 +212,15 @@ public class PiPieItem extends Item {
                             event.setImpactResult(ProjectileImpactEvent.ImpactResult.STOP_AT_CURRENT_NO_DAMAGE);
                             DamageSource damageSource = createPlayerAttackDamageSource(shooter);
 
-                            // 重置无敌帧，让箭雨箭矢能够无视无敌帧
-                            if (isRainArrow) {
+                            // 修改这里：所有标记了BYPASS_IMMUNITY_TAG的箭矢都能无视无敌帧
+                            if (tag.getBoolean(BYPASS_IMMUNITY_TAG)) {
                                 livingTarget.invulnerableTime = 0;
                             }
 
                             livingTarget.hurt(damageSource, actualDamage);
 
                             if (shooter.isAlive() && isPlayerActive(shooter)) {
-                                float healAmount = isRainArrow ? actualDamage * 0.5f : actualDamage;
+                                float healAmount = isRainArrow ? actualDamage * 0.025f : actualDamage;
                                 shooter.heal(healAmount);
                             }
                         }
@@ -271,7 +271,7 @@ public class PiPieItem extends Item {
         }
 
         private static void spawnArrowBatch(ServerLevel level, Vec3 center, Player shooter) {
-            int arrowCount = 5 + level.random.nextInt(6);
+            int arrowCount = 7 + level.random.nextInt(4);
 
             for (int j = 0; j < arrowCount; j++) {
                 double angle = level.random.nextDouble() * 360 * Math.PI / 180;
@@ -279,14 +279,14 @@ public class PiPieItem extends Item {
 
                 Vec3 spawnPos = new Vec3(
                         center.x + Math.cos(angle) * radius,
-                        center.y + 15,
+                        center.y + 10,
                         center.z + Math.sin(angle) * radius
                 );
 
                 Arrow rainArrow = new Arrow(level, spawnPos.x, spawnPos.y, spawnPos.z);
                 rainArrow.setDeltaMovement(
                         (level.random.nextDouble() - 0.5) * 0.5,
-                        -2.0,
+                        -2.5,
                         (level.random.nextDouble() - 0.5) * 0.5
                 );
                 rainArrow.setOwner(shooter);
