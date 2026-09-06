@@ -22,7 +22,7 @@ import java.util.Map;
 public class SharkGummyItem extends Item {
 
     private static final String NBT_KEY = "SharkGummyEffect";
-    private static final int EFFECT_DURATION = 10 * 20;
+    private static final int EFFECT_DURATION = 15 * 20;
 
     private static Field activeEffectsField;
     private static Method onEffectAddedMethod;

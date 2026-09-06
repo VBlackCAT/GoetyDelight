@@ -22,11 +22,12 @@
     },
     {
       "type": "forge:nbt",
-      "item": "minecraft",
+      "item": "minecraft:enchanted_book",
       "nbt": {
         "StoredEnchantments": [
           {
-            "id": "goetydelight:soul_mending"
+            "id": "minecraft:multishot",
+            "lvl": 1
           }
         ]
       }
