@@ -2,6 +2,7 @@ package net.v_black_cat.goetydelight.events;
 
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.compat.CompatRegistry;
 import net.v_black_cat.goetydelight.compat.curios.CuriosCompat;
 import net.v_black_cat.goetydelight.ritual.DelightRitualType;
 
@@ -10,5 +11,7 @@ public class CommonSetupHandler {
         GoetyDelight.LOGGER.info("HELLO FROM COMMON SETUP");
         DelightRitualType.onCommonSetup(event);
         event.enqueueWork(CuriosCompat::commonSetup);
+        // 联动模块的注册表后置初始化统一入口
+        event.enqueueWork(CompatRegistry::commonSetup);
     }
 }

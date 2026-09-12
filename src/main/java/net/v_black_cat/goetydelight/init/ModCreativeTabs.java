@@ -56,6 +56,7 @@ public class ModCreativeTabs {
                         output.accept(ModItems.ECTOPLASM_JELLY.get());
                         output.accept(ModItems.WHITE_SHARK_SUGAR_PACK.get());
                         output.accept(ModItems.SUNSHINE_SUGAR_BUN.get());
+                        output.accept(ModItems.COLD_LEAF_CANDY.get());
                         output.accept(ModItems.CANDY_FISH.get());
                         output.accept(ModItems.FROG_LEG_SANDWICH.get());
                         output.accept(ModItems.CREAMY_BERRY_FISH_PASTE_DUMPLING_WITH_CHOCOLATE_SAUCE.get());
@@ -63,6 +64,12 @@ public class ModCreativeTabs {
                         output.accept(ModItems.CRYING_SHARK_SUGAR_PACK.get());
                         output.accept(ModItems.SIBLING_SUNDAE.get());
                         output.accept(ModItems.BEAR_PAW.get());
+                        output.accept(ModItems.BRAISED_BEAR_PAW.get());
+                        output.accept(ModItems.SHARK_FIN.get());
+                        output.accept(ModItems.COOKED_SHARK_FIN.get());
+                        output.accept(ModItems.BREAM.get());
+                        output.accept(ModItems.COOKED_BREAM.get());
+                        output.accept(ModItems.TAIYAKI.get());
                         output.accept(ModItems.ECTOPLASMIC_MELON.get());
                         output.accept(ModItems.BLUE_ECTOPLASMIC_SUNDAE.get());
                         output.accept(ModItems.POACHED_SPIDER_EGG.get());
@@ -138,6 +145,9 @@ public class ModCreativeTabs {
                         output.accept(ModItems.GRASS_CUTTING_FOCUS.get());
                         output.accept(ModItems.HOE_FOCUS.get());
                         output.accept(ModItems.MARBLE_FOCUS.get());
+                        output.accept(ModItems.LOVE_AND_FERTILITY_FOCUS.get());
+                        output.accept(ModItems.RICH_SOIL_FOCUS.get());
+                        output.accept(ModItems.LAOWANG_FOCUS.get());
 
                         // 人偶
                         CustomDollItem.addCreativeTab(output);

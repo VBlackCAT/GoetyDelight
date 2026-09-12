@@ -15,7 +15,7 @@ import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
-import net.v_black_cat.goetydelight.init.ModConfig;
+import net.v_black_cat.goetydelight.init.ModServerConfig;
 import net.v_black_cat.goetydelight.init.ModItems;
 import net.v_black_cat.goetydelight.init.ModRecipeSerializers;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +38,7 @@ public class TenThousandPoisonFeastRecipe extends CustomRecipe {
                 collectDebuffs(stack, debuffIds);
             }
         }
-        return debuffIds.size() >= ModConfig.getTenThousandPoisonFeastMinDebuffCount();
+        return debuffIds.size() >= ModServerConfig.getTenThousandPoisonFeastMinDebuffCount();
     }
 
     @Override
@@ -48,7 +48,7 @@ public class TenThousandPoisonFeastRecipe extends CustomRecipe {
 
     @Override
     public boolean canCraftInDimensions(int width, int height) {
-        return width * height >= ModConfig.getTenThousandPoisonFeastMinItemCount();
+        return width * height >= ModServerConfig.getTenThousandPoisonFeastMinItemCount();
     }
 
     @Override

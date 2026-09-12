@@ -119,6 +119,24 @@ public class ModAttachments {
         );
     }
 
+    // ==================== 虚妄箴言背部模型 ====================
+
+    /**
+     * 虚妄箴言「背在背上」时所在的主背包槽位（0-35）；-1 表示没有背在背上。
+     *
+     * <p>由 {@code FalseProverbsItem#inventoryTick} 写入：剑在背包里才会触发回调，
+     * 剑不在背包时服务器端零开销。{@code Entity#setData} 会自动同步给附近玩家（含玩家本人），
+     * 新玩家开始追踪实体 / 玩家登录时 NeoForge 也会补发一次初始值。
+     */
+    public static final Supplier<
+            AttachmentType<
+                    Integer>> FALSE_PROVERBS_BACK_SLOT = ATTACHMENT_TYPES.register("false_proverbs_back_slot",
+            () -> AttachmentType.builder(() -> -1)
+                    .serialize(Codec.INT)
+                    .sync(ByteBufCodecs.VAR_INT)
+                    .build()
+    );
+
     public static void register(IEventBus modEventBus) {
         ATTACHMENT_TYPES.register(modEventBus);
     }

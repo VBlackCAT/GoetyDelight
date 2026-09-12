@@ -36,10 +36,7 @@ public class ClientSetup {
 
     @SubscribeEvent
     public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        event.registerLayerDefinition(
-                ModLayerDefinitions.FALSE_PROVERBS_BACK,
-                FalseProverbsItemModel::createBodyLayer
-        );
+        // 物品栏/BEWLR 用的模型层（背部渲染层直接用物品模型，不需要额外的实体层）
         event.registerLayerDefinition(
                 FalseProverbsItemModel.LAYER_LOCATION,
                 FalseProverbsItemModel::createBodyLayer

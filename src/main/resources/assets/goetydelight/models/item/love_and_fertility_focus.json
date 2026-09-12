@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "goetydelight:item/focus/love_and_fertility_focus"
+  }
+}

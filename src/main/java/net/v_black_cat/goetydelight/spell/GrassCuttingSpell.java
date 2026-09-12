@@ -22,6 +22,8 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.v_black_cat.goetydelight.util.SpellCastUtil;
+import net.v_black_cat.goetydelight.util.SpellLootUtil;
 import vectorwing.farmersdelight.common.registry.ModItems;
 
 import java.util.ArrayList;
@@ -30,8 +32,8 @@ import java.util.List;
 public class GrassCuttingSpell extends Spell {
 
     private static final double BASE_RADIUS = 2.0D;   // 5×5
-    private static final double MAX_RADIUS = 12.0D;   // 25×25
-    private static final int COOLDOWN_TICKS = 25 * 20; // 25 秒
+    private static final double MAX_RADIUS = 7.0D;    // 15×15（范围附魔每级 +2，III 级到顶）
+    private static final int COOLDOWN_TICKS = 10 * 20; // 10 秒
 
    
     private static final TagKey<Block> GRASS_LIKE = TagKey.create(Registries.BLOCK,
@@ -70,6 +72,7 @@ public class GrassCuttingSpell extends Spell {
         list.add(Enchantments.SILK_TOUCH);
         list.add(Enchantments.FORTUNE);
         list.add(ModEnchantments.RANGE);
+        list.add(ModEnchantments.MAGNET); // 磁引：掉落直接进背包（参考 Goety 的 burrowing_focus）
         return list;
     }
 
@@ -83,21 +86,16 @@ public class GrassCuttingSpell extends Spell {
         // 直接从聚晶栈读取附魔等级（绕过 enchantedFocus/isEnchanted 等间接门禁）
         boolean silkTouch = getEnchantLevel(focus, caster, Enchantments.SILK_TOUCH) > 0;
         int fortune = getEnchantLevel(focus, caster, Enchantments.FORTUNE);
-        int rangeLevel = getEnchantLevel(focus, caster, ModEnchantments.RANGE);
+        boolean magnet = getEnchantLevel(focus, caster, ModEnchantments.MAGNET) > 0;
 
-        // 范围 = 基础半径 + 强效(potency) + 半径(radius) 属性加成 + 范围附魔(每级+2)，上限 25×25
-        double radius = Math.max(BASE_RADIUS, spellStat.getRadius() + spellStat.getPotency());
-        radius += 2.0D * rangeLevel;
-        radius = Math.min(radius, MAX_RADIUS);
-        int r = (int) Math.floor(radius);
-
-        BlockPos center = caster.blockPosition();
+        int r = spellRadius(focus, caster, spellStat);
+        BlockPos center = SpellCastUtil.castCenter(caster); // 以右击的方块为中心
         int harvested = 0;
         for (int y = -2; y <= 2; ++y) {
             for (int dx = -r; dx <= r; ++dx) {
                 for (int dz = -r; dz <= r; ++dz) {
                     BlockPos pos = center.offset(dx, y, dz);
-                    if (harvestPlant(worldIn, pos, caster, silkTouch, fortune)) {
+                    if (harvestPlant(worldIn, pos, caster, silkTouch, fortune, magnet)) {
                         harvested++;
                     }
                 }
@@ -110,6 +108,31 @@ public class GrassCuttingSpell extends Spell {
         }
     }
 
+    @Override
+    public boolean conditionsMet(ServerLevel worldIn, LivingEntity caster, SpellStat spellStat) {
+        int r = spellRadius(WandUtil.findFocus(caster), caster, spellStat);
+        BlockPos center = SpellCastUtil.castCenter(caster); // 与 SpellResult 同一中心
+        for (int y = -2; y <= 2; ++y) {
+            for (int dx = -r; dx <= r; ++dx) {
+                for (int dz = -r; dz <= r; ++dz) {
+                    if (isHarvestable(worldIn.getBlockState(center.offset(dx, y, dz)))) {
+                        return true; // 只要有一株可割就放行，边扫边退
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /** 范围 = 基础半径 + 强效(potency) + 半径(radius) 属性加成 + 范围附魔(每级 +2)，上限 15×15 */
+    private static int spellRadius(ItemStack focus, LivingEntity caster, SpellStat spellStat) {
+        int rangeLevel = getEnchantLevel(focus, caster, ModEnchantments.RANGE);
+        double radius = Math.max(BASE_RADIUS, spellStat.getRadius() + spellStat.getPotency());
+        radius += 2.0D * rangeLevel;
+        radius = Math.min(radius, MAX_RADIUS);
+        return (int) Math.floor(radius);
+    }
+
     private static int getEnchantLevel(ItemStack stack, LivingEntity caster, ResourceKey<Enchantment> enchantment) {
         if (stack.isEmpty()) {
             return 0;
@@ -120,13 +143,8 @@ public class GrassCuttingSpell extends Spell {
                 .orElse(0);
     }
 
-    /**
-     * 收割单个位置。
-     * 精准采集 = 用剪刀模拟该方块自己的战利品表（双格植物在结构完整时先结算，高草→2 短草、
-     * Goety 高 sienna → 2 sienna_grass、FD 沙灌走它的 shears_harvest 能力条件）；
-     * 无精准的草类 → 草秆(自实现时运：数量 = 1 + 随机(0..时运))，花 → 本体，其余剪刀类 → 无掉落。
-     */
-    private boolean harvestPlant(ServerLevel world, BlockPos pos, LivingEntity caster, boolean silkTouch, int fortune) {
+    private boolean harvestPlant(ServerLevel world, BlockPos pos, LivingEntity caster, boolean silkTouch,
+                                 int fortune, boolean magnet) {
         BlockState state = world.getBlockState(pos);
         if (!isHarvestable(state)) {
             return false;
@@ -152,24 +170,23 @@ public class GrassCuttingSpell extends Spell {
 
         if (grassLike) {
             if (silkTouch) {
-                dropAll(world, pos, shearsDrops);
+                dropAll(world, pos, caster, shearsDrops, magnet);
             } else {
                 int strawCount = 1 + world.random.nextInt(fortune + 1);
-                Block.popResource(world, pos, new ItemStack(ModItems.STRAW.get(), strawCount));
+                SpellLootUtil.giveOrDrop(world, pos, caster, new ItemStack(ModItems.STRAW.get(), strawCount), magnet);
             }
         } else if (flower) {
-            Block.popResource(world, pos, new ItemStack(block.asItem()));
+            SpellLootUtil.giveOrDrop(world, pos, caster, new ItemStack(block.asItem()), magnet);
         } else if (silkTouch) {
-            dropAll(world, pos, shearsDrops);
+            dropAll(world, pos, caster, shearsDrops, magnet);
         }
         return true;
     }
 
-    private static void dropAll(ServerLevel world, BlockPos pos, List<ItemStack> stacks) {
+    private static void dropAll(ServerLevel world, BlockPos pos, LivingEntity caster,
+                                List<ItemStack> stacks, boolean magnet) {
         for (ItemStack stack : stacks) {
-            if (!stack.isEmpty()) {
-                Block.popResource(world, pos, stack);
-            }
+            SpellLootUtil.giveOrDrop(world, pos, caster, stack, magnet);
         }
     }
 

@@ -10,6 +10,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.v_black_cat.goetydelight.render.test.ModShaderReg;
+import net.v_black_cat.goetydelight.init.ModClientConfig;
 import net.v_black_cat.goetydelight.visual.ActiveEntityVisualEffect;
 import org.joml.Matrix4f;
 
@@ -26,6 +27,9 @@ public final class RedEyeFlashRenderer {
     }
 
     public static void render(RenderLevelStageEvent event, Entity entity, ActiveEntityVisualEffect effect) {
+        if (!ModClientConfig.isSkeletonRedEyeEffectEnabled()) {
+            return; // 客户端配置：关掉就不再渲染红眼闪光
+        }
         float partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(true);
         float renderTime = entity.level().getGameTime() + partialTick;
         Camera camera = event.getCamera();

@@ -2,7 +2,6 @@ package net.v_black_cat.goetydelight.init;
 
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-import net.v_black_cat.goetydelight.network.SyncBackModelPacket;
 import net.v_black_cat.goetydelight.network.handler.ClientClickAirPayloadHandler;
 import net.v_black_cat.goetydelight.network.payload.ClientClickAirPayload;
 
@@ -18,13 +17,5 @@ public class ModPayloadHandlers {
                 ClientClickAirPayload.STREAM_CODEC,
                 ClientClickAirPayloadHandler::handle
         );
-
-        // 服务端→客户端：背部模型同步
-        registrar.playToClient(
-                SyncBackModelPacket.TYPE,
-                SyncBackModelPacket.STREAM_CODEC,
-                SyncBackModelPacket::handleClient
-        );
-
     }
 }

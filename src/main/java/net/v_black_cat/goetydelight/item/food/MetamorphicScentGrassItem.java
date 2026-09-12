@@ -31,7 +31,7 @@ import java.util.Set;
 
 import static com.Polarice3.Goety.api.ritual.RitualType.getRitualType;
 import static net.v_black_cat.goetydelight.GoetyDelight.MODID;
-import static net.v_black_cat.goetydelight.init.ModConfig.*;
+import static net.v_black_cat.goetydelight.init.ModServerConfig.*;
 import static net.v_black_cat.goetydelight.util.RitualUtil.getItemsOnPedestals;
 
 public class MetamorphicScentGrassItem extends Item {

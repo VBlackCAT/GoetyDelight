@@ -10,13 +10,10 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -28,12 +25,10 @@ import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.init.ModAttachments;
-import net.v_black_cat.goetydelight.init.ModConfig;
+import net.v_black_cat.goetydelight.init.ModServerConfig;
 import net.v_black_cat.goetydelight.item.FalseProverbsItem;
-import net.v_black_cat.goetydelight.network.SyncBackModelPacket;
 import net.v_black_cat.goetydelight.util.FoodState;
 import vectorwing.farmersdelight.common.item.enchantment.BackstabbingEnchantment;
 
@@ -43,16 +38,17 @@ import java.util.UUID;
 public class FalseProverbsEvents {
 
     private static final ResourceLocation SHIFT_SPEED_MODIFIER_ID = ResourceLocation.withDefaultNamespace("shift_speed");
-    private static final int SYNC_DISTANCE_SQR = 4096; // 64格内同步
-    private static final int CLEANUP_INTERVAL = 1200; // 60秒清理一次
-    private static int cleanupCounter = 0;
 
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
         if (player.level().isClientSide) return;
 
-        // 【优化】状态机检测整体降频为每 5 tick：shift 按下/松开、维度检查、背部模型同步
+        // 背部模型兜底校验：O(1)，只在「附件里确实记着背上背着剑」时才真正干活
+        // （剑被丢弃/移走时不会再有 inventoryTick 回调，必须每 tick 补一次校验）
+        FalseProverbsItem.validateBackSlot(player);
+
+        // 【优化】状态机检测整体降频为每 5 tick：shift 按下/松开、维度检查
         // 全部走 5 tick 粒度，切换延迟 ≤250ms 不可感知（伤害倍率走事件，不受影响）
         if (player.tickCount % 5 != 0) return;
 
@@ -95,9 +91,6 @@ public class FalseProverbsEvents {
                 resetShiftState(player);
             }
         }
-
-        // 背部模型同步（与状态机同一 5 tick 粒度）
-        syncBackModelStatus(player, playerUUID);
     }
 
     private static void spawnShiftParticles(Player player) {
@@ -124,32 +117,12 @@ public class FalseProverbsEvents {
         player.setInvisible(false);
     }
 
-    private static void syncBackModelStatus(Player player, UUID playerUUID) {
-        boolean newStatus = FalseProverbsItem.shouldShowBackModel(player);
-        Boolean lastStatus = FalseProverbsItem.getLastSentBackModelStatus().get(playerUUID);
-
-        if (lastStatus == null || lastStatus != newStatus) {
-            FalseProverbsItem.setPlayerBackModelStatus(playerUUID, newStatus);
-            FalseProverbsItem.getLastSentBackModelStatus().put(playerUUID, newStatus);
-
-            SyncBackModelPacket packet = new SyncBackModelPacket(player.getId(), newStatus);
-            if (player.level() instanceof ServerLevel serverLevel) {
-                for (ServerPlayer serverPlayer : serverLevel.players()) {
-                    // 距离优化，减少不必要的网络传输
-                    if (serverPlayer.distanceToSqr(player) < SYNC_DISTANCE_SQR) {
-                        SyncBackModelPacket.sendToClient(packet, serverPlayer);
-                    }
-                }
-            }
-        }
-    }
-
     private static void addBonusAttributes(Player player) {
         AttributeInstance speedAttribute = player.getAttribute(Attributes.MOVEMENT_SPEED);
         if (speedAttribute != null && speedAttribute.getModifier(SHIFT_SPEED_MODIFIER_ID) == null) {
             AttributeModifier modifier = new AttributeModifier(
                     SHIFT_SPEED_MODIFIER_ID,
-                    ModConfig.getShiftSpeedMultiplier(),
+                    ModServerConfig.getShiftSpeedMultiplier(),
                     AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
             );
             speedAttribute.addTransientModifier(modifier);
@@ -178,16 +151,16 @@ public class FalseProverbsEvents {
                 if (FalseProverbsItem.getPlayerTeleportStatus(playerUUID)) {
                     // 传送状态下的背刺检查
                     if (!BackstabbingEnchantment.isLookingBehindTarget(event.getEntity(), player.getEyePosition())) {
-                        event.setAmount(amount * ModConfig.getFalseProverbsShiftDamageMultiplier());
+                        event.setAmount(amount * ModServerConfig.getFalseProverbsShiftDamageMultiplier());
                     }
                     // 如果是背刺，在onLivingDamage中处理
                 } else {
                     // 非传送状态下的Shift伤害
-                    event.setAmount(amount * ModConfig.getFalseProverbsShiftDamageMultiplier());
+                    event.setAmount(amount * ModServerConfig.getFalseProverbsShiftDamageMultiplier());
                 }
             } else {
                 // 普通攻击
-                event.setAmount(amount * ModConfig.getFalseProverbsNormalDamageMultiplier());
+                event.setAmount(amount * ModServerConfig.getFalseProverbsNormalDamageMultiplier());
             }
         }
     }
@@ -204,7 +177,7 @@ public class FalseProverbsEvents {
             if (event.getOriginalDamage() > 0.0F) {
                 // 背刺额外伤害
                 if (BackstabbingEnchantment.isLookingBehindTarget(event.getEntity(), player.getEyePosition())) {
-                    event.setNewDamage(event.getOriginalDamage() * ModConfig.getFalseProverbsBackstabDamageMultiplier());
+                    event.setNewDamage(event.getOriginalDamage() * ModServerConfig.getFalseProverbsBackstabDamageMultiplier());
                 }
 
                 // 传送回原位
@@ -224,20 +197,6 @@ public class FalseProverbsEvents {
     @SubscribeEvent
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         FalseProverbsItem.clearPlayerData(event.getEntity().getUUID());
-    }
-
-    // 定期清理过期数据
-    @SubscribeEvent
-    public static void onServerTick(ServerTickEvent.Post event) {
-        cleanupCounter++;
-        if (cleanupCounter >= CLEANUP_INTERVAL) {
-            cleanupCounter = 0;
-
-            long currentTick = event.getServer().getTickCount();
-            FalseProverbsItem.cleanupExpiredData(currentTick, uuid ->
-                    event.getServer().getPlayerList().getPlayer(uuid) != null
-            );
-        }
     }
 
     @EventBusSubscriber(modid = GoetyDelight.MODID, value = Dist.CLIENT)

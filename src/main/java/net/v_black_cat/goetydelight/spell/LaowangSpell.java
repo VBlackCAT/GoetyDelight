@@ -1,0 +1,133 @@
+package net.v_black_cat.goetydelight.spell;
+
+import com.Polarice3.Goety.api.items.magic.IWand;
+import com.Polarice3.Goety.api.magic.SpellType;
+import com.Polarice3.Goety.common.enchantments.ModEnchantments;
+import com.Polarice3.Goety.common.magic.Spell;
+import com.Polarice3.Goety.common.magic.SpellStat;
+import com.Polarice3.Goety.init.ModSounds;
+import com.Polarice3.Goety.utils.BlockFinder;
+import com.Polarice3.Goety.utils.MobUtil;
+import com.Polarice3.Goety.utils.WandUtil;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.Pig;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class LaowangSpell extends Spell {
+
+    private static final String PIG_NAME = "laowang237";
+    private static final int BASE_MIN = 3;      // 基础召唤下限
+    private static final int BASE_MAX = 5;      // 基础召唤上限
+    private static final int PER_LEVEL_MIN = 1; // 每级强效额外下限
+    private static final int PER_LEVEL_MAX = 3; // 每级强效额外上限
+    private static final int COOLDOWN_TICKS = 30 * 20; // 30 秒
+
+    @Override
+    public int defaultSoulCost() {
+        return 100;
+    }
+
+    @Override
+    public int defaultCastDuration() {
+        return 0;
+    }
+
+    @Override
+    public int defaultSpellCooldown() {
+        return COOLDOWN_TICKS;
+    }
+
+    @Override
+    public SpellType getSpellType() {
+        return SpellType.NONE;
+    }
+
+    @Override
+    public List<ResourceKey<Enchantment>> acceptedEnchantments() {
+        List<ResourceKey<Enchantment>> list = new ArrayList<>();
+        list.add(ModEnchantments.POTENCY);
+        return list;
+    }
+
+    @Override
+    public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
+        ItemStack focus = IWand.getFocus(staff);
+        if (focus.isEmpty()) {
+            focus = WandUtil.findFocus(caster);
+        }
+        if (focus.isEmpty()) {
+            focus = caster.getMainHandItem(); // 兜底
+        }
+
+        // 直接从聚晶栈读取强效等级（不走 WandUtil 的间接门禁）
+        int potency = getEnchantLevel(focus, caster, ModEnchantments.POTENCY);
+
+        int count = randomBetween(worldIn, BASE_MIN, BASE_MAX);
+        for (int level = 0; level < potency; ++level) {
+            count += randomBetween(worldIn, PER_LEVEL_MIN, PER_LEVEL_MAX);
+        }
+
+        int summoned = 0;
+        for (int i = 0; i < count; ++i) {
+            if (summonPig(worldIn, caster)) {
+                summoned++;
+            }
+        }
+
+        if (summoned > 0) {
+            this.playSound(worldIn, caster, ModSounds.SUMMON_SPELL.get());
+        }
+    }
+
+    /** 在施法者附近召唤一只名为 laowang237 的成年猪 */
+    private static boolean summonPig(ServerLevel worldIn, LivingEntity caster) {
+        Pig pig = EntityType.PIG.create(worldIn);
+        if (pig == null) {
+            return false;
+        }
+        pig.setBaby(false);
+
+        BlockPos spawnPos = BlockFinder.SummonRadius(caster.blockPosition(), pig, worldIn);
+        pig.moveTo(spawnPos.getX() + 0.5D, spawnPos.getY(), spawnPos.getZ() + 0.5D,
+                worldIn.random.nextFloat() * 360.0F, 0.0F);
+        MobUtil.moveDownToGround(pig);
+
+        pig.setCustomName(Component.literal(PIG_NAME));
+        pig.setCustomNameVisible(true);
+        pig.setPersistenceRequired();
+
+        if (worldIn.addFreshEntity(pig)) {
+            worldIn.sendParticles(ParticleTypes.LARGE_SMOKE,
+                    pig.getX(), pig.getY() + pig.getBbHeight() * 0.5D, pig.getZ(),
+                    8, 0.3D, 0.3D, 0.3D, 0.02D);
+            return true;
+        }
+        return false;
+    }
+
+    private static int randomBetween(ServerLevel worldIn, int min, int max) {
+        return min + worldIn.random.nextInt(max - min + 1);
+    }
+
+    /** 直接从物品栈读取附魔等级；注册表/物品缺失时返回 0（不抛异常） */
+    private static int getEnchantLevel(ItemStack stack, LivingEntity caster, ResourceKey<Enchantment> enchantment) {
+        if (stack.isEmpty()) {
+            return 0;
+        }
+        return caster.registryAccess().registryOrThrow(Registries.ENCHANTMENT)
+                .getHolder(enchantment)
+                .map(stack::getEnchantmentLevel)
+                .orElse(0);
+    }
+}

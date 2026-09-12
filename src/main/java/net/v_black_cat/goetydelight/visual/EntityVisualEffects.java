@@ -46,18 +46,6 @@ public class EntityVisualEffects {
         return Collections.unmodifiableCollection(activeEffects.values());
     }
 
-    public boolean tick() {
-        boolean changed = false;
-        var iterator = activeEffects.values().iterator();
-        while (iterator.hasNext()) {
-            if (iterator.next().tick()) {
-                iterator.remove();
-                changed = true;
-            }
-        }
-        return changed;
-    }
-
     public CompoundTag serializeNBT() {
         return serializeNBT(false);
     }

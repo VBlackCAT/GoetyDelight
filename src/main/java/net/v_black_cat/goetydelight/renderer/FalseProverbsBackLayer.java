@@ -11,8 +11,8 @@ import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.v_black_cat.goetydelight.init.ModAttachments;
 import net.v_black_cat.goetydelight.init.ModItems;
-import net.v_black_cat.goetydelight.item.FalseProverbsItem;
 
 public class FalseProverbsBackLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
 
@@ -33,8 +33,9 @@ public class FalseProverbsBackLayer extends RenderLayer<AbstractClientPlayer, Pl
             float netHeadYaw,
             float headPitch
     ) {
-        // ★ 正常判断条件
-        if (!FalseProverbsItem.getPlayerBackModelStatus(player.getUUID())) {
+        // 附件由服务端同步（槽位 >= 0 表示背上背着剑）；没同步过就不画
+        Integer backSlot = player.getExistingDataOrNull(ModAttachments.FALSE_PROVERBS_BACK_SLOT.get());
+        if (backSlot == null || backSlot < 0) {
             return;
         }
 

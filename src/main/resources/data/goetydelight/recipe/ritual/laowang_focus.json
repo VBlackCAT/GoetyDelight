@@ -1,0 +1,40 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "goety:mystic_core"
+  },
+  "craftType": "forge",
+  "soulCost": 100,
+  "duration": 10,
+  "ingredients": [
+    {
+      "item": "farmersdelight:rich_soil"
+    },
+    {
+      "item": "farmersdelight:rich_soil"
+    },
+    {
+      "item": "farmersdelight:rich_soil"
+    },
+    {
+      "item": "farmersdelight:rich_soil"
+    },
+    {
+      "item": "goety:snap_warts"
+    },
+    {
+      "item": "goety:quick_growing_seed"
+    },
+    {
+      "item": "goety:grave_dust"
+    },
+    {
+      "item": "goety:grave_dust"
+    }
+  ],
+  "result": {
+    "id": "goetydelight:laowang_focus",
+    "count": 1
+  }
+}

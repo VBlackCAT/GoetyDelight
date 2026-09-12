@@ -22,7 +22,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.v_black_cat.goetydelight.GoetyDelight;
-import net.v_black_cat.goetydelight.init.ModConfig;
+import net.v_black_cat.goetydelight.init.ModServerConfig;
 import net.v_black_cat.goetydelight.init.ModEffects;   // 确保存在
 import net.v_black_cat.goetydelight.util.TickConverterUtil;
 import org.jetbrains.annotations.NotNull;
@@ -108,9 +108,9 @@ public class TenThousandPoisonFeastItem extends BowlFoodItem {
     }
 
     private static void cacheFilteredDebuffEffects() {
-        boolean useWhitelist = ModConfig.isTenThousandPoisonFeastUseWhitelist();
-        Map<ResourceLocation, int[]> levelConfig = ModConfig.getTenThousandPoisonFeastLevelConfig();
-        Map<ResourceLocation, double[]> durationConfig = ModConfig.getTenThousandPoisonFeastDurationConfig();
+        boolean useWhitelist = ModServerConfig.isTenThousandPoisonFeastUseWhitelist();
+        Map<ResourceLocation, int[]> levelConfig = ModServerConfig.getTenThousandPoisonFeastLevelConfig();
+        Map<ResourceLocation, double[]> durationConfig = ModServerConfig.getTenThousandPoisonFeastDurationConfig();
 
         cachedFilteredDebuffs = BuiltInRegistries.MOB_EFFECT.holders()
                 .filter(holder -> holder.value().getCategory() == MobEffectCategory.HARMFUL)
@@ -122,7 +122,7 @@ public class TenThousandPoisonFeastItem extends BowlFoodItem {
                     if (levelConfig.containsKey(effectId) || durationConfig.containsKey(effectId)) {
                         return true;
                     }
-                    boolean isInFilterList = ModConfig.isEffectInFilterList(effectId);
+                    boolean isInFilterList = ModServerConfig.isEffectInFilterList(effectId);
                     return useWhitelist == isInFilterList;
                 })
                 .collect(Collectors.toList());
@@ -151,14 +151,14 @@ public class TenThousandPoisonFeastItem extends BowlFoodItem {
             return;
         }
 
-        int effectCount = ModConfig.getTenThousandPoisonFeastEffectCount();
-        Map<ResourceLocation, int[]> levelConfig = ModConfig.getTenThousandPoisonFeastLevelConfig();
-        Map<ResourceLocation, double[]> durationConfig = ModConfig.getTenThousandPoisonFeastDurationConfig();
+        int effectCount = ModServerConfig.getTenThousandPoisonFeastEffectCount();
+        Map<ResourceLocation, int[]> levelConfig = ModServerConfig.getTenThousandPoisonFeastLevelConfig();
+        Map<ResourceLocation, double[]> durationConfig = ModServerConfig.getTenThousandPoisonFeastDurationConfig();
 
-        int defaultMinLevel = ModConfig.getTenThousandPoisonFeastDefaultMinLevel();
-        int defaultMaxLevel = ModConfig.getTenThousandPoisonFeastDefaultMaxLevel();
-        double defaultMinDuration = ModConfig.getTenThousandPoisonFeastDefaultMinDuration();
-        double defaultMaxDuration = ModConfig.getTenThousandPoisonFeastDefaultMaxDuration();
+        int defaultMinLevel = ModServerConfig.getTenThousandPoisonFeastDefaultMinLevel();
+        int defaultMaxLevel = ModServerConfig.getTenThousandPoisonFeastDefaultMaxLevel();
+        double defaultMinDuration = ModServerConfig.getTenThousandPoisonFeastDefaultMinDuration();
+        double defaultMaxDuration = ModServerConfig.getTenThousandPoisonFeastDefaultMaxDuration();
 
         RandomSource random = entity.getRandom();
 
@@ -202,7 +202,7 @@ public class TenThousandPoisonFeastItem extends BowlFoodItem {
             int level = minLevel + (maxLevel > minLevel ? random.nextInt(maxLevel - minLevel + 1) : 0);
             double randomDuration = minDuration + (maxDuration > minDuration ?
                     random.nextDouble() * (maxDuration - minDuration) : 0);
-            int durationTicks = ModConfig.minutesToTicks(randomDuration);
+            int durationTicks = ModServerConfig.minutesToTicks(randomDuration);
             durationTicks = Math.max(1, durationTicks);
 
             if (entity.addEffect(new MobEffectInstance(

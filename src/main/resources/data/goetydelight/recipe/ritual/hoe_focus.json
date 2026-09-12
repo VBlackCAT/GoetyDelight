@@ -1,0 +1,31 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "goety:burrowing_focus"
+  },
+  "craftType": "forge",
+  "soulCost": 20,
+  "duration": 10,
+  "ingredients": [
+    {
+      "item": "minecraft:iron_hoe"
+    },
+    {
+      "item": "minecraft:iron_hoe"
+    },
+    {
+      "item": "minecraft:iron_hoe"
+    },
+    {
+      "tag": "c:gens/diamond"
+    },
+    {
+      "item": "goety:mystic_core"
+    }
+  ],
+  "result": {
+    "id": "goetydelight:hoe_focus",
+    "count": 1
+  }
+}

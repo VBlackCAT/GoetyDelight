@@ -1,6 +1,5 @@
 package net.v_black_cat.goetydelight.item.food;
 
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EntityType;
@@ -12,7 +11,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.v_black_cat.goetydelight.init.ModAttachments;
 import net.v_black_cat.goetydelight.init.ModItems;
 import net.v_black_cat.goetydelight.util.FoodState;
@@ -56,19 +54,7 @@ public class RoastLaowangItem extends Item {
         }
     }
 
-    @SubscribeEvent
-    public static void onServerTickPost(ServerTickEvent.Post event) {
-        MinecraftServer server = event.getServer();
-        // 【优化】每 20 tick 检查一次过期（时效判定基于游戏时间，最大延迟 1 秒可忽略）
-        if (server.getTickCount() % 20 != 0) return;
-        for (Player player : server.getPlayerList().getPlayers()) {
-            FoodState state = player.getData(ModAttachments.FOOD_STATE);
-            if (state.isRoastLaowangActive()) {
-                if (player.level().getGameTime() - state.getRoastLaowangStartTime() >= state.getRoastLaowangDuration()) {
-                    state.setRoastLaowangActive(false);
-                }
-            }
-        }
-    }
+    // 时效判定已改为 FoodState#isRoastLaowangActive(gameTime) 现场计算，
+    // 不再需要每 20 tick 遍历所有玩家清理过期标记。
 
 }

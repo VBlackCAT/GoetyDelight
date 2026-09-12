@@ -8,7 +8,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.v_black_cat.goetydelight.GoetyDelight;
-import net.v_black_cat.goetydelight.init.ModConfig;
+import net.v_black_cat.goetydelight.init.ModCommonConfig;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -23,14 +23,14 @@ public class ItemBlackList {
     private static final Set<String> BLACK_LIST_SET = new HashSet<>();
 
     static {
-        ModConfig.registerBlackListUpdateListener(v -> updateBlackListFromConfig());
+        ModCommonConfig.registerBlackListUpdateListener(v -> updateBlackListFromConfig());
         updateBlackListFromConfig();
     }
 
     public static void updateBlackListFromConfig() {
         BLACK_LIST_SET.clear();
-        if (ModConfig.blacklistedItems != null) {
-            ModConfig.blacklistedItems.stream()
+        if (ModCommonConfig.blacklistedItems != null) {
+            ModCommonConfig.blacklistedItems.stream()
                     .map(item -> BuiltInRegistries.ITEM.getKey(item).toString())
                     .forEach(BLACK_LIST_SET::add);
         }

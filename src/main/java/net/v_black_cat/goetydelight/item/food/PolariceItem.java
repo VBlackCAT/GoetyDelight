@@ -3,7 +3,6 @@ package net.v_black_cat.goetydelight.item.food;
 import com.Polarice3.Goety.api.entities.IOwned;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -17,10 +16,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.v_black_cat.goetydelight.init.ModAttachments;
-import net.v_black_cat.goetydelight.init.ModConfig;
-import net.v_black_cat.goetydelight.init.ModItems;
+import net.v_black_cat.goetydelight.init.ModServerConfig;
 import net.minecraft.util.RandomSource;
 import net.v_black_cat.goetydelight.util.FoodState;
 import org.slf4j.Logger;
@@ -35,6 +32,8 @@ public class PolariceItem extends BowlFoodItem {
     }
 
     static int polarice_count;
+    /** 极地冰时效：2 秒 * 60 = 1200 tick（原实现是每 20 tick 从 1200 递减到 0）。 */
+    private static final int POLARICE_DURATION_TICKS = 1200;
     private long lastEatTime = 0;
 
     
@@ -43,8 +42,11 @@ public class PolariceItem extends BowlFoodItem {
     public static void onItemUseFinish(LivingEntityUseItemEvent.Finish event) {
         if (event.getItem().getItem() instanceof PolariceItem) {
             LivingEntity entity = event.getEntity();
-            entity.getData(ModAttachments.FOOD_STATE).setPolariceTime(1200.0f);
-            polarice_count = ModConfig.getPolariceCount();
+            // 【优化】记录绝对到期时间，配合 FoodState#hasActivePolarice(gameTime) 判定，
+            // 不再需要每 20 tick 遍历所有玩家做递减。
+            entity.getData(ModAttachments.FOOD_STATE)
+                    .setPolariceEndTime(entity.level().getGameTime() + POLARICE_DURATION_TICKS);
+            polarice_count = ModServerConfig.getPolariceCount();
         }
     }
 
@@ -52,7 +54,7 @@ public class PolariceItem extends BowlFoodItem {
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         if (!level.isClientSide && entity instanceof Player player) {
             long currentTime = level.getGameTime();
-            long cooldown = ModConfig.getPolariceCooldown() * 20L;
+            long cooldown = ModServerConfig.getPolariceCooldown() * 20L;
             if (currentTime - lastEatTime <= cooldown) {
                 return super.finishUsingItem(stack, level, entity);
             } else {
@@ -62,25 +64,9 @@ public class PolariceItem extends BowlFoodItem {
         return super.finishUsingItem(stack, level, entity);
     }
 
-    @SubscribeEvent
-    public static void onServerTickPost(ServerTickEvent.Post event) {
-        MinecraftServer server = event.getServer();
-        // 【优化】每 20 tick 批量衰减 20，避免每 tick 遍历全部玩家（衰减速率不变）
-        if (server.getTickCount() % 20 != 0) return;
-        for (Player player : server.getPlayerList().getPlayers()) {
-            Level level = player.level();
-            if (level.isClientSide) continue;
-
-            FoodState state = player.getData(ModAttachments.FOOD_STATE);
-            if (state.getPolariceTime() > 0) {
-                state.setPolariceTime(state.getPolariceTime() - 20);
-            }
-        }
-    }
-
     private static boolean hasActivePolarice(Entity attacker) {
         if (!(attacker instanceof LivingEntity living)) return false;
-        return living.getData(ModAttachments.FOOD_STATE).getPolariceTime() > 0;
+        return living.getData(ModAttachments.FOOD_STATE).hasActivePolarice(living.level().getGameTime());
     }
 
     @SubscribeEvent
@@ -128,9 +114,9 @@ public class PolariceItem extends BowlFoodItem {
                 }
             }
         }
-        if (!ModConfig.getPolariceAffectsBosses() && targetEntity.getPersistentData().contains("c:bosses")) {
+        if (!ModServerConfig.getPolariceAffectsBosses() && targetEntity.getPersistentData().contains("c:bosses")) {
             isAffectedByPolarice = false;
-        } else if (targetEntity.getAttributeBaseValue(Attributes.MAX_HEALTH) > ModConfig.getPolariceHealthThreshold()) {
+        } else if (targetEntity.getAttributeBaseValue(Attributes.MAX_HEALTH) > ModServerConfig.getPolariceHealthThreshold()) {
             isAffectedByPolarice = false;
         } else if (isBanEntity) {
             isAffectedByPolarice = false;

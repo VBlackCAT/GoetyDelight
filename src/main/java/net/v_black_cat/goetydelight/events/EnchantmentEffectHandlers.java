@@ -21,13 +21,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.init.ModEnchantments;
 import net.v_black_cat.goetydelight.util.SearchServant;
+import net.v_black_cat.goetydelight.util.SoulEnchantUtil;
 
 import java.util.Map;
 import java.util.Optional;
@@ -62,105 +62,41 @@ public class EnchantmentEffectHandlers {
         }
     }
 
-    // === Soul Mending ===
-    @SubscribeEvent
-    public static void onSoulMending(PlayerTickEvent.Post event) {
-        Player player = event.getEntity();
-        if (player.level().isClientSide()) return;
-        if (player.tickCount % 4 != 0) return;
+    // === Soul Mending / Soul Healing ===
+    // 玩家自身：已改为「物品自报」（见 ItemStackMixin + SoulEnchantUtil#onInventoryTick），
+    // 不再每 4/10 tick 扫描 getAllSlots() 或查询胸甲附魔。
 
-        RegistryAccess registryAccess = player.level().registryAccess();
-        net.minecraft.core.Holder<Enchantment> holder = getHolder(registryAccess, ModEnchantments.SOUL_MENDING);
-
-        for (ItemStack stack : player.getAllSlots()) {
-            // 【优化】先做廉价的耐久检查，再查附魔等级（避免对每格物品都做注册表/组件查询）
-            if (stack.isDamageableItem() && stack.getDamageValue() > 0) {
-                int level = stack.getEnchantmentLevel(holder);
-                if (level > 0) {
-                    repairItemWithSoulEnergy(player, stack, level);
-                }
-            }
-        }
-    }
-
-    private static void repairItemWithSoulEnergy(Player player, ItemStack stack, int level) {
-        int currentDamage = stack.getDamageValue();
-        int actualRepair = Math.min(level, currentDamage);
-        int requiredSouls;
-        if (level > 9) requiredSouls = 1;
-        else if (actualRepair < level) requiredSouls = Math.max(1, 5 - level / 2);
-        else requiredSouls = actualRepair * 5;
-
-        if (requiredSouls <= 0 || SEHelper.getSoulsAmount(player, requiredSouls)) {
-            if (requiredSouls > 0) SEHelper.decreaseSouls(player, requiredSouls);
-            stack.setDamageValue(currentDamage - actualRepair);
-        }
-    }
-
-    // === Soul Healing ===
-    @SubscribeEvent
-    public static void onSoulHealing(PlayerTickEvent.Post event) {
-        Player player = event.getEntity();
-        if (player.level().isClientSide()) return;
-        if (player.tickCount % 10 != 0) return;
-
-        ItemStack chest = player.getItemBySlot(EquipmentSlot.CHEST);
-        RegistryAccess registryAccess = player.level().registryAccess();
-        int level = chest.getEnchantmentLevel(getHolder(registryAccess, ModEnchantments.SOUL_HEALING));
-        if (level <= 0 || player.getHealth() >= player.getMaxHealth()) return;
-
-        float maxHealth = player.getMaxHealth();
-        float healAmount = (1.0F + 0.01F * maxHealth) * level;
-        if (healAmount > 0.5F * maxHealth) healAmount = 0.5F * maxHealth;
-        int cost = 5 * level;
-
-        if (SEHelper.getSoulsAmount(player, cost)) {
-            player.heal(healAmount);
-            SEHelper.decreaseSouls(player, cost);
-        }
-    }
-
+    // 仆人装备：不在 Inventory 里、不会被 vanilla tick，保留周期驱动；
+    // 频率由每 4 tick 降到每 20 tick（一次补足 5 次修复，速率不变），并去掉 getAllSlots() 的列表分配。
     @SubscribeEvent
     public static void onSoulMendingServantTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
         if (player.level().isClientSide()) return;
-        if (player.tickCount % 4 != 0) return;
+        if (player.tickCount % SoulEnchantUtil.SERVANT_CHECK_INTERVAL_TICKS != 0) return;
         if (!(player instanceof ServerPlayer serverPlayer)) return;
 
-        // 处理仆人装备
         Optional<SearchServant.ServantData> servantDataOpt = SearchServant.getServantData(serverPlayer);
-        if (servantDataOpt.isPresent()) {
-            SearchServant.ServantData servantData = servantDataOpt.get();
-            ServerLevel level = (ServerLevel) serverPlayer.level();
-            RegistryAccess registryAccess = level.registryAccess();
-            Holder<Enchantment> holder = getHolder(registryAccess, ModEnchantments.SOUL_MENDING);
+        if (servantDataOpt.isEmpty()) return;
 
-            for (UUID servantUUID : servantData.servantUUIDs) {
-                Entity entity = level.getEntity(servantUUID);
-                if (entity instanceof LivingEntity servant) {
-                    // 处理不同类型的所有者
-                    Player owner = null;
-                    if (servant instanceof IOwned owned && owned.getTrueOwner() instanceof Player p) {
-                        owner = p;
-                    } else if (servant instanceof OwnableEntity ownable && ownable.getOwner() instanceof Player p) {
-                        owner = p;
-                    }
+        ServerLevel level = (ServerLevel) serverPlayer.level();
+        for (UUID servantUUID : servantDataOpt.get().servantUUIDs) {
+            Entity entity = level.getEntity(servantUUID);
+            if (!(entity instanceof LivingEntity servant)) continue;
 
-                    if (owner != null) {
-                        for (ItemStack stack : servant.getAllSlots()) {
-                            // 【优化】廉价耐久检查前置，且只查一次附魔等级
-                            if (stack.isDamageableItem() && stack.getDamageValue() > 0) {
-                                int enchantLevel = stack.getEnchantmentLevel(holder);
-                                if (enchantLevel > 0) {
-                                    repairItemWithSoulEnergy(owner, stack, enchantLevel);
-                                }
-                            }
-                        }
-                    }
-                }
+            // 处理不同类型的所有者
+            Player owner = null;
+            if (servant instanceof IOwned owned && owned.getTrueOwner() instanceof Player p) {
+                owner = p;
+            } else if (servant instanceof OwnableEntity ownable && ownable.getOwner() instanceof Player p) {
+                owner = p;
+            }
+
+            if (owner != null) {
+                SoulEnchantUtil.repairServantEquipment(owner, servant);
             }
         }
     }
+
 
     // === Soul Affix ===
     @SubscribeEvent

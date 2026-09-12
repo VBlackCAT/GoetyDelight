@@ -20,11 +20,17 @@ public class GoetyDelight {
         // 注册所有内容
         registerAllDeferred(modEventBus);
 
+        // 挂载所有联动（必须在注册事件前，且各自带模组存在性判断）
+        net.v_black_cat.goetydelight.compat.CompatRegistry.register(modEventBus);
+
         // 注册所有事件监听器
         registerEvents(modEventBus);
 
-        // 注册配置
-        modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.COMMON, ModConfig.SPEC);
+        // 注册配置（拆分四类：客户端 / 通用 / 服务端 / 启动时）
+        modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.CLIENT, net.v_black_cat.goetydelight.init.ModClientConfig.SPEC);
+        modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.COMMON, net.v_black_cat.goetydelight.init.ModCommonConfig.SPEC);
+        modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.SERVER, net.v_black_cat.goetydelight.init.ModServerConfig.SPEC);
+        modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.STARTUP, net.v_black_cat.goetydelight.init.ModStartupConfig.SPEC);
     }
 
     private static void registerAllDeferred(IEventBus modEventBus) {
@@ -89,6 +95,8 @@ public class GoetyDelight {
         NeoForge.EVENT_BUS.addListener(PlayerInteractEventHandler::onLeftClickEmpty);
         NeoForge.EVENT_BUS.addListener(LivingIncomingDamageEventHandler::onLivingIncomingDamage);
         NeoForge.EVENT_BUS.addListener(LivingChangeTargetEventHandler::onLivingChangeTarget);
+        // 爱与丰饶药云的存活管理（按时长回收 + 被 Goety 提前判废时补回）
+        NeoForge.EVENT_BUS.addListener(net.v_black_cat.goetydelight.spell.LoveCloudTracker::onServerTick);
         NeoForge.EVENT_BUS.addListener(PlayerTickEventHandler::onPlayerTick);
         NeoForge.EVENT_BUS.addListener(PlayerTickEventHandler::onBreakSpeed);
         NeoForge.EVENT_BUS.addListener(PlayerTickEventHandler::onPlayerDeath);

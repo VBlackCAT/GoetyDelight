@@ -265,12 +265,15 @@ public final class DepthVisualEffectRenderer {
     }
 
     private static float effectProgress(RenderLevelStageEvent event, Entity entity, ActiveEntityVisualEffect effect) {
+        float partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(true);
         if (effect.initialDuration() > 0) {
-            return Mth.clamp(1.0F - effect.remainingTicks() / (float) effect.initialDuration(), 0.0F, 1.0F);
+            // 【修复】原实现按 remainingTicks 递减推算进度，但客户端从不递减该值 → 进度恒为 0。
+            // 现在按 StartGameTime + 游戏时间计算（服务端只在增删/到期时同步，进度客户端自走）。
+            return effect.progress(entity.level().getGameTime(), partialTick);
         }
 
-        long start = effect.data().contains("StartGameTime") ? effect.data().getLong("StartGameTime") : entity.level().getGameTime();
-        return Mth.clamp((entity.level().getGameTime() + event.getPartialTick().getGameTimeDeltaPartialTick(true) - start) / 36.0F, 0.0F, 1.0F);
+        long start = effect.startGameTime() >= 0 ? effect.startGameTime() : entity.level().getGameTime();
+        return Mth.clamp((entity.level().getGameTime() + partialTick - start) / 36.0F, 0.0F, 1.0F);
     }
 
     private static float contactIntensity(Entity entity) {

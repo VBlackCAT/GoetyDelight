@@ -36,8 +36,10 @@ public class FoodState {
     private boolean crimsonMemories;
     // 虚假箴言下蹲状态
     private boolean falseProverbsShift;
-    // 极地冰剩余时间
+    // 极地冰剩余时间（旧存档字段，仅在没有 polariceEndTime 时作为回退）
     private float polariceTime;
+    // 极地冰到期游戏时间（>0 表示用绝对时间判定，无需任何周期递减）
+    private long polariceEndTime;
     // 饼干猫（Biscat）
     private long biscatEffectEndTime;
     private final Map<String, Long> biscatAffectedPlayers = new HashMap<>();
@@ -166,12 +168,24 @@ public class FoodState {
         this.falseProverbsShift = falseProverbsShift;
     }
 
-    public float getPolariceTime() {
-        return polariceTime;
+    /**
+     * 是否仍处于极地冰时效内。
+     *
+     * <p>食用时记录的是绝对到期游戏时间，因此不需要「每 20 tick 遍历所有玩家递减一次」的清理循环。
+     * 旧存档只有 polariceTime（剩余 tick）而没有到期时间，这里做一次惰性迁移把它折算成绝对时间
+     * ——不能直接沿用旧字段判定，否则没人递减它会导致永久免疫。
+     */
+    public boolean hasActivePolarice(long gameTime) {
+        if (polariceEndTime <= 0L && polariceTime > 0.0F) {
+            polariceEndTime = gameTime + (long) polariceTime;
+            polariceTime = 0.0F;
+        }
+        return polariceEndTime > gameTime;
     }
 
-    public void setPolariceTime(float polariceTime) {
-        this.polariceTime = polariceTime;
+    public void setPolariceEndTime(long polariceEndTime) {
+        this.polariceEndTime = polariceEndTime;
+        this.polariceTime = 0.0F;
     }
 
     public long getBiscatEffectEndTime() {
@@ -186,8 +200,13 @@ public class FoodState {
         return biscatAffectedPlayers;
     }
 
-    public boolean isRoastLaowangActive() {
-        return roastLaowangActive;
+    /**
+     * 是否仍处于烤老王时效内。
+     *
+     * <p>用「开始时间 + 时长」现场判定，替代原来每 20 tick 遍历所有玩家清理标记的循环。
+     */
+    public boolean isRoastLaowangActive(long gameTime) {
+        return roastLaowangActive && gameTime - roastLaowangStartTime < roastLaowangDuration;
     }
 
     public void setRoastLaowangActive(boolean roastLaowangActive) {
@@ -228,6 +247,7 @@ public class FoodState {
         tag.putBoolean("crimsonMemories", crimsonMemories);
         tag.putBoolean("falseProverbsShift", falseProverbsShift);
         tag.putFloat("polariceTime", polariceTime);
+        tag.putLong("polariceEndTime", polariceEndTime);
         tag.putLong("biscatEffectEndTime", biscatEffectEndTime);
         CompoundTag affectedPlayers = new CompoundTag();
         for (Map.Entry<String, Long> e : biscatAffectedPlayers.entrySet()) {
@@ -257,6 +277,7 @@ public class FoodState {
         crimsonMemories = tag.getBoolean("crimsonMemories");
         falseProverbsShift = tag.getBoolean("falseProverbsShift");
         polariceTime = tag.getFloat("polariceTime");
+        polariceEndTime = tag.getLong("polariceEndTime");
         biscatEffectEndTime = tag.getLong("biscatEffectEndTime");
         biscatAffectedPlayers.clear();
         CompoundTag affectedPlayers = tag.getCompound("biscatAffectedPlayers");

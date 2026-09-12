@@ -11,7 +11,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
@@ -22,12 +21,16 @@ import net.v_black_cat.goetydelight.GoetyDelight;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Stream;
 
 public class SearchServant {
     private static final Map<UUID, ServantData> PLAYER_SERVANT_CACHE = new ConcurrentHashMap<>();
+    /** 兜底全量校验间隔（6 分钟）：事件路径覆盖不到的情况由它收尾。 */
     private static final int SCAN_INTERVAL_TICKS = 7200;
+    /** dirty 触发的重扫最快也要间隔这么久，避免把事件驱动的重扫变成常态开销。 */
+    private static final int MIN_RESCAN_INTERVAL_TICKS = 600;
     private static int globalTickCounter = 0;
+    private static int lastScanTick = 0;
+    private static volatile boolean scanDirty = false;
 
     private static volatile boolean isScanning = false;
     private static Iterator<ServerLevel> levelIterator = null;
@@ -423,6 +426,7 @@ public class SearchServant {
         currentLevel = null;
         entityIterator = null;
         scanningPlayerServants.clear();
+        lastScanTick = globalTickCounter;
     }
 
 
@@ -435,6 +439,11 @@ public class SearchServant {
     }
 
     public static void onServantJoin(Player player, LivingEntity servant) {
+        if (!PLAYER_SERVANT_CACHE.containsKey(player.getUUID())) {
+            // 增量路径依赖已存在的缓存条目；这里没有条目，只能交给下一次全量扫积分帧建立
+            scanDirty = true;
+        }
+
         getServantData(player).ifPresent(data -> {
             data.addServant(servant.getUUID());
         });
@@ -473,9 +482,26 @@ public class SearchServant {
 
             if (isScanning) {
                 processNextFrame();
-            } else if (globalTickCounter % SCAN_INTERVAL_TICKS == 0) {
-                scanAllPlayersOptimized(event.getServer());
+                return;
             }
+
+            // 没有任何仆从数据、也没有 dirty 时直接跳过：不再每 6 分钟白走一遍全世界实体
+            // （全量扫只能发现「已加载」的实体，而它们加载时都会走 EntityJoinLevelEvent，
+            //  因此缓存为空时跳过是安全的；dirty 情况见 onServantJoin）
+            boolean nothingToMaintain = PLAYER_SERVANT_CACHE.isEmpty() && ENHANCED_PLAYER_CACHE.isEmpty();
+            if (nothingToMaintain && !scanDirty) {
+                return;
+            }
+
+            int sinceLast = globalTickCounter - lastScanTick;
+            boolean dirtyDue = scanDirty && sinceLast >= MIN_RESCAN_INTERVAL_TICKS;
+            boolean fallbackDue = sinceLast >= SCAN_INTERVAL_TICKS;
+            if (!dirtyDue && !fallbackDue) {
+                return;
+            }
+
+            scanDirty = false;
+            scanAllPlayersOptimized(event.getServer());
         }
 
         @SubscribeEvent

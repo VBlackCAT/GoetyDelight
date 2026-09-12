@@ -1,33 +1,19 @@
 package net.v_black_cat.goetydelight.init;
 
+import java.util.*;
+import java.util.stream.Collectors;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
-import net.v_black_cat.goetydelight.GoetyDelight;
 
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
-@EventBusSubscriber(modid = GoetyDelight.MODID)
-public class ModConfig {
+/**
+ * 服务端配置：玩法数值与黑白名单，随存档保存（单人即世界配置），进服后由服务端同步给客户端。
+ * <p>
+ * 对应配置文件：goetydelight-server.toml
+ */
+public class ModServerConfig {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
-
-    // ==================== 黑名单物品 ====================
-    private static final ModConfigSpec.ConfigValue<List<? extends String>> BLACKLISTED_ITEMS = BUILDER
-            .comment("A list of blacklisted items that will be hidden from creative tabs and prevent drops\n物品黑名单列表，这些物品将从创造模式标签页隐藏并阻止掉落")
-            .defineListAllowEmpty("blacklistedItems", List.of(
-                    "goetydelight:roasted_corpse_maggots",
-                    "goetydelight:corpse_maggot",
-                    "goetydelight:rotten_corpse_maggot_feast",
-                    "goetydelight:rotten_corpse_maggot_feast_block"
-            ), ModConfig::validateItemName);
 
     // ==================== 皇家蛋糕效果半径 ====================
     private static final ModConfigSpec.DoubleValue CAKE_EFFECT_RADIUS = BUILDER
@@ -61,7 +47,7 @@ public class ModConfig {
                             "l2complements:totemic_apple", "l2complements:enchanted_totemic_apple", "hmag:insomnia_fruit",
                             "artifacts:everlasting_beef", "artifacts:eternal_steak", "born_in_chaos_v1:eternal_candy", "avaritia_delight:infinity_apple",
                             "avaritia_delight:slice_of_endless_cake", "avaritia_delight:infinity_taco", "avaritia_delight:pasta_with_cosmic_meatballs",
-                            "avaritia_delight:infinity_large_hamburger", "minecraft:apple"), ModConfig::noValidateItemName);
+                            "avaritia_delight:infinity_large_hamburger", "minecraft:apple"), ModServerConfig::noValidateItemName);
 
     // ==================== 幻味草持续时长倍率 ====================
     private static final ModConfigSpec.DoubleValue METAMORPHIC_SCENT_GRASS_DURATION_MULTIPLIER = BUILDER
@@ -87,7 +73,7 @@ public class ModConfig {
                     "l2complements:totemic_apple", "l2complements:enchanted_totemic_apple", "hmag:insomnia_fruit",
                     "artifacts:everlasting_beef", "artifacts:eternal_steak", "born_in_chaos_v1:eternal_candy", "avaritia_delight:infinity_apple",
                     "avaritia_delight:slice_of_endless_cake", "avaritia_delight:infinity_taco", "avaritia_delight:pasta_with_cosmic_meatballs",
-                    "avaritia_delight:infinity_large_hamburger", "minecraft:apple"), ModConfig::noValidateItemName);
+                    "avaritia_delight:infinity_large_hamburger", "minecraft:apple"), ModServerConfig::noValidateItemName);
 
     // ==================== 幻味果复制数量 ====================
     private static final ModConfigSpec.IntValue METAMORPHIC_SCENT_FRUIT_COPY_COUNT = BUILDER
@@ -133,22 +119,17 @@ public class ModConfig {
             .comment("Disable Soul Affix enchantment entirely\n完全禁用灵魂附加附魔")
             .define("disableSoulAffix", false);
 
-    // ==================== 骷髅红眼特效 ====================
-    private static final ModConfigSpec.BooleanValue SKELETON_RED_EYE_EFFECT_ENABLED = BUILDER
-            .comment("Whether to enable the skeleton red-eye effect (red eye flash when a skeleton targets a low-health player)\n是否启用骷髅红眼特效（骷髅锁定低血量玩家时触发的红眼闪光特效）")
-            .define("skeletonRedEyeEffectEnabled", true);
-
     private static final ModConfigSpec.ConfigValue<List<? extends String>> SOUL_MENDING_BLACKLIST = BUILDER
             .comment("A list of items that cannot be enchanted with Soul Mending\n无法附魔灵魂修补的物品列表")
-            .defineListAllowEmpty("soulMendingBlacklist", List.of(), ModConfig::noValidateItemName);
+            .defineListAllowEmpty("soulMendingBlacklist", List.of(), ModServerConfig::noValidateItemName);
 
     private static final ModConfigSpec.ConfigValue<List<? extends String>> SOUL_HEALING_BLACKLIST = BUILDER
             .comment("A list of items that cannot be enchanted with Soul Healing\n无法附魔溢魂弥躯的物品列表")
-            .defineListAllowEmpty("soulHealingBlacklist", List.of(), ModConfig::noValidateItemName);
+            .defineListAllowEmpty("soulHealingBlacklist", List.of(), ModServerConfig::noValidateItemName);
 
     private static final ModConfigSpec.ConfigValue<List<? extends String>> SOUL_AFFIX_BLACKLIST = BUILDER
             .comment("A list of items that cannot be enchanted with Soul Affix\n无法附魔灵魂附加的物品列表")
-            .defineListAllowEmpty("soulAffixBlacklist", List.of(), ModConfig::noValidateItemName);
+            .defineListAllowEmpty("soulAffixBlacklist", List.of(), ModServerConfig::noValidateItemName);
 
     // ==================== 巫妖乱炖相关 ====================
     private static final ModConfigSpec.DoubleValue LICH_CHAOS_STEW_BOOST_PERCENTAGE = BUILDER
@@ -167,18 +148,6 @@ public class ModConfig {
     private static final ModConfigSpec.IntValue NIGHT_PEA_SOUP_MAX_COUNT = BUILDER
             .comment("Maximum stack count for Night Heart Pea Soup effect\n暗夜之心豌豆汤效果的最大叠加层数")
             .defineInRange("nightPeaSoupMaxCount", 12, 1, 30);
-
-    // ==================== Goety Revelation 兼容性 ====================
-    private static final ModConfigSpec.BooleanValue ENABLE_GOETY_REVELATION_COMPATIBILITY = BUILDER
-            .comment("Whether to enable compatibility with goety_revelation mod\n是否启用与goety_revelation模组的兼容性")
-            .define("enableGoetyRevelationCompatibility", true);
-
-    // ==================== 玩家模型缩放 ====================
-    private static final ModConfigSpec.ConfigValue<List<? extends String>> PLAYER_MODEL_SCALES = BUILDER
-            .comment("Player model scale settings (format: playerName=scale)\n玩家模型缩放设置（格式：玩家名称=缩放比例）\n注：请勿在高版本ysm中使用该功能（2.6.2版本可用，2.6.5版本不可用）")
-            .defineListAllowEmpty("playerModelScales", List.of(
-                    "Steve=1.0", "Alex=1.0", "wu1wu2=1.0"
-            ), ModConfig::validatePlayerScaleEntry);
 
     // ==================== 万毒盛宴相关配置 ====================
     private static final ModConfigSpec.BooleanValue TEN_THOUSAND_POISON_FEAST_USE_WHITELIST = BUILDER
@@ -302,12 +271,9 @@ public class ModConfig {
     // ==================== 构建 Spec ====================
     public static final ModConfigSpec SPEC = BUILDER.build();
 
-    // ==================== 缓存字段 ====================
-    public static Set<Item> blacklistedItems;
-    private static Consumer<Void> blackListUpdateListener;
+    // ==================== Getter / 辅助方法 ====================
 
     // ==================== Getter 方法 ====================
-
     public static Set<Item> getSoulMendingBlacklist() {
         return SOUL_MENDING_BLACKLIST.get().stream()
                 .map(itemName -> BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemName)))
@@ -354,26 +320,12 @@ public class ModConfig {
         return DISABLE_SOUL_AFFIX.get();
     }
 
-    public static boolean isSkeletonRedEyeEffectEnabled() {
-        return SKELETON_RED_EYE_EFFECT_ENABLED.get();
-    }
-
     public static int getSoulAffixSoulCostPerLevel() {
         return SOUL_AFFIX_SOUL_COST_PER_LEVEL.get();
     }
 
     public static double getSoulAffixDamagePerLevel() {
         return SOUL_AFFIX_DAMAGE_PER_LEVEL.get();
-    }
-
-    public static Map<String, Float> getPlayerModelScales() {
-        return PLAYER_MODEL_SCALES.get().stream()
-                .map(entry -> entry.split("="))
-                .filter(parts -> parts.length == 2)
-                .collect(Collectors.toMap(
-                        parts -> parts[0].trim(),
-                        parts -> Float.parseFloat(parts[1].trim())
-                ));
     }
 
     public static double getMetamorphicScentGrassDurationMultiplier() {
@@ -398,10 +350,6 @@ public class ModConfig {
         return METAMORPHIC_SCENT_FRUIT_COPY_BLACKLIST.get().stream()
                 .map(itemName -> BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemName)))
                 .collect(Collectors.toSet());
-    }
-
-    public static boolean isGoetyRevelationCompatibilityEnabled() {
-        return ENABLE_GOETY_REVELATION_COMPATIBILITY.get();
     }
 
     public static int getMetamorphicScentGrassCopyCount() {
@@ -445,7 +393,6 @@ public class ModConfig {
     }
 
     // ==================== TenThousandPoison 配置 Getter 方法 ====================
-
     public static boolean isTenThousandPoisonFeastUseWhitelist() {
         return TEN_THOUSAND_POISON_FEAST_USE_WHITELIST.get();
     }
@@ -515,7 +462,6 @@ public class ModConfig {
     }
 
     // ==================== 解析辅助方法 ====================
-
     private static Map<ResourceLocation, int[]> parseEffectRangeConfig(List<? extends String> configList) {
         Map<ResourceLocation, int[]> result = new HashMap<>();
         for (String entry : configList) {
@@ -557,7 +503,6 @@ public class ModConfig {
     }
 
     // ==================== 验证方法 ====================
-
     private static boolean validateItemName(final Object obj) {
         return obj instanceof final String itemName && BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(itemName));
     }
@@ -572,36 +517,5 @@ public class ModConfig {
 
     private static boolean noValidateItemName(final Object obj) {
         return true;
-    }
-
-    private static boolean validatePlayerScaleEntry(final Object obj) {
-        if (!(obj instanceof String entry)) return false;
-        String[] parts = entry.split("=");
-        if (parts.length != 2) return false;
-        try {
-            float scale = Float.parseFloat(parts[1].trim());
-            return scale > 0;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
-    // ==================== 事件监听 ====================
-
-    @SubscribeEvent
-    static void onLoad(final ModConfigEvent event) {
-        blacklistedItems = BLACKLISTED_ITEMS.get().stream()
-                .map(itemName -> BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemName)))
-                .collect(Collectors.toSet());
-
-        if (blackListUpdateListener != null) {
-            blackListUpdateListener.accept(null);
-        }
-    }
-
-    // ==================== 回调注册 ====================
-
-    public static void registerBlackListUpdateListener(Consumer<Void> listener) {
-        blackListUpdateListener = listener;
     }
 }

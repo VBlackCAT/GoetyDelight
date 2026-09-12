@@ -1,0 +1,19 @@
+{
+    "name": "大理石聚晶",
+    "icon": "goetydelight:marble_focus",
+    "category": "goety:goetydelight/else",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "💦💦💦💦💦💦💦💦💦💦💦💦💦💦💦💦💦💦💦💦💦💦💦💦💦💦💦💦💦💦💦💦💦💦💦💦$(br)哈！gsmgsmgsm$(br)哈！哈！！哈！！！"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "笨wu出于某些原因不喜欢这个，所以它应该不会被移植回1.20.1（sad$(br)效果就是右键放一格水，可以在下界放水，的范围不吃任何加成。shift右键施法可以把大部分石头替换为严重磨损的粉砂质大理石"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/marble_focus"
+        }
+    ]
+}

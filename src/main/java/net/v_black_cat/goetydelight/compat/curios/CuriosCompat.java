@@ -3,15 +3,15 @@ package net.v_black_cat.goetydelight.compat.curios;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.v_black_cat.goetydelight.compat.CompatManager;
 
 public class CuriosCompat {
     private static final String ID = "curios";
     public static final boolean IS_LOADED;
 
     static {
-        IS_LOADED = ModList.get().isLoaded(ID);
+        IS_LOADED = CompatManager.isLoaded(ID);
     }
 
     @OnlyIn(Dist.CLIENT)

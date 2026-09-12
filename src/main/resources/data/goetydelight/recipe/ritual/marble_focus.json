@@ -1,0 +1,40 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "goety:wind_core"
+  },
+  "craftType": "magic",
+  "soulCost": 51,
+  "duration": 52,
+  "ingredients": [
+    {
+      "item": "goety:silt_marble_heavy"
+    },
+    {
+      "item": "goety:silt_marble_heavy"
+    },
+    {
+      "item": "goety:silt_marble_heavy"
+    },
+    {
+      "item": "minecraft:water_bucket"
+    },
+    {
+      "item": "minecraft:water_bucket"
+    },
+    {
+      "item": "goety:silt_marble_heavy"
+    },
+    {
+      "item": "goetydelight:crisp_biscuit"
+    },
+    {
+      "item": "goetydelight:crisp_biscuit"
+    }
+  ],
+  "result": {
+    "id": "goetydelight:marble_focus",
+    "count": 1
+  }
+}

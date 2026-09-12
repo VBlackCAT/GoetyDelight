@@ -21,7 +21,10 @@ import net.v_black_cat.goetydelight.item.food.*;
 import net.v_black_cat.goetydelight.item.food.MetamorphicScentGrassItem;
 import net.v_black_cat.goetydelight.spell.GrassCuttingSpell;
 import net.v_black_cat.goetydelight.spell.HoeHarvestSpell;
+import net.v_black_cat.goetydelight.spell.LaowangSpell;
+import net.v_black_cat.goetydelight.spell.LoveAndFertilitySpell;
 import net.v_black_cat.goetydelight.spell.MarbleWaterSpell;
+import net.v_black_cat.goetydelight.spell.RichSoilSpell;
 
 import static vectorwing.farmersdelight.common.registry.ModItems.basicItem;
 import vectorwing.farmersdelight.common.item.KnifeItem;
@@ -74,6 +77,7 @@ public class ModItems {
     public static final DeferredItem<Item> WHITE_SHARK_CANDY;
     public static final DeferredItem<Item> WHITE_SHARK_SUGAR_PACK;
     public static final DeferredItem<Item> SUNSHINE_SUGAR_BUN;
+    public static final DeferredItem<Item> COLD_LEAF_CANDY;
     public static final DeferredItem<Item> CANDY_FISH;
     public static final DeferredItem<Item> GRAPE_SLUSH;
     public static final DeferredItem<Item> FROG_LEG_SANDWICH;
@@ -83,6 +87,12 @@ public class ModItems {
     public static final DeferredItem<Item> CRYING_SHARK_SUGAR_PACK;
     public static final DeferredItem<Item> SEVEN_LEAF_PUDDING;
     public static final DeferredItem<Item> BEAR_PAW;
+    public static final DeferredItem<Item> BRAISED_BEAR_PAW;
+    public static final DeferredItem<Item> SHARK_FIN;
+    public static final DeferredItem<Item> COOKED_SHARK_FIN;
+    public static final DeferredItem<Item> BREAM;
+    public static final DeferredItem<Item> COOKED_BREAM;
+    public static final DeferredItem<Item> TAIYAKI;
     public static final DeferredItem<Item> CAKE;
     public static final DeferredItem<Item> OMINOUS_ICE_CREAM;
     public static final DeferredItem<Item> ECTOPLASMIC_MELON;
@@ -164,6 +174,9 @@ public class ModItems {
     public static final DeferredItem<Item> GRASS_CUTTING_FOCUS;
     public static final DeferredItem<Item> HOE_FOCUS;
     public static final DeferredItem<Item> MARBLE_FOCUS;
+    public static final DeferredItem<Item> LOVE_AND_FERTILITY_FOCUS;
+    public static final DeferredItem<Item> RICH_SOIL_FOCUS;
+    public static final DeferredItem<Item> LAOWANG_FOCUS;
 
     //    // ==================== 静态初始化块：物品定义区域 ====================
     static {
@@ -368,6 +381,10 @@ public class ModItems {
                 () -> new Item(basicItem().stacksTo(64).food(
                         ModFoods.SUNSHINE_SUGAR_BUN
                 )));
+        COLD_LEAF_CANDY = ITEMS.register("cold_leaf_candy",
+                () -> new Item(basicItem().stacksTo(64).food(
+                        ModFoods.COLD_LEAF_CANDY
+                )));
 //
         GRAPE_SLUSH = ITEMS.register("grape_slush",
                 () -> new NoGlassBottleDrinkItem(basicItem().stacksTo(64).food(
@@ -382,6 +399,30 @@ public class ModItems {
         BEAR_PAW = ITEMS.register("bear_paw",
                 () -> new Item(basicItem().stacksTo(64).food(
                         ModFoods.BEAR_PAW
+                )));
+        BRAISED_BEAR_PAW = ITEMS.register("braised_bear_paw",
+                () -> new Item(basicItem().stacksTo(64).food(
+                        ModFoods.BRAISED_BEAR_PAW
+                )));
+        SHARK_FIN = ITEMS.register("shark_fin",
+                () -> new Item(basicItem().stacksTo(64).food(
+                        ModFoods.SHARK_FIN
+                )));
+        COOKED_SHARK_FIN = ITEMS.register("cooked_shark_fin",
+                () -> new Item(basicItem().stacksTo(64).food(
+                        ModFoods.COOKED_SHARK_FIN
+                )));
+        BREAM = ITEMS.register("bream",
+                () -> new Item(basicItem().stacksTo(64).food(
+                        ModFoods.BREAM
+                )));
+        COOKED_BREAM = ITEMS.register("cooked_bream",
+                () -> new Item(basicItem().stacksTo(64).food(
+                        ModFoods.COOKED_BREAM
+                )));
+        TAIYAKI = ITEMS.register("taiyaki",
+                () -> new Item(basicItem().stacksTo(64).food(
+                        ModFoods.TAIYAKI
                 )));
         CAKE = ITEMS.register("royal_cake",
                 () -> new CakeItem(basicItem().stacksTo(64).rarity(Rarity.RARE).food(
@@ -632,6 +673,12 @@ public class ModItems {
                 () -> new MagicFocus(new HoeHarvestSpell()));
         MARBLE_FOCUS = ITEMS.register("marble_focus",
                 () -> new MagicFocus(new MarbleWaterSpell()));
+        LOVE_AND_FERTILITY_FOCUS = ITEMS.register("love_and_fertility_focus",
+                () -> new MagicFocus(new LoveAndFertilitySpell()));
+        RICH_SOIL_FOCUS = ITEMS.register("rich_soil_focus",
+                () -> new MagicFocus(new RichSoilSpell()));
+        LAOWANG_FOCUS = ITEMS.register("laowang_focus",
+                () -> new MagicFocus(new LaowangSpell()));
     }
 
     // ==================== 辅助方法 ====================

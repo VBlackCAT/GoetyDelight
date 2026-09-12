@@ -10,10 +10,10 @@ import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.v_black_cat.goetydelight.buff.effect.BuffEffect;
+import net.v_black_cat.goetydelight.compat.CompatManager;
 import net.v_black_cat.goetydelight.init.ModBuffTypes;
 import net.v_black_cat.goetydelight.util.BuffUtil;
 
@@ -44,7 +44,7 @@ public class CrimsonMemoriesBuffEffect implements BuffEffect {
 
         Registry<DamageType> damageTypeRegistry = player.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
         DamageSource damageSource = null;
-        if (target.level().dimension() == Level.NETHER && ModList.get().isLoaded("goety_revelation")) {
+        if (target.level().dimension() == Level.NETHER && CompatManager.isGoetyRevelationCompatEnabled()) {
 //            damageSource = new DamageSource(damageTypeRegistry.getHolderOrThrow(ExtraDamageTypes.QUIETUS));
         } else {
             damageSource = new DamageSource(damageTypeRegistry.getHolderOrThrow(ModDamageSource.DOOM));

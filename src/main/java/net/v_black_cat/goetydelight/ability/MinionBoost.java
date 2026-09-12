@@ -18,7 +18,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.init.ModAttachments;
-import net.v_black_cat.goetydelight.init.ModConfig;
+import net.v_black_cat.goetydelight.init.ModServerConfig;
 
 import java.util.List;
 import java.util.UUID;
@@ -46,7 +46,7 @@ public class MinionBoost {
 
     public static void increaseStewBoostCount(Player player) {
         int cur = getStewBoostCount(player);
-        if (cur < ModConfig.getLichStewMaxCount()) {
+        if (cur < ModServerConfig.getLichStewMaxCount()) {
             player.setData(ModAttachments.MINION_STEW_BOOST_COUNT, cur + 1);
             applyMinionBoosts(player);
         }
@@ -54,7 +54,7 @@ public class MinionBoost {
 
     public static void increaseSoupBoostCount(Player player) {
         int cur = getSoupBoostCount(player);
-        if (cur < ModConfig.getNightPeaSoupMaxCount()) {
+        if (cur < ModServerConfig.getNightPeaSoupMaxCount()) {
             player.setData(ModAttachments.MINION_SOUP_BOOST_COUNT, cur + 1);
             applyMinionBoosts(player);
         }
@@ -93,9 +93,9 @@ public class MinionBoost {
         removeMinionBoost(minion);
 
         double stewPct = LichdomHelper.isLich(owner)
-                ? ModConfig.getLichChaosStewBoostPercentage() * stewCount
+                ? ModServerConfig.getLichChaosStewBoostPercentage() * stewCount
                 : 0;
-        double soupPct = ModConfig.getNightHeartPeaSoupBoostPercentage() * soupCount;
+        double soupPct = ModServerConfig.getNightHeartPeaSoupBoostPercentage() * soupCount;
         double total = stewPct + soupPct;
         if (total <= 0) return;
 

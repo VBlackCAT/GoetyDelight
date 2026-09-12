@@ -1,6 +1,5 @@
 package net.v_black_cat.goetydelight.compat;
 
-import net.neoforged.fml.ModList;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
@@ -16,7 +15,7 @@ public final class OculusCompat {
     }
 
     public static boolean isShaderPackInUse() {
-        if (!ModList.get().isLoaded("oculus") && !ModList.get().isLoaded("iris")) {
+        if (!CompatManager.isShaderModLoaded()) {
             return false;
         }
 

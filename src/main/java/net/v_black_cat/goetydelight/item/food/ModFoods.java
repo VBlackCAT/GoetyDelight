@@ -34,8 +34,15 @@ public class ModFoods {
     public static final FoodProperties CORPSE_MAGGOT;
     public static final FoodProperties CRYING_SHARK_SUGAR_PACK;
     public static final FoodProperties SUNSHINE_SUGAR_BUN;
+    public static final FoodProperties COLD_LEAF_CANDY;
     public static final FoodProperties SEVEN_LEAF_PUDDING;
     public static final FoodProperties BEAR_PAW;
+    public static final FoodProperties BRAISED_BEAR_PAW;
+    public static final FoodProperties SHARK_FIN;
+    public static final FoodProperties COOKED_SHARK_FIN;
+    public static final FoodProperties BREAM;
+    public static final FoodProperties COOKED_BREAM;
+    public static final FoodProperties TAIYAKI;
     public static final FoodProperties CAKE;
     public static final FoodProperties OMINOUS_ICE_CREAM;
     public static final FoodProperties ECTOPLASMIC_MELON;
@@ -200,6 +207,14 @@ public class ModFoods {
                 .effect(() -> new MobEffectInstance(vectorwing.farmersdelight.common.registry.ModEffects.NOURISHMENT, minToTick(5), 0), 1.0F)
                 .build();
 
+        // 冷叶糖：清凉系糖果，附带刺激感 / 凛寒气场 / 洞悉（6 点饱食度、3.6 饱和度）
+        COLD_LEAF_CANDY = new FoodProperties.Builder()
+                .nutrition(6).saturationModifier(0.6F).alwaysEdible()
+                .effect(() -> new MobEffectInstance(ModEffects.TINGLING, sToTick(10), 1), 1.0F)           // 刺激感 II，10 秒
+                .effect(() -> new MobEffectInstance(GoetyEffects.FROSTY_AURA, sToTick(90), 0), 1.0F)      // 凛寒气场 I，1:30
+                .effect(() -> new MobEffectInstance(GoetyEffects.INSIGHT, sToTick(180), 0), 1.0F)         // 洞悉 I，3:00
+                .build();
+
         SUNSHINE_SUGAR_BUN = new FoodProperties.Builder()
                 .nutrition(7).saturationModifier(0.5714F).alwaysEdible()
                 .effect(() -> new MobEffectInstance(GoetyEffects.PHOTOSYNTHESIS, minToTick(15), 1), 1.0F)
@@ -216,6 +231,44 @@ public class ModFoods {
                 .nutrition(6).saturationModifier(0.8333F).alwaysEdible()
                 .effect(() -> new MobEffectInstance(vectorwing.farmersdelight.common.registry.ModEffects.NOURISHMENT, 6000, 0), 1.0F)
                 .effect(() -> new MobEffectInstance(GoetyEffects.RAMPAGE, 2400, 0), 1.0F)
+                .build();
+
+        // 红烧熊掌：熊掌的熟食版本，饱食度与增益都更强（9 点饱食度 / 7.5 饱和度）
+        BRAISED_BEAR_PAW = new FoodProperties.Builder()
+                .nutrition(9).saturationModifier(0.8333F).alwaysEdible()
+                .effect(() -> new MobEffectInstance(vectorwing.farmersdelight.common.registry.ModEffects.NOURISHMENT, minToTick(8), 0), 1.0F)
+                .effect(() -> new MobEffectInstance(GoetyEffects.RAMPAGE, 3600, 0), 1.0F)
+                .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(1), 0), 1.0F)
+                .build();
+
+        // 鱼翅（生）：食材级，仅饥饿时可食（2 点饱食度 / 0.8 饱和度）
+        SHARK_FIN = new FoodProperties.Builder()
+                .nutrition(2).saturationModifier(0.4F)
+                .build();
+
+        // 熟鱼翅：5 点饱食度 / 4 点饱和度，附带少量水肺（延续糖果鱼的鲨鱼系风味）
+        COOKED_SHARK_FIN = new FoodProperties.Builder()
+                .nutrition(5).saturationModifier(0.8F).alwaysEdible()
+                .effect(() -> new MobEffectInstance(vectorwing.farmersdelight.common.registry.ModEffects.NOURISHMENT, minToTick(5), 0), 1.0F)
+                .effect(() -> new MobEffectInstance(MobEffects.WATER_BREATHING, sToTick(60), 0), 1.0F)
+                .build();
+
+        // 鲷鱼（生）：食材级（2 点饱食度 / 0.8 饱和度）
+        BREAM = new FoodProperties.Builder()
+                .nutrition(2).saturationModifier(0.4F)
+                .build();
+
+        // 熟鲷鱼：6 点饱食度 / 4.8 饱和度（对齐熟鲑鱼档位）
+        COOKED_BREAM = new FoodProperties.Builder()
+                .nutrition(6).saturationModifier(0.8F).alwaysEdible()
+                .effect(() -> new MobEffectInstance(vectorwing.farmersdelight.common.registry.ModEffects.NOURISHMENT, minToTick(5), 0), 1.0F)
+                .build();
+
+        // 鲷鱼烧：甜点，6 点饱食度 / 4 点饱和度，鱼形点心延续水肺彩蛋
+        TAIYAKI = new FoodProperties.Builder()
+                .nutrition(6).saturationModifier(0.6667F).alwaysEdible()
+                .effect(() -> new MobEffectInstance(vectorwing.farmersdelight.common.registry.ModEffects.NOURISHMENT, minToTick(3), 0), 1.0F)
+                .effect(() -> new MobEffectInstance(MobEffects.WATER_BREATHING, sToTick(30), 0), 1.0F)
                 .build();
 
         CAKE = new FoodProperties.Builder()

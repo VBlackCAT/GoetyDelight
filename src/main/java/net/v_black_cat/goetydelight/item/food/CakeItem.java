@@ -17,7 +17,7 @@ import java.util.List;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.v_black_cat.goetydelight.init.ModConfig;
+import net.v_black_cat.goetydelight.init.ModServerConfig;
 import org.jetbrains.annotations.NotNull;
 
 public class CakeItem extends Item {
@@ -37,7 +37,7 @@ public class CakeItem extends Item {
         ItemStack resultStack = super.finishUsingItem(stack, level, entity);
 
         if (!level.isClientSide && entity instanceof Player player) {
-            double effectRadius = ModConfig.getCakeEffectRadius();
+            double effectRadius = ModServerConfig.getCakeEffectRadius();
 
             AABB effectArea = new AABB(
             player.position().subtract(effectRadius, effectRadius, effectRadius),

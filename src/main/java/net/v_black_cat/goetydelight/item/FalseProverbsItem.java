@@ -4,6 +4,7 @@ import com.Polarice3.Goety.common.items.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -18,23 +19,24 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.v_black_cat.goetydelight.init.ModAttachments;
 import net.v_black_cat.goetydelight.renderer.FalseProverbsItemRender;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.IntStream;
 
 public class FalseProverbsItem extends SwordItem {
 
-    // 优化的玩家数据管理
-    private static final Map<UUID, PlayerFalseProverbsData> playerDataMap = new ConcurrentHashMap<>();
-    private static final Map<UUID, CachedInventoryResult> inventoryCache = new ConcurrentHashMap<>();
-    private static final Map<UUID, Boolean> lastSentBackModelStatus = new ConcurrentHashMap<>();
+    /** 主背包槽位数（0-35）；36-39 为盔甲槽，40 为副手槽。 */
+    private static final int MAIN_INVENTORY_SIZE = 36;
 
-    private static final int CACHE_DURATION = 20; // tick缓存时间
-    private static final int CLEANUP_INTERVAL = 1200; // 60秒清理一次
+    /** 附件值：没有背在背上。 */
+    public static final int NO_BACK_SLOT = -1;
+
+    // 玩家数据管理（传送状态）
+    private static final Map<UUID, PlayerFalseProverbsData> playerDataMap = new ConcurrentHashMap<>();
 
     private static FalseProverbsItemRender renderer = null;
     private static final float ADDED_DAMAGE = 0.0f;
@@ -42,32 +44,12 @@ public class FalseProverbsItem extends SwordItem {
     // 玩家数据封装类
     private static class PlayerFalseProverbsData {
         boolean teleportStatus = false;
-        boolean backModelStatus = false;
         Vec3 originalPosition = null;
         WeakReference<Level> worldLevel = null;
 
         void clearPosition() {
             originalPosition = null;
             worldLevel = null;
-        }
-
-        void clear() {
-            teleportStatus = false;
-            backModelStatus = false;
-            clearPosition();
-        }
-    }
-
-    // 缓存背包检查结果
-    private static class CachedInventoryResult {
-        boolean shouldShowBack;
-        long lastCheckTick;
-        int inventoryHash;
-
-        boolean isValid(Player player) {
-            int currentHash = calculateInventoryHash(player.getInventory());
-            return lastCheckTick + CACHE_DURATION > player.tickCount &&
-                    inventoryHash == currentHash;
         }
     }
 
@@ -129,21 +111,6 @@ public class FalseProverbsItem extends SwordItem {
         }
     }
 
-    public static boolean getPlayerBackModelStatus(UUID playerUUID) {
-        return getPlayerData(playerUUID).backModelStatus;
-    }
-
-    public static void setPlayerBackModelStatus(UUID playerUUID, boolean status) {
-        getPlayerData(playerUUID).backModelStatus = status;
-    }
-
-    public static void removePlayerBackModelStatus(UUID playerUUID) {
-        PlayerFalseProverbsData data = playerDataMap.get(playerUUID);
-        if (data != null) {
-            data.backModelStatus = false;
-        }
-    }
-
     public static Vec3 getOriginalPosition(UUID playerUUID) {
         return getPlayerData(playerUUID).originalPosition;
     }
@@ -161,69 +128,61 @@ public class FalseProverbsItem extends SwordItem {
         return data != null && data.worldLevel != null ? data.worldLevel.get() : null;
     }
 
-    // 优化后的背包检查方法
-    private static int calculateInventoryHash(Inventory inventory) {
-        int hash = 0;
-        for (int i = 0; i < inventory.getContainerSize(); i++) {
-            ItemStack stack = inventory.getItem(i);
-            if (stack.getItem() instanceof FalseProverbsItem) {
-                hash = 31 * hash + i;
-            }
-        }
-        return hash;
+    // ==================== 背部模型状态 ====================
+    // 旧实现：每 5 tick 扫描背包 + 静态缓存 + 自定义同步包。
+    // 新实现：状态由物品自身的 inventoryTick 驱动（剑在背包里才会被调用，
+    // 剑不在背包时服务器端零开销），值放在同步附件里交给 NeoForge 传输。
+
+    /**
+     * 「背在背上」= 剑在主背包（0-35）且不是当前选中格、且副手没有拿剑。
+     * 与旧逻辑等价：副手持剑不显示；主手选中格不算「背着」；
+     * 主手拿着剑但背包里还有一把时，背包里那把依然背在背上。
+     */
+    @Override
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+        if (level.isClientSide || isSelected) return;
+        // 排除盔甲槽（36-39）与副手槽（40）：NeoForge 的 Inventory#tick 传入全局槽位
+        if (slotId < 0 || slotId >= MAIN_INVENTORY_SIZE) return;
+        if (!(entity instanceof Player player)) return;
+        updateBackSlot(player, slotId);
     }
 
-    public static boolean shouldShowBackModel(Player player) {
-        UUID uuid = player.getUUID();
-        CachedInventoryResult cached = inventoryCache.get(uuid);
+    /** 记录背上的剑所在槽位；值没变化就不写附件（避免每 tick 写数据 + 同步）。 */
+    private static void updateBackSlot(Player player, int slotId) {
+        if (player.getOffhandItem().getItem() instanceof FalseProverbsItem) return;
+        int current = player.getData(ModAttachments.FALSE_PROVERBS_BACK_SLOT.get());
+        // 已经记着自己，或者已经记着另一把合法的剑 → 不动，避免同一 tick 内互相覆盖
+        if (current == slotId || isBackSlotValid(player, current)) return;
+        setBackSlot(player, slotId);
+    }
 
-        if (cached != null && cached.isValid(player)) {
-            return cached.shouldShowBack;
-        }
+    /**
+     * 服务端每 tick 调用一次兜底校验：剑被丢弃 / 移进容器 / 换到手上 / 死亡掉落时
+     * 都不会再触发 inventoryTick，必须在这里把附件清掉。
+     * 没有背着剑时只读一次附件就返回，开销可忽略。
+     */
+    public static void validateBackSlot(Player player) {
+        int slot = player.getData(ModAttachments.FALSE_PROVERBS_BACK_SLOT.get());
+        if (slot < 0 || isBackSlotValid(player, slot)) return;
+        setBackSlot(player, NO_BACK_SLOT);
+    }
 
-        // 计算新结果
+    private static boolean isBackSlotValid(Player player, int slot) {
+        if (slot < 0 || slot >= MAIN_INVENTORY_SIZE) return false;
         Inventory inventory = player.getInventory();
-        boolean hasInMainHand = player.getMainHandItem().getItem() instanceof FalseProverbsItem;
-        boolean hasInOffHand = player.getOffhandItem().getItem() instanceof FalseProverbsItem;
-
-        // 使用Stream API优化遍历
-        int falseProverbsCount = (hasInMainHand ? 1 : 0) + (hasInOffHand ? 1 : 0);
-        falseProverbsCount += IntStream.range(0, inventory.getContainerSize())
-                .filter(i -> i != inventory.selected)
-                .mapToObj(inventory::getItem)
-                .filter(stack -> stack.getItem() instanceof FalseProverbsItem)
-                .count();
-
-        CachedInventoryResult result = new CachedInventoryResult();
-        result.shouldShowBack = hasInOffHand ? false :
-                (falseProverbsCount > 1 || (falseProverbsCount == 1 && !hasInMainHand));
-        result.lastCheckTick = player.tickCount;
-        result.inventoryHash = calculateInventoryHash(inventory);
-
-        inventoryCache.put(uuid, result);
-        return result.shouldShowBack;
+        if (inventory.selected == slot) return false;
+        if (player.getOffhandItem().getItem() instanceof FalseProverbsItem) return false;
+        return inventory.getItem(slot).getItem() instanceof FalseProverbsItem;
     }
 
-    // 清理方法
+    private static void setBackSlot(Player player, int slot) {
+        // Entity#setData 内部会自动调用 AttachmentSync.syncEntityUpdate（含玩家本人）
+        player.setData(ModAttachments.FALSE_PROVERBS_BACK_SLOT.get(), slot);
+    }
+
+    /** 玩家登出 / 清理 */
     public static void clearPlayerData(UUID uuid) {
         playerDataMap.remove(uuid);
-        inventoryCache.remove(uuid);
-        lastSentBackModelStatus.remove(uuid);
-    }
-
-    public static void cleanupExpiredData(long currentTick, java.util.function.Predicate<UUID> isPlayerOnline) {
-        // 清理过期的缓存数据
-        inventoryCache.entrySet().removeIf(entry ->
-                entry.getValue().lastCheckTick + CACHE_DURATION < currentTick
-        );
-
-        // 清理离线玩家的数据
-        lastSentBackModelStatus.keySet().removeIf(uuid -> !isPlayerOnline.test(uuid));
-        playerDataMap.keySet().removeIf(uuid -> !isPlayerOnline.test(uuid));
-    }
-
-    public static Map<UUID, Boolean> getLastSentBackModelStatus() {
-        return lastSentBackModelStatus;
     }
 
     @OnlyIn(Dist.CLIENT)

@@ -1,0 +1,40 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "goety:mystic_core"
+  },
+  "craftType": "forge",
+  "soulCost": 250,
+  "duration": 10,
+  "ingredients": [
+    {
+      "item": "minecraft:cocoa"
+    },
+    {
+      "item": "minecraft:cocoa"
+    },
+    {
+      "item": "minecraft:eggs"
+    },
+    {
+      "item": "minecraft:eggs"
+    },
+    {
+      "item": "goety:henbane_flower"
+    },
+    {
+      "item": "minecraft:glowstone_dust"
+    },
+    {
+      "item": "minecraft:redstone_block"
+    },
+    {
+      "item": "minecraft:nether_wart"
+    }
+  ],
+  "result": {
+    "id": "goetydelight:love_and_fertility_focus",
+    "count": 1
+  }
+}
