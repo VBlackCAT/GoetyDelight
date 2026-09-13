@@ -1,58 +1,50 @@
 package net.v_black_cat.goetydelight.compat.goety_revelation.item;
 
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
 public class AtonementVoucherWrapedCodItem extends Item {
-    private static final Map<UUID, Integer> PLAYER_USAGE_COUNT = new ConcurrentHashMap<>();
+    private static final String USAGE_COUNT_TAG = "AtonementVoucherUsageCount";
 
     public AtonementVoucherWrapedCodItem(Properties properties) {
         super(properties);
     }
 
-    public static int getUsageCount(Player player) {
-        return PLAYER_USAGE_COUNT.getOrDefault(player.getUUID(), 0);
+    // 获取玩家NBT中的使用次数
+    private static CompoundTag getPlayerPersistentData(Player player) {
+        return player.getPersistentData();
     }
 
-    public static int getUsageCount(UUID playerUUID) {
-        return PLAYER_USAGE_COUNT.getOrDefault(playerUUID, 0);
+    public static int getUsageCount(Player player) {
+        return getPlayerPersistentData(player).getInt(USAGE_COUNT_TAG);
     }
 
     public static int incrementUsageCount(Player player) {
-        UUID playerUUID = player.getUUID();
-        return PLAYER_USAGE_COUNT.merge(playerUUID, 1, Integer::sum);
-    }
-
-    public static int incrementUsageCount(UUID playerUUID) {
-        return PLAYER_USAGE_COUNT.merge(playerUUID, 1, Integer::sum);
+        CompoundTag tag = getPlayerPersistentData(player);
+        int current = tag.getInt(USAGE_COUNT_TAG);
+        int newCount = current + 1;
+        tag.putInt(USAGE_COUNT_TAG, newCount);
+        return newCount;
     }
 
     public static void resetUsageCount(Player player) {
-        PLAYER_USAGE_COUNT.remove(player.getUUID());
+        getPlayerPersistentData(player).remove(USAGE_COUNT_TAG);
     }
 
     public static void setUsageCount(Player player, int count) {
-        UUID playerUUID = player.getUUID();
+        CompoundTag tag = getPlayerPersistentData(player);
         if (count <= 0) {
-            PLAYER_USAGE_COUNT.remove(playerUUID);
+            tag.remove(USAGE_COUNT_TAG);
         } else {
-            PLAYER_USAGE_COUNT.put(playerUUID, count);
+            tag.putInt(USAGE_COUNT_TAG, count);
         }
-    }
-
-    public static Map<UUID, Integer> getAllUsageCounts() {
-        return Map.copyOf(PLAYER_USAGE_COUNT);
-    }
-
-    public static void clearAllUsageCounts() {
-        PLAYER_USAGE_COUNT.clear();
     }
 
     public static boolean hasReachedCount(Player player, int threshold) {
@@ -65,5 +57,19 @@ public class AtonementVoucherWrapedCodItem extends Item {
             incrementUsageCount(player);
         }
         return super.finishUsingItem(stack, level, entity);
+    }
+
+    @Override
+    public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity interactionTarget, InteractionHand usedHand) {
+        Level level = player.level();
+
+        if (interactionTarget instanceof Player targetPlayer && targetPlayer != player) {
+            if (!level.isClientSide) {
+                incrementUsageCount(targetPlayer);
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        }
+
+        return super.interactLivingEntity(stack, player, interactionTarget, usedHand);
     }
 }

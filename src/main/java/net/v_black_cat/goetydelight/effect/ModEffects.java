@@ -41,6 +41,8 @@ public class ModEffects {
             EFFECTS.register("warden", WardenEffect::new);
     public static final RegistryObject<MobEffect> INFERNO =
             EFFECTS.register("inferno", InfernoEffect::new);
+    public static final RegistryObject<MobEffect> FASTING =
+            EFFECTS.register("fasting", FastingEffect::new);
 
     public static void register(IEventBus bus) {
         EFFECTS.register(bus);

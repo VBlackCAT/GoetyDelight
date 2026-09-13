@@ -1,6 +1,5 @@
 package net.v_black_cat.goetydelight.entities;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
@@ -22,6 +21,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.monster.Phantom;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
@@ -96,6 +96,7 @@ public class DollEntity extends Entity {
             );
             float color = randomSource.nextInt(4) / 24.0F;
             serverLevel.sendParticles(ParticleTypes.NOTE, notePos.x(), notePos.y(), notePos.z(), 0, color, 0, 0, 1);
+            applyWu1WU2Wu3DollEffect(player);
 
             this.setTouchAnimationTick(TOUCH_ANIMATION_DURATION);
 
@@ -351,5 +352,23 @@ public class DollEntity extends Entity {
         float pitchVariation = 0.75f + randomSource.nextFloat() * 0.5f;
         float volume = soundEvent == SoundEvents.FOX_AMBIENT ? 1.5f : 1.0f;
         this.playSound(soundEvent, volume, basePitch * pitchVariation);
+    }
+
+    private void applyWu1WU2Wu3DollEffect(Player player) {
+        if (!"doll_wu1wu2wu3".equals(getCustomDollId())) {
+            return;
+        }
+        FoodData foodData = player.getFoodData();
+        int foodLevel = foodData.getFoodLevel();
+        float saturation = foodData.getSaturationLevel();
+        if (foodLevel <= 0) {
+            player.hurt(player.damageSources().starve(), 1.0F);
+            return;
+        }
+        foodData.setFoodLevel(Math.max(0, foodLevel - 1));
+        if (saturation > 0.0F) {
+            foodData.setSaturation(Math.max(0.0F, saturation - 1.0F));
+        }
+        player.hurt(player.damageSources().starve(), 0.5F);
     }
 }

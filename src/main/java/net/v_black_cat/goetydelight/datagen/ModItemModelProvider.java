@@ -66,7 +66,6 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.GRAPE_SLUSH);
         simpleItem(ModItems.FROG_LEG_SANDWICH);
         simpleItem(ModItems.SPIDER_EGG_BUBBLE_TEA);
-        simpleItem(ModItems.SPIDER_EGG_BUBBLE_TEA_2);
         simpleItem(ModItems.SAUCE_GRILLED_CANDY_FISH);
         simpleItem(ModItems.BONE_LORD_ASH_RICE);
         simpleItem(ModItems.RUBY_HARD_CANDY);
