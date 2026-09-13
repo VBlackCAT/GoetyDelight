@@ -1,0 +1,13 @@
+{
+  "type": "goetydelight:goetydelight_loot_modifier",
+  "conditions": [
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:gameplay/cat_morning_gift"
+    }
+  ],
+  "itemToAdd": "goetydelight:biscat",
+  "chance": 0.1,
+  "min": 0,
+  "max": 3
+}

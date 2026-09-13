@@ -1,6 +1,7 @@
 package net.v_black_cat.goetydelight.item;
 
 import com.Polarice3.Goety.common.items.ModTiers;
+import com.mega.revelationfix.client.font.BakedGlyphBottomDissolve;
 import com.mega.revelationfix.common.item.ModItemTiers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
@@ -73,7 +74,6 @@ public class ModItems {
     public static final RegistryObject<Item> GRAPE_SLUSH;
     public static final RegistryObject<Item> FROG_LEG_SANDWICH;
     public static final RegistryObject<Item> SPIDER_EGG_BUBBLE_TEA;
-    public static final RegistryObject<Item> SPIDER_EGG_BUBBLE_TEA_2;
     public static final RegistryObject<Item> SAUCE_GRILLED_CANDY_FISH;
     public static final RegistryObject<Item> CRYING_SHARK_SUGAR_PACK;
     public static final RegistryObject<Item> SEVEN_LEAF_PUDDING;
@@ -99,7 +99,6 @@ public class ModItems {
     public static final RegistryObject<Item> EXOTIC_BREAKFAST;
     public static final RegistryObject<Item> JUNGLE_SALAD;
     public static final RegistryObject<Item> BOILING_BLOOD_BREW;
-    public static final RegistryObject<Item> ASCENSION_MOONCAKE;
     public static final RegistryObject<Item> VILLAGERS_FEAST;
     public static final RegistryObject<Item> NETHER_WART_OMELETTE;
     public static final RegistryObject<Item> WARPED_WART_OMELETTE;
@@ -145,8 +144,8 @@ public class ModItems {
     public static final RegistryObject<Item> BOAT_PLATE;
     public static final RegistryObject<Item> TEN_THOUSAND_POISON_FEAST;
     public static final RegistryObject<Item> UNHOLY_SAUCE;
-
-
+    public static final RegistryObject<Item> COLDLEMONLEAF;
+    public static final RegistryObject<Item> THERMAL_PULSE_PIE;
 
     //种子
     public static final RegistryObject<Item> ECTOPLASMIC_MELON_SEEDS;
@@ -166,26 +165,29 @@ public class ModItems {
     public static RegistryObject<Item> APOCALYPTIUM_COD = null;
     public static RegistryObject<Item> DOOM_COOKIE = null;
     public static RegistryObject<Item> ATONEMENT_VOUCHER_WRAPED_COD = null;
+    public static RegistryObject<Item> ASCENSION_MOONCAKE = null;
+    public static RegistryObject<Item> QUIETUS_MARROW = null;
     // ==================== 效果供应商常量 ====================
     public static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
     public static final Supplier<MobEffect> NOURISHMENT_EFFECT_SUPPLIER = farmersDelightBuff("nourishment");
-    private static final Supplier<MobEffect> WILD_RAGE_EFFECT_SUPPLIER = goetyBuff("wild_rage");
-    private static final Supplier<MobEffect> RAMPAGE_EFFECT_SUPPLIER = goetyBuff("rampage");
-    private static final Supplier<MobEffect> FORTUNATE_EFFECT_SUPPLIER = goetyBuff("fortunate");
-    private static final Supplier<MobEffect> CHILL_HIDE_EFFECT_SUPPLIER = goetyBuff("chill_hide");
-    private static final Supplier<MobEffect> CORPSE_EATER_EFFECT_SUPPLIER = goetyBuff("corpse_eater");
-    private static final Supplier<MobEffect> SHADOW_WALK_EFFECT_SUPPLIER = goetyBuff("shadow_walk");
-    private static final Supplier<MobEffect> CLIMBING_EFFECT_SUPPLIER = goetyBuff("climbing");
-    private static final Supplier<MobEffect> FROG_LEG_EFFECT_SUPPLIER = goetyBuff("frog_leg");
-    private static final Supplier<MobEffect> CHARGED_EFFECT_SUPPLIER = goetyBuff("charged");
-    private static final Supplier<MobEffect> SOUL_ARMOR_EFFECT_SUPPLIER = goetyBuff("soul_armor");
+    public static final Supplier<MobEffect> WILD_RAGE_EFFECT_SUPPLIER = goetyBuff("wild_rage");
+    public static final Supplier<MobEffect> RAMPAGE_EFFECT_SUPPLIER = goetyBuff("rampage");
+    public static final Supplier<MobEffect> FORTUNATE_EFFECT_SUPPLIER = goetyBuff("fortunate");
+    public static final Supplier<MobEffect> CHILL_HIDE_EFFECT_SUPPLIER = goetyBuff("chill_hide");
+    public static final Supplier<MobEffect> CORPSE_EATER_EFFECT_SUPPLIER = goetyBuff("corpse_eater");
+    public static final Supplier<MobEffect> SHADOW_WALK_EFFECT_SUPPLIER = goetyBuff("shadow_walk");
+    public static final Supplier<MobEffect> CLIMBING_EFFECT_SUPPLIER = goetyBuff("climbing");
+    public static final Supplier<MobEffect> FROG_LEG_EFFECT_SUPPLIER = goetyBuff("frog_leg");
+    public static final Supplier<MobEffect> CHARGED_EFFECT_SUPPLIER = goetyBuff("charged");
+    public static final Supplier<MobEffect> SOUL_ARMOR_EFFECT_SUPPLIER = goetyBuff("soul_armor");
     public static final Supplier<MobEffect> BUFF_EFFECT_SUPPLIER = goetyBuff("buff");
-    private static final Supplier<MobEffect> SAVE_EFFECTS_SUPPLIER = goetyBuff("save_effects");
-    private static final Supplier<MobEffect> PHOTOSYNTHESIS_SUPPLIER = goetyBuff("photosynthesis");
-    private static final Supplier<MobEffect> FROSTY_AURA_SUPPLIER = goetyBuff("frosty_aura");
-    private static final Supplier<MobEffect> FIERY_AURA_SUPPLIER = goetyBuff("fiery_aura");
-    private static final Supplier<MobEffect> ILLAGUE = goetyBuff("illague");
-    private static final Supplier<MobEffect> VENOMOUS_HANDS = goetyBuff("venomous_hands");
+    public static final Supplier<MobEffect> SAVE_EFFECTS_SUPPLIER = goetyBuff("save_effects");
+    public static final Supplier<MobEffect> PHOTOSYNTHESIS_SUPPLIER = goetyBuff("photosynthesis");
+    public static final Supplier<MobEffect> FROSTY_AURA_SUPPLIER = goetyBuff("frosty_aura");
+    public static final Supplier<MobEffect> FIERY_AURA_SUPPLIER = goetyBuff("fiery_aura");
+    public static final Supplier<MobEffect> ILLAGUE = goetyBuff("illague");
+    public static final Supplier<MobEffect> VENOMOUS_HANDS = goetyBuff("venomous_hands");
+    public static final Supplier<MobEffect> ELECTRIFIED = goetyBuff("electrified");
 
     // ==================== 静态初始化块：物品定义区域 ====================
     static {
@@ -296,22 +298,8 @@ public class ModItems {
                 () -> simpleFastFoodItem(4, 4, false));
         FROG_LEG_SANDWICH = ITEMS.register("frog_leg_sandwich",
                 () -> simpleFoodItem(10, 8, false));
-        SPIDER_EGG_BUBBLE_TEA_2 = ITEMS.register("spider_egg_bubble_tea_2",
-                () -> simpleFoodItem(1, 1, true));
         ROAST_LAOWANG_EAR = ITEMS.register("roast_laowang_ear",
                 () -> simpleFoodItem(4, 3, false));
-
-
-        // 特殊效果食物物品初始化
-
-
-
-        ASCENSION_MOONCAKE = ITEMS.register("ascension_mooncake",
-                () -> new Item(basicItem().stacksTo(1).rarity(Rarity.EPIC).food(
-                        simpleFoodItemProperties(66, 333)
-                                .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(66), 5), 1.0F)
-                                .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, minToTick(66), 5), 1.0F)
-                                .build())));
 
         SPIDER_EGG_BUBBLE_TEA = ITEMS.register("spider_egg_bubble_tea",
                 () -> new CustomDrinkItem(basicItem().stacksTo(16).food(
@@ -343,37 +331,37 @@ public class ModItems {
                 () -> new Item(basicItem().stacksTo(16).food(
                         simpleFoodItemProperties(16, 10)
                                 .effect(() -> new MobEffectInstance(MobEffects.HERO_OF_THE_VILLAGE, minToTick(3), 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .build())));
 
         JUNGLE_SALAD = ITEMS.register("jungle_salad",
                 () -> new BowlFoodItem(basicItem().stacksTo(16).food(
                         simpleFoodItemProperties(8, 4)
-                                .effect(() -> new MobEffectInstance(PHOTOSYNTHESIS_SUPPLIER.get(), minToTick(5), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(PHOTOSYNTHESIS_SUPPLIER.get(), minToTick(2), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(1), 0), 1.0F)
                                 .build())));
 
         QUICK_GROWING_SEED_POPCORN = ITEMS.register("quick_growing_seed_popcorn",
                 () -> new Item(basicItem().stacksTo(16).food(
                         simpleFoodItemProperties(8, 5)
-                                .effect(() -> new MobEffectInstance(MobEffects.SATURATION, 100, 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(PHOTOSYNTHESIS_SUPPLIER.get(), minToTick(5), 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(15), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.SATURATION, 20, 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(PHOTOSYNTHESIS_SUPPLIER.get(), minToTick(2), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .build())));
 
 
         SAUCE_GRILLED_CANDY_FISH = ITEMS.register("sauce_grilled_candy_fish",
                 () ->  new SauceGrilledCandyFishItem(basicItem().stacksTo(8).food(
                         simpleFoodItemProperties(9, 6)
-                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(8), 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(FIERY_AURA.get(), minToTick(5), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(FIERY_AURA.get(), minToTick(1), 0), 1.0F)
                                 .build())));
 
         CANDY_FISH = ITEMS.register("candy_fish",
                 () -> new CandyFishItem(basicItem().stacksTo(8).food(
                         simpleFoodItemProperties(6, 4)
-                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(7), 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(MobEffects.WATER_BREATHING, minToTick(5), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(2), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.WATER_BREATHING, minToTick(3), 0), 1.0F)
                                 .build())));
 
         WHITE_SHARK_SUGAR_PACK = ITEMS.register("sugar_pack",
@@ -385,8 +373,8 @@ public class ModItems {
         WHITE_SHARK_CANDY = ITEMS.register("sugar_scepter",
                 () ->  new SugarScepterItem(basicItem().stacksTo(8).rarity(Rarity.UNCOMMON).food(
                         simpleFoodItemProperties(8, 5)
-                                .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(1), 1), 1.0F)
-                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, sToTick(30), 1), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .build())));
 
         SIBLING_SUNDAE = ITEMS.register("possible_holy_representative",
@@ -426,23 +414,22 @@ public class ModItems {
         GRAPE_SLUSH = ITEMS.register("grape_slush",
                 () -> new NoGlassBottleDrinkItem(basicItem().stacksTo(64).food(
                         simpleFoodItemProperties(9, 6)
-                                .effect(() -> new MobEffectInstance(CHILL_HIDE_EFFECT_SUPPLIER.get(),4200, 1), 1.0F)
+                                .effect(() -> new MobEffectInstance(CHILL_HIDE_EFFECT_SUPPLIER.get(),sToTick(90), 1), 1.0F)
                                 .effect(() -> new MobEffectInstance(FROSTY_AURA_SUPPLIER.get(), 600, 1), 1.0F)
-                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .build())));
 
         SEVEN_LEAF_PUDDING = ITEMS.register("sweet_berry_pudding",
                 () -> new SevenLeafPuddingItem(basicItem().stacksTo(64).craftRemainder(Items.BOWL).food(
                         simpleFoodItemProperties(7, 5)
-                                .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(5), 1), 1.0F)
-                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(1.5F), 1), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(1), 0), 1.0F)
                                 .build())));
-
 
         BEAR_PAW = ITEMS.register("bear_paw",
                 () -> new Item(basicItem().stacksTo(64).food(
                         simpleFoodItemProperties(6, 5)
-                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), 6000, 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(30), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(RAMPAGE_EFFECT_SUPPLIER.get(), 2400, 0), 1.0F)
                                 .build())));
         CAKE = ITEMS.register("royal_cake",
@@ -456,8 +443,8 @@ public class ModItems {
         OMINOUS_ICE_CREAM = ITEMS.register("ominous_ice_cream",
                 () -> new OminousIceCreamItem(basicItem().stacksTo(64).rarity(Rarity.UNCOMMON).food(
                                 simpleFoodItemProperties(8, 5)
-                                        .effect(() -> new MobEffectInstance(MobEffects.BAD_OMEN, 6000, 4), 1.0F)
-                                        .effect(() -> new MobEffectInstance(CHILL_HIDE_EFFECT_SUPPLIER.get(), 1200, 0), 1.0F)
+                                        .effect(() -> new MobEffectInstance(MobEffects.BAD_OMEN, minToTick(5), 4), 1.0F)
+                                        .effect(() -> new MobEffectInstance(CHILL_HIDE_EFFECT_SUPPLIER.get(), sToTick(60), 0), 1.0F)
                                         .build())));
         ECTOPLASMIC_MELON = ITEMS.register("ectoplasmic_melon",
                 () -> new Item(basicItem().stacksTo(64).food(
@@ -467,9 +454,9 @@ public class ModItems {
         BLUE_ECTOPLASMIC_SUNDAE = ITEMS.register("blue_ectoplasmic_sundae",
                 () -> new Item(basicItem().stacksTo(64).food(
                         simpleFoodItemProperties(10, 6)
-                                .effect(() -> new MobEffectInstance(FORTUNATE_EFFECT_SUPPLIER.get(), 12000, 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 2400, 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(CHILL_HIDE_EFFECT_SUPPLIER.get(), 2400, 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(FORTUNATE_EFFECT_SUPPLIER.get(), minToTick(2), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, sToTick(90), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(CHILL_HIDE_EFFECT_SUPPLIER.get(), sToTick(90), 0), 1.0F)
                                 .build())));
 
         SKULL_SHOT = ITEMS.register("skull_shot",
@@ -481,10 +468,10 @@ public class ModItems {
         NIGHT_HEART_PEA_SOUP = ITEMS.register("night_heart_pea_soup",
                 () -> new NightHeartPeaSoupItem(basicItem().craftRemainder(Items.GLASS_BOTTLE).stacksTo(64).rarity(Rarity.UNCOMMON).food(
                         simpleFoodItemProperties(7, 3)
-                                .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(5), 2), 1.0F)
-                                .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 6000, 2), 1.0F)
-                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), 18000, 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(ModEffects.SERVANT_REINFORCEMENT.get(), minToTick(5), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, minToTick(5), 1), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, sToTick(150), 1), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(8), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(ModEffects.SERVANT_REINFORCEMENT.get(), minToTick(3), 0), 1.0F)
                                 .build())));
         POACHED_SPIDER_EGG = ITEMS.register("poached_spider_egg",
                 () -> new Item(basicItem().stacksTo(64).food(
@@ -518,18 +505,18 @@ public class ModItems {
         BONE_LORD_ASH_RICE = ITEMS.register("bone_lord_ash_rice",
                 () -> new BoneLordAshRiceItem(basicItem().craftRemainder(Items.BOWL).stacksTo(64).food(
                         simpleFoodItemProperties(6, 4)
-                                .effect(() -> new MobEffectInstance(CHILL_HIDE_EFFECT_SUPPLIER.get(), 6000, 1), 1.0F)
-                                .effect(() -> new MobEffectInstance(BUFF_EFFECT_SUPPLIER.get(), 6000, 2), 1.0F)
+                                .effect(() -> new MobEffectInstance(CHILL_HIDE_EFFECT_SUPPLIER.get(), minToTick(3), 1), 1.0F)
+                                .effect(() -> new MobEffectInstance(BUFF_EFFECT_SUPPLIER.get(), minToTick(3), 2), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(CORPSE_EATER.get(), minToTick(1), 2), 1.0F)
                                 .build())));
         RUBY_HARD_CANDY = ITEMS.register("ruby_hard_candy",
                 () -> new RubyHardCandyItem(basicItem().stacksTo(64).rarity(Rarity.UNCOMMON).food(
                         simpleFoodItemProperties(10, 8)
-                                .effect(() -> new MobEffectInstance(ModEffects.SPELL_MASTERY.get(), minToTick(10), 2), 1.0F)
-                                .effect(() -> new MobEffectInstance(ModEffects.SPELL_DURATION.get(), minToTick(10), 2), 1.0F)
-                                .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(8), 1), 1.0F)
-                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(15), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(ModEffects.SPELL_MASTERY.get(), minToTick(10), 1), 1.0F)
+                                .effect(() -> new MobEffectInstance(ModEffects.SPELL_DURATION.get(), minToTick(10), 1), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(3), 1), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
                                 .build())));
         CRISP_BISCUIT = ITEMS.register("crisp_biscuit",
                 () -> new CrispBiscuitItem(basicItem().stacksTo(64).food(
@@ -553,7 +540,7 @@ public class ModItems {
         FULL_SPIDER_FEAST = ITEMS.register("full_spider_feast",
                 () -> new Item(basicItem().stacksTo(64).food(
                         simpleFoodItemProperties(8, 5)
-                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(3), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(CLIMBING.get(), minToTick(5), 0), 1.0F)
                                 .build())));
         LIQUID_VOID_TEA_DRINK = ITEMS.register("liquid_void_tea_drink",
@@ -569,7 +556,7 @@ public class ModItems {
                                 .effect(() -> new MobEffectInstance(SAVE_EFFECTS.get(), -1, 2), 1.0F)
                                 .effect(() -> new MobEffectInstance(ModEffects.WIGHT_DENIAL.get(), minToTick(30), 0,false,false), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, -1, 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(30), 2), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(10), 2), 1.0F)
                                 .build())));
         MAGIC_QUARTZ_COOKIE = ITEMS.register("magic_quartz_cookie",
                 () -> new MagicQuartzCookieItem(basicItem().stacksTo(64).food(
@@ -680,7 +667,7 @@ public class ModItems {
         ROAST_LAOWANG = ITEMS.register("roast_laowang",
                 () -> new RoastLaowangItem(basicItem().stacksTo(64).rarity(Rarity.EPIC)
                         .food(simpleFoodItemProperties(20, 15)
-                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(20), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .build())));
 
         POLARICE = ITEMS.register("polarice",
@@ -770,38 +757,38 @@ public class ModItems {
         ROAST_LAOWANG_HEAD = ITEMS.register("roast_laowang_head",
                 () -> new Item(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
                         .food(simpleFoodItemProperties(20, 13)
-                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .build())));
 
         ROAST_LAOWANG_FEET = ITEMS.register("roast_laowang_feet",
                 () -> new Item(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
                         .food(simpleFoodItemProperties(10, 6)
-                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .build())));
 
         ROAST_LAOWANG_LEG = ITEMS.register("roast_laowang_leg",
                 () -> new Item(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
                         .food(simpleFoodItemProperties(10, 6)
-                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .build())));
 
         ONION_PORK_CHOP_RICE = ITEMS.register("onion_pork_chop_rice",
                 () -> new BowlFoodItem(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
                         .food(simpleFoodItemProperties(12, 8)
-                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .build())));
 
         ECTOPLASMIC_MELON_SALAD = ITEMS.register("ectoplasmic_melon_salad",
                 () -> new BowlFoodItem(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
                         .food(simpleFoodItemProperties(6, 5)
-                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(CHILL_HIDE_EFFECT_SUPPLIER.get(), minToTick(1), 2), 1.0F)
                                 .build())));
 
         ROAST_SPIDER_EGG = ITEMS.register("roast_spider_egg",
                 () -> new Item(basicItem().stacksTo(16).rarity(Rarity.COMMON)
                         .food(simpleFoodItemProperties(10, 6)
-                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .effect(() ->new MobEffectInstance(CLIMBING_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .effect(() ->new MobEffectInstance(VENOMOUS_HANDS.get(), minToTick(5), 0), 1.0F)
                                 .build())));
@@ -818,6 +805,20 @@ public class ModItems {
                                 .effect(() ->new MobEffectInstance(ModEffects.ZOMBIFIED_PIGLIN_BRUTE_SERVANT_SUPPORT.get(), minToTick(5), 0), 1.0F)
                                 .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .effect(() ->new MobEffectInstance(ModEffects.INFERNO.get(), minToTick(5), 0), 1.0F)
+                                .build())));
+
+        COLDLEMONLEAF = ITEMS.register("coldlemonleaf",
+                () -> new Item(basicItem().stacksTo(64).rarity(Rarity.COMMON)
+                        .food(simpleFoodItemProperties(3, 2)
+                                .effect(() ->new MobEffectInstance(ModEffects.TINGLING.get(), sToTick(10), 1), 1.0F)
+                                .effect(() ->new MobEffectInstance(FROSTY_AURA_SUPPLIER.get(), minToTick(1.5F), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(INSIGHT.get(), minToTick(3), 0), 1.0F).build())));
+
+        THERMAL_PULSE_PIE = ITEMS.register("thermal_pulse_pie",
+                () -> new ThermalPulsePieItem(basicItem().stacksTo(64).rarity(Rarity.UNCOMMON)
+                        .food(simpleFoodItemProperties(10, 6)
+                                .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(3), 0), 1.0F)
+                                .effect(() ->new MobEffectInstance(ELECTRIFIED.get(), minToTick(3), 0), 1.0F)
                                 .build())));
 
         // ==================== 种子物品 ====================
@@ -867,13 +868,13 @@ public class ModItems {
             PI_PIE = ITEMS.register("pi_pie",
                     () -> new PiPieItem(basicItem().stacksTo(1).rarity(Rarity.EPIC)
                             .food(simpleFoodItemProperties(15, 10)
-                                    .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                    .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                     .build())));
 
             SHARK_GUMMY = ITEMS.register("shark_gummy",
                     () -> new SharkGummyItem(basicItem().stacksTo(1).rarity(Rarity.EPIC)
                             .food(simpleFoodItemProperties(10, 7)
-                                    .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
+                                    .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(3), 0), 1.0F)
                                     .build())));
 
             APOCALYPTIUM_COD = ITEMS.register("apocalyptium_cod",
@@ -885,13 +886,28 @@ public class ModItems {
             DOOM_COOKIE = ITEMS.register("doom_cookie",
                     () -> new DoomCookieItem(basicItem().stacksTo(16).rarity(Rarity.UNCOMMON)
                             .food(simpleFoodItemProperties(6, 4)
-                                    .effect(() ->new MobEffectInstance(DOOM.get(), minToTick(1), 14), 1.0F)
+                                    .effect(() ->new MobEffectInstance(DOOM.get(), minToTick(1), 19), 1.0F)
                                     .build())));
 
             ATONEMENT_VOUCHER_WRAPED_COD = ITEMS.register("atonement_voucher_wraped_cod",
                     () -> new AtonementVoucherWrapedCodItem(basicItem().stacksTo(16).rarity(Rarity.UNCOMMON)
                             .food(simpleFoodItemProperties(10, 7)
                                     .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                    .build())));
+
+            ASCENSION_MOONCAKE = ITEMS.register("ascension_mooncake",
+                    () -> new AscensionMooncakeItem(basicItem().stacksTo(1).rarity(Rarity.EPIC).food(
+                            simpleFoodItemProperties(66, 333)
+                                    .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, sToTick(66), 2), 1.0F)
+                                    .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, sToTick(66), 3), 1.0F)
+                                    .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), sToTick(66), 0), 1.0F)
+                                    .build())));
+
+            QUIETUS_MARROW = ITEMS.register("quietus_marrow",
+                    () -> new QuietusMarrowItem(basicItem().stacksTo(16).rarity(Rarity.EPIC).food(
+                            simpleFoodItemProperties(5, 0)
+                                    .effect(() -> new MobEffectInstance(com.mega.revelationfix.common.init.ModEffects.QUIETUS.get(), -1, 1), 1.0F)
+                                    .effect(() -> new MobEffectInstance(ModEffects.FASTING.get(), -1, 0), 1.0F)
                                     .build())));
 
         }

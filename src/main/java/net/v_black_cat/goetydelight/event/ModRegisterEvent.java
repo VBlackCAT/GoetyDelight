@@ -29,7 +29,7 @@ public class ModRegisterEvent {
             "doll_maid1", "doll_maid2", "doll_moon", "doll_skillupper", "doll_vblackcat",
             "doll_windis", "doll_zswj", "doll_yushi", "doll_sim", "doll_dwky",
             "doll_sky", "doll_dimspector","doll_haozi","doll_fish","doll_kunkun","doll_djm",
-            "doll_htohtosgoy"
+            "doll_htohtosgoy","doll_wu1wu2wu3"
     };
 
     private static void registerAllSpecialTooltips() {
@@ -60,6 +60,7 @@ public class ModRegisterEvent {
         registerVanillaTooltips("doll_kunkun", "doll_kunkun");
         registerVanillaTooltips("doll_djm", "doll_djm");
         registerVanillaTooltips("doll_htohtosgoy", "doll_htohtosgoy");
+        registerVanillaTooltips("doll_wu1wu2wu3", "doll_wu1wu2wu3");
     }
     @SubscribeEvent
     public static void registerBlocks(RegisterEvent event) {

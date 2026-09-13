@@ -26,10 +26,8 @@ public class ModCreativeModTabs {
     static {
          BLACKLIST.add(ModItems.MARBLE_OP_SWORD);
          BLACKLIST.add(ModItems.GOETYDELIGHT_ICON);
-         BLACKLIST.add(ModItems.SPIDER_EGG_BUBBLE_TEA_2);
          BLACKLIST.add(ModItems.SPECTRE_KNIFE);
          BLACKLIST.add(ModItems.VENOMOUS_SPIDER_KNIFE);
-         BLACKLIST.add(ModItems.ASCENSION_MOONCAKE);
          BLACKLIST.add(ModItems.PROMOTION_HARD_CANDY);
          BLACKLIST.add(ModItems.NOT_ANYTHING);
          BLACKLIST.add(ModItems.ROAST_LAOWANG);
@@ -39,8 +37,6 @@ public class ModCreativeModTabs {
 
 
          BLACKLIST.add(ModBlocks.APOCALYPTIUM_POT);
-
-         BLACKLIST.add(ModBlocks.EXAMPLE_BLOCK);
          BLACKLIST.add(ModBlocks.NETHER_MARBLE);
          BLACKLIST.add(ModBlocks.POINTED_DRIPMARBLE);
          BLACKLIST.add(ModBlocks.DRIPMARBLE_BLOCK);

@@ -20,17 +20,11 @@ import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = "goetydelight")
 public class BoneLordAshRiceItem extends Item {
-
-     
     private static final UUID ARMOR_BONUS_UUID = UUID.fromString("a1b2c3d4-5e6f-7a8b-9c0d-1e2f3a4b5c6d");
     private static final UUID ARMOR_TOUGHNESS_BONUS_UUID = UUID.fromString("d4c3b2a1-f6e5-b8a7-d0c9-f2e1b4a3c5d6");
-
-     
     private static final String BONUS_ACTIVE_TAG = "BoneLordAshRiceActive";
     private static final String ACTIVATION_TIME_TAG = "BoneLordAshRiceActivationTime";
-
-     
-    private static final int DURATION_TICKS = 20 * 60 * 5;  
+    private static final int DURATION_TICKS = 20 * 60 * 5;
 
     public BoneLordAshRiceItem(Properties properties) {
         super(properties);
@@ -39,39 +33,25 @@ public class BoneLordAshRiceItem extends Item {
     @Override
     public @NotNull ItemStack finishUsingItem(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity entity) {
         ItemStack resultStack = super.finishUsingItem(stack, level, entity);
-
         if (!level.isClientSide && entity instanceof Player player) {
-             
             CompoundTag persistentData = player.getPersistentData();
-
-             
             if (persistentData.getBoolean(BONUS_ACTIVE_TAG)) {
                 removeBonusAttributes(player);
             }
-
-             
             addBonusAttributes(player);
-
-             
             persistentData.putBoolean(BONUS_ACTIVE_TAG, true);
             persistentData.putLong(ACTIVATION_TIME_TAG, level.getGameTime());
-
-             
-           // player.displayClientMessage(Component.literal("骨头领主骨灰拌饭的力量被激活！获得15点护甲和10点护甲韧性，持续5分钟。"), true);
         }
-
         if (entity instanceof Player player) {
             if (player.getAbilities().instabuild) {
                 return resultStack;
             }
-
             if (resultStack.isEmpty()) {
                 return new ItemStack(Items.BOWL);
             } else if (!player.getInventory().add(new ItemStack(Items.BOWL))) {
                 player.drop(new ItemStack(Items.BOWL), false);
             }
         }
-
         return resultStack;
     }
 
@@ -82,7 +62,7 @@ public class BoneLordAshRiceItem extends Item {
             AttributeModifier modifier = new AttributeModifier(
                     ARMOR_BONUS_UUID,
                     "Bone Lord Ash Rice Armor Bonus",
-                    15.0,
+                    8.0,
                     AttributeModifier.Operation.ADDITION
             );
             armorAttribute.addTransientModifier(modifier);
@@ -93,7 +73,7 @@ public class BoneLordAshRiceItem extends Item {
             AttributeModifier modifier = new AttributeModifier(
                     ARMOR_TOUGHNESS_BONUS_UUID,
                     "Bone Lord Ash Rice Toughness Bonus",
-                    10.0,
+                    5.0,
                     AttributeModifier.Operation.ADDITION
             );
             toughnessAttribute.addTransientModifier(modifier);
@@ -111,8 +91,6 @@ public class BoneLordAshRiceItem extends Item {
         if (toughnessAttribute != null && toughnessAttribute.getModifier(ARMOR_TOUGHNESS_BONUS_UUID) != null) {
             toughnessAttribute.removeModifier(ARMOR_TOUGHNESS_BONUS_UUID);
         }
-
-         
         player.getPersistentData().remove(BONUS_ACTIVE_TAG);
         player.getPersistentData().remove(ACTIVATION_TIME_TAG);
     }
@@ -121,25 +99,16 @@ public class BoneLordAshRiceItem extends Item {
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
-
         Player player = event.player;
         Level level = player.level();
-
         if (!level.isClientSide) {
             CompoundTag persistentData = player.getPersistentData();
-
             if (persistentData.getBoolean(BONUS_ACTIVE_TAG)) {
                 long activationTime = persistentData.getLong(ACTIVATION_TIME_TAG);
                 long currentTime = level.getGameTime();
-
-                 
                 if (currentTime - activationTime >= DURATION_TICKS) {
-                     
                     BoneLordAshRiceItem item = (BoneLordAshRiceItem) net.v_black_cat.goetydelight.item.ModItems.BONE_LORD_ASH_RICE.get();
                     item.removeBonusAttributes(player);
-
-                     
-//                    player.displayClientMessage(Component.literal("骨头领主骨灰拌饭的效果已结束。"), true);
                 }
             }
         }
@@ -149,7 +118,6 @@ public class BoneLordAshRiceItem extends Item {
     @SubscribeEvent
     public static void onPlayerDeath(net.minecraftforge.event.entity.living.LivingDeathEvent event) {
         if (!event.isCanceled() && event.getEntity() instanceof Player player) {
-             
             BoneLordAshRiceItem item = (BoneLordAshRiceItem) net.v_black_cat.goetydelight.item.ModItems.BONE_LORD_ASH_RICE.get();
             if (player.getPersistentData().getBoolean(BONUS_ACTIVE_TAG)) {
                 item.removeBonusAttributes(player);
@@ -160,7 +128,6 @@ public class BoneLordAshRiceItem extends Item {
     @SubscribeEvent
     public static void onPlayerRespawn(net.minecraftforge.event.entity.player.PlayerEvent.PlayerRespawnEvent event) {
         Player player = event.getEntity();
-         
         player.getPersistentData().remove(BONUS_ACTIVE_TAG);
         player.getPersistentData().remove(ACTIVATION_TIME_TAG);
     }

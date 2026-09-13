@@ -1,0 +1,16 @@
+{
+  "name": "Cold Lemon Leaf Candy",
+  "icon": "goetydelight:coldlemonleaf",
+  "category": "goety:goetydelight/food",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Whoa! This feeling is really evil and \"cool\" at the same time..."
+    },
+    {
+      "type": "goety:cooking",
+      "recipe": "goetydelight:cooking/coldlemonleaf"
+    }
+
+  ]
+}

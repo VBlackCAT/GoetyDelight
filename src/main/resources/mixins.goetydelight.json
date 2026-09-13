@@ -17,6 +17,7 @@
     "MobMixin",
     "ModelBakeryMixin",
     "RecipeManagerMixin",
+    "SummonApollyonMixin",
     "SummonSpellMixin",
     "WightSpawnerMixin"
   ],

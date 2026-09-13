@@ -1,0 +1,16 @@
+{
+  "name": "冷叶糖",
+  "icon": "goetydelight:coldlemonleaf",
+  "category": "goety:goetydelight/food",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "哇喔！这感觉可真是又邪恶又\"酷\"啊………"
+    },
+    {
+      "type": "goety:cooking",
+      "recipe": "goetydelight:cooking/coldlemonleaf"
+    }
+
+  ]
+}

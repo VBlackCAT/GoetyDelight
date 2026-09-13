@@ -224,29 +224,4 @@ public class BiscatItem extends Item {
             ));
         }
     }
-
-    @SubscribeEvent
-    public static void onRightClickCat(PlayerInteractEvent.EntityInteract event) {
-        if (event.getTarget() instanceof Cat cat && cat.isTame()) {
-            Player player = event.getEntity();
-            ItemStack heldItem = player.getItemInHand(event.getHand());
-
-            if (heldItem.is(Items.ORANGE_TULIP)) {
-                if (!player.level().isClientSide) {
-                    cat.level().addParticle(ParticleTypes.HEART, cat.getX(), cat.getY() + 0.5, cat.getZ(), 0, 0, 0);
-
-                    if (!player.getAbilities().instabuild) {
-                        heldItem.shrink(1);
-                    }
-
-                    ItemStack biscatStack = new ItemStack(ModItems.BISCAT.get());
-                    if (!player.getInventory().add(biscatStack)) {
-                        player.drop(biscatStack, false);
-                    }
-
-                    event.setCanceled(true);
-                }
-            }
-        }
-    }
 }

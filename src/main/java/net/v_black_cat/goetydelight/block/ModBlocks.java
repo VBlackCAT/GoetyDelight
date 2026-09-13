@@ -30,9 +30,6 @@ public class ModBlocks {
 //    public static final RegistryObject<Block> MARBLE_BLOCK = registerBlock("marble_block",
 //            () -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.AMETHYST)));
 
-
-    public static final RegistryObject<Block> EXAMPLE_BLOCK = BLOCKS.register("example_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).noLootTable()));
-
     public static final RegistryObject<Block> MARBLE = registerBlock("marble",() -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.AMETHYST)));
     public static final RegistryObject<Block> SILT_MARBLE_HEAVY = registerBlock("silt_marble_heavy",() -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.AMETHYST)));
     public static final RegistryObject<Block> BLUE_MARBLE= registerBlock("blue_marble",() -> new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).sound(SoundType.AMETHYST)));
