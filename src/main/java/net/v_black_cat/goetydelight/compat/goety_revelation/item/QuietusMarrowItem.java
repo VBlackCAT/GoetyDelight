@@ -18,6 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHealEvent;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -173,7 +174,39 @@ public class QuietusMarrowItem extends Item {
 
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
-        clearMarrow(event.getEntity());
+        removeQuietusMarrowEffects(event.getEntity());
+    }
+
+    @SubscribeEvent
+    public static void onPlayerClone(PlayerEvent.Clone event) {
+        if (!event.isWasDeath()) return;
+
+        Player original = event.getOriginal();
+        Player newPlayer = event.getEntity();
+
+        CompoundTag oldData = original.getPersistentData();
+        CompoundTag newData = newPlayer.getPersistentData();
+
+        if (oldData.getBoolean(MARROW_TAG)) {
+            newData.putBoolean(MARROW_TAG, true);
+            newData.putInt(MARROW_DAMAGE_WINDOW, oldData.getInt(MARROW_DAMAGE_WINDOW));
+            newData.putInt(MARROW_NO_HEAL_UNTIL, oldData.getInt(MARROW_NO_HEAL_UNTIL));
+            if (oldData.contains(NBT_KEY, Tag.TAG_LIST)) {
+                newData.put(NBT_KEY, oldData.getList(NBT_KEY, Tag.TAG_STRING).copy());
+            }
+
+            MobEffect quietusEffect = ModEffects.QUIETUS.get();
+            MobEffect fastingEffect = net.v_black_cat.goetydelight.effect.ModEffects.FASTING.get();
+
+            MobEffectInstance quietus = new MobEffectInstance(quietusEffect, -1, 1, false, false, true);
+            MobEffectInstance fasting = new MobEffectInstance(fastingEffect, -1, 0, false, false, true);
+
+            newPlayer.getActiveEffectsMap().put(quietusEffect, quietus);
+            newPlayer.getActiveEffectsMap().put(fastingEffect, fasting);
+
+            syncEffect(newPlayer, quietus);
+            syncEffect(newPlayer, fasting);
+        }
     }
 
     private static void clearMarrow(LivingEntity entity) {

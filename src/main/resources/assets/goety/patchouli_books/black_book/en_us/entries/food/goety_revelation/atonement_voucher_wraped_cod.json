@@ -1,0 +1,15 @@
+{
+  "name": "Atonement Voucher Wrapped Cod",
+  "icon": "goetydelight:atonement_voucher_wraped_cod",
+  "category": "goety:goetydelight/food/goety_revelation",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Upon consumption, grants the eater:$(br)$(li)10 minutes of Nourishment$(li)The next time summoning an apostle attracts the world's gaze, it will be diverted."
+    },
+    {
+      "type": "goety:cooking",
+      "recipe": "goetydelight:cooking/atonement_voucher_wraped_cod"
+    }
+  ]
+}

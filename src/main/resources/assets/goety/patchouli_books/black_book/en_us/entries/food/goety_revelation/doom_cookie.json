@@ -1,0 +1,19 @@
+{
+  "name": "Doom Cookie",
+  "icon": "goetydelight:doom_cookie",
+  "category": "goety:goetydelight/food/goety_revelation",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Upon consumption, grants the eater:$(br)$(li)1 minute of Doom XX$(li)The next apostle summoning will inevitably attract the world's gaze."
+    },
+    {
+      "type": "goety:cooking",
+      "recipe": "goetydelight:cooking/doom_cookie"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "You have gained the Dark Sovereign's approval, deemed worthy of the badge of judgment. The omen of doom pulses in your hands, yet your thoughts pour into the cooking pot.$(br)Perhaps through certain means, the omen of doom can be transformed into another form—no matter whose head this final judgment descends upon.$(br)$(br)Therefore keep watch, because you do not know on what day your Lord will come. — Matthew"
+    }
+  ]
+}

@@ -5,7 +5,7 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "Doll, crafted with wool in a stonecutter (not a patron doll). Thanks to Lll252 for making the model and handling the doll texture!"
+            "text": "Use wool in a stonecutter to craft a doll (not a supporter doll).$(br)Place 1 Ectoplasm, 1 Slimeball, and the doll block you just crafted on a crafting table to create an animated entity doll.$(br)Thanks to Lll252 for creating the model and processing the doll textures!"
         }
     ]
 }

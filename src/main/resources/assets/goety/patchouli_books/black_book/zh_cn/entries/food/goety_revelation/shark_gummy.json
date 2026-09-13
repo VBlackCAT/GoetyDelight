@@ -1,0 +1,19 @@
+{
+  "name": "鲨鱼软糖",
+  "icon": "goetydelight:shark_gummy",
+  "category": "goety:goetydelight/food/goety_revelation",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "食用后给予食用者:$(br)$(li)投掷的三叉戟会给予命中的目标15秒的黑暗，15秒的震撼,15秒的诅咒$(li)效果持续10分钟"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetydelight:ritual/shark_gummy"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "运用大戟，荊藤与极寒的冰川为引导，可以寻得主的梦幻。$(br)$(br)他站立，震撼全地；他观看，惊散列国。永在的山崩裂，长存的岭塌陷。——哈巴谷书"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "Ascension Mooncake",
+  "icon": "goetydelight:ascension_mooncake",
+  "category": "goety:goetydelight/food/goety_revelation",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Upon consumption, grants the eater:$(br)$(li)66 seconds of Nourishment$(li)66 seconds of Regeneration III$(li)66 seconds of Resistance IV$(li)66 seconds of The Pale Messenger"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "During certain seasons, the Lord of the Nether carries them on his person.$(br)Perhaps the ancient Nether also had similar traditional festival foods?$(br)$(br)The bright moon rises over the sea; from afar, we share this moment together."
+    }
+  ]
+}

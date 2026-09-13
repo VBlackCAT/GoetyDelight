@@ -71,17 +71,52 @@ public class MinionBoost {
         return false;
     }
 
+    public static boolean hasMinionBoost(LivingEntity minion) {
+        AttributeInstance attackDamage = minion.getAttribute(Attributes.ATTACK_DAMAGE);
+        if (attackDamage != null && attackDamage.getModifier(ATTACK_DAMAGE_BOOST_UUID) != null) {
+            return true;
+        }
+
+        AttributeInstance maxHealth = minion.getAttribute(Attributes.MAX_HEALTH);
+        if (maxHealth != null && maxHealth.getModifier(MAX_HEALTH_BOOST_UUID) != null) {
+            return true;
+        }
+
+        AttributeInstance armor = minion.getAttribute(Attributes.ARMOR);
+        if (armor != null && armor.getModifier(ARMOR_BOOST_UUID) != null) {
+            return true;
+        }
+
+        AttributeInstance movementSpeed = minion.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (movementSpeed != null && movementSpeed.getModifier(MOVEMENT_SPEED_BOOST_UUID) != null) {
+            return true;
+        }
+
+        AttributeInstance armorToughness = minion.getAttribute(Attributes.ARMOR_TOUGHNESS);
+        if (armorToughness != null && armorToughness.getModifier(ARMOR_TOUGHNESS_BOOST_UUID) != null) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static boolean hasModifier(AttributeInstance instance, UUID uuid) {
+        return instance != null && instance.getModifier(uuid) != null;
+    }
+
     public static void applyMinionBoost(LivingEntity minion, Player owner, int stewBoostCount, int soupBoostCount) {
         if (minion.level().isClientSide) return;
 
-        removeMinionBoost(minion);
+        if (hasMinionBoost(minion)) {
+            removeMinionBoost(minion);
+        }
 
         double stewBoost = LichdomHelper.isLich(owner) ? Config.getLichChaosStewBoostPercentage() * stewBoostCount : 0;
         double soupBoost = Config.getNightHeartPeaSoupBoostPercentage() * soupBoostCount;
         double boostMultiplier = stewBoost + soupBoost;
 
         AttributeInstance attackDamage = minion.getAttribute(Attributes.ATTACK_DAMAGE);
-        if (attackDamage != null) {
+        if (attackDamage != null && !hasModifier(attackDamage, ATTACK_DAMAGE_BOOST_UUID)) {
             double baseValue = attackDamage.getBaseValue();
             double boostValue = baseValue * boostMultiplier;
             attackDamage.addPermanentModifier(new AttributeModifier(
@@ -93,7 +128,7 @@ public class MinionBoost {
         }
 
         AttributeInstance maxHealth = minion.getAttribute(Attributes.MAX_HEALTH);
-        if (maxHealth != null) {
+        if (maxHealth != null && !hasModifier(maxHealth, MAX_HEALTH_BOOST_UUID)) {
             double baseValue = maxHealth.getBaseValue();
             double boostValue = baseValue * boostMultiplier;
             maxHealth.addPermanentModifier(new AttributeModifier(
@@ -103,11 +138,11 @@ public class MinionBoost {
                     AttributeModifier.Operation.ADDITION
             ));
 
-            minion.setHealth(minion.getHealth() + (float)boostValue);
+            minion.setHealth(minion.getHealth() + (float) boostValue);
         }
 
         AttributeInstance armor = minion.getAttribute(Attributes.ARMOR);
-        if (armor != null) {
+        if (armor != null && !hasModifier(armor, ARMOR_BOOST_UUID)) {
             double baseValue = armor.getBaseValue();
             double boostValue = baseValue * boostMultiplier;
             armor.addPermanentModifier(new AttributeModifier(
@@ -119,7 +154,8 @@ public class MinionBoost {
         }
 
         AttributeInstance movementSpeed = minion.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (movementSpeed != null && !(minion instanceof com.Polarice3.Goety.common.entities.ally.golem.RedstoneMonstrosity)) {
+        if (movementSpeed != null && !(minion instanceof com.Polarice3.Goety.common.entities.ally.golem.RedstoneMonstrosity)
+                && !hasModifier(movementSpeed, MOVEMENT_SPEED_BOOST_UUID)) {
             double baseValue = movementSpeed.getBaseValue();
             double boostValue = baseValue * soupBoost;
             movementSpeed.addPermanentModifier(new AttributeModifier(
@@ -131,7 +167,7 @@ public class MinionBoost {
         }
 
         AttributeInstance armorToughness = minion.getAttribute(Attributes.ARMOR_TOUGHNESS);
-        if (armorToughness != null) {
+        if (armorToughness != null && !hasModifier(armorToughness, ARMOR_TOUGHNESS_BOOST_UUID)) {
             double baseValue = armorToughness.getBaseValue();
             double boostValue = baseValue * boostMultiplier;
             armorToughness.addPermanentModifier(new AttributeModifier(
@@ -170,11 +206,9 @@ public class MinionBoost {
         }
     }
 
-    // 事件处理
     @Mod.EventBusSubscriber(modid = GoetyDelight.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
     public static class MinionBoostHandler {
 
-        // 1. 实体加入世界事件
         @SubscribeEvent
         public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
             if (!event.getLevel().isClientSide() && event.getEntity() instanceof LivingEntity entity) {
@@ -184,14 +218,15 @@ public class MinionBoost {
                         int soupBoostCount = getSoupBoostCount(player);
                         int stewBoostCount = getStewBoostCount(player);
                         if (soupBoostCount > 0 || stewBoostCount > 0) {
-                            applyMinionBoost(entity, player, stewBoostCount, soupBoostCount);
+                            if (!hasMinionBoost(entity)) {
+                                applyMinionBoost(entity, player, stewBoostCount, soupBoostCount);
+                            }
                         }
                     }
                 }
             }
         }
 
-        // 2. 玩家进入游戏
         @SubscribeEvent
         public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
             if (!event.getEntity().level().isClientSide()) {
@@ -204,7 +239,6 @@ public class MinionBoost {
             }
         }
 
-        // 3. 玩家克隆事件 - 防止数据丢失
         @SubscribeEvent
         public static void onPlayerClone(PlayerEvent.Clone event) {
             if (!event.getEntity().level().isClientSide()) {

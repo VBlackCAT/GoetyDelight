@@ -1,0 +1,15 @@
+{
+  "name": "Apocalyptium Knife",
+  "icon": "goetydelight:apocalyptium_knife",
+  "category": "goety:goetydelight/food/goety_revelation",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Attacks ignore armor, enchantments, and resistances.$(br)Killing mobs additionally drops 2 Delight-type drops (if they have any).$(br)Right-click to harvest crops, producing 2 extra drops and reverting their growth stage by one."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Place an Apocalyptium Smithing Template, a Cursed Metal Knife, and an Apocalyptium Ingot into a smithing table to forge an Apocalyptium Knife."
+    }
+  ]
+}

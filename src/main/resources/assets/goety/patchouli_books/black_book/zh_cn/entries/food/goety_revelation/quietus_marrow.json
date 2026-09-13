@@ -1,0 +1,19 @@
+{
+  "name": "寂灭脊髓",
+  "icon": "goetydelight:quietus_marrow",
+  "category": "goety:goetydelight/food/goety_revelation",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "食用后给予食用者:$(br)$(li)永久的寂灭2$(li)永久的断食$(li)每隔0.5秒对食用者造成2点饥饿伤害$(li)禁止食用者的生命回复$(li)后2个效果持续5分钟$(br)$(br)或许你需要饮用一些由那些苍白的使者们的血液所制成的饮品，来消除这些副作用。"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetydelight:ritual/quietus_marrow"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "获知冥教的过去，你已知晓那三首亡灵的来历——那是被毁灭的亿万生命的亡魂中产生的，不得解脱的怨灵。$(br)他们记得主神的审判……他们留存下天国的劫难，若有幸获取那命运的赤星，通过一些引导，你便可触及这世界与神灵的遗存。$(br)$(br)我又看见一个新天新地...神要擦去他们一切的眼泪；不再有死亡，也不再有悲哀、哭号、疼痛，因为以前的事都过去了。——启示录"
+    }
+  ]
+}

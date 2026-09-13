@@ -898,6 +898,7 @@ public class ModItems {
             ASCENSION_MOONCAKE = ITEMS.register("ascension_mooncake",
                     () -> new AscensionMooncakeItem(basicItem().stacksTo(1).rarity(Rarity.EPIC).food(
                             simpleFoodItemProperties(66, 333)
+                                    .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(66), 0), 1.0F)
                                     .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, sToTick(66), 2), 1.0F)
                                     .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, sToTick(66), 3), 1.0F)
                                     .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), sToTick(66), 0), 1.0F)

@@ -1,0 +1,8 @@
+{
+  "name": "菜系-冥教珍馐",
+  "description": "踏入昔在今在的幽冥教所，见证黑暗至尊的遗世珍馐，神性，人性，在锅中有何不同？",
+  "icon": "goety_revelation:ascension_hard_candy",
+  "flag": "mod:goety_revelation",
+  "parent": "goety:goetydelight/food",
+  "sortnum": 1
+}
