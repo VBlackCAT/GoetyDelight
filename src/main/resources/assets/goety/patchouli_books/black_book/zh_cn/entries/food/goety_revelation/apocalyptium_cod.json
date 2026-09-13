@@ -1,0 +1,19 @@
+{
+  "name": "神灵金鳕鱼",
+  "icon": "goetydelight:apocalyptium_cod",
+  "category": "goety:goetydelight/food/goety_revelation",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "食用后召唤一只30分钟寿命的使徒仆从为玩家作战$(br)对使徒仆从右键可以吸引亚波伦暂时性的附身在使徒身上，亚波伦会在5分钟之后离去"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetydelight:ritual/apocalyptium_cod"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "从冥教教堂的遭劫者身上，你得到一些神奇的鳕鱼，它很普通，却仿佛拥有非凡的潜能。$(br)一条鱼如何能保存这么久呢？通过一些实验，你把见证完整与破碎的不朽神性注入其中，使其超凡入圣。$(br)毫无疑问，圣先知与他的使徒们是喜爱这鱼的。$(br)$(br)他们都吃，并且吃饱了；把剩下的零碎收拾起来，装满了十二个篮子。——马太福音"
+    }
+  ]
+}

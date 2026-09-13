@@ -1,0 +1,19 @@
+{
+  "name": "烤制末日曲奇",
+  "icon": "goetydelight:doom_cookie",
+  "category": "goety:goetydelight/food/goety_revelation",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "食用后给予食用者:$(br)$(li)1分钟的末日20$(li)下一次召唤使徒必定会引来世界的注视"
+    },
+    {
+      "type": "goety:cooking",
+      "recipe": "goetydelight:cooking/doom_cookie"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "你获得那黑暗至尊的认可，得配那审判的勋章，末日的预兆在你手中跃动，而你的思绪却注入厨锅。$(br)或许通过一些方式，可以把末日之兆转化为另一种形态，无论这最后的审判，会降临在谁的头上。$(br)$(br)所以，你们要警醒，因为不知道你们的主是哪一天来到。——马太福音"
+    }
+  ]
+}

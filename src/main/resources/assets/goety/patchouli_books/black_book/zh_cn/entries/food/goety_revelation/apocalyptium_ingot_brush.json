@@ -1,0 +1,15 @@
+{
+  "name": "神灵金属刷",
+  "icon": "goetydelight:apocalyptium_ingot_brush",
+  "category": "goety:goetydelight/food/goety_revelation",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "会以极快的速度刷扫可疑方块$(br)刷扫后额外获得2个物品"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "goetydelight:apocalyptium_ingot_brush"
+    }
+  ]
+}

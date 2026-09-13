@@ -1,0 +1,19 @@
+{
+  "name": "Apocalyptium Cod",
+  "icon": "goetydelight:apocalyptium_cod",
+  "category": "goety:goetydelight/food/goety_revelation",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Upon consumption, summons an Apostle Servant with a 30-minute lifespan to fight for the player.$(br)Right-clicking an Apostle Servant will attract Apollyon to temporarily possess the apostle; Apollyon will depart after 5 minutes."
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetydelight:ritual/apocalyptium_cod"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "From the Plundered in the Nether Cult's church, you obtained some wondrous cod. It seems ordinary, yet appears to possess extraordinary potential.$(br)How could a fish be preserved for so long? Through some experiments, you infused it with the immortal divinity that has witnessed both wholeness and fragmentation, elevating it to transcendence.$(br)Undoubtedly, the Holy Prophet and his apostles favored this fish.$(br)$(br)They all ate and were satisfied, and the disciples picked up twelve basketfuls of broken pieces that were left over. — Matthew"
+    }
+  ]
+}

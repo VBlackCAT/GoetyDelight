@@ -1,0 +1,19 @@
+{
+  "name": "Pi Pie",
+  "icon": "goetydelight:pi_pie",
+  "category": "goety:goetydelight/food/goety_revelation",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Upon consumption, grants the eater:$(br)$(li)v$(li)Shot arrows will produce a 3.5-second dense arrow rain at the landing point, and restore health equal to 2.5% of the damage dealt$(li)Arrows will pierce projectile protection$(li)Effect lasts 10 minutes"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetydelight:ritual/pi_pie"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Using the great bow, the tome, and a rain of arrows as guidance, one can find the Lord's judgment.$(br)$(br)I will make my arrows drunk with blood, the blood of the slain and the captives. — Deuteronomy"
+    }
+  ]
+}

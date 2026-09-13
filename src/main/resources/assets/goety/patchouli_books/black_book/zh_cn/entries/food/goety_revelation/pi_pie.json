@@ -1,0 +1,19 @@
+{
+  "name": "π派",
+  "icon": "goetydelight:pi_pie",
+  "category": "goety:goetydelight/food/goety_revelation",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "食用后给予食用者:$(br)$(li)射出的箭矢转变为具有100％吸血量的三连发箭矢$(li)射出的箭矢将会在落点处产生3.5秒的密集箭雨，并回复等同于2.5％的伤害量的血量$(li)箭矢将穿透弹射物保护$(li)效果持续10分钟"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetydelight:ritual/pi_pie"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "运用大弓，书典与如雨的箭矢为引导，可以寻得主的审判。$(br)$(br)我要使我的箭饮血饮醉，就是被杀被掳之人的血。——申命记"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "赎罪劵纸包鱼",
+  "icon": "goetydelight:atonement_voucher_wraped_cod",
+  "category": "goety:goetydelight/food/goety_revelation",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "食用后给予食用者:$(br)$(li)10分钟的滋养$(li)下一次召唤使徒引来世界的注视之时，会将其引开"
+    },
+    {
+      "type": "goety:cooking",
+      "recipe": "goetydelight:cooking/atonement_voucher_wraped_cod"
+    }
+  ]
+}

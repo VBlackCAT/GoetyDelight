@@ -1,0 +1,16 @@
+{
+  "name": "Quietus Marrow",
+  "icon": "goetydelight:quietus_marrow",
+  "category": "goety:goetydelight/food/goety_revelation",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Upon consumption, grants the eater:$(br)$(li)Permanent Quietus II$(li)Permanent Fasting$(li)Deals 2 points of hunger damage to the eater every 0.5 seconds$(li)Disables the eater's health regeneration$(li)The latter 2 effects last 5 minutes"
+    },
+    {
+      "type": "goety:cooking",
+      "recipe": "goetydelight:cooking/quietus_marrow",
+      "text":"Perhaps you need to drink something made from the blood of those Pale Messengers to remove these side effects."
+    }
+  ]
+}

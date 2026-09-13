@@ -1,0 +1,15 @@
+{
+  "name": "Apocalyptium Ingot Brush",
+  "icon": "goetydelight:apocalyptium_ingot_brush",
+  "category": "goety:goetydelight/food/goety_revelation",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Brushes suspicious blocks at extreme speed.$(br)Grants 2 additional items after brushing."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "goetydelight:apocalyptium_ingot_brush"
+    }
+  ]
+}

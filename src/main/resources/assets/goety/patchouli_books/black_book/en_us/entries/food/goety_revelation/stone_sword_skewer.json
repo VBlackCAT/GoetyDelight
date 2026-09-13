@@ -1,0 +1,19 @@
+{
+  "name": "Stone Sword Skewer",
+  "icon": "goetydelight:stone_sword_skewer",
+  "category": "goety:goetydelight/food/goety_revelation",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Upon consumption, grants the eater:$(br)$(li)At full health, increases base attack damage by 100%; the bonus scales up as health decreases, reaching a 500% base attack damage increase at 1 HP$(li)Permanent 37% dodge chance$(li)Immune to one fatal damage instance; after immunity triggers, health cap is locked to 1 and self-healing is disabled$(li)Effect lasts 10 minutes; if no mobs hostile to the eater remain when the effect ends, all bonuses and the healing disable are removed"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetydelight:ritual/stone_sword_skewer"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Using the stone sword, flesh and blood, and the heads of enemies as guidance, one can find the Lord's slaughter.$(br)$(br)I did not come to bring peace to the earth, but a sword. — Matthew"
+    }
+  ]
+}
