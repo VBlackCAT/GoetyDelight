@@ -224,4 +224,22 @@ public class ApocalyptiumData extends SavedData {
         }
         return null;
     }
+
+    // ==================== 检查是否已存在转化后的使徒（同一玩家唯一） ====================
+
+    /**
+     * 检查指定玩家是否已经存在一个未过期的亚形态使徒。
+     * @return 已存在的那个亚形态实体的 UUID，不存在返回 null
+     */
+    @Nullable
+    public static UUID findExistingApollyonFor(Player player, long currentTime) {
+        Map<UUID, CompoundTag> snapshot = getApollyonExpirySnapshot(player);
+        for (Map.Entry<UUID, CompoundTag> entry : snapshot.entrySet()) {
+            long expiry = entry.getValue().getLong("Time");
+            if (expiry > 0 && currentTime < expiry) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
 }

@@ -76,19 +76,23 @@ public class ApocalyptiumCodItem extends Item {
 
                 if (entityId.equals("revelationfix:apostle_servant")) {
                     // 仆从可以直接转化
-                    convertToApollyon(target, player);
-                    if (!player.getAbilities().instabuild) {
-                        stack.shrink(1);
-                    }
-                    return InteractionResult.SUCCESS;
-                } else if (entityId.equals("goety:apostle")) {
-                    // 使徒需要特殊条件才能转化
-                    if (canConvertApostle(player)) {
-                        convertToApollyon(target, player);
+                    if (convertToApollyon(target, player)) {
                         if (!player.getAbilities().instabuild) {
                             stack.shrink(1);
                         }
                         return InteractionResult.SUCCESS;
+                    }
+                    return InteractionResult.FAIL;
+                } else if (entityId.equals("goety:apostle")) {
+                    // 使徒需要特殊条件才能转化
+                    if (canConvertApostle(player)) {
+                        if (convertToApollyon(target, player)) {
+                            if (!player.getAbilities().instabuild) {
+                                stack.shrink(1);
+                            }
+                            return InteractionResult.SUCCESS;
+                        }
+                        return InteractionResult.FAIL;
                     } else {
                         return InteractionResult.FAIL;
                     }
@@ -163,9 +167,23 @@ public class ApocalyptiumCodItem extends Item {
         player.sendSystemMessage(Component.literal("§6使徒仆从已召唤，将持续30分钟"));
     }
 
-    private void convertToApollyon(LivingEntity target, Player owner) {
+    /**
+     * 将目标转化为亚形态使徒。
+     * @return 是否转化成功
+     */
+    private boolean convertToApollyon(LivingEntity target, Player owner) {
         ServerLevel serverLevel = (ServerLevel) target.level();
         ApocalyptiumData data = ApocalyptiumData.get(serverLevel);
+        long currentTime = serverLevel.getGameTime();
+
+        // ★ 限制：同一玩家已存在转化后的使徒，则不允许再次转化
+        if (owner != null) {
+            UUID existing = ApocalyptiumData.findExistingApollyonFor(owner, currentTime);
+            if (existing != null && !existing.equals(target.getUUID())) {
+                owner.sendSystemMessage(Component.literal("§c你已经有一个转化后的使徒，无法再次转化"));
+                return false;
+            }
+        }
 
         UUID entityUUID = target.getUUID();
         String targetTypeId = ForgeRegistries.ENTITY_TYPES.getKey(target.getType()).toString();
@@ -174,12 +192,12 @@ public class ApocalyptiumCodItem extends Item {
             ApocalyptiumData.addApollyonExpiry(
                     owner,
                     entityUUID,
-                    serverLevel.getGameTime() + APOLLYON_DURATION,
+                    currentTime + APOLLYON_DURATION,
                     targetTypeId
             );
             ApocalyptiumData.addPreventDrop(owner, entityUUID);
         }
-        // 关键：缓存 convertToApollyon 中的那个实体，后续 onLivingDrops 就用它
+        // 缓存 convertToApollyon 中的那个实体，后续 onLivingDrops 就用它
         data.cacheEntity(entityUUID, target);
 
         // ↓↓↓ 以下转化逻辑完全不变 ↓↓↓
@@ -206,6 +224,7 @@ public class ApocalyptiumCodItem extends Item {
             }
         }
         isTrackingActive = true;
+        return true;
     }
 
     private void restoreFromApollyon(LivingEntity target, Player owner) {
@@ -221,6 +240,8 @@ public class ApocalyptiumCodItem extends Item {
 
         if (owner != null) {
             ApocalyptiumData.removeApollyonExpiry(owner, entityUUID);
+            // 保留 PreventDrops，使徒恢复后仍然不掉落
+            // ApocalyptiumData.removePreventDrop(owner, entityUUID);
         }
         data.removeCachedEntity(entityUUID);
     }
@@ -250,7 +271,7 @@ public class ApocalyptiumCodItem extends Item {
         return entity.level().getNearestPlayer(entity, 32);
     }
 
-    // ==================== 掉落阻止：改为遍历在线玩家查 PreventDrops ====================
+    // ==================== 掉落阻止：遍历在线玩家查 PreventDrops ====================
 
     @SubscribeEvent
     public void onLivingDrops(LivingDropsEvent event) {
