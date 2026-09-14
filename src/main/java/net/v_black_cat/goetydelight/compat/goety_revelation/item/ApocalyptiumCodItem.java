@@ -7,6 +7,7 @@ import com.mega.revelationfix.common.init.ModEntities;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -21,8 +22,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.v_black_cat.goetydelight.compat.goety_revelation.ApocalyptiumData;
@@ -36,7 +38,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ApocalyptiumCodItem extends Item {
 
-    private static final String IS_APOLLYON_TAG = "isApollyon";
     private static final String PREVENT_DROPS_TAG = "PreventDrops";
     private static final String HALO_OF_THE_END_ID = "goety_revelation:halo_of_the_end";
 
@@ -75,7 +76,7 @@ public class ApocalyptiumCodItem extends Item {
 
                 if (entityId.equals("revelationfix:apostle_servant")) {
                     // 仆从可以直接转化
-                    convertToApollyon(target);
+                    convertToApollyon(target, player);
                     if (!player.getAbilities().instabuild) {
                         stack.shrink(1);
                     }
@@ -83,7 +84,7 @@ public class ApocalyptiumCodItem extends Item {
                 } else if (entityId.equals("goety:apostle")) {
                     // 使徒需要特殊条件才能转化
                     if (canConvertApostle(player)) {
-                        convertToApollyon(target);
+                        convertToApollyon(target, player);
                         if (!player.getAbilities().instabuild) {
                             stack.shrink(1);
                         }
@@ -149,8 +150,8 @@ public class ApocalyptiumCodItem extends Item {
 
         String servantTypeId = ForgeRegistries.ENTITY_TYPES.getKey(servant.getType()).toString();
 
-        data.addServantExpiry(servantUUID, expiryTime, servantTypeId);
-        data.addPreventDrop(servantUUID);
+        ApocalyptiumData.addServantExpiry(player, servantUUID, expiryTime, servantTypeId);
+        ApocalyptiumData.addPreventDrop(player, servantUUID);
         data.cacheEntity(servantUUID, servant);
 
         servant.getPersistentData().putBoolean(PREVENT_DROPS_TAG, true);
@@ -162,21 +163,25 @@ public class ApocalyptiumCodItem extends Item {
         player.sendSystemMessage(Component.literal("§6使徒仆从已召唤，将持续30分钟"));
     }
 
-    private void convertToApollyon(LivingEntity target) {
+    private void convertToApollyon(LivingEntity target, Player owner) {
         ServerLevel serverLevel = (ServerLevel) target.level();
         ApocalyptiumData data = ApocalyptiumData.get(serverLevel);
 
         UUID entityUUID = target.getUUID();
         String targetTypeId = ForgeRegistries.ENTITY_TYPES.getKey(target.getType()).toString();
 
-        data.addApollyonExpiry(
-                entityUUID,
-                serverLevel.getGameTime() + APOLLYON_DURATION,
-                targetTypeId
-        );
-        data.addPreventDrop(entityUUID);
+        if (owner != null) {
+            ApocalyptiumData.addApollyonExpiry(
+                    owner,
+                    entityUUID,
+                    serverLevel.getGameTime() + APOLLYON_DURATION,
+                    targetTypeId
+            );
+            ApocalyptiumData.addPreventDrop(owner, entityUUID);
+        }
         data.cacheEntity(entityUUID, target);
 
+        // ↓↓↓ 以下转化逻辑完全不变 ↓↓↓
         if (target instanceof Apostle apostle) {
             ApollyonAbilityHelper helper = (ApollyonAbilityHelper) apostle;
             helper.allTitlesApostle_1_20_1$setApollyon(true);
@@ -187,7 +192,7 @@ public class ApocalyptiumCodItem extends Item {
 
         if (target.level() instanceof ServerLevel level) {
             level.sendParticles(
-                    net.minecraft.core.particles.ParticleTypes.ENCHANTED_HIT,
+                    ParticleTypes.ENCHANTED_HIT,
                     target.getX(), target.getY() + 1, target.getZ(),
                     50, 0.5, 0.5, 0.5, 0.1
             );
@@ -202,7 +207,7 @@ public class ApocalyptiumCodItem extends Item {
         isTrackingActive = true;
     }
 
-    private void restoreFromApollyon(LivingEntity target) {
+    private void restoreFromApollyon(LivingEntity target, Player owner) {
         ServerLevel serverLevel = (ServerLevel) target.level();
         ApocalyptiumData data = ApocalyptiumData.get(serverLevel);
         UUID entityUUID = target.getUUID();
@@ -213,8 +218,10 @@ public class ApocalyptiumCodItem extends Item {
             helper.allTitlesApostle_1_20_1$setApollyon(false);
         }
 
-        data.removeApollyonExpiry(entityUUID);
-        data.removePreventDrop(entityUUID);
+        if (owner != null) {
+            ApocalyptiumData.removeApollyonExpiry(owner, entityUUID);
+            ApocalyptiumData.removePreventDrop(owner, entityUUID);
+        }
         data.removeCachedEntity(entityUUID);
     }
 
@@ -230,6 +237,19 @@ public class ApocalyptiumCodItem extends Item {
         }
     }
 
+    /**
+     * 寻找实体归属玩家，用于定位玩家 NBT 数据
+     */
+    private Player findOwnerFor(LivingEntity entity) {
+        if (entity instanceof ApostleServant servant) {
+            LivingEntity owner = servant.getTrueOwner();
+            if (owner instanceof Player player) {
+                return player;
+            }
+        }
+        return entity.level().getNearestPlayer(entity, 32);
+    }
+
     @SubscribeEvent
     public void onLivingDrops(LivingDropsEvent event) {
         LivingEntity entity = event.getEntity();
@@ -237,17 +257,22 @@ public class ApocalyptiumCodItem extends Item {
 
         if (entity.level() instanceof ServerLevel serverLevel) {
             ApocalyptiumData data = ApocalyptiumData.get(serverLevel);
-            if (data.shouldPreventDrop(entityUUID)) {
+
+            Player owner = findOwnerFor(entity);
+            if (owner != null && ApocalyptiumData.shouldPreventDrop(owner, entityUUID)) {
                 event.setCanceled(true);
             }
-            data.cleanupEntity(entityUUID);
+
+            if (owner != null) {
+                ApocalyptiumData.cleanupEntity(owner, entityUUID);
+            }
             data.removeCachedEntity(entityUUID);
         }
         cleanupDeadReferences();
     }
 
     @SubscribeEvent
-    public void onEntityJoinLevel(net.minecraftforge.event.entity.EntityJoinLevelEvent event) {
+    public void onEntityJoinLevel(EntityJoinLevelEvent event) {
         if (event.getLevel().isClientSide()) return;
         if (!(event.getEntity() instanceof LivingEntity living)) return;
         if (!(event.getLevel() instanceof ServerLevel serverLevel)) return;
@@ -255,26 +280,30 @@ public class ApocalyptiumCodItem extends Item {
         UUID uuid = living.getUUID();
         ApocalyptiumData data = ApocalyptiumData.get(serverLevel);
 
+        Player owner = findOwnerFor(living);
+        if (owner == null) return;
+
         // 补缓存
-        if (data.getApollyonExpiry(uuid) > 0 || data.getServantExpiry(uuid) > 0) {
+        if (ApocalyptiumData.getApollyonExpiry(owner, uuid) > 0
+                || ApocalyptiumData.getServantExpiry(owner, uuid) > 0) {
             data.cacheEntity(uuid, living);
         }
 
         // 如果加载时已经过期，立刻处理
-        long apollyonExpiry = data.getApollyonExpiry(uuid);
+        long apollyonExpiry = ApocalyptiumData.getApollyonExpiry(owner, uuid);
         if (apollyonExpiry > 0 && serverLevel.getGameTime() >= apollyonExpiry) {
-            restoreFromApollyon(living);
+            restoreFromApollyon(living, owner);
             serverLevel.sendParticles(
-                    net.minecraft.core.particles.ParticleTypes.SMOKE,
+                    ParticleTypes.SMOKE,
                     living.getX(), living.getY() + 1, living.getZ(),
                     30, 0.5, 0.5, 0.5, 0.05
             );
         }
 
-        long servantExpiry = data.getServantExpiry(uuid);
+        long servantExpiry = ApocalyptiumData.getServantExpiry(owner, uuid);
         if (servantExpiry > 0 && serverLevel.getGameTime() >= servantExpiry) {
             living.remove(Entity.RemovalReason.DISCARDED);
-            data.cleanupEntity(uuid);
+            ApocalyptiumData.cleanupEntity(owner, uuid);
         }
     }
 
@@ -293,38 +322,13 @@ public class ApocalyptiumCodItem extends Item {
         }
     }
 
-    /**
-     * 检查并重新激活追踪
-     */
-    private void checkAndReactivateTracking(ServerLevel serverLevel) {
-        ApocalyptiumData data = ApocalyptiumData.get(serverLevel);
-        if (!data.isEmpty()) {
-            activateTracking();
-
-            // 重新添加已存在的实体到追踪列表
-            for (UUID uuid : data.getServantExpirySnapshot().keySet()) {
-                Entity entity = serverLevel.getEntity(uuid);
-                if (entity instanceof LivingEntity livingEntity) {
-                    TRACKED_ENTITIES.add(new WeakReference<>(livingEntity));
-                }
-            }
-
-            for (UUID uuid : data.getApollyonExpirySnapshot().keySet()) {
-                Entity entity = serverLevel.getEntity(uuid);
-                if (entity instanceof LivingEntity livingEntity) {
-                    TRACKED_ENTITIES.add(new WeakReference<>(livingEntity));
-                }
-            }
-        }
-    }
-
     @SubscribeEvent
-    public void onEntityTick(net.minecraftforge.event.TickEvent.LevelTickEvent event) {
+    public void onLevelTick(TickEvent.LevelTickEvent event) {
         if (!isTrackingActive) {
             return;
         }
 
-        if (event.phase != net.minecraftforge.event.TickEvent.Phase.END || event.level.isClientSide) {
+        if (event.phase != TickEvent.Phase.END || event.level.isClientSide) {
             return;
         }
 
@@ -332,56 +336,57 @@ public class ApocalyptiumCodItem extends Item {
         ApocalyptiumData data = ApocalyptiumData.get(serverLevel);
         long currentTime = serverLevel.getGameTime();
 
-        for (Map.Entry<UUID, CompoundTag> entry : data.getServantExpirySnapshot().entrySet()) {
-            long expiry = entry.getValue().getLong("Time");
-            if (currentTime >= expiry) {
-                UUID entityUUID = entry.getKey();
+        for (Player player : serverLevel.getServer().getPlayerList().getPlayers()) {
+            if (ApocalyptiumData.isEmpty(player)) continue;
 
-                LivingEntity livingEntity = data.getCachedEntity(entityUUID);
-                if (livingEntity == null) {
-                    Entity entity = serverLevel.getEntity(entityUUID);
-                    if (entity instanceof LivingEntity le) {
-                        livingEntity = le;
+            // 处理仆从过期
+            for (Map.Entry<UUID, CompoundTag> entry : ApocalyptiumData.getServantExpirySnapshot(player).entrySet()) {
+                long expiry = entry.getValue().getLong("Time");
+                if (currentTime >= expiry) {
+                    UUID entityUUID = entry.getKey();
+
+                    LivingEntity livingEntity = data.getCachedEntity(entityUUID);
+                    if (livingEntity == null) {
+                        Entity entity = serverLevel.getEntity(entityUUID);
+                        if (entity instanceof LivingEntity le) {
+                            livingEntity = le;
+                        }
                     }
-                }
 
-                if (livingEntity != null) {
-                    livingEntity.remove(Entity.RemovalReason.DISCARDED);
+                    if (livingEntity != null) {
+                        livingEntity.remove(Entity.RemovalReason.DISCARDED);
+                    }
+                    ApocalyptiumData.cleanupEntity(player, entityUUID);
+                    data.removeCachedEntity(entityUUID);
                 }
-                data.cleanupEntity(entityUUID);
-                data.removeCachedEntity(entityUUID);
             }
-        }
 
-        // 处理亚形态过期
-        for (Map.Entry<UUID, CompoundTag> entry : data.getApollyonExpirySnapshot().entrySet()) {
-            long expiry = entry.getValue().getLong("Time");
-            String typeId = entry.getValue().getString("EntityType");
-            if (currentTime >= expiry) {
-                UUID entityUUID = entry.getKey();
+            // 处理亚形态过期
+            for (Map.Entry<UUID, CompoundTag> entry : ApocalyptiumData.getApollyonExpirySnapshot(player).entrySet()) {
+                long expiry = entry.getValue().getLong("Time");
+                if (currentTime >= expiry) {
+                    UUID entityUUID = entry.getKey();
 
-                // 优先用缓存
-                LivingEntity livingEntity = data.getCachedEntity(entityUUID);
-
-                // 缓存没有，再退回 level 查询
-                if (livingEntity == null) {
-                    Entity entity = serverLevel.getEntity(entityUUID);
-                    if (entity instanceof LivingEntity le) {
-                        livingEntity = le;
-                        data.cacheEntity(entityUUID, le); // 顺手补缓存
+                    LivingEntity livingEntity = data.getCachedEntity(entityUUID);
+                    if (livingEntity == null) {
+                        Entity entity = serverLevel.getEntity(entityUUID);
+                        if (entity instanceof LivingEntity le) {
+                            livingEntity = le;
+                            data.cacheEntity(entityUUID, le);
+                        }
                     }
-                }
 
-                if (livingEntity != null) {
-                    restoreFromApollyon(livingEntity);
-                    if (livingEntity.level() instanceof ServerLevel entityLevel) {
-                        entityLevel.sendParticles(
-                                net.minecraft.core.particles.ParticleTypes.SMOKE,
-                                livingEntity.getX(), livingEntity.getY() + 1, livingEntity.getZ(),
-                                30, 0.5, 0.5, 0.5, 0.05
-                        );
+                    if (livingEntity != null) {
+                        restoreFromApollyon(livingEntity, player);
+                        if (livingEntity.level() instanceof ServerLevel entityLevel) {
+                            entityLevel.sendParticles(
+                                    ParticleTypes.SMOKE,
+                                    livingEntity.getX(), livingEntity.getY() + 1, livingEntity.getZ(),
+                                    30, 0.5, 0.5, 0.5, 0.05
+                            );
+                        }
                     }
-                    data.removeApollyonExpiry(entityUUID);
+                    ApocalyptiumData.removeApollyonExpiry(player, entityUUID);
                     data.removeCachedEntity(entityUUID);
                 }
             }
@@ -394,19 +399,12 @@ public class ApocalyptiumCodItem extends Item {
             LivingEntity livingEntity = ref.get();
 
             if (livingEntity == null || livingEntity.isRemoved() || !livingEntity.isAlive()) {
-                UUID entityUUID = null;
-                if (livingEntity != null) {
-                    entityUUID = livingEntity.getUUID();
-                }
                 iterator.remove();
-                if (entityUUID != null) {
-                    data.cleanupEntity(entityUUID);
-                }
             }
         }
 
         // 检查是否需要停用追踪
-        if (TRACKED_ENTITIES.isEmpty() && data.isEmpty()) {
+        if (TRACKED_ENTITIES.isEmpty()) {
             deactivateTracking();
         }
     }
