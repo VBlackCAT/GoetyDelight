@@ -124,8 +124,10 @@ public class ModAttachments {
     /**
      * 虚妄箴言「背在背上」时所在的主背包槽位（0-35）；-1 表示没有背在背上。
      *
-     * <p>由 {@code FalseProverbsItem#inventoryTick} 写入：剑在背包里才会触发回调，
-     * 剑不在背包时服务器端零开销。{@code Entity#setData} 会自动同步给附近玩家（含玩家本人），
+     * <p>由 {@code FalseProverbsItem#refreshBackSlot} 写入，触发时机是「背包真的变了」：
+     * 玩家容器菜单上原版的槽位监听器（只在 {@code ItemStack.matches} 为假时回调）、
+     * 快捷栏切格的 {@code ServerGamePacketListenerImplMixin}，以及登录 / 重生 / 换维度。
+     * <b>不是每 tick 轮询</b>。{@code Entity#setData} 会自动同步给附近玩家（含玩家本人），
      * 新玩家开始追踪实体 / 玩家登录时 NeoForge 也会补发一次初始值。
      */
     public static final Supplier<

@@ -444,31 +444,38 @@ public class SearchServant {
             scanDirty = true;
         }
 
-        getServantData(player).ifPresent(data -> {
+        // 【优化】不用 ifPresent(捕获 lambda)：那会为每次调用分配一个 lambda 实例
+        ServantData data = PLAYER_SERVANT_CACHE.get(player.getUUID());
+        if (data != null) {
             data.addServant(servant.getUUID());
-        });
+        }
 
-        getEnhancedServantData(player).ifPresent(data -> {
-            data.addOrUpdateServant(servant);
-        });
+        EnhancedServantData enhancedData = ENHANCED_PLAYER_CACHE.get(player.getUUID());
+        if (enhancedData != null) {
+            enhancedData.addOrUpdateServant(servant);
+        }
     }
 
     public static void onServantDeath(Player player, UUID servantUUID) {
-        getServantData(player).ifPresent(data -> {
+        // 【优化】同上：去掉捕获 lambda 的分配
+        ServantData data = PLAYER_SERVANT_CACHE.get(player.getUUID());
+        if (data != null) {
             data.removeServant(servantUUID);
-        });
+        }
 
-        getEnhancedServantData(player).ifPresent(data -> {
-            data.removeServant(servantUUID);
-        });
+        EnhancedServantData enhancedData = ENHANCED_PLAYER_CACHE.get(player.getUUID());
+        if (enhancedData != null) {
+            enhancedData.removeServant(servantUUID);
+        }
     }
 
     public static void updateServantData(LivingEntity servant) {
         if (servant instanceof IOwned owned) {
             if (owned.getTrueOwner() instanceof Player ownerPlayer) {
-                getEnhancedServantData(ownerPlayer).ifPresent(data -> {
+                EnhancedServantData data = ENHANCED_PLAYER_CACHE.get(ownerPlayer.getUUID());
+                if (data != null) {
                     data.addOrUpdateServant(servant);
-                });
+                }
             }
         }
     }

@@ -13,7 +13,8 @@
         "MobMixin",
         "SummonSpellMixin",
         "WightSpawnerMixin",
-        "LivingEntityBuffMixin"
+        "LivingEntityBuffMixin",
+        "ServerGamePacketListenerImplMixin"
     ],
     "client": [
         "BlockStateModelLoaderMixin",

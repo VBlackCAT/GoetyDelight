@@ -29,7 +29,7 @@ public class BuffEventHandler {
         // tickAllAndRemove 内部已追踪是否发生变化，无需再额外做快照对比（避免每 tick 分配 HashMap）
         boolean changed = buffs.tickAllAndRemove(living);
 
-        for (ResourceLocation typeId : buffs.getActiveTypes()) {
+        for (ResourceLocation typeId : buffs.activeTypesView()) {
             BuffEffect effect = ModBuffTypes.getEffect(typeId);
             if (effect != null) {
                 effect.apply(living, buffs.getTotalAmplifier(typeId));

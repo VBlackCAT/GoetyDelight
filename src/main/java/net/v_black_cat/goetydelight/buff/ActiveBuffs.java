@@ -13,12 +13,6 @@ import net.v_black_cat.goetydelight.init.ModBuffTypes;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * 管理实体身上所有 Buff 实例，提供增删改查、持久化、网络同步功能。
- *
- * <p>运行时代理：直接通过 Mixin 字段访问，避免 Attachment Map 查找。 持久化：通过 INBTSerializable 配合 Attachment 系统保存/加载。
- * 全局计数器：ACTIVE_ENTITY_COUNT 用于快速判断是否有任何 Buff 存在。
- */
 public class ActiveBuffs implements INBTSerializable<CompoundTag> {
 
     // ==================== 数据容器 ====================
@@ -97,6 +91,17 @@ public class ActiveBuffs implements INBTSerializable<CompoundTag> {
     /** 返回当前所有活跃的 Buff 类型集合（不可修改）。 */
     public Set<ResourceLocation> getActiveTypes() {
         return Collections.unmodifiableSet(buffs.keySet());
+    }
+
+    /**
+     * 每 tick 遍历用：直接给出 {@code keySet()} 的实时视图，<b>不分配</b>任何包装对象
+     * （{@link #getActiveTypes()} 每次都会新建一个 unmodifiableSet 包装器，
+     * 而 {@code BuffEventHandler} 是每 tick 每实体都要遍历一次的）。
+     *
+     * <p>只读用，不要在遍历中改这个 Buff 集合。
+     */
+    public Set<ResourceLocation> activeTypesView() {
+        return this.buffs.keySet();
     }
 
     /** 返回指定类型的所有 Buff 实例列表（不可修改）。 */
