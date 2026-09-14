@@ -311,5 +311,65 @@
   "goetydelight.configuration.tenThousandPoisonFeastMinItemCount": "万毒盛宴最少物品数量",
   "goetydelight.configuration.tenThousandPoisonFeastMinDebuffCount": "万毒盛宴最少debuff种类",
   "goetydelight.configuration.enableGoetyRevelationCompatibility": "Goety Revelation兼容性",
-  "goetydelight.configuration.playerModelScales": "玩家模型缩放"
+  "goetydelight.configuration.playerModelScales": "玩家模型缩放",
+  "item.goetydelight.tooltip.shift": "§d按住 §eShift §d查看详情",
+
+  "item.goetydelight.apocalyptium_ingot_brush.tooltip.1": "会以极快的速度刷扫可疑方块",
+  "item.goetydelight.apocalyptium_ingot_brush.tooltip.2": "额外掉落2个物品",
+
+  "item.goetydelight.apocalyptium_cod.tooltip.1": "召唤一只30分钟寿命的使徒仆从为你而战",
+  "item.goetydelight.apocalyptium_cod.tooltip.2": "对使徒仆从右键可以吸引亚波伦暂时性的附身在使徒身上",
+  "item.goetydelight.apocalyptium_cod.tooltip.3": "亚波伦会在5分钟之后离去",
+  "item.goetydelight.apocalyptium_cod.tooltip.4": "“他们都吃”",
+  "item.goetydelight.apocalyptium_cod.tooltip.5": "“并且吃饱了”",
+  "item.goetydelight.apocalyptium_cod.tooltip.6": "“把剩下的零碎收拾起来”",
+  "item.goetydelight.apocalyptium_cod.tooltip.7": "“装满了十二个篮子”",
+
+  "item.goetydelight.apocalyptium_knife.tooltip.1": "攻击无视护甲，附魔，抗性",
+  "item.goetydelight.apocalyptium_knife.tooltip.2": "击杀生物时产生更多的乐事掉落物",
+  "item.goetydelight.apocalyptium_knife.tooltip.3": "右键可以收获作物并产生更多的掉落",
+
+  "item.goetydelight.ascension_mooncake.tooltip.1": "“海上升明月，天涯共此时”",
+
+  "item.goetydelight.atonement_voucher_wraped_cod.tooltip.1": "避免一次世界的注视",
+
+  "item.goetydelight.doom_cookie.tooltip.1": "下一次召唤使徒必定会引来世界的注视",
+  "item.goetydelight.doom_cookie.tooltip.2": "“所以”",
+  "item.goetydelight.doom_cookie.tooltip.3": "“你们要警醒”",
+  "item.goetydelight.doom_cookie.tooltip.4": "“因为不知道你们的主是哪一天来到”",
+
+  "item.goetydelight.pi_pie.tooltip.1": "效果持续10分钟",
+  "item.goetydelight.pi_pie.tooltip.2": "射出的箭矢转变为三连发",
+  "item.goetydelight.pi_pie.tooltip.3": "射出的箭矢将会在落点处产生密集的箭雨",
+  "item.goetydelight.pi_pie.tooltip.4": "箭矢将穿透弹射物保护",
+  "item.goetydelight.pi_pie.tooltip.5": "“我要使我的箭饮血饮醉”",
+  "item.goetydelight.pi_pie.tooltip.6": "“就是被杀被掳之人的血”",
+
+  "item.goetydelight.quietus_marrow.tooltip.1": "永久的寂灭2",
+  "item.goetydelight.quietus_marrow.tooltip.2": "永久的断食",
+  "item.goetydelight.quietus_marrow.tooltip.3": "周期性的受到饥饿伤害",
+  "item.goetydelight.quietus_marrow.tooltip.4": "生命值将不再恢复",
+  "item.goetydelight.quietus_marrow.tooltip.5": "这2个效果持续10分钟",
+  "item.goetydelight.quietus_marrow.tooltip.6": "“我又看见一个新天新地...”",
+  "item.goetydelight.quietus_marrow.tooltip.7": "“神要擦去他们一切的眼泪”",
+  "item.goetydelight.quietus_marrow.tooltip.8": "“不再有死亡”",
+  "item.goetydelight.quietus_marrow.tooltip.9": "“也不再有悲哀、哭号、疼痛”",
+  "item.goetydelight.quietus_marrow.tooltip.10": "“因为以前的事都过去了”",
+
+  "item.goetydelight.shark_gummy.tooltip.1": "效果持续10分钟",
+  "item.goetydelight.shark_gummy.tooltip.2": "投掷的三叉戟会给予命中的目标:",
+  "item.goetydelight.shark_gummy.tooltip.3": "15秒黑暗",
+  "item.goetydelight.shark_gummy.tooltip.4": "15秒震撼",
+  "item.goetydelight.shark_gummy.tooltip.5": "15秒诅咒",
+  "item.goetydelight.shark_gummy.tooltip.6": "“他站立，震撼全地”",
+  "item.goetydelight.shark_gummy.tooltip.7": "“他观看，惊散列国”",
+  "item.goetydelight.shark_gummy.tooltip.8": "“永在的山崩裂，长存的岭塌陷”",
+
+  "item.goetydelight.stone_sword_skewer.tooltip.1": "效果持续10分钟",
+  "item.goetydelight.stone_sword_skewer.tooltip.2": "提升基础攻击力，随着血量的减少提升加成幅度",
+  "item.goetydelight.stone_sword_skewer.tooltip.3": "获得37%的闪避率",
+  "item.goetydelight.stone_sword_skewer.tooltip.4": "免疫一次致死伤害",
+  "item.goetydelight.stone_sword_skewer.tooltip.5": "免疫死亡后锁定血量上限为1并禁疗自身",
+  "item.goetydelight.stone_sword_skewer.tooltip.6": "“我来并不是叫地上太平”",
+  "item.goetydelight.stone_sword_skewer.tooltip.7": "“乃是叫地上动刀兵”"
 }

@@ -842,7 +842,7 @@ public class ModItems {
         if (RevelationCompat.IS_REVELATION_LOADED) {
             APOCALYPTIUM_KNIFE = ITEMS.register("apocalyptium_knife",
                     () -> new ApocalyptiumKnifeItem(ModItemTiers.APOCALYPTIUM, -5.0F, -2.0F,
-                            basicItem().durability(666)));
+                            basicItem().durability(666).rarity(Rarity.UNCOMMON)));
 
             VENOMOUS_SPIDER_KNIFE = registerWithTab("venomous_spider_knife",
                     () -> new KnifeItem(Tiers.IRON, 0.5F, -2.0F, basicItem()));
@@ -850,9 +850,8 @@ public class ModItems {
             SPECTRE_KNIFE = registerWithTab("spectre_knife",
                     () -> new KnifeItem(Tiers.IRON, 0.5F, -2.0F, basicItem()));
 
-
             APOCALYPTIUM_INGOT_BRUSH = ITEMS.register("apocalyptium_ingot_brush",
-                    () -> new ApocalyptiumBrushItem(basicItem().durability(166)));
+                    () -> new ApocalyptiumBrushItem(basicItem().durability(166).rarity(Rarity.UNCOMMON)));
 
             STONE_SWORD_SKEWER = ITEMS.register("stone_sword_skewer",
                     () -> new StoneSwordSkewerItem(
