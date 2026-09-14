@@ -179,6 +179,7 @@ public class ApocalyptiumCodItem extends Item {
             );
             ApocalyptiumData.addPreventDrop(owner, entityUUID);
         }
+        // 关键：缓存 convertToApollyon 中的那个实体，后续 onLivingDrops 就用它
         data.cacheEntity(entityUUID, target);
 
         // ↓↓↓ 以下转化逻辑完全不变 ↓↓↓
@@ -220,7 +221,6 @@ public class ApocalyptiumCodItem extends Item {
 
         if (owner != null) {
             ApocalyptiumData.removeApollyonExpiry(owner, entityUUID);
-            ApocalyptiumData.removePreventDrop(owner, entityUUID);
         }
         data.removeCachedEntity(entityUUID);
     }
@@ -238,7 +238,7 @@ public class ApocalyptiumCodItem extends Item {
     }
 
     /**
-     * 寻找实体归属玩家，用于定位玩家 NBT 数据
+     * 寻找实体归属玩家（仅作为兜底，优先用 ApocalyptiumData.findOwnerByPreventDrop）
      */
     private Player findOwnerFor(LivingEntity entity) {
         if (entity instanceof ApostleServant servant) {
@@ -250,6 +250,8 @@ public class ApocalyptiumCodItem extends Item {
         return entity.level().getNearestPlayer(entity, 32);
     }
 
+    // ==================== 掉落阻止：改为遍历在线玩家查 PreventDrops ====================
+
     @SubscribeEvent
     public void onLivingDrops(LivingDropsEvent event) {
         LivingEntity entity = event.getEntity();
@@ -258,18 +260,38 @@ public class ApocalyptiumCodItem extends Item {
         if (entity.level() instanceof ServerLevel serverLevel) {
             ApocalyptiumData data = ApocalyptiumData.get(serverLevel);
 
-            Player owner = findOwnerFor(entity);
-            if (owner != null && ApocalyptiumData.shouldPreventDrop(owner, entityUUID)) {
+            // 1. 遍历在线玩家，找出哪个玩家的 PreventDrops 锁定了这个 UUID
+            Player owner = ApocalyptiumData.findOwnerByPreventDrop(serverLevel, entityUUID);
+            if (owner == null) {
+                // 没有玩家锁定这个实体，不做处理
+                cleanupDeadReferences();
+                return;
+            }
+
+            // 2. 确认要阻止掉落
+            if (ApocalyptiumData.shouldPreventDrop(owner, entityUUID)) {
                 event.setCanceled(true);
             }
 
-            if (owner != null) {
-                ApocalyptiumData.cleanupEntity(owner, entityUUID);
+            // 3. 拿到 convertToApollyon / summonApostleServant 中保存的那个实体
+            //    优先用运行时缓存，缓存没有再按 UUID 从世界拿
+            LivingEntity lockedEntity = data.getCachedEntity(entityUUID);
+            if (lockedEntity == null) {
+                Entity worldEntity = serverLevel.getEntity(entityUUID);
+                if (worldEntity instanceof LivingEntity le) {
+                    lockedEntity = le;
+                    data.cacheEntity(entityUUID, le);
+                }
             }
+
+            // 4. 清理该玩家身上关于这个实体的所有记录
+            ApocalyptiumData.cleanupEntity(owner, entityUUID);
             data.removeCachedEntity(entityUUID);
         }
         cleanupDeadReferences();
     }
+
+    // ==================== 实体重新加载：同样用 PreventDrops 反查 owner ====================
 
     @SubscribeEvent
     public void onEntityJoinLevel(EntityJoinLevelEvent event) {
@@ -280,14 +302,12 @@ public class ApocalyptiumCodItem extends Item {
         UUID uuid = living.getUUID();
         ApocalyptiumData data = ApocalyptiumData.get(serverLevel);
 
-        Player owner = findOwnerFor(living);
+        // 用 PreventDrops 反查 owner，而不是按距离找
+        Player owner = ApocalyptiumData.findOwnerByPreventDrop(serverLevel, uuid);
         if (owner == null) return;
 
-        // 补缓存
-        if (ApocalyptiumData.getApollyonExpiry(owner, uuid) > 0
-                || ApocalyptiumData.getServantExpiry(owner, uuid) > 0) {
-            data.cacheEntity(uuid, living);
-        }
+        // 补缓存（重新加载时把世界里的实体引用补进缓存）
+        data.cacheEntity(uuid, living);
 
         // 如果加载时已经过期，立刻处理
         long apollyonExpiry = ApocalyptiumData.getApollyonExpiry(owner, uuid);
@@ -304,6 +324,7 @@ public class ApocalyptiumCodItem extends Item {
         if (servantExpiry > 0 && serverLevel.getGameTime() >= servantExpiry) {
             living.remove(Entity.RemovalReason.DISCARDED);
             ApocalyptiumData.cleanupEntity(owner, uuid);
+            data.removeCachedEntity(uuid);
         }
     }
 

@@ -9,6 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.saveddata.SavedData;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -206,5 +207,21 @@ public class ApocalyptiumData extends SavedData {
         removeServantExpiry(player, uuid);
         removeApollyonExpiry(player, uuid);
         removePreventDrop(player, uuid);
+    }
+
+    // ==================== 根据 UUID 反查玩家 ====================
+
+    /**
+     * 在所有在线玩家中查找哪个玩家的 PreventDrops 列表锁定了该 UUID。
+     * 找到后返回该玩家，未找到返回 null。
+     */
+    @Nullable
+    public static Player findOwnerByPreventDrop(ServerLevel level, UUID entityUUID) {
+        for (Player player : level.getServer().getPlayerList().getPlayers()) {
+            if (shouldPreventDrop(player, entityUUID)) {
+                return player;
+            }
+        }
+        return null;
     }
 }
