@@ -5,6 +5,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.*;
@@ -13,10 +14,29 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ApocalyptiumData extends SavedData {
     private static final String DATA_NAME = "apocalyptium_data";
 
-    // 使用线程安全的集合
-    private final Map<UUID, Long> servantExpiryMap = new ConcurrentHashMap<>();
-    private final Map<UUID, Long> apollyonExpiryMap = new ConcurrentHashMap<>();
+    // 值改为 CompoundTag，内部包含 "Time"(long) 和 "EntityType"(String)
+    private final Map<UUID, CompoundTag> servantExpiryMap = new ConcurrentHashMap<>();
+    private final Map<UUID, CompoundTag> apollyonExpiryMap = new ConcurrentHashMap<>();
     private final Set<UUID> preventDropsList = ConcurrentHashMap.newKeySet();
+    private final Map<UUID, LivingEntity> liveEntityCache = new ConcurrentHashMap<>();
+
+    public void cacheEntity(UUID uuid, LivingEntity entity) {
+        liveEntityCache.put(uuid, entity);
+    }
+
+    public LivingEntity getCachedEntity(UUID uuid) {
+        LivingEntity entity = liveEntityCache.get(uuid);
+        if (entity == null) return null;
+        if (entity.isRemoved() || !entity.isAlive()) {
+            liveEntityCache.remove(uuid);
+            return null;
+        }
+        return entity;
+    }
+
+    public void removeCachedEntity(UUID uuid) {
+        liveEntityCache.remove(uuid);
+    }
 
     public static ApocalyptiumData get(ServerLevel level) {
         return level.getServer().overworld().getDataStorage()
@@ -26,26 +46,29 @@ public class ApocalyptiumData extends SavedData {
     public static ApocalyptiumData load(CompoundTag tag) {
         ApocalyptiumData data = new ApocalyptiumData();
 
-        // 加载servant过期时间
+        // 加载 servant 过期时间
         if (tag.contains("ServantExpiry", Tag.TAG_LIST)) {
             ListTag servantList = tag.getList("ServantExpiry", Tag.TAG_COMPOUND);
             for (int i = 0; i < servantList.size(); i++) {
                 CompoundTag entry = servantList.getCompound(i);
                 UUID uuid = entry.getUUID("UUID");
-                long time = entry.getLong("Time");
-                // 直接操作，因为在加载时对象还未被共享
-                data.servantExpiryMap.put(uuid, time);
+                CompoundTag value = new CompoundTag();
+                value.putLong("Time", entry.getLong("Time"));
+                value.putString("EntityType", entry.getString("EntityType"));
+                data.servantExpiryMap.put(uuid, value);
             }
         }
 
-        // 加载apollyon过期时间
+        // 加载 apollyon 过期时间
         if (tag.contains("ApollyonExpiry", Tag.TAG_LIST)) {
             ListTag apollyonList = tag.getList("ApollyonExpiry", Tag.TAG_COMPOUND);
             for (int i = 0; i < apollyonList.size(); i++) {
                 CompoundTag entry = apollyonList.getCompound(i);
                 UUID uuid = entry.getUUID("UUID");
-                long time = entry.getLong("Time");
-                data.apollyonExpiryMap.put(uuid, time);
+                CompoundTag value = new CompoundTag();
+                value.putLong("Time", entry.getLong("Time"));
+                value.putString("EntityType", entry.getString("EntityType"));
+                data.apollyonExpiryMap.put(uuid, value);
             }
         }
 
@@ -57,7 +80,7 @@ public class ApocalyptiumData extends SavedData {
                     UUID uuid = UUID.fromString(dropsList.getString(i));
                     data.preventDropsList.add(uuid);
                 } catch (IllegalArgumentException e) {
-                    // 忽略无效的UUID
+                    // 忽略无效的 UUID
                 }
             }
         }
@@ -67,22 +90,24 @@ public class ApocalyptiumData extends SavedData {
 
     @Override
     public CompoundTag save(CompoundTag tag) {
-        // 保存servant过期时间 - 使用快照避免并发修改
+        // 保存 servant 过期时间
         ListTag servantList = new ListTag();
-        for (Map.Entry<UUID, Long> entry : new ArrayList<>(servantExpiryMap.entrySet())) {
+        for (Map.Entry<UUID, CompoundTag> entry : new ArrayList<>(servantExpiryMap.entrySet())) {
             CompoundTag entryTag = new CompoundTag();
             entryTag.putUUID("UUID", entry.getKey());
-            entryTag.putLong("Time", entry.getValue());
+            entryTag.putLong("Time", entry.getValue().getLong("Time"));
+            entryTag.putString("EntityType", entry.getValue().getString("EntityType"));
             servantList.add(entryTag);
         }
         tag.put("ServantExpiry", servantList);
 
-        // 保存apollyon过期时间
+        // 保存 apollyon 过期时间
         ListTag apollyonList = new ListTag();
-        for (Map.Entry<UUID, Long> entry : new ArrayList<>(apollyonExpiryMap.entrySet())) {
+        for (Map.Entry<UUID, CompoundTag> entry : new ArrayList<>(apollyonExpiryMap.entrySet())) {
             CompoundTag entryTag = new CompoundTag();
             entryTag.putUUID("UUID", entry.getKey());
-            entryTag.putLong("Time", entry.getValue());
+            entryTag.putLong("Time", entry.getValue().getLong("Time"));
+            entryTag.putString("EntityType", entry.getValue().getString("EntityType"));
             apollyonList.add(entryTag);
         }
         tag.put("ApollyonExpiry", apollyonList);
@@ -97,10 +122,18 @@ public class ApocalyptiumData extends SavedData {
         return tag;
     }
 
-    // 线程安全的操作方法
-    public void addServantExpiry(UUID uuid, long expiryTime) {
-        servantExpiryMap.put(uuid, expiryTime);
+    // ==================== 仆从过期时间 ====================
+
+    public void addServantExpiry(UUID uuid, long expiryTime, String entityTypeId) {
+        CompoundTag value = new CompoundTag();
+        value.putLong("Time", expiryTime);
+        value.putString("EntityType", entityTypeId == null ? "" : entityTypeId);
+        servantExpiryMap.put(uuid, value);
         setDirty();
+    }
+
+    public void addServantExpiry(UUID uuid, long expiryTime) {
+        addServantExpiry(uuid, expiryTime, "");
     }
 
     public void removeServantExpiry(UUID uuid) {
@@ -109,12 +142,27 @@ public class ApocalyptiumData extends SavedData {
     }
 
     public long getServantExpiry(UUID uuid) {
-        return servantExpiryMap.getOrDefault(uuid, -1L);
+        CompoundTag tag = servantExpiryMap.get(uuid);
+        return tag == null ? -1L : tag.getLong("Time");
+    }
+
+    public String getServantEntityType(UUID uuid) {
+        CompoundTag tag = servantExpiryMap.get(uuid);
+        return tag == null ? "" : tag.getString("EntityType");
+    }
+
+    // ==================== 亚形态过期时间 ====================
+
+    public void addApollyonExpiry(UUID uuid, long expiryTime, String entityTypeId) {
+        CompoundTag value = new CompoundTag();
+        value.putLong("Time", expiryTime);
+        value.putString("EntityType", entityTypeId == null ? "" : entityTypeId);
+        apollyonExpiryMap.put(uuid, value);
+        setDirty();
     }
 
     public void addApollyonExpiry(UUID uuid, long expiryTime) {
-        apollyonExpiryMap.put(uuid, expiryTime);
-        setDirty();
+        addApollyonExpiry(uuid, expiryTime, "");
     }
 
     public void removeApollyonExpiry(UUID uuid) {
@@ -123,8 +171,16 @@ public class ApocalyptiumData extends SavedData {
     }
 
     public long getApollyonExpiry(UUID uuid) {
-        return apollyonExpiryMap.getOrDefault(uuid, -1L);
+        CompoundTag tag = apollyonExpiryMap.get(uuid);
+        return tag == null ? -1L : tag.getLong("Time");
     }
+
+    public String getApollyonEntityType(UUID uuid) {
+        CompoundTag tag = apollyonExpiryMap.get(uuid);
+        return tag == null ? "" : tag.getString("EntityType");
+    }
+
+    // ==================== 防止掉落 ====================
 
     public void addPreventDrop(UUID uuid) {
         preventDropsList.add(uuid);
@@ -146,17 +202,20 @@ public class ApocalyptiumData extends SavedData {
         changed |= apollyonExpiryMap.remove(uuid) != null;
         changed |= preventDropsList.remove(uuid);
 
+        liveEntityCache.remove(uuid); // 不 setDirty，因为它不参与序列化
+
         if (changed) {
             setDirty();
         }
     }
 
-    // 获取快照用于迭代
-    public Map<UUID, Long> getServantExpirySnapshot() {
+    // ==================== 快照 ====================
+
+    public Map<UUID, CompoundTag> getServantExpirySnapshot() {
         return new HashMap<>(servantExpiryMap);
     }
 
-    public Map<UUID, Long> getApollyonExpirySnapshot() {
+    public Map<UUID, CompoundTag> getApollyonExpirySnapshot() {
         return new HashMap<>(apollyonExpiryMap);
     }
 

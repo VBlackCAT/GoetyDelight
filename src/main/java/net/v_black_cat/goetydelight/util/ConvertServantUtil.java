@@ -1,6 +1,7 @@
 package net.v_black_cat.goetydelight.util;
 
 import com.Polarice3.Goety.api.entities.IOwned;
+import com.google.common.collect.ImmutableSet;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -23,65 +24,59 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * 极地之触相关逻辑的工具类。
- * <p>
- * 承载：效果时长管理、攻击事件处理、限制条件判定、实体转化等全部逻辑。
- */
 public final class ConvertServantUtil {
-
-    private static final Logger log = LoggerFactory.getLogger(ConvertServantUtil.class);
 
     private ConvertServantUtil() {
     }
 
-    /** 玩家持久化数据中记录极地之触剩余时长的 NBT 键 */
     public static final String POLARICE_TAG = "ploarice_tag";
 
-    /** 禁止转化的实体黑名单，静态初始化，避免每次攻击重复创建 ResourceLocation */
-    private static final Set<ResourceLocation> BANNED_ENTITIES = Set.of(
+
+    private static final Set<ResourceLocation> DEFAULT_BANNED_ENTITIES = Set.of(
             new ResourceLocation("goety:vizier_clone"),
             new ResourceLocation("goety:apostle"),
             new ResourceLocation("minecraft:ender_dragon"),
             new ResourceLocation("goety:ender_keeper"),
             new ResourceLocation("goety:obsidian_monolith"),
             new ResourceLocation("twilightforest:lich"),
-            new ResourceLocation("goetyawaken:hostile_mushroom_monstrosity")
+            new ResourceLocation("goetyawaken:hostile_mushroom_monstrosity"),
+            new ResourceLocation("goetyawaken:nameless_one"),
+            new ResourceLocation("irons_spellbooks:fire_boss")
     );
 
-    /** 仆从实体查找缓存，key 为 "servantTypeName|entityName" */
+    private static volatile Set<ResourceLocation> bannedEntities = DEFAULT_BANNED_ENTITIES;
+
     private static final Map<String, Optional<EntityType<?>>> SERVANT_CACHE = new ConcurrentHashMap<>();
 
-    /** 当前极地之触效果总时长（tick） */
     private static float polariceTime = 0.0f;
 
-    /** 剩余可转化次数 */
     private static int polariceCount;
 
-    /** 两次食用之间的冷却（tick） */
     private static long polariceCooldown = 0;
 
-    /** 配置项缓存，避免每次攻击都读取 Config */
     private static boolean cachedAffectsBosses = true;
     private static double cachedHealthThreshold = 0.0;
 
-    // ==================== 配置与状态 ====================
 
-    /**
-     * 配置加载/重载时刷新缓存的配置项与冷却、次数。
-     */
     public static void onConfigLoad() {
         polariceCount = Config.getPolariceCount();
         polariceCooldown = Config.getPolariceCooldown() * 20L;
         cachedAffectsBosses = Config.getPolariceAffectsBosses();
         cachedHealthThreshold = Config.getPolariceHealthThreshold();
+
+        ImmutableSet.Builder<ResourceLocation> builder = ImmutableSet.builder();
+        builder.addAll(DEFAULT_BANNED_ENTITIES);
+
+        for (String id : Config.getExtraBannedEntities()) {
+            ResourceLocation rl = ResourceLocation.tryParse(id);
+            if (rl != null) {
+                builder.add(rl);
+            }
+        }
+
+        bannedEntities = builder.build();
     }
 
-    /**
-     * 食用极地之触时触发：重置效果时长并刷新次数。
-     *
-     * @param entity 食用者
-     */
     public static void onEaten(LivingEntity entity) {
         polariceTime = 1200.0f;
         CompoundTag tag = entity.getPersistentData();
@@ -89,18 +84,10 @@ public final class ConvertServantUtil {
         polariceCount = Config.getPolariceCount();
     }
 
-    /**
-     * 获取当前食用冷却（tick）。
-     */
     public static long getPolariceCooldown() {
         return polariceCooldown;
     }
 
-    /**
-     * 玩家每 tick 递减极地之触剩余时长。
-     *
-     * @param player 玩家
-     */
     public static void tickPlayer(Player player) {
         CompoundTag persistentData = player.getPersistentData();
         if (persistentData.contains(POLARICE_TAG)) {
@@ -113,31 +100,18 @@ public final class ConvertServantUtil {
         }
     }
 
-    /**
-     * 判断攻击者当前是否处于极地之触生效状态。
-     */
     private static boolean isPolariceActive(Entity attacker) {
         return attacker != null
                 && polariceTime > 0
                 && attacker.getPersistentData().contains(POLARICE_TAG);
     }
 
-    // ==================== 攻击事件主流程 ====================
-
-    /**
-     * 处理极地之触攻击事件的核心逻辑。
-     * 包含：Boss 特殊处理、限制条件判定、概率判定、以及将低血量敌人转化为仆从。
-     *
-     * @param event 攻击事件
-     */
     public static void handleAttack(LivingAttackEvent event) {
         LivingEntity targetEntity = event.getEntity();
         Entity attacker = event.getSource().getEntity();
 
-        // 对 Apostle 的特殊处理：直接移除并生成村民 + 哭泣的黑曜石
         handleApostleSpecialCase(targetEntity, attacker);
 
-        // 限制条件判定：是否允许被转化
         if (!canBeAffectedByPolarice(targetEntity)) {
             return;
         }
@@ -145,72 +119,35 @@ public final class ConvertServantUtil {
         double targetMaxHealth = targetEntity.getMaxHealth();
         double targetHealth = targetEntity.getHealth();
 
-        // 概率判定
         if (!shouldTransform(targetHealth, targetMaxHealth)) {
             return;
         }
 
-        // 执行转化
         if (targetEntity.level() instanceof ServerLevel level && isPolariceActive(attacker)) {
             transformToServant(targetEntity, attacker, level, targetMaxHealth, targetHealth);
         }
     }
 
-    // ==================== 限制条件 ====================
-
-    /**
-     * 限制条件判定：判断目标实体是否允许被极地之触影响并转化为仆从。
-     *
-     * @param targetEntity 被攻击的目标实体
-     * @return true 表示允许转化，false 表示禁止转化
-     */
     public static boolean canBeAffectedByPolarice(LivingEntity targetEntity) {
-        // 配置项：极地之触是否影响 Boss
         if (!cachedAffectsBosses && targetEntity.getPersistentData().contains("forge:bosses")) {
             return false;
         }
-
-        // 血量超过阈值则不受影响
         if (targetEntity.getAttributeBaseValue(Attributes.MAX_HEALTH) > cachedHealthThreshold) {
             return false;
         }
-
-        // 黑名单实体不受影响
         return !isBannedEntity(targetEntity);
     }
 
-    /**
-     * 判断目标实体是否属于禁止转化的黑名单。O(1) 复杂度。
-     *
-     * @param targetEntity 被攻击的目标实体
-     * @return true 表示是黑名单实体，禁止转化
-     */
     public static boolean isBannedEntity(LivingEntity targetEntity) {
         ResourceLocation entityId = ForgeRegistries.ENTITY_TYPES.getKey(targetEntity.getType());
-        return entityId != null && BANNED_ENTITIES.contains(entityId);
+        return entityId != null && bannedEntities.contains(entityId);
     }
 
-    // ==================== 概率与特殊处理 ====================
-
-    /**
-     * 概率判定：根据目标当前血量比例决定是否触发转化。
-     * 血量越低，触发概率越高。
-     *
-     * @param targetHealth    目标当前血量
-     * @param targetMaxHealth 目标最大血量
-     * @return true 表示本次攻击触发转化
-     */
     public static boolean shouldTransform(double targetHealth, double targetMaxHealth) {
         float randomchange = (float) (1.1f - targetHealth / targetMaxHealth);
         return ThreadLocalRandom.current().nextFloat() < randomchange;
     }
 
-    /**
-     * 对 Apostle 的特殊处理：移除本体，生成村民并掉落哭泣的黑曜石。
-     *
-     * @param targetEntity 被攻击的目标实体
-     * @param attacker     攻击者
-     */
     private static void handleApostleSpecialCase(LivingEntity targetEntity, Entity attacker) {
         if (!(targetEntity instanceof com.Polarice3.Goety.common.entities.boss.Apostle)) {
             return;
@@ -242,7 +179,6 @@ public final class ConvertServantUtil {
         polariceCount -= 1;
     }
 
-    // ==================== 转化逻辑 ====================
 
     /**
      * 将目标实体转化为对应的仆从实体，并继承血量比例与装备。
@@ -278,7 +214,6 @@ public final class ConvertServantUtil {
             return;
         }
 
-        // 生成仆从并继承目标血量比例与装备
         double servantMaxHealth = servant.getMaxHealth();
         servant.moveTo(targetEntity.getX(), targetEntity.getY(), targetEntity.getZ());
         servant.setHealth((float) (servantMaxHealth * targetHealth / targetMaxHealth));

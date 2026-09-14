@@ -288,7 +288,7 @@ dependencies {
     compileOnly(annotationProcessor(
             "io.github.llamalad7:mixinextras-common:0.4.1"
     ))
-//    compileOnly "curse.maven:goety-revelation-1236817:8311906"//编译时加载启示录
+    compileOnly "curse.maven:goety-revelation-1236817:8311906"//编译时加载启示录
     modImplementation "curse.maven:curios-309927:6418456"//5.14.1
 
     //帕秋莉

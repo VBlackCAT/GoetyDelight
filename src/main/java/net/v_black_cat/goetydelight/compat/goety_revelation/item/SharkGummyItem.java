@@ -29,6 +29,7 @@ import java.util.Map;
 public class SharkGummyItem extends Item {
 
     private static final String NBT_KEY = "SharkGummyEffect";
+    private static final int SHARKGUMMYEffect_DURATION = 10 * 15 * 20;
     private static final int EFFECT_DURATION = 15 * 20;
 
     private static Field activeEffectsField;
@@ -64,7 +65,7 @@ public class SharkGummyItem extends Item {
 
         if (entity instanceof Player player && !level.isClientSide) {
             CompoundTag playerData = player.getPersistentData();
-            playerData.putLong(NBT_KEY, level.getGameTime() + EFFECT_DURATION);
+            playerData.putLong(NBT_KEY, level.getGameTime() + SHARKGUMMYEffect_DURATION);
         }
 
         return result;

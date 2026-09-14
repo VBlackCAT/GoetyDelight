@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.util.ConvertServantUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +37,7 @@ public class Config
     private static final ForgeConfigSpec.DoubleValue CAKE_EFFECT_RADIUS = BUILDER
             .comment("Effect radius for the cake item\n皇家蛋糕的效果半径")
             .defineInRange("cakeEffectRadius", 32.0, 1.0, 256.0);
+
     private static final ForgeConfigSpec.BooleanValue POLARICE_AFFECTS_BOSSES = BUILDER
             .comment("Whether bosses are affected by Polarice item\nBoss是否北极刨冰影响")
             .define("polariceAffectsBosses", false);
@@ -51,6 +53,15 @@ public class Config
     private static final ForgeConfigSpec.IntValue POLARICE_COUNT = BUILDER
             .comment("The number of Polarice item can affect\n北极刨冰可以影响的实体数量")
             .defineInRange("polarice_count", 10, 1, Integer.MAX_VALUE);
+
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> EXTRA_BANNED_ENTITIES = BUILDER
+            .comment("""
+                    Additional entity IDs that cannot be converted by Polarice item.
+                    These are added on top of the built-in default ban list.
+                    Format: 'namespace:path', e.g. 'minecraft:zombie'.
+                    北极刨冰无法转化的额外实体黑名单，会追加在默认黑名单之上。
+                    格式：'命名空间:路径'，例如 'minecraft:zombie'。""")
+            .defineListAllowEmpty("extraBannedEntities", List.of(), Config::validateEntityName);
 
     //幻味草黑名单
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> METAMORPHIC_SCENT_GRASS_COPY_BLACKLIST = BUILDER
@@ -412,6 +423,11 @@ public class Config
         return POLARICE_HEALTH_THRESHOLD.get();
     }
 
+    public static List<? extends String> getExtraBannedEntities() {
+        return EXTRA_BANNED_ENTITIES.get();
+    }
+
+
     public static double getCakeEffectRadius() {
         return CAKE_EFFECT_RADIUS.get();
     }
@@ -550,7 +566,7 @@ public class Config
     public static final ForgeConfigSpec SPEC = BUILDER.build();
 
     public static Set<Item> blacklistedItems;
-    
+
     private static Consumer<Void> blackListUpdateListener;
 
 
@@ -582,17 +598,19 @@ public class Config
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event)
     {
-        
+
         blacklistedItems = BLACKLISTED_ITEMS.get().stream()
                 .map(itemName -> ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName)))
                 .collect(Collectors.toSet());
-        
-        
+
+
         if (blackListUpdateListener != null) {
             blackListUpdateListener.accept(null);
         }
+
+        ConvertServantUtil.onConfigLoad();
     }
-    
+
     public static void registerBlackListUpdateListener(Consumer<Void> listener) {
         blackListUpdateListener = listener;
     }
