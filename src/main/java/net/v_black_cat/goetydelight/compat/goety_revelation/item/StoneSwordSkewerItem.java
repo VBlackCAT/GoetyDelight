@@ -1,6 +1,10 @@
 package net.v_black_cat.goetydelight.compat.goety_revelation.item;
 
+import com.mega.endinglib.api.client.text.TextColorUtils;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -19,6 +23,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
+import java.util.List;
 import java.util.UUID;
 
 @Mod.EventBusSubscriber
@@ -216,5 +222,31 @@ public class StoneSwordSkewerItem extends SwordItem {
         }
 
         removeMaxHealthLimitModifier(player);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        tooltip.add(Component.literal(""));
+        if (Screen.hasShiftDown()) {
+            tooltip.add(Component.translatable("item.goetydelight.stone_sword_skewer.tooltip.1")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+            tooltip.add(Component.translatable("item.goetydelight.stone_sword_skewer.tooltip.2")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+            tooltip.add(Component.translatable("item.goetydelight.stone_sword_skewer.tooltip.3")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+            tooltip.add(Component.translatable("item.goetydelight.stone_sword_skewer.tooltip.4")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+            tooltip.add(Component.translatable("item.goetydelight.stone_sword_skewer.tooltip.5")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+        } else {
+            tooltip.add(Component.translatable("item.goetydelight.tooltip.shift"));
+        }
+        tooltip.add(Component.literal(""));
+        tooltip.add(Component.translatable("item.goetydelight.stone_sword_skewer.tooltip.6")
+                .withStyle(TextColorUtils.MIDDLE)
+                .withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.add(Component.translatable("item.goetydelight.stone_sword_skewer.tooltip.7")
+                .withStyle(TextColorUtils.MIDDLE)
+                .withStyle(ChatFormatting.DARK_GRAY));
     }
 }

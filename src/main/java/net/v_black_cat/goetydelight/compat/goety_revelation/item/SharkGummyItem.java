@@ -1,7 +1,11 @@
 package net.v_black_cat.goetydelight.compat.goety_revelation.item;
 
 import com.Polarice3.Goety.common.effects.GoetyEffects;
+import com.mega.endinglib.api.client.text.TextColorUtils;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -10,13 +14,16 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 
 public class SharkGummyItem extends Item {
@@ -132,5 +139,34 @@ public class SharkGummyItem extends Item {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        tooltip.add(Component.literal(""));
+        if (Screen.hasShiftDown()) {
+            tooltip.add(Component.translatable("item.goetydelight.shark_gummy.tooltip.1")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+            tooltip.add(Component.translatable("item.goetydelight.shark_gummy.tooltip.2")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+            tooltip.add(Component.translatable("item.goetydelight.shark_gummy.tooltip.3")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+            tooltip.add(Component.translatable("item.goetydelight.shark_gummy.tooltip.4")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+            tooltip.add(Component.translatable("item.goetydelight.shark_gummy.tooltip.5")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+        } else {
+            tooltip.add(Component.translatable("item.goetydelight.tooltip.shift"));
+        }
+        tooltip.add(Component.literal(""));
+        tooltip.add(Component.translatable("item.goetydelight.shark_gummy.tooltip.6")
+                .withStyle(TextColorUtils.MIDDLE)
+                .withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.add(Component.translatable("item.goetydelight.shark_gummy.tooltip.7")
+                .withStyle(TextColorUtils.MIDDLE)
+                .withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.add(Component.translatable("item.goetydelight.shark_gummy.tooltip.8")
+                .withStyle(TextColorUtils.MIDDLE)
+                .withStyle(ChatFormatting.DARK_GRAY));
     }
 }

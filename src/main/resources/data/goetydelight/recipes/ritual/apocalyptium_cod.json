@@ -2,9 +2,14 @@
   "type": "goety:ritual",
   "ritual_type": "goety:craft",
   "activation_item": {
-    "type": "forge:nbt",
+    "type": "forge:partial_nbt",
     "item": "minecraft:cod",
-    "nbt": "{\"display\": {\"Name\": \"[{\\\"text\\\":\\\"\\\",\\\"color\\\":\\\"dark_purple\\\",\\\"bold\\\":false,\\\"italic\\\":false,\\\"underlined\\\":false,\\\"strikethrough\\\":false,\\\"obfuscated\\\":true}]\", \"Lore\": [\"{\\\"text\\\":\\\"111111111\\\",\\\"color\\\":\\\"gold\\\",\\\"bold\\\":false,\\\"italic\\\":false,\\\"underlined\\\":false,\\\"strikethrough\\\":false,\\\"obfuscated\\\":true}\"]}}"
+    "nbt": {
+      "display": {
+        "Name": "[{\"text\":\"🐛🐛🐛\",\"color\":\"dark_purple\",\"bold\":false,\"italic\":false,\"underlined\":false,\"strikethrough\":false,\"obfuscated\":true}]",
+        "Lore": ["{\"text\":\"111111111\",\"color\":\"gold\",\"bold\":false,\"italic\":false,\"underlined\":false,\"strikethrough\":false,\"obfuscated\":true}"]
+      }
+    }
   },
   "craftType": "culinary",
   "entity_to_sacrifice": {

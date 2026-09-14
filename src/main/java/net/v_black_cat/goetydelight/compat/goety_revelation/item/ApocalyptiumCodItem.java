@@ -1,8 +1,11 @@
 package net.v_black_cat.goetydelight.compat.goety_revelation.item;
 
+import com.mega.endinglib.api.client.text.TextColorUtils;
 import com.mega.revelationfix.Revelationfix;
 import com.mega.revelationfix.common.entity.boss.ApostleServant;
 import com.mega.revelationfix.common.init.ModEntities;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -16,6 +19,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
@@ -27,6 +31,7 @@ import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotResult;
 import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 
+import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -369,5 +374,33 @@ public class ApocalyptiumCodItem extends Item {
         if (TRACKED_ENTITIES.isEmpty() && data.isEmpty()) {
             deactivateTracking();
         }
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        tooltip.add(Component.literal(""));
+        if (Screen.hasShiftDown()) {
+            tooltip.add(Component.translatable("item.goetydelight.apocalyptium_cod.tooltip.1")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+            tooltip.add(Component.translatable("item.goetydelight.apocalyptium_cod.tooltip.2")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+            tooltip.add(Component.translatable("item.goetydelight.apocalyptium_cod.tooltip.3")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+        } else {
+            tooltip.add(Component.translatable("item.goetydelight.tooltip.shift"));
+        }
+        tooltip.add(Component.literal(""));
+        tooltip.add(Component.translatable("item.goetydelight.apocalyptium_cod.tooltip.4")
+                .withStyle(TextColorUtils.MIDDLE)
+                .withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.add(Component.translatable("item.goetydelight.apocalyptium_cod.tooltip.5")
+                .withStyle(TextColorUtils.MIDDLE)
+                .withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.add(Component.translatable("item.goetydelight.apocalyptium_cod.tooltip.6")
+                .withStyle(TextColorUtils.MIDDLE)
+                .withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.add(Component.translatable("item.goetydelight.apocalyptium_cod.tooltip.7")
+                .withStyle(TextColorUtils.MIDDLE)
+                .withStyle(ChatFormatting.DARK_GRAY));
     }
 }

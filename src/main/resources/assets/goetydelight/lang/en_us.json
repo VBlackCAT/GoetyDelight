@@ -311,5 +311,65 @@
   "goetydelight.configuration.tenThousandPoisonFeastMinItemCount": "Ten Thousand Poison Feast Min Item Count",
   "goetydelight.configuration.tenThousandPoisonFeastMinDebuffCount": "Ten Thousand Poison Feast Min Debuff Count",
   "goetydelight.configuration.enableGoetyRevelationCompatibility": "Goety Revelation Compatibility",
-  "goetydelight.configuration.playerModelScales": "Player Model Scales"
+  "goetydelight.configuration.playerModelScales": "Player Model Scales",
+  "item.goetydelight.tooltip.shift": "§dHold §eShift §dfor details",
+
+  "item.goetydelight.apocalyptium_ingot_brush.tooltip.1": "Brushes suspicious blocks at extreme speed",
+  "item.goetydelight.apocalyptium_ingot_brush.tooltip.2": "Grants 2 additional items",
+
+  "item.goetydelight.apocalyptium_cod.tooltip.1": "Summons a 30-minute Apostle Servant to fight for you",
+  "item.goetydelight.apocalyptium_cod.tooltip.2": "Right-click an Apostle Servant to attract Apollyon to temporarily possess it",
+  "item.goetydelight.apocalyptium_cod.tooltip.3": "Apollyon will depart after 5 minutes",
+  "item.goetydelight.apocalyptium_cod.tooltip.4": "\"They all ate\"",
+  "item.goetydelight.apocalyptium_cod.tooltip.5": "\"and were satisfied\"",
+  "item.goetydelight.apocalyptium_cod.tooltip.6": "\"and picked up the leftover pieces\"",
+  "item.goetydelight.apocalyptium_cod.tooltip.7": "\"and filled twelve baskets\"",
+
+  "item.goetydelight.apocalyptium_knife.tooltip.1": "Attacks ignore armor, enchantments, and resistances",
+  "item.goetydelight.apocalyptium_knife.tooltip.2": "Killing mobs produces more Delight drops",
+  "item.goetydelight.apocalyptium_knife.tooltip.3": "Right-click to harvest crops and produce more drops",
+
+  "item.goetydelight.ascension_mooncake.tooltip.1": "\"The bright moon rises over the sea; from afar, we share this moment\"",
+
+  "item.goetydelight.atonement_voucher_wraped_cod.tooltip.1": "Avoids the world's gaze once",
+
+  "item.goetydelight.doom_cookie.tooltip.1": "The next apostle summoning will inevitably attract the world's gaze",
+  "item.goetydelight.doom_cookie.tooltip.2": "\"Therefore\"",
+  "item.goetydelight.doom_cookie.tooltip.3": "\"keep watch\"",
+  "item.goetydelight.doom_cookie.tooltip.4": "\"because you do not know on what day your Lord will come\"",
+
+  "item.goetydelight.pi_pie.tooltip.1": "Effect lasts 10 minutes",
+  "item.goetydelight.pi_pie.tooltip.2": "Shot arrows become triple-shot",
+  "item.goetydelight.pi_pie.tooltip.3": "Shot arrows create a dense arrow rain at the landing point",
+  "item.goetydelight.pi_pie.tooltip.4": "Arrows pierce projectile protection",
+  "item.goetydelight.pi_pie.tooltip.5": "\"I will make my arrows drunk with blood\"",
+  "item.goetydelight.pi_pie.tooltip.6": "\"the blood of the slain and the captives\"",
+
+  "item.goetydelight.quietus_marrow.tooltip.1": "Permanent Quietus II",
+  "item.goetydelight.quietus_marrow.tooltip.2": "Permanent Fasting",
+  "item.goetydelight.quietus_marrow.tooltip.3": "Periodically take starvation damage",
+  "item.goetydelight.quietus_marrow.tooltip.4": "Health will no longer regenerate",
+  "item.goetydelight.quietus_marrow.tooltip.5": "These 2 effects last 10 minutes",
+  "item.goetydelight.quietus_marrow.tooltip.6": "\"Then I saw a new heaven and a new earth...\"",
+  "item.goetydelight.quietus_marrow.tooltip.7": "\"God will wipe every tear from their eyes\"",
+  "item.goetydelight.quietus_marrow.tooltip.8": "\"There will be no more death\"",
+  "item.goetydelight.quietus_marrow.tooltip.9": "\"or mourning, or crying, or pain\"",
+  "item.goetydelight.quietus_marrow.tooltip.10": "\"for the old order of things has passed away\"",
+
+  "item.goetydelight.shark_gummy.tooltip.1": "Effect lasts 10 minutes",
+  "item.goetydelight.shark_gummy.tooltip.2": "Thrown tridents inflict on hit:",
+  "item.goetydelight.shark_gummy.tooltip.3": "15 seconds of Darkness",
+  "item.goetydelight.shark_gummy.tooltip.4": "15 seconds of Stun",
+  "item.goetydelight.shark_gummy.tooltip.5": "15 seconds of Curse",
+  "item.goetydelight.shark_gummy.tooltip.6": "\"He stood, and shook the earth\"",
+  "item.goetydelight.shark_gummy.tooltip.7": "\"He looked, and made the nations tremble\"",
+  "item.goetydelight.shark_gummy.tooltip.8": "\"The eternal mountains were shattered, the ancient hills collapsed\"",
+
+  "item.goetydelight.stone_sword_skewer.tooltip.1": "Effect lasts 10 minutes",
+  "item.goetydelight.stone_sword_skewer.tooltip.2": "Increases base attack damage; the bonus scales up as health decreases",
+  "item.goetydelight.stone_sword_skewer.tooltip.3": "Grants 37% dodge chance",
+  "item.goetydelight.stone_sword_skewer.tooltip.4": "Immune to one fatal damage instance",
+  "item.goetydelight.stone_sword_skewer.tooltip.5": "After death immunity triggers, health cap is locked to 1 and self-healing is disabled",
+  "item.goetydelight.stone_sword_skewer.tooltip.6": "\"I did not come to bring peace to the earth\"",
+  "item.goetydelight.stone_sword_skewer.tooltip.7": "\"but a sword\""
 }

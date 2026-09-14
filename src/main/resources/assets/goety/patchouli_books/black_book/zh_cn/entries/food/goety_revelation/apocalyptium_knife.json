@@ -8,7 +8,11 @@
       "text": "攻击会无视护甲，附魔，抗性$(br)击杀生物时会额外掉落2个乐事类型的掉落物(如果他们有的话)$(br)右键可以收获作物，产生额外2次掉落并让其生长阶段返回上一阶段"
     },
     {
-      "type": "patchouli:text",
+      "type": "spotlight",
+      "title": "神灵金属刀",
+      "link_recipe": false,
+      "item": "goetydelight:apocalyptium_knife",
+      "scale": 1.2,
       "text": "在锻造台放入神灵金锻造模版，诅咒金属刀以及一个神灵金属锭可以锻造出神灵金属刀"
     }
   ]

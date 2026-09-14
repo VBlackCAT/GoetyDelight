@@ -11,9 +11,7 @@
       "item": "minecraft:cod"
     },
     {
-      "type": "forge:nbt",
-      "item": "goety:unholy_blood",
-      "nbt": "{\"Pure\": 1b}"
+      "item": "goetydelight:ruby_syrup"
     },
     {
       "item": "goety:mystic_core"

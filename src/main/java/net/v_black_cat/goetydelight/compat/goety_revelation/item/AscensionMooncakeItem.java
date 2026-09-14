@@ -1,11 +1,16 @@
 package net.v_black_cat.goetydelight.compat.goety_revelation.item;
 
+import com.mega.endinglib.api.client.text.TextColorUtils;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -13,8 +18,10 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.v_black_cat.goetydelight.item.ModItems;
 
+import javax.annotation.Nullable;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
 
 @Mod.EventBusSubscriber
 public class AscensionMooncakeItem extends Item {
@@ -67,5 +74,13 @@ public class AscensionMooncakeItem extends Item {
             default -> null;
         };
         return midAutumn != null && midAutumn.equals(date);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        tooltip.add(Component.literal(""));
+        tooltip.add(Component.translatable("item.goetydelight.ascension_mooncake.tooltip.1")
+                .withStyle(TextColorUtils.MIDDLE)
+                .withStyle(ChatFormatting.DARK_GRAY));
     }
 }
