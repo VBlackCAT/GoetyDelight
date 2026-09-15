@@ -19,12 +19,14 @@ import net.v_black_cat.goetydelight.item.*;
 import net.v_black_cat.goetydelight.item.CustomDrinkItem;
 import net.v_black_cat.goetydelight.item.food.*;
 import net.v_black_cat.goetydelight.item.food.MetamorphicScentGrassItem;
+import net.v_black_cat.goetydelight.spell.CropGrowthSpell;
 import net.v_black_cat.goetydelight.spell.GrassCuttingSpell;
 import net.v_black_cat.goetydelight.spell.HoeHarvestSpell;
 import net.v_black_cat.goetydelight.spell.LaowangSpell;
 import net.v_black_cat.goetydelight.spell.LoveAndFertilitySpell;
 import net.v_black_cat.goetydelight.spell.MarbleWaterSpell;
 import net.v_black_cat.goetydelight.spell.RichSoilSpell;
+import net.v_black_cat.goetydelight.spell.TreeGrowthSpell;
 
 import static vectorwing.farmersdelight.common.registry.ModItems.basicItem;
 import vectorwing.farmersdelight.common.item.KnifeItem;
@@ -177,6 +179,8 @@ public class ModItems {
     public static final DeferredItem<Item> LOVE_AND_FERTILITY_FOCUS;
     public static final DeferredItem<Item> RICH_SOIL_FOCUS;
     public static final DeferredItem<Item> LAOWANG_FOCUS;
+    public static final DeferredItem<Item> TREE_GROWTH_FOCUS;
+    public static final DeferredItem<Item> CROP_GROWTH_FOCUS;
 
     //    // ==================== 静态初始化块：物品定义区域 ====================
     static {
@@ -679,6 +683,10 @@ public class ModItems {
                 () -> new MagicFocus(new RichSoilSpell()));
         LAOWANG_FOCUS = ITEMS.register("laowang_focus",
                 () -> new MagicFocus(new LaowangSpell()));
+        TREE_GROWTH_FOCUS = ITEMS.register("tree_growth_focus",
+                () -> new MagicFocus(new TreeGrowthSpell()));
+        CROP_GROWTH_FOCUS = ITEMS.register("crop_growth_focus",
+                () -> new MagicFocus(new CropGrowthSpell()));
     }
 
     // ==================== 辅助方法 ====================

@@ -101,7 +101,7 @@ public class HoeHarvestSpell extends Spell {
     private static int spellRadius(ItemStack focus, LivingEntity caster, SpellStat spellStat) {
         int rangeLevel = getEnchantLevel(focus, caster, ModEnchantments.RANGE);
         double radius = Math.max(BASE_RADIUS, spellStat.getRadius() + spellStat.getPotency());
-        radius += 2.0D * rangeLevel;
+        radius += 1.0D * rangeLevel;
         radius = Math.min(radius, MAX_RADIUS);
         return (int) Math.floor(radius);
     }

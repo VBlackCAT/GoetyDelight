@@ -148,6 +148,8 @@ public class ModCreativeTabs {
                         output.accept(ModItems.LOVE_AND_FERTILITY_FOCUS.get());
                         output.accept(ModItems.RICH_SOIL_FOCUS.get());
                         output.accept(ModItems.LAOWANG_FOCUS.get());
+                        output.accept(ModItems.TREE_GROWTH_FOCUS.get());
+                        output.accept(ModItems.CROP_GROWTH_FOCUS.get());
 
                         // 人偶
                         CustomDollItem.addCreativeTab(output);
