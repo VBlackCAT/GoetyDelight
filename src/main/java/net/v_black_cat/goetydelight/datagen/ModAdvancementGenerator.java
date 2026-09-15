@@ -11,6 +11,7 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.ForgeAdvancementProvider;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompatRegistry;
 import net.v_black_cat.goetydelight.entities.ModEntities;
 import net.v_black_cat.goetydelight.item.ModItems;
 import net.v_black_cat.goetydelight.block.ModBlocks;
@@ -75,14 +76,14 @@ public class ModAdvancementGenerator implements ForgeAdvancementProvider.Advance
         // ========== 第二层：进阶成就（需要第一层成就） ==========
 
         // 2.1 刀具收集者（需要第一把刀）
-        Advancement knifeCollector = getAdvancement(firstKnife, ModItems.APOCALYPTIUM_KNIFE.get(),
+        Advancement knifeCollector = getAdvancement(firstKnife, RevelationCompatRegistry.APOCALYPTIUM_KNIFE.get(),
                 "knife_collector", FrameType.GOAL, true, true, false)
                 .addCriterion("apocalyptium_knife",
-                        InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.APOCALYPTIUM_KNIFE.get()))
+                        InventoryChangeTrigger.TriggerInstance.hasItems(RevelationCompatRegistry.APOCALYPTIUM_KNIFE.get()))
                 .addCriterion("venomous_spider_knife",
-                        InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.VENOMOUS_SPIDER_KNIFE.get()))
+                        InventoryChangeTrigger.TriggerInstance.hasItems(RevelationCompatRegistry.VENOMOUS_SPIDER_KNIFE.get()))
                 .addCriterion("spectre_knife",
-                        InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.SPECTRE_KNIFE.get()))
+                        InventoryChangeTrigger.TriggerInstance.hasItems(RevelationCompatRegistry.SPECTRE_KNIFE.get()))
                 .requirements(RequirementsStrategy.AND) // 需要所有刀具
                 .save(consumer, GoetyDelight.MODID + ":main/knife_collector");
 
@@ -112,15 +113,15 @@ public class ModAdvancementGenerator implements ForgeAdvancementProvider.Advance
         // ========== 第三层：专家成就（需要第二层成就） ==========
 
         // 3.1 刀具大师（需要刀具收集者）
-        Advancement knifeMaster = getAdvancement(knifeCollector, ModItems.APOCALYPTIUM_KNIFE.get(),
+        Advancement knifeMaster = getAdvancement(knifeCollector, RevelationCompatRegistry.APOCALYPTIUM_KNIFE.get(),
                 "knife_master", FrameType.CHALLENGE, true, true, false)
                 .addCriterion("use_knife_100_times",
                         // 物品耐久度触发
                         ItemDurabilityTrigger.TriggerInstance.changedDurability(
                                 ItemPredicate.Builder.item()
-                                        .of(ModItems.APOCALYPTIUM_KNIFE.get(),
-                                                ModItems.VENOMOUS_SPIDER_KNIFE.get(),
-                                                ModItems.SPECTRE_KNIFE.get(),
+                                        .of(RevelationCompatRegistry.APOCALYPTIUM_KNIFE.get(),
+                                                RevelationCompatRegistry.VENOMOUS_SPIDER_KNIFE.get(),
+                                                RevelationCompatRegistry.SPECTRE_KNIFE.get(),
                                                 ModItems.DARK_KNIFE.get()).build(),
                                 MinMaxBounds.Ints.atLeast(100)
                         ))
@@ -160,7 +161,7 @@ public class ModAdvancementGenerator implements ForgeAdvancementProvider.Advance
         Advancement darkCookingGod = getAdvancement(root, ModItems.ROTTEN_CORPSE_MAGGOT_FEAST.get(),
                 "dark_cooking_god", FrameType.CHALLENGE, true, true, true) // 隐藏成就
                 .addCriterion("knife_master_complete",
-                        InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.APOCALYPTIUM_KNIFE.get()))
+                        InventoryChangeTrigger.TriggerInstance.hasItems(RevelationCompatRegistry.APOCALYPTIUM_KNIFE.get()))
                 .addCriterion("dark_gourmet_complete",
                         ConsumeItemTrigger.TriggerInstance.usedItem(ModItems.TOXIC_MEAL.get()))
                 .addCriterion("perfect_chef_complete",

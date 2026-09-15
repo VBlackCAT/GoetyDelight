@@ -1,8 +1,6 @@
 package net.v_black_cat.goetydelight.item;
 
 import com.Polarice3.Goety.common.items.ModTiers;
-import com.mega.revelationfix.client.font.BakedGlyphBottomDissolve;
-import com.mega.revelationfix.common.item.ModItemTiers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -22,7 +20,6 @@ import net.v_black_cat.goetydelight.entities.ModEntities;
 import net.v_black_cat.goetydelight.item.food.*;
 import net.v_black_cat.goetydelight.item.food.BaklavaItem;
 import net.v_black_cat.goetydelight.item.food.BowlFoodItem;
-import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompat;
 import vectorwing.farmersdelight.common.item.KnifeItem;
 
 import java.util.Random;
@@ -154,19 +151,6 @@ public class ModItems {
 //    public static final RegistryObject<Item> MENU;
     public static final RegistryObject<Item> DOLL_ITEM;
 
-    //联动物品
-    public static RegistryObject<Item> APOCALYPTIUM_KNIFE = null;
-    public static RegistryObject<Item> VENOMOUS_SPIDER_KNIFE = null;
-    public static RegistryObject<Item> SPECTRE_KNIFE = null;
-    public static RegistryObject<Item> APOCALYPTIUM_INGOT_BRUSH = null;
-    public static RegistryObject<Item> STONE_SWORD_SKEWER = null;
-    public static RegistryObject<Item> PI_PIE = null;
-    public static RegistryObject<Item> SHARK_GUMMY = null;
-    public static RegistryObject<Item> APOCALYPTIUM_COD = null;
-    public static RegistryObject<Item> DOOM_COOKIE = null;
-    public static RegistryObject<Item> ATONEMENT_VOUCHER_WRAPED_COD = null;
-    public static RegistryObject<Item> ASCENSION_MOONCAKE = null;
-    public static RegistryObject<Item> QUIETUS_MARROW = null;
     // ==================== 效果供应商常量 ====================
     public static final Supplier<MobEffect> COMFORT_EFFECT_SUPPLIER = farmersDelightBuff("comfort");
     public static final Supplier<MobEffect> NOURISHMENT_EFFECT_SUPPLIER = farmersDelightBuff("nourishment");
@@ -838,79 +822,6 @@ public class ModItems {
 //        MENU = registerWithTab("menu", () -> new MenuItem(new Item.Properties()));
 
         DOLL_ITEM = registerWithTab("doll_item", DollEntityItem::new);
-
-        if (RevelationCompat.IS_REVELATION_LOADED) {
-            APOCALYPTIUM_KNIFE = ITEMS.register("apocalyptium_knife",
-                    () -> new ApocalyptiumKnifeItem(ModItemTiers.APOCALYPTIUM, -5.0F, -2.0F,
-                            basicItem().durability(666).rarity(Rarity.UNCOMMON)));
-
-            VENOMOUS_SPIDER_KNIFE = registerWithTab("venomous_spider_knife",
-                    () -> new KnifeItem(Tiers.IRON, 0.5F, -2.0F, basicItem()));
-
-            SPECTRE_KNIFE = registerWithTab("spectre_knife",
-                    () -> new KnifeItem(Tiers.IRON, 0.5F, -2.0F, basicItem()));
-
-            APOCALYPTIUM_INGOT_BRUSH = ITEMS.register("apocalyptium_ingot_brush",
-                    () -> new ApocalyptiumBrushItem(basicItem().durability(166).rarity(Rarity.UNCOMMON)));
-
-            STONE_SWORD_SKEWER = ITEMS.register("stone_sword_skewer",
-                    () -> new StoneSwordSkewerItem(
-                            Tiers.STONE,
-                            4,
-                            -2.4f,
-                            basicItem().stacksTo(1).rarity(Rarity.EPIC).food(
-                                    simpleFoodItemProperties(8, 4).build()
-                            )
-                    )
-            );
-
-            PI_PIE = ITEMS.register("pi_pie",
-                    () -> new PiPieItem(basicItem().stacksTo(1).rarity(Rarity.EPIC)
-                            .food(simpleFoodItemProperties(15, 10)
-                                    .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
-                                    .build())));
-
-            SHARK_GUMMY = ITEMS.register("shark_gummy",
-                    () -> new SharkGummyItem(basicItem().stacksTo(1).rarity(Rarity.EPIC)
-                            .food(simpleFoodItemProperties(10, 7)
-                                    .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(3), 0), 1.0F)
-                                    .build())));
-
-            APOCALYPTIUM_COD = ITEMS.register("apocalyptium_cod",
-                    () -> new ApocalyptiumCodItem(basicItem().stacksTo(1).rarity(Rarity.EPIC)
-                            .food(simpleFoodItemProperties(12, 8)
-                                    .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(6), 0), 1.0F)
-                                    .build())));
-
-            DOOM_COOKIE = ITEMS.register("doom_cookie",
-                    () -> new DoomCookieItem(basicItem().stacksTo(16).rarity(Rarity.UNCOMMON)
-                            .food(simpleFoodItemProperties(6, 4)
-                                    .effect(() ->new MobEffectInstance(DOOM.get(), minToTick(1), 19), 1.0F)
-                                    .build())));
-
-            ATONEMENT_VOUCHER_WRAPED_COD = ITEMS.register("atonement_voucher_wraped_cod",
-                    () -> new AtonementVoucherWrapedCodItem(basicItem().stacksTo(16).rarity(Rarity.UNCOMMON)
-                            .food(simpleFoodItemProperties(10, 7)
-                                    .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
-                                    .build())));
-
-            ASCENSION_MOONCAKE = ITEMS.register("ascension_mooncake",
-                    () -> new AscensionMooncakeItem(basicItem().stacksTo(1).rarity(Rarity.EPIC).food(
-                            simpleFoodItemProperties(66, 333)
-                                    .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(66), 0), 1.0F)
-                                    .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, sToTick(66), 2), 1.0F)
-                                    .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, sToTick(66), 3), 1.0F)
-                                    .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), sToTick(66), 0), 1.0F)
-                                    .build())));
-
-            QUIETUS_MARROW = ITEMS.register("quietus_marrow",
-                    () -> new QuietusMarrowItem(basicItem().stacksTo(16).rarity(Rarity.EPIC).food(
-                            simpleFoodItemProperties(5, 0)
-                                    .effect(() -> new MobEffectInstance(com.mega.revelationfix.common.init.ModEffects.QUIETUS.get(), -1, 1), 1.0F)
-                                    .effect(() -> new MobEffectInstance(ModEffects.FASTING.get(), -1, 0), 1.0F)
-                                    .build())));
-
-        }
     }
 
 

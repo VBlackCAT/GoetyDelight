@@ -12,6 +12,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlocks;
+import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompatRegistry;
 import net.v_black_cat.goetydelight.event.ModRegisterEvent;
 import net.v_black_cat.goetydelight.item.ModItems;
 
@@ -25,9 +26,9 @@ public class ModItemModelProvider extends ItemModelProvider {
     @Override
     protected void registerModels() {
 
-        simpleHandHoldItem(ModItems.APOCALYPTIUM_KNIFE);
-        simpleHandHoldItem(ModItems.VENOMOUS_SPIDER_KNIFE);
-        simpleHandHoldItem(ModItems.SPECTRE_KNIFE);
+        simpleHandHoldItem(RevelationCompatRegistry.APOCALYPTIUM_KNIFE);
+        simpleHandHoldItem(RevelationCompatRegistry.VENOMOUS_SPIDER_KNIFE);
+        simpleHandHoldItem(RevelationCompatRegistry.SPECTRE_KNIFE);
 //        simpleHandHoldItem(ModItems.CURSED_INGOT_KNIFE);
         simpleHandHoldItem(ModItems.DARK_KNIFE);
 
@@ -79,8 +80,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.BOILING_BLOOD_BREW);
         simpleItem(ModItems.CURSED_METAL_BRUSH);
         simpleItem(ModItems.DARK_BRUSH);
-        simpleItem(ModItems.APOCALYPTIUM_INGOT_BRUSH);
-        simpleItem(ModItems.ASCENSION_MOONCAKE);
+        simpleItem(RevelationCompatRegistry.APOCALYPTIUM_INGOT_BRUSH);
+        simpleItem(RevelationCompatRegistry.ASCENSION_MOONCAKE);
         simpleItem(ModItems.VILLAGERS_FEAST);
         simpleItem(ModItems.WARPED_WART_OMELETTE);
         simpleItem(ModItems.NETHER_WART_OMELETTE);

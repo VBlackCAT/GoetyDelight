@@ -18,6 +18,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.v_black_cat.goetydelight.advancements.ModAdvancementsTrigger;
+import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompat;
+import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompatRegistry;
 import net.v_black_cat.goetydelight.event.AnvilLandInBlockEvent;
 import net.v_black_cat.goetydelight.init.ModBuffTypes;
 import net.v_black_cat.goetydelight.block.ModBlockEntities;
@@ -103,6 +105,10 @@ public class GoetyDelight
 
         // 注册自定义成就触发器
         ModAdvancementsTrigger.init();
+
+        if (RevelationCompat.IS_REVELATION_LOADED) {
+            RevelationCompatRegistry.register(modEventBus);
+        }
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);

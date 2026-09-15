@@ -12,6 +12,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlocks;
+import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompat;
+import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompatRegistry;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -26,15 +28,11 @@ public class ModCreativeModTabs {
     static {
          BLACKLIST.add(ModItems.MARBLE_OP_SWORD);
          BLACKLIST.add(ModItems.GOETYDELIGHT_ICON);
-         BLACKLIST.add(ModItems.SPECTRE_KNIFE);
-         BLACKLIST.add(ModItems.VENOMOUS_SPIDER_KNIFE);
          BLACKLIST.add(ModItems.PROMOTION_HARD_CANDY);
          BLACKLIST.add(ModItems.NOT_ANYTHING);
          BLACKLIST.add(ModItems.ROAST_LAOWANG);
          BLACKLIST.add(ModItems.METAMORPHIC_SCENT_FRUIT);
          BLACKLIST.add(ModItems.DOLL_ITEM);
-
-
 
          BLACKLIST.add(ModBlocks.APOCALYPTIUM_POT);
          BLACKLIST.add(ModBlocks.NETHER_MARBLE);
@@ -71,6 +69,21 @@ public class ModCreativeModTabs {
                                 }
                             }
                         });
+
+                        if (RevelationCompat.IS_REVELATION_LOADED) {
+                            Set<RegistryObject<?>> compatBlacklist = Set.of(
+                                    RevelationCompatRegistry.SPECTRE_KNIFE,
+                                    RevelationCompatRegistry.VENOMOUS_SPIDER_KNIFE
+                            );
+                            RevelationCompatRegistry.ITEMS.getEntries().forEach(item -> {
+                                if (item.isPresent() && !compatBlacklist.contains(item)) {
+                                    Item itemInstance = item.get();
+                                    if (itemInstance != null && itemInstance != Items.AIR) {
+                                        output.accept(itemInstance);
+                                    }
+                                }
+                            });
+                        }
 
                         ModBlocks.BLOCKS.getEntries().forEach(block -> {
                             if (block.isPresent() && !BLACKLIST.contains(block)) {
