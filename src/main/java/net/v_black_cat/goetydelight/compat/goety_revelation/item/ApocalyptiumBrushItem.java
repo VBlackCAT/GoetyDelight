@@ -1,13 +1,11 @@
 package net.v_black_cat.goetydelight.compat.goety_revelation.item;
 
-import com.mega.endinglib.api.client.text.TextColorUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -36,6 +34,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompatRegistry;
 import net.v_black_cat.goetydelight.item.DarkBrushItem;
 import net.v_black_cat.goetydelight.item.ModItems;
 
@@ -56,7 +55,7 @@ public class ApocalyptiumBrushItem extends DarkBrushItem {
 
     @Override
     public void repairTick(ItemStack stack, Entity entityIn, boolean isSelected) {
-        if (stack.getItem() == ModItems.APOCALYPTIUM_INGOT_BRUSH.get()) {
+        if (stack.getItem() == RevelationCompatRegistry.APOCALYPTIUM_INGOT_BRUSH.get()) {
             super.repairTick(stack, entityIn, isSelected);
         }
     }

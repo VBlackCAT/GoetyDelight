@@ -42,7 +42,7 @@ public class ApocalyptiumCodItem extends Item {
     private static final String HALO_OF_THE_END_ID = "goety_revelation:halo_of_the_end";
 
     public static int SERVANT_LIFETIME = 30 * 60 * 20;
-    public static int APOLLYON_DURATION = 5 * 20;
+    public static int APOLLYON_DURATION = 5* 60 * 20;
 
     public static Set<WeakReference<LivingEntity>> TRACKED_ENTITIES = ConcurrentHashMap.newKeySet();
 

@@ -16,6 +16,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompatRegistry;
 import net.v_black_cat.goetydelight.item.ModItems;
 
 import javax.annotation.Nullable;
@@ -48,7 +49,7 @@ public class AscensionMooncakeItem extends Item {
         if (!rootNbt.contains("isApollyon", CompoundTag.TAG_BYTE) || rootNbt.getByte("isApollyon") != 1)
             return;
 
-        ItemStack stack = new ItemStack(ModItems.ASCENSION_MOONCAKE.get());
+        ItemStack stack = new ItemStack(RevelationCompatRegistry.ASCENSION_MOONCAKE.get());
         ItemEntity itemEntity = new ItemEntity(
                 level,
                 entity.getX(),
