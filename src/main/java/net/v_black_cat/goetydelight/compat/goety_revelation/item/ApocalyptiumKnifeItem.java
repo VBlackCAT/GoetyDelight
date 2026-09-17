@@ -30,6 +30,7 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompat;
 import vectorwing.farmersdelight.common.item.KnifeItem;
 import net.v_black_cat.goetydelight.util.DelightLootTableCache;
 import com.Polarice3.Goety.common.blocks.SnapWartsBlock;
@@ -39,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = RevelationCompat.ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ApocalyptiumKnifeItem extends KnifeItem {
     public ApocalyptiumKnifeItem(Tier tier, float attackDamage, float attackSpeed, Properties properties) {
         super(tier, attackDamage, attackSpeed, properties);

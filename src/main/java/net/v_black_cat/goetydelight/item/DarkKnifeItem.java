@@ -15,9 +15,10 @@ public class DarkKnifeItem extends KnifeItem {
 
     @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event) {
-        LivingEntity entity = event.getEntity();
-        if (entity.getMainHandItem().getItem() instanceof DarkKnifeItem) {
-            event.setAmount(event.getAmount() * 1.5f);
+        if(event.getSource().getEntity() instanceof LivingEntity entity){
+            if (entity.getMainHandItem().getItem() instanceof DarkKnifeItem) {
+                event.setAmount(event.getAmount() * 1.5f);
+            }
         }
     }
 }

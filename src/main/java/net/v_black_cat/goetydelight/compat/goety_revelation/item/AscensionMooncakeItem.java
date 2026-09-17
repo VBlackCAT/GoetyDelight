@@ -16,6 +16,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompat;
 import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompatRegistry;
 import net.v_black_cat.goetydelight.item.ModItems;
 
@@ -24,7 +25,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = RevelationCompat.ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class AscensionMooncakeItem extends Item {
     private static final boolean IS_MID_AUTUMN =
             isMidAutumn(LocalDate.now(ZoneId.systemDefault()));
