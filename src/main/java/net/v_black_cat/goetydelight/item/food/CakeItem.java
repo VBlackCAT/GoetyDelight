@@ -30,12 +30,7 @@ public class CakeItem extends Item {
 
     @Override
     public @NotNull ItemStack finishUsingItem(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity entity) {
-
         ItemStack resultStack = super.finishUsingItem(stack, level, entity);
-
-
-
-
         if (!level.isClientSide && entity instanceof Player player) {
             double effectRadius = net.v_black_cat.goetydelight.config.Config.getCakeEffectRadius();
 
@@ -44,11 +39,9 @@ public class CakeItem extends Item {
                     player.position().add(effectRadius, effectRadius, effectRadius)
             );
 
-            
             List<Mob> nearbyEntities = level.getEntitiesOfClass(Mob.class, effectArea);
             int kills = 0;
 
-            
             for (Mob target : nearbyEntities) {
                 if (isTargetEntity(target)) {
                     float maxHealth = target.getHealth();
@@ -66,8 +59,6 @@ public class CakeItem extends Item {
         }
         return resultStack;
     }
-
-
 
     private boolean isTargetEntity(Mob entity) {
         ResourceLocation entityId = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());

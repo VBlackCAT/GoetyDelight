@@ -28,6 +28,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.v_black_cat.goetydelight.item.ModItems;
+import net.v_black_cat.goetydelight.item.food.CakeItem;
 
 public class RoyalCakeBlock extends Block {
     public static final DirectionProperty FACING = net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
@@ -165,16 +166,18 @@ public class RoyalCakeBlock extends Block {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack heldStack = player.getItemInHand(hand);
-
-        
+        if (heldStack.isEmpty()) {
+            if (level.isClientSide) {
+                return InteractionResult.SUCCESS;
+            }
+            return takeServingByHand(level, pos, state, player, hand);
+        }
         if (!isKnife(heldStack)) {
             return InteractionResult.PASS;
         }
-
         if (level.isClientSide) {
             return InteractionResult.SUCCESS;
         }
-
         return takeServing(level, pos, state, player, hand);
     }
 
@@ -260,5 +263,29 @@ public class RoyalCakeBlock extends Block {
     @Override
     public boolean isPathfindable(BlockState state, BlockGetter level, BlockPos pos, PathComputationType type) {
         return false;
+    }
+
+    protected InteractionResult takeServingByHand(Level level, BlockPos pos, BlockState state, Player player, InteractionHand hand) {
+        int servings = state.getValue(SERVINGS);
+
+        if (servings == 0) {
+            level.removeBlock(pos, false);
+            level.playSound(null, pos, SoundEvents.WOOD_BREAK, SoundSource.BLOCKS, 0.8F, 0.8F);
+            return InteractionResult.SUCCESS;
+        }
+
+        ItemStack cakeSlice = new ItemStack(ModItems.CAKE.get());
+        ItemStack resultStack = cakeSlice.copy();
+        ((CakeItem) ModItems.CAKE.get()).finishUsingItem(resultStack, level, player);
+
+        int newServings = servings - 1;
+        if (newServings <= 0) {
+            level.removeBlock(pos, false);
+        } else {
+            level.setBlock(pos, state.setValue(SERVINGS, newServings), 3);
+        }
+
+        level.playSound(null, pos, SoundEvents.WOOL_PLACE, SoundSource.BLOCKS, 1.0F, 1.0F);
+        return InteractionResult.SUCCESS;
     }
 }
