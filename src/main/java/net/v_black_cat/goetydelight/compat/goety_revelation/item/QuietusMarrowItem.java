@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@Mod.EventBusSubscriber(modid = RevelationCompat.ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+
 public class QuietusMarrowItem extends Item {
 
     private static final String NBT_KEY = "GoetyDelight:QuietusProtected";
