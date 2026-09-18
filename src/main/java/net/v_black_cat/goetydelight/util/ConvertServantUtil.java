@@ -109,12 +109,12 @@ public final class ConvertServantUtil {
     public static void handleAttack(LivingAttackEvent event) {
         LivingEntity targetEntity = event.getEntity();
         Entity attacker = event.getSource().getEntity();
+        if (!(targetEntity instanceof LivingEntity)) {return;}
+        if (!(attacker instanceof LivingEntity)) {return;}
 
         handleApostleSpecialCase(targetEntity, attacker);
 
-        if (!canBeAffectedByPolarice(targetEntity)) {
-            return;
-        }
+        if (!canBeAffectedByPolarice(targetEntity)) {return;}
 
         double targetMaxHealth = targetEntity.getMaxHealth();
         double targetHealth = targetEntity.getHealth();
@@ -303,5 +303,52 @@ public final class ConvertServantUtil {
         }
 
         return Optional.empty();
+    }
+
+    public static void applyTimedTag(LivingEntity entity, String tagKey, float durationTicks) {
+        entity.getPersistentData().putFloat(tagKey, durationTicks);
+    }
+
+    public static void tickTimedTag(Player player, String tagKey) {
+        CompoundTag data = player.getPersistentData();
+        if (!data.contains(tagKey)) return;
+        float remaining = data.getFloat(tagKey);
+        if (remaining > 0) {
+            data.putFloat(tagKey, remaining - 1);
+        } else {
+            data.remove(tagKey);
+        }
+    }
+
+    public static String[] resolveServantKey(LivingEntity target) {
+        String entityTypeName = EntityType.getKey(target.getType()).toString();
+        String entityName = entityTypeName.substring(entityTypeName.indexOf(":") + 1);
+        String servantTypeName = "entity.goety." + entityName + "_servant";
+        if (entityName.contains("hostile_")) {
+            entityName = entityName.replace("hostile_", "");
+            servantTypeName = "entity.goety." + entityName;
+        }
+        return new String[]{entityName, servantTypeName};
+    }
+
+    public static void spawnServantFromTarget(LivingEntity targetEntity, LivingEntity servant,
+                                              Entity attacker, ServerLevel level,
+                                              double targetHealth, double targetMaxHealth) {
+        double servantMaxHealth = servant.getMaxHealth();
+        servant.moveTo(targetEntity.getX(), targetEntity.getY(), targetEntity.getZ());
+        servant.setHealth((float) (servantMaxHealth * targetHealth / targetMaxHealth));
+
+        if (servant instanceof IOwned ownedServant) {
+            ownedServant.setTrueOwner((LivingEntity) attacker);
+        }
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            ItemStack equipment = targetEntity.getItemBySlot(slot);
+            if (!equipment.isEmpty()) {
+                servant.setItemSlot(slot, equipment.copy());
+            }
+        }
+
+        targetEntity.setRemoved(Entity.RemovalReason.DISCARDED);
+        level.addFreshEntity(servant);
     }
 }
