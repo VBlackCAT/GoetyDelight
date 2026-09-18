@@ -2,7 +2,6 @@ package net.v_black_cat.goetydelight.item.food;
 
 import com.Polarice3.Goety.api.entities.IOwned;
 import com.Polarice3.Goety.common.entities.boss.Apostle;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
@@ -11,6 +10,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Mod.EventBusSubscriber(modid = "goetydelight")
 public class ThermalPulsePieItem extends Item {
+
     private static final float DURATION_TICKS = 3 * 60 * 20.0f;
     private static final String THERMAL_TAG = "thermal_pulse_tag";
 
@@ -36,12 +37,13 @@ public class ThermalPulsePieItem extends Item {
         super(properties);
     }
 
-    @SubscribeEvent
-    public static void onItemUseFinish(LivingEntityUseItemEvent.Finish event) {
-        if (event.getItem().getItem() instanceof ThermalPulsePieItem) {
-            LivingEntity entity = event.getEntity();
-            entity.getPersistentData().putFloat(THERMAL_TAG, DURATION_TICKS);
+    @Override
+    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
+        ItemStack result = super.finishUsingItem(stack, level, entity);
+        if (!level.isClientSide) {
+            ConvertServantUtil.applyTimedTag(entity, THERMAL_TAG, DURATION_TICKS);
         }
+        return result;
     }
 
     @SubscribeEvent
@@ -49,15 +51,7 @@ public class ThermalPulsePieItem extends Item {
         if (event.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
         Player player = event.player;
         if (player.level().isClientSide) return;
-        CompoundTag data = player.getPersistentData();
-        if (data.contains(THERMAL_TAG)) {
-            float remaining = data.getFloat(THERMAL_TAG);
-            if (remaining > 0) {
-                data.putFloat(THERMAL_TAG, remaining - 1);
-            } else {
-                data.remove(THERMAL_TAG);
-            }
-        }
+        ConvertServantUtil.tickTimedTag(player, THERMAL_TAG);
     }
 
     private static boolean isThermalActive(Entity attacker) {
@@ -66,48 +60,34 @@ public class ThermalPulsePieItem extends Item {
 
     @SubscribeEvent
     public static void onAttackEvent(net.minecraftforge.event.entity.living.LivingAttackEvent event) {
-        LivingEntity target = event.getEntity();
         Entity attacker = event.getSource().getEntity();
+        if (!(attacker instanceof LivingEntity)) {return;}
+        LivingEntity target = event.getEntity();
+        if (!(target instanceof LivingEntity)) {return;}
         if (!(target.level() instanceof ServerLevel level)) return;
-        if (!isThermalActive(attacker)) return;
+        if (!isThermalActive(target)) return;
+
         ResourceLocation targetId = net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES.getKey(target.getType());
         if (targetId == null || ConvertServantUtil.isBannedEntity(target)) return;
         if (target instanceof IOwned owned && owned.getTrueOwner() != null) return;
+
         convertToServant(target, attacker, level);
     }
 
     private static void convertToServant(LivingEntity target, Entity attacker, ServerLevel level) {
-        String entityTypeName = EntityType.getKey(target.getType()).toString();
-        String entityName = entityTypeName.substring(entityTypeName.indexOf(":") + 1);
-        String servantKey = "entity.goety." + entityName + "_servant";
-
-        if (entityName.contains("hostile_")) {
-            entityName = entityName.replace("hostile_", "");
-            servantKey = "entity.goety." + entityName;
-        }
+        String[] names = ConvertServantUtil.resolveServantKey(target);
+        String entityName = names[0];
+        String servantKey = names[1];
 
         LivingEntity servant = ConvertServantUtil.findServantEntity(
                 level, entityName, servantKey, target.getMaxHealth()
         );
-
         if (servant == null) return;
 
-        double ratio = target.getHealth() / target.getMaxHealth();
-        servant.moveTo(target.getX(), target.getY(), target.getZ());
-        servant.setHealth((float) (servant.getMaxHealth() * ratio));
-
-        if (servant instanceof IOwned ownedServant) {
-            ownedServant.setTrueOwner((LivingEntity) attacker);
-        }
-        for (EquipmentSlot slot : EquipmentSlot.values()) {
-            ItemStack equipment = target.getItemBySlot(slot);
-            if (!equipment.isEmpty()) {
-                servant.setItemSlot(slot, equipment.copy());
-            }
-        }
-
-        target.setRemoved(Entity.RemovalReason.DISCARDED);
-        level.addFreshEntity(servant);
+        ConvertServantUtil.spawnServantFromTarget(
+                target, servant, attacker, level,
+                target.getHealth(), target.getMaxHealth()
+        );
     }
 
     /**
@@ -134,12 +114,15 @@ public class ThermalPulsePieItem extends Item {
     public static void onApostleKilledByServant(LivingDeathEvent event) {
         if (!(event.getEntity() instanceof Apostle apostle)) return;
         if (!(apostle.level() instanceof ServerLevel serverLevel)) return;
+
         UUID attackerUUID = LETHAL_ATTACKERS.remove(apostle.getUUID());
         if (attackerUUID == null) return;
+
         Entity attacker = serverLevel.getEntity(attackerUUID);
         if (!(attacker instanceof LivingEntity living)) return;
         if (!(living instanceof IOwned owned)) return;
         if (owned.getTrueOwner() == null) return;
+
         ItemStack drop = new ItemStack(ModItems.THERMAL_PULSE_PIE.get());
         ItemEntity itemEntity = new ItemEntity(
                 serverLevel,

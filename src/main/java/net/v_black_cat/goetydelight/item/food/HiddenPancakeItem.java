@@ -19,12 +19,16 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.v_black_cat.goetydelight.item.ModItems;
 
 import java.util.Objects;
 import java.util.UUID;
 
+@Mod.EventBusSubscriber(modid = "goetydelight")
 public class HiddenPancakeItem extends Item {
     public HiddenPancakeItem(Properties pProperties) {
         super(pProperties);
@@ -156,64 +160,12 @@ public class HiddenPancakeItem extends Item {
         return super.onLeftClickEntity(stack, player, target);
     }
 
-//    @Override
-//    public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity target, InteractionHand hand) {
-//        ResourceLocation entityId = ForgeRegistries.ENTITY_TYPES.getKey(target.getType());
-//        boolean isHiddenPancakeCopy = isIsHiddenPancakeCopy(entityId);
-//        if (player.getMainHandItem().getItem() == ModItems.HIDDEN_PANCAKE.get()){
-//            player.stopRiding();
-//        }
-//        // 服务端判定
-//        if (!player.level().isClientSide) {
-//            player.stopRiding();
-//            if (isHiddenPancakeCopy) {
-//                LivingEntity newEntity = (LivingEntity) target.getType().create(target.level());
-//                if (newEntity == null) {
-//                    System.out.println("Failed to create entity of type: " + target.getType());
-//                    return InteractionResult.FAIL;
-//                }
-//
-//                // 复制装备
-//                for (EquipmentSlot slot : EquipmentSlot.values()) {
-//                    ItemStack equipment = target.getItemBySlot(slot);
-//                    if (!equipment.isEmpty()) {
-//                        newEntity.setItemSlot(slot, equipment.copy());
-//                    }
-//                }
-//
-//                // 复制药水效果
-//                for (MobEffectInstance effect : target.getActiveEffects()) {
-//                    newEntity.addEffect(new MobEffectInstance(
-//                            effect.getEffect(),
-//                            effect.getDuration(),
-//                            effect.getAmplifier(),
-//                            effect.isAmbient(),
-//                            effect.isVisible()
-//                    ));
-//                }
-//
-//                // 设置生命值和位置
-//                Float healeh = target.getHealth();
-//                newEntity.setHealth(healeh);
-//                newEntity.moveTo(target.getX(), target.getY(), target.getZ());
-//
-//                IServant newServant = (IServant) newEntity;
-//
-//                // 设置属性
-//                newServant.setTrueOwner(player);
-//                newServant.setOwnerId(player.getUUID());
-//                newServant.setLimitedLife(6000);
-//
-//                // 添加实体到世界
-//                target.level().addFreshEntity(newEntity);
-//                stack.shrink(1);
-//
-//                return InteractionResult.SUCCESS;
-//            }
-//        }
-//
-//        return InteractionResult.PASS;
-//    }
+    @SubscribeEvent
+    public static void onLivingDrops(LivingDropsEvent event) {
+        if (event.getEntity().getTags().contains("HiddenPancake")) {
+            event.getDrops().clear();
+        }
+    }
 
     public static boolean isIsHiddenPancakeCopy(ResourceLocation entityId) {
         boolean isHiddenPancakeCopy = false;
