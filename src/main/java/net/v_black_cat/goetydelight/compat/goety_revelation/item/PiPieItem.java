@@ -35,7 +35,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Mod.EventBusSubscriber(modid = RevelationCompat.ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+
 public class PiPieItem extends Item {
 
     private static final String PI_PIE_ACTIVE_TAG = "PiPieActive";

@@ -25,7 +25,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = RevelationCompat.ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class AscensionMooncakeItem extends Item {
     private static final boolean IS_MID_AUTUMN =
             isMidAutumn(LocalDate.now(ZoneId.systemDefault()));

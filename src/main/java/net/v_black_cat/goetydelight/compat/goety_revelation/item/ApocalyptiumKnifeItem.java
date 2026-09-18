@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@Mod.EventBusSubscriber(modid = RevelationCompat.ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ApocalyptiumKnifeItem extends KnifeItem {
     public ApocalyptiumKnifeItem(Tier tier, float attackDamage, float attackSpeed, Properties properties) {
         super(tier, attackDamage, attackSpeed, properties);
