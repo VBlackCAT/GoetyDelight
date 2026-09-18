@@ -12,11 +12,13 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLPaths;
 import net.v_black_cat.goetydelight.advancements.ModAdvancementsTrigger;
 import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompat;
 import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompatRegistry;
@@ -111,7 +113,14 @@ public class GoetyDelight
         }
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
-        context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+
+        Config.captureLegacyConfig(FMLPaths.CONFIGDIR.get());
+
+        ModLoadingContext.get().registerConfig(
+                ModConfig.Type.COMMON,
+                Config.SPEC,
+                "goetydelight-common.toml"
+        );
     }
 
 
