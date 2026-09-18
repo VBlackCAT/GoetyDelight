@@ -5,7 +5,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Upon consumption, grants the eater:$(br)$(li)At full health, increases base attack damage by 100%; the bonus scales up as health decreases, reaching a 500% base attack damage increase at 1 HP$(li)Permanent 37% dodge chance$(li)Immune to one fatal damage instance; after immunity triggers, health cap is locked to 1 and self-healing is disabled$(li)Effect lasts 10 minutes; if no mobs hostile to the eater remain when the effect ends, all bonuses and the healing disable are removed"
+      "text": "Upon consumption, grants the eater:$(br)$(li)At full health, increases base attack damage by 100%; the bonus scales up as health decreases, reaching a 500% base attack damage increase at 1 HP$(li)Permanent 17% dodge chance$(li)Immune to one fatal damage instance; after immunity triggers, health cap is locked to 1 and self-healing is disabled$(li)Effect lasts 10 minutes; if no mobs hostile to the eater remain when the effect ends, all bonuses and the healing disable are removed"
     },
     {
       "type": "goety:ritual",

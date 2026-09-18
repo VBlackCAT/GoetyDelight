@@ -145,7 +145,7 @@ public class StoneSwordSkewerItem extends SwordItem {
             if (persistentData.contains(EFFECT_DURATION_TAG)) {
                 int remainingDuration = persistentData.getInt(EFFECT_DURATION_TAG);
                 if (remainingDuration > 0) {
-                    if (player.getRandom().nextFloat() < 0.37f) {
+                    if (player.getRandom().nextFloat() < 0.17f) {
                         event.setCanceled(true);
                     }
                 }
