@@ -1,7 +1,7 @@
 package net.v_black_cat.goetydelight.config;
 
+import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -11,10 +11,14 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.util.ConvertServantUtil;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -24,284 +28,502 @@ public class Config
 {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
+    // ==================== 旧值缓存（线程安全） ====================
+    private static final Map<String, Object> LEGACY_VALUES = new ConcurrentHashMap<>();
+    private static final AtomicBoolean LEGACY_CAPTURED = new AtomicBoolean(false);
+    private static final AtomicBoolean LEGACY_APPLIED = new AtomicBoolean(false);
 
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> BLACKLISTED_ITEMS = BUILDER
-            .comment("A list of blacklisted items that will be hidden from creative tabs and prevent drops\n物品黑名单列表，这些物品将从创造模式标签页隐藏并阻止掉落")
-            .defineListAllowEmpty("blacklistedItems", List.of(
-                    "goetydelight:roasted_corpse_maggots",
-                    "goetydelight:corpse_maggot",
-                    "goetydelight:rotten_corpse_maggot_feast",
-                    "goetydelight:rotten_corpse_maggot_feast_block"
-            ), Config::validateItemName);
+    // ==================== 旧 key -> 新 ConfigValue 映射 ====================
+    private static final Map<String, ForgeConfigSpec.ConfigValue<?>> LEGACY_KEY_MAP = new HashMap<>();
 
-    private static final ForgeConfigSpec.DoubleValue CAKE_EFFECT_RADIUS = BUILDER
-            .comment("Effect radius for the cake item\n皇家蛋糕的效果半径")
-            .defineInRange("cakeEffectRadius", 32.0, 1.0, 256.0);
+    // ==================== 字段声明（全部先声明，后赋值） ====================
 
-    private static final ForgeConfigSpec.BooleanValue POLARICE_AFFECTS_BOSSES = BUILDER
-            .comment("Whether bosses are affected by Polarice item\nBoss是否北极刨冰影响")
-            .define("polariceAffectsBosses", false);
+    // 杂项 - 物品
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> BLACKLISTED_ITEMS;
+    // 食物 - 蛋糕
+    private static final ForgeConfigSpec.DoubleValue CAKE_EFFECT_RADIUS;
+    // 食物 - 北极刨冰
+    private static final ForgeConfigSpec.BooleanValue POLARICE_AFFECTS_BOSSES;
+    private static final ForgeConfigSpec.DoubleValue POLARICE_HEALTH_THRESHOLD;
+    private static final ForgeConfigSpec.IntValue POLARICE_COOLDOWN;
+    private static final ForgeConfigSpec.IntValue POLARICE_COUNT;
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> EXTRA_BANNED_ENTITIES;
+    // 食物 - 幻味草
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> METAMORPHIC_SCENT_GRASS_COPY_BLACKLIST;
+    private static final ForgeConfigSpec.DoubleValue METAMORPHIC_SCENT_GRASS_DURATION_MULTIPLIER;
+    private static final ForgeConfigSpec.DoubleValue METAMORPHIC_SCENT_GRASS_AMPLIFIER_MULTIPLIER;
+    private static final ForgeConfigSpec.IntValue METAMORPHIC_SCENT_GRASS_COPY_COUNT;
+    // 食物 - 幻味果
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> METAMORPHIC_SCENT_FRUIT_COPY_BLACKLIST;
+    private static final ForgeConfigSpec.IntValue METAMORPHIC_SCENT_FRUIT_COPY_COUNT;
+    // 食物 - 巫妖乱炖
+    private static final ForgeConfigSpec.DoubleValue LICH_CHAOS_STEW_BOOST_PERCENTAGE;
+    private static final ForgeConfigSpec.IntValue LICH_STEW_MAX_COUNT;
+    // 食物 - 暗夜之心豌豆汤
+    private static final ForgeConfigSpec.DoubleValue NIGHT_HEART_PEA_SOUP_BOOST_PERCENTAGE;
+    private static final ForgeConfigSpec.IntValue NIGHT_PEA_SOUP_MAX_COUNT;
+    // 食物 - 万毒盛宴
+    private static final ForgeConfigSpec.BooleanValue TEN_THOUSAND_POISON_FEAST_USE_WHITELIST;
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> TEN_THOUSAND_POISON_FEAST_EFFECT_LIST;
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> TEN_THOUSAND_POISON_FEAST_LEVEL_CONFIG;
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> TEN_THOUSAND_POISON_FEAST_DURATION_CONFIG;
+    private static final ForgeConfigSpec.IntValue TEN_THOUSAND_POISON_FEAST_DEFAULT_MIN_LEVEL;
+    private static final ForgeConfigSpec.IntValue TEN_THOUSAND_POISON_FEAST_DEFAULT_MAX_LEVEL;
+    private static final ForgeConfigSpec.DoubleValue TEN_THOUSAND_POISON_FEAST_DEFAULT_MIN_DURATION;
+    private static final ForgeConfigSpec.DoubleValue TEN_THOUSAND_POISON_FEAST_DEFAULT_MAX_DURATION;
+    private static final ForgeConfigSpec.IntValue TEN_THOUSAND_POISON_FEAST_EFFECT_COUNT;
+    private static final ForgeConfigSpec.IntValue TEN_THOUSAND_POISON_FEAST_MIN_ITEM_COUNT;
+    private static final ForgeConfigSpec.IntValue TEN_THOUSAND_POISON_FEAST_MIN_DEBUFF_COUNT;
+    // 工具 - 战斗
+    private static final ForgeConfigSpec.DoubleValue SHIFT_SPEED_MULTIPLIER;
+    private static final ForgeConfigSpec.DoubleValue LIVING_HURT_DAMAGE_MULTIPLIER;
+    private static final ForgeConfigSpec.DoubleValue LIVING_DAMAGE_GENERAL_MULTIPLIER;
+    private static final ForgeConfigSpec.DoubleValue LIVING_DAMAGE_BACKSTAB_MULTIPLIER;
+    // 工具 - 附魔 - 灵魂附加
+    private static final ForgeConfigSpec.DoubleValue SOUL_AFFIX_DAMAGE_PER_LEVEL;
+    private static final ForgeConfigSpec.IntValue SOUL_AFFIX_SOUL_COST_PER_LEVEL;
+    private static final ForgeConfigSpec.BooleanValue DISABLE_SOUL_AFFIX;
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SOUL_AFFIX_BLACKLIST;
+    // 工具 - 附魔 - 灵魂修补
+    private static final ForgeConfigSpec.BooleanValue DISABLE_SOUL_MENDING;
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SOUL_MENDING_BLACKLIST;
+    // 工具 - 附魔 - 溢魂弥躯
+    private static final ForgeConfigSpec.BooleanValue DISABLE_SOUL_HEALING;
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SOUL_HEALING_BLACKLIST;
+    // 杂项 - 玩家模型
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> PLAYER_MODEL_SCALES;
+    // 杂项 - 骷髅红眼
+    private static final ForgeConfigSpec.BooleanValue SKELETON_RED_EYE_EFFECT_ENABLED;
+    // 杂项 - 兼容
+    private static final ForgeConfigSpec.BooleanValue ENABLE_GOETY_REVELATION_COMPATIBILITY;
 
-    private static final ForgeConfigSpec.DoubleValue POLARICE_HEALTH_THRESHOLD = BUILDER
-            .comment("Maximum health threshold for entities to be affected by Polarice item (in half-hearts)\n实体受北极刨冰影响的最大生命值阈值（单位：半颗心）")
-            .defineInRange("polariceHealthThreshold", 50.0, 1.0, Float.MAX_VALUE);
 
-    private static final ForgeConfigSpec.IntValue POLARICE_COOLDOWN = BUILDER
-            .comment("The cooldown for Polarice item to use\n北极刨冰的使用冷却时间（tick）")
-            .defineInRange("polarice_cooldown", 1800, 300, Integer.MAX_VALUE);
+    // ==================== 初始化块：分区 + 映射填充 ====================
+    static {
 
-    private static final ForgeConfigSpec.IntValue POLARICE_COUNT = BUILDER
-            .comment("The number of Polarice item can affect\n北极刨冰可以影响的实体数量")
-            .defineInRange("polarice_count", 10, 1, Integer.MAX_VALUE);
+        // ============================================================
+        //                      大区域：食物
+        // ============================================================
+        BUILDER.push("food");
+        BUILDER.comment("All food-related configurations / 所有食物相关的配置");
 
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> EXTRA_BANNED_ENTITIES = BUILDER
-            .comment("""
-                    Additional entity IDs that cannot be converted by Polarice item.
-                    These are added on top of the built-in default ban list.
-                    Format: 'namespace:path', e.g. 'minecraft:zombie'.
-                    北极刨冰无法转化的额外实体黑名单，会追加在默认黑名单之上。
-                    格式：'命名空间:路径'，例如 'minecraft:zombie'。""")
-            .defineListAllowEmpty("extraBannedEntities", List.of(), Config::validateEntityName);
+        // ---------- 北极刨冰 ----------
+        BUILDER.push("polarice");
+        BUILDER.comment("Polarice item settings / 北极刨冰设置");
 
-    //幻味草黑名单
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> METAMORPHIC_SCENT_GRASS_COPY_BLACKLIST = BUILDER
-            .comment("A list of items that cannot be copied by Metamorphic Scent Grass\n幻味草无法复制的物品黑名单")
-            .defineListAllowEmpty("MetamorphicScentGrassCopyBlacklist",
-                    List.of("goety_revelation:ascension_hard_candy",
-                            "enigmaticdelicacy:abyssal_stew","goetydelight:pure_drink","goetydelight:tainted_drink",
-                            "goetydelight:snap_unholy_tripe","goetydelight:lichs_chaos_stew","goetydelight:sundae_of_the_philosophers_potion",
-                            "l2complements:totemic_apple","l2complements:enchanted_totemic_apple","hmag:insomnia_fruit",
-                            "artifacts:everlasting_beef","artifacts:eternal_steak","born_in_chaos_v1:eternal_candy","avaritia_delight:infinity_apple",
-                            "avaritia_delight:slice_of_endless_cake","avaritia_delight:infinity_taco","avaritia_delight:pasta_with_cosmic_meatballs",
-                            "avaritia_delight:infinity_large_hamburger","minecraft:apple"), Config::NoValidateItemName);
+        POLARICE_AFFECTS_BOSSES = BUILDER
+                .comment("Whether bosses are affected by Polarice item\nBoss是否北极刨冰影响")
+                .define("polariceAffectsBosses", false);
+        POLARICE_HEALTH_THRESHOLD = BUILDER
+                .comment("Maximum health threshold for entities to be affected by Polarice item (in half-hearts)\n实体受北极刨冰影响的最大生命值阈值（单位：半颗心）")
+                .defineInRange("polariceHealthThreshold", 50.0, 1.0, Float.MAX_VALUE);
+        POLARICE_COOLDOWN = BUILDER
+                .comment("The cooldown for Polarice item to use\n北极刨冰的使用冷却时间（tick）")
+                .defineInRange("polariceCooldown", 1800, 300, Integer.MAX_VALUE);
+        POLARICE_COUNT = BUILDER
+                .comment("The number of Polarice item can affect\n北极刨冰可以影响的实体数量")
+                .defineInRange("polariceCount", 10, 1, Integer.MAX_VALUE);
+        EXTRA_BANNED_ENTITIES = BUILDER
+                .comment("Additional entity IDs that cannot be converted by Polarice item.\n北极刨冰无法转化的额外实体黑名单")
+                .defineListAllowEmpty("extraBannedEntities", List.of(), Config::validateEntityName);
 
-    //幻味草持续时长倍率
-    private static final ForgeConfigSpec.DoubleValue METAMORPHIC_SCENT_GRASS_DURATION_MULTIPLIER = BUILDER
-            .comment("Duration multiplier for Metamorphic Scent Grass effect (0.0 to 1.0)\n幻味草效果持续时间倍率（0.0-1.0）")
-            .defineInRange("metamorphicScentGrassDurationMultiplier", 0.2, 0.0, 1.0);
-    //幻味草buff强度倍率
-    private static final ForgeConfigSpec.DoubleValue METAMORPHIC_SCENT_GRASS_AMPLIFIER_MULTIPLIER = BUILDER
-            .comment("Amplifier multiplier for Metamorphic Scent Grass effect (0.0 to 1.0)\n幻味草效果等级倍率（0.0-1.0）")
-            .defineInRange("metamorphicScentGrassAmplifierMultiplier", 0.3, 0.0, 1.0);
+        BUILDER.pop();
 
-    //幻味草复制数量
-    private static final ForgeConfigSpec.IntValue METAMORPHIC_SCENT_GRASS_COPY_COUNT = BUILDER
-            .comment("The maximum number of effects that can be copied by Metamorphic Scent Grass (0-64)\n幻味草可复制的最大效果数量（0-64）")
-            .defineInRange("metamorphicScentGrassCopyCount", 1, 0, 64);
+        // ---------- 皇家蛋糕 ----------
+        BUILDER.push("cake");
+        CAKE_EFFECT_RADIUS = BUILDER
+                .comment("Effect radius for the cake item\n皇家蛋糕的效果半径")
+                .defineInRange("cakeEffectRadius", 32.0, 1.0, 256.0);
+        BUILDER.pop();
 
-    //幻味果黑名单
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> METAMORPHIC_SCENT_FRUIT_COPY_BLACKLIST = BUILDER
-            .comment("A list of items that cannot be copied by Metamorphic Scent Fruit\n幻味果无法复制的物品黑名单")
-            .defineListAllowEmpty("MetamorphicScentFruitCopyBlacklist", List.of("goety_revelation:ascension_hard_candy",
-                    "enigmaticdelicacy:abyssal_stew","goetydelight:pure_drink","goetydelight:tainted_drink",
-                    "goetydelight:snap_unholy_tripe","goetydelight:lichs_chaos_stew","goetydelight:sundae_of_the_philosophers_potion",
-                    "l2complements:totemic_apple","l2complements:enchanted_totemic_apple","hmag:insomnia_fruit",
-                    "artifacts:everlasting_beef","artifacts:eternal_steak","born_in_chaos_v1:eternal_candy","avaritia_delight:infinity_apple",
-                    "avaritia_delight:slice_of_endless_cake","avaritia_delight:infinity_taco","avaritia_delight:pasta_with_cosmic_meatballs",
-                    "avaritia_delight:infinity_large_hamburger","minecraft:apple"), Config::NoValidateItemName);
-    //幻味果复制数量
-    private static final ForgeConfigSpec.IntValue METAMORPHIC_SCENT_FRUIT_COPY_COUNT = BUILDER
-            .comment("The maximum number of effects that can be copied by Metamorphic Scent Fruit (1-64)\n幻味果可复制的最大效果数量（1-64）")
-            .defineInRange("metamorphicScentFruitCopyCount", 1, 1, 12);
+        // ---------- 幻味草/果 ----------
+        BUILDER.push("metamorphicScent");
+        BUILDER.push("grass");
+        METAMORPHIC_SCENT_GRASS_COPY_BLACKLIST = BUILDER
+                .comment("A list of items that cannot be copied by Metamorphic Scent Grass\n幻味草无法复制的物品黑名单")
+                .defineListAllowEmpty("copyBlacklist", List.of(
+                        "goety_revelation:ascension_hard_candy",
+                        "enigmaticdelicacy:abyssal_stew","goetydelight:pure_drink","goetydelight:tainted_drink",
+                        "goetydelight:snap_unholy_tripe","goetydelight:lichs_chaos_stew","goetydelight:sundae_of_the_philosophers_potion",
+                        "l2complements:totemic_apple","l2complements:enchanted_totemic_apple","hmag:insomnia_fruit",
+                        "artifacts:everlasting_beef","artifacts:eternal_steak","born_in_chaos_v1:eternal_candy",
+                        "avaritia_delight:infinity_apple","avaritia_delight:slice_of_endless_cake",
+                        "avaritia_delight:infinity_taco","avaritia_delight:pasta_with_cosmic_meatballs",
+                        "avaritia_delight:infinity_large_hamburger","minecraft:apple"
+                ), Config::NoValidateItemName);
+        METAMORPHIC_SCENT_GRASS_DURATION_MULTIPLIER = BUILDER
+                .comment("Duration multiplier for Metamorphic Scent Grass effect (0.0 to 1.0)\n幻味草效果持续时间倍率")
+                .defineInRange("durationMultiplier", 0.2, 0.0, 1.0);
+        METAMORPHIC_SCENT_GRASS_AMPLIFIER_MULTIPLIER = BUILDER
+                .comment("Amplifier multiplier for Metamorphic Scent Grass effect (0.0 to 1.0)\n幻味草效果等级倍率")
+                .defineInRange("amplifierMultiplier", 0.3, 0.0, 1.0);
+        METAMORPHIC_SCENT_GRASS_COPY_COUNT = BUILDER
+                .comment("The maximum number of effects that can be copied by Metamorphic Scent Grass (0-64)\n幻味草可复制的最大效果数量")
+                .defineInRange("copyCount", 1, 0, 64);
+        BUILDER.pop();
+        BUILDER.push("fruit");
+        METAMORPHIC_SCENT_FRUIT_COPY_BLACKLIST = BUILDER
+                .comment("A list of items that cannot be copied by Metamorphic Scent Fruit\n幻味果无法复制的物品黑名单")
+                .defineListAllowEmpty("copyBlacklist", List.of(
+                        "goety_revelation:ascension_hard_candy",
+                        "enigmaticdelicacy:abyssal_stew","goetydelight:pure_drink","goetydelight:tainted_drink",
+                        "goetydelight:snap_unholy_tripe","goetydelight:lichs_chaos_stew","goetydelight:sundae_of_the_philosophers_potion",
+                        "l2complements:totemic_apple","l2complements:enchanted_totemic_apple","hmag:insomnia_fruit",
+                        "artifacts:everlasting_beef","artifacts:eternal_steak","born_in_chaos_v1:eternal_candy",
+                        "avaritia_delight:infinity_apple","avaritia_delight:slice_of_endless_cake",
+                        "avaritia_delight:infinity_taco","avaritia_delight:pasta_with_cosmic_meatballs",
+                        "avaritia_delight:infinity_large_hamburger","minecraft:apple"
+                ), Config::NoValidateItemName);
+        METAMORPHIC_SCENT_FRUIT_COPY_COUNT = BUILDER
+                .comment("The maximum number of effects that can be copied by Metamorphic Scent Fruit (1-64)\n幻味果可复制的最大效果数量")
+                .defineInRange("copyCount", 1, 1, 12);
+        BUILDER.pop();
+        BUILDER.pop();
 
-    // Shift speed 倍数
-    private static final ForgeConfigSpec.DoubleValue SHIFT_SPEED_MULTIPLIER = BUILDER
-            .comment("Movement speed multiplier when Shift key is pressed\n按下Shift键时的移动速度倍率")
-            .defineInRange("shiftSpeedMultiplier", 2.0, 0.0, Double.MAX_VALUE);
+        // ---------- 巫妖乱炖 ----------
+        BUILDER.push("lichChaosStew");
+        LICH_CHAOS_STEW_BOOST_PERCENTAGE = BUILDER
+                .comment("Boost percentage per stack of Lich's Chaos Stew for minions (0.1 = 10%)\n巫妖乱炖每层为仆从提供的加成百分比")
+                .defineInRange("boostPercentage", 0.1, 0.0, 1.0);
+        LICH_STEW_MAX_COUNT = BUILDER
+                .comment("Maximum stack count for Lich's Chaos Stew effect\n巫妖乱炖效果的最大叠加层数")
+                .defineInRange("maxCount", 6, 1, 20);
+        BUILDER.pop();
 
-    // 正常的伤害增幅倍率
-    private static final ForgeConfigSpec.DoubleValue LIVING_HURT_DAMAGE_MULTIPLIER = BUILDER
-            .comment("Normal damage multiplier (when not sneaking)\n正常的伤害增幅倍率（非潜行状态）")
-            .defineInRange("livingHurtDamageMultiplier", 1.5, 0.0, Float.MAX_VALUE);
+        // ---------- 暗夜之心豌豆汤 ----------
+        BUILDER.push("nightHeartPeaSoup");
+        NIGHT_HEART_PEA_SOUP_BOOST_PERCENTAGE = BUILDER
+                .comment("Boost percentage per stack of Night Heart Pea Soup for minions (0.02 = 2%)\n暗夜之心豌豆汤每层为仆从提供的加成百分比")
+                .defineInRange("boostPercentage", 0.02, 0.0, 1.0);
+        NIGHT_PEA_SOUP_MAX_COUNT = BUILDER
+                .comment("Maximum stack count for Night Heart Pea Soup effect\n暗夜之心豌豆汤效果的最大叠加层数")
+                .defineInRange("maxCount", 12, 1, 30);
+        BUILDER.pop();
 
-    // 潜行非背刺的伤害增幅倍率
-    private static final ForgeConfigSpec.DoubleValue LIVING_DAMAGE_GENERAL_MULTIPLIER = BUILDER
-            .comment("Damage multiplier when sneaking but not backstabbing\n潜行非背刺的伤害增幅倍率")
-            .defineInRange("livingDamageGeneralMultiplier", 1.5, 0.0, Float.MAX_VALUE);
+        // ---------- 万毒盛宴 ----------
+        BUILDER.push("tenThousandPoisonFeast");
+        TEN_THOUSAND_POISON_FEAST_USE_WHITELIST = BUILDER
+                .comment("If true, use whitelist mode; if false, use blacklist mode\ntrue=白名单模式，false=黑名单模式")
+                .define("useWhitelist", true);
+        TEN_THOUSAND_POISON_FEAST_EFFECT_LIST = BUILDER
+                .comment("A list of debuff effects for whitelist/blacklist\n万毒盛宴的效果白名单/黑名单")
+                .defineListAllowEmpty("effectList", List.of(
+                        "minecraft:slowness", "minecraft:mining_fatigue", "minecraft:poison", "minecraft:wither",
+                        "minecraft:blindness", "minecraft:nausea", "minecraft:darkness", "minecraft:weakness",
+                        "minecraft:hunger", "minecraft:unluck", "minecraft:bad_omen", "minecraft:levitation",
+                        "mod:goety","mod:twilightforest","mod:quark","mod:jerotes","mod:delight","mod:cataclysm",
+                        "mod:enigmatic","mod:aether","mod:born_in_chaos_v1","mod:spell","mod:iron"
+                ), entry -> {
+                    if (!(entry instanceof String str)) return false;
+                    if (str.startsWith("mod:")) return !str.substring(4).isEmpty();
+                    return validateEffectName(str);
+                });
+        TEN_THOUSAND_POISON_FEAST_LEVEL_CONFIG = BUILDER
+                .comment("Level range configuration for specific debuffs (format: effect_id=min-max)\n万毒宴特定效果等级范围配置")
+                .defineListAllowEmpty("levelConfig", List.of(
+                        "minecraft:slowness=0-4", "minecraft:weakness=0-3", "minecraft:wither=0-2",
+                        "minecraft:blindness=0-1", "minecraft:nausea=0-1", "minecraft:hunger=0-3",
+                        "minecraft:mining_fatigue=0-3"
+                ), entry -> {
+                    if (!(entry instanceof String str)) return false;
+                    String[] parts = str.split("=");
+                    if (parts.length != 2) return false;
+                    String[] range = parts[1].split("-");
+                    if (range.length != 2) return false;
+                    try {
+                        int min = Integer.parseInt(range[0]);
+                        int max = Integer.parseInt(range[1]);
+                        return min >= 0 && max >= min && validateEffectName(parts[0]);
+                    } catch (NumberFormatException e) { return false; }
+                });
+        TEN_THOUSAND_POISON_FEAST_DURATION_CONFIG = BUILDER
+                .comment("Duration range configuration for specific debuffs (format: effect_id=min-max, unit: minutes)\n万毒宴特定效果时长范围配置")
+                .defineListAllowEmpty("durationConfig", List.of(
+                        "minecraft:slowness=0.5-3", "minecraft:weakness=0.5-3", "minecraft:wither=0.25-1.5",
+                        "minecraft:blindness=0.25-0.5", "minecraft:nausea=0.25-0.5", "minecraft:hunger=0.5-2",
+                        "minecraft:mining_fatigue=0.5-2"
+                ), entry -> {
+                    if (!(entry instanceof String str)) return false;
+                    String[] parts = str.split("=");
+                    if (parts.length != 2) return false;
+                    String[] range = parts[1].split("-");
+                    if (range.length != 2) return false;
+                    try {
+                        double min = Double.parseDouble(range[0]);
+                        double max = Double.parseDouble(range[1]);
+                        return min > 0 && max >= min && validateEffectName(parts[0]);
+                    } catch (NumberFormatException e) { return false; }
+                });
+        TEN_THOUSAND_POISON_FEAST_DEFAULT_MIN_LEVEL = BUILDER
+                .comment("Default minimum level for unconfigured debuffs\n未配置效果的默认最小等级")
+                .defineInRange("defaultMinLevel", 0, 0, 255);
+        TEN_THOUSAND_POISON_FEAST_DEFAULT_MAX_LEVEL = BUILDER
+                .comment("Default maximum level for unconfigured debuffs\n未配置效果的默认最大等级")
+                .defineInRange("defaultMaxLevel", 2, 0, 255);
+        TEN_THOUSAND_POISON_FEAST_DEFAULT_MIN_DURATION = BUILDER
+                .comment("Default minimum duration (minutes) for unconfigured debuffs\n未配置效果的默认最短持续时间")
+                .defineInRange("defaultMinDuration", 0.1, 0.0, Double.MAX_VALUE);
+        TEN_THOUSAND_POISON_FEAST_DEFAULT_MAX_DURATION = BUILDER
+                .comment("Default maximum duration (minutes) for unconfigured debuffs\n未配置效果的默认最长持续时间")
+                .defineInRange("defaultMaxDuration", 5.0, 0.0, Double.MAX_VALUE);
+        TEN_THOUSAND_POISON_FEAST_EFFECT_COUNT = BUILDER
+                .comment("Number of random debuffs to apply when eating Ten Thousand Poison Feast\n食用万毒盛宴时随机施加的debuff数量")
+                .defineInRange("effectCount", 6, 1, 100);
+        TEN_THOUSAND_POISON_FEAST_MIN_ITEM_COUNT = BUILDER
+                .comment("Minimum number of items required in crafting grid\n合成万毒盛宴所需的最少物品数量")
+                .defineInRange("minItemCount", 4, 1, 9);
+        TEN_THOUSAND_POISON_FEAST_MIN_DEBUFF_COUNT = BUILDER
+                .comment("Minimum number of unique debuff types required\n合成万毒盛宴所需的最少debuff种类数")
+                .defineInRange("minDebuffCount", 8, 1, 100);
+        BUILDER.pop();
 
-    // 潜行背刺的伤害增幅倍率
-    private static final ForgeConfigSpec.DoubleValue LIVING_DAMAGE_BACKSTAB_MULTIPLIER = BUILDER
-            .comment("Damage multiplier when sneaking and backstabbing\n潜行背刺的伤害增幅倍率")
-            .defineInRange("livingDamageBackstabMultiplier", 2.5, 0.0, Float.MAX_VALUE);
+        BUILDER.pop(); // 结束 food
 
-    private static final ForgeConfigSpec.DoubleValue SOUL_AFFIX_DAMAGE_PER_LEVEL = BUILDER
-            .comment("Damage increase per level of Soul Affix enchantment\n灵魂附加附魔每级增加的伤害值")
-            .defineInRange("soulAffixDamagePerLevel", 0.4, 0.0, Double.MAX_VALUE);
+        // ============================================================
+        //                      大区域：工具
+        // ============================================================
+        BUILDER.push("tools");
 
-    private static final ForgeConfigSpec.IntValue SOUL_AFFIX_SOUL_COST_PER_LEVEL = BUILDER
-            .comment("Soul energy cost per level of Soul Affix enchantment\n灵魂附加附魔每级消耗的灵魂能量")
-            .defineInRange("soulAffixSoulCostPerLevel", 5, 1, Integer.MAX_VALUE);
+        BUILDER.push("combat");
+        SHIFT_SPEED_MULTIPLIER = BUILDER
+                .comment("Movement speed multiplier when Shift key is pressed\n按下Shift键时的移动速度倍率")
+                .defineInRange("shiftSpeedMultiplier", 2.0, 0.0, Double.MAX_VALUE);
+        LIVING_HURT_DAMAGE_MULTIPLIER = BUILDER
+                .comment("Normal damage multiplier (when not sneaking)\n正常的伤害增幅倍率")
+                .defineInRange("livingHurtDamageMultiplier", 1.5, 0.0, Float.MAX_VALUE);
+        LIVING_DAMAGE_GENERAL_MULTIPLIER = BUILDER
+                .comment("Damage multiplier when sneaking but not backstabbing\n潜行非背刺的伤害增幅倍率")
+                .defineInRange("livingDamageGeneralMultiplier", 1.5, 0.0, Float.MAX_VALUE);
+        LIVING_DAMAGE_BACKSTAB_MULTIPLIER = BUILDER
+                .comment("Damage multiplier when sneaking and backstabbing\n潜行背刺的伤害增幅倍率")
+                .defineInRange("livingDamageBackstabMultiplier", 2.5, 0.0, Float.MAX_VALUE);
+        BUILDER.pop();
 
-    private static final ForgeConfigSpec.BooleanValue DISABLE_SOUL_MENDING = BUILDER
-            .comment("Disable Soul Mending enchantment entirely\n完全禁用灵魂修补附魔")
-            .define("disableSoulMending", false);
+        BUILDER.push("enchantments");
+        BUILDER.push("soulAffix");
+        DISABLE_SOUL_AFFIX = BUILDER
+                .comment("Disable Soul Affix enchantment entirely\n完全禁用灵魂附加附魔")
+                .define("disable", false);
+        SOUL_AFFIX_DAMAGE_PER_LEVEL = BUILDER
+                .comment("Damage increase per level of Soul Affix enchantment\n灵魂附加附魔每级增加的伤害值")
+                .defineInRange("damagePerLevel", 0.4, 0.0, Double.MAX_VALUE);
+        SOUL_AFFIX_SOUL_COST_PER_LEVEL = BUILDER
+                .comment("Soul energy cost per level of Soul Affix enchantment\n灵魂附加附魔每级消耗的灵魂能量")
+                .defineInRange("soulCostPerLevel", 5, 1, Integer.MAX_VALUE);
+        SOUL_AFFIX_BLACKLIST = BUILDER
+                .comment("A list of items that cannot be enchanted with Soul Affix\n无法附魔灵魂附加的物品列表")
+                .defineListAllowEmpty("blacklist", List.of(), Config::NoValidateItemName);
+        BUILDER.pop();
+        BUILDER.push("soulMending");
+        DISABLE_SOUL_MENDING = BUILDER
+                .comment("Disable Soul Mending enchantment entirely\n完全禁用灵魂修补附魔")
+                .define("disable", false);
+        SOUL_MENDING_BLACKLIST = BUILDER
+                .comment("A list of items that cannot be enchanted with Soul Mending\n无法附魔灵魂修补的物品列表")
+                .defineListAllowEmpty("blacklist", List.of(), Config::NoValidateItemName);
+        BUILDER.pop();
+        BUILDER.push("soulHealing");
+        DISABLE_SOUL_HEALING = BUILDER
+                .comment("Disable Soul Healing enchantment entirely\n完全禁用溢魂弥躯附魔")
+                .define("disable", false);
+        SOUL_HEALING_BLACKLIST = BUILDER
+                .comment("A list of items that cannot be enchanted with Soul Healing\n无法附魔溢魂弥躯的物品列表")
+                .defineListAllowEmpty("blacklist", List.of(), Config::NoValidateItemName);
+        BUILDER.pop();
+        BUILDER.pop();
 
-    private static final ForgeConfigSpec.BooleanValue DISABLE_SOUL_HEALING = BUILDER
-            .comment("Disable Soul Healing enchantment entirely\n完全禁用溢魂弥躯附魔")
-            .define("disableSoulHealing", false);
+        BUILDER.pop(); // 结束 tools
 
-    private static final ForgeConfigSpec.BooleanValue DISABLE_SOUL_AFFIX = BUILDER
-            .comment("Disable Soul Affix enchantment entirely\n完全禁用灵魂附加附魔")
-            .define("disableSoulAffix", false);
+        // ============================================================
+        //                      大区域：杂项
+        // ============================================================
+        BUILDER.push("misc");
 
-    private static final ForgeConfigSpec.BooleanValue SKELETON_RED_EYE_EFFECT_ENABLED = BUILDER
-            .comment("Whether to enable the skeleton red-eye effect (red eye flash when a skeleton targets a low-health player)\n是否启用骷髅红眼特效（骷髅锁定低血量玩家时触发的红眼闪光特效）")
-            .define("skeletonRedEyeEffectEnabled", false);
+        BUILDER.push("items");
+        BLACKLISTED_ITEMS = BUILDER
+                .comment("A list of blacklisted items that will be hidden from creative tabs and prevent drops\n物品黑名单列表")
+                .defineListAllowEmpty("blacklistedItems", List.of(
+                        "goetydelight:roasted_corpse_maggots",
+                        "goetydelight:corpse_maggot",
+                        "goetydelight:rotten_corpse_maggot_feast",
+                        "goetydelight:rotten_corpse_maggot_feast_block"
+                ), Config::validateItemName);
+        BUILDER.pop();
 
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SOUL_MENDING_BLACKLIST = BUILDER
-            .comment("A list of items that cannot be enchanted with Soul Mending\n无法附魔灵魂修补的物品列表")
-            .defineListAllowEmpty("soulRepairBlacklist", List.of(), Config::NoValidateItemName);
+        BUILDER.push("playerModel");
+        PLAYER_MODEL_SCALES = BUILDER
+                .comment("Player model scale settings (format: playerName=scale)\n玩家模型缩放设置")
+                .defineListAllowEmpty("playerModelScales", List.of(
+                        "Steve=1.0", "Alex=1.0", "wu1wu2=1.0"
+                ), Config::validatePlayerScaleEntry);
+        BUILDER.pop();
 
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SOUL_HEALING_BLACKLIST = BUILDER
-            .comment("A list of items that cannot be enchanted with Soul Healing\n无法附魔溢魂弥躯的物品列表")
-            .defineListAllowEmpty("soulHealBlacklist", List.of(), Config::NoValidateItemName);
+        BUILDER.push("skeletonEye");
+        SKELETON_RED_EYE_EFFECT_ENABLED = BUILDER
+                .comment("Whether to enable the skeleton red-eye effect\n是否启用骷髅红眼特效")
+                .define("enabled", false);
+        BUILDER.pop();
 
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SOUL_AFFIX_BLACKLIST = BUILDER
-            .comment("A list of items that cannot be enchanted with Soul Affix\n无法附魔灵魂附加的物品列表")
-            .defineListAllowEmpty("soulAffixBlacklist", List.of(), Config::NoValidateItemName);
+        BUILDER.push("compat");
+        ENABLE_GOETY_REVELATION_COMPATIBILITY = BUILDER
+                .comment("Whether to enable compatibility with goety_revelation mod\n是否启用与goety_revelation模组的兼容性")
+                .define("enableGoetyRevelationCompatibility", true);
+        BUILDER.pop();
 
-    private static final ForgeConfigSpec.DoubleValue LICH_CHAOS_STEW_BOOST_PERCENTAGE = BUILDER
-            .comment("Boost percentage per stack of Lich's Chaos Stew for minions (0.1 = 10%)\n巫妖乱炖每层为仆从提供的加成百分比（0.1 = 10%）")
-            .defineInRange("lichChaosStewBoostPercentage", 0.1, 0.0, 1.0);
+        BUILDER.pop(); // 结束 misc
 
-    private static final ForgeConfigSpec.IntValue LICH_STEW_MAX_COUNT = BUILDER
-            .comment("Maximum stack count for Lich's Chaos Stew effect\n巫妖乱炖效果的最大叠加层数")
-            .defineInRange("lichStewMaxCount", 6, 1, 20);
+        // ============================================================
+        //  填充旧 key -> 新 ConfigValue 映射
+        //  旧 key 必须与原代码中 define 的字符串完全一致
+        // ============================================================
+        LEGACY_KEY_MAP.put("blacklistedItems", BLACKLISTED_ITEMS);
+        LEGACY_KEY_MAP.put("cakeEffectRadius", CAKE_EFFECT_RADIUS);
+        LEGACY_KEY_MAP.put("polariceAffectsBosses", POLARICE_AFFECTS_BOSSES);
+        LEGACY_KEY_MAP.put("polariceHealthThreshold", POLARICE_HEALTH_THRESHOLD);
+        LEGACY_KEY_MAP.put("polarice_cooldown", POLARICE_COOLDOWN);     // 原 key 带下划线
+        LEGACY_KEY_MAP.put("polarice_count", POLARICE_COUNT);           // 原 key 带下划线
+        LEGACY_KEY_MAP.put("extraBannedEntities", EXTRA_BANNED_ENTITIES);
+        LEGACY_KEY_MAP.put("MetamorphicScentGrassCopyBlacklist", METAMORPHIC_SCENT_GRASS_COPY_BLACKLIST);
+        LEGACY_KEY_MAP.put("metamorphicScentGrassDurationMultiplier", METAMORPHIC_SCENT_GRASS_DURATION_MULTIPLIER);
+        LEGACY_KEY_MAP.put("metamorphicScentGrassAmplifierMultiplier", METAMORPHIC_SCENT_GRASS_AMPLIFIER_MULTIPLIER);
+        LEGACY_KEY_MAP.put("metamorphicScentGrassCopyCount", METAMORPHIC_SCENT_GRASS_COPY_COUNT);
+        LEGACY_KEY_MAP.put("MetamorphicScentFruitCopyBlacklist", METAMORPHIC_SCENT_FRUIT_COPY_BLACKLIST);
+        LEGACY_KEY_MAP.put("metamorphicScentFruitCopyCount", METAMORPHIC_SCENT_FRUIT_COPY_COUNT);
+        LEGACY_KEY_MAP.put("shiftSpeedMultiplier", SHIFT_SPEED_MULTIPLIER);
+        LEGACY_KEY_MAP.put("livingHurtDamageMultiplier", LIVING_HURT_DAMAGE_MULTIPLIER);
+        LEGACY_KEY_MAP.put("livingDamageGeneralMultiplier", LIVING_DAMAGE_GENERAL_MULTIPLIER);
+        LEGACY_KEY_MAP.put("livingDamageBackstabMultiplier", LIVING_DAMAGE_BACKSTAB_MULTIPLIER);
+        LEGACY_KEY_MAP.put("soulAffixDamagePerLevel", SOUL_AFFIX_DAMAGE_PER_LEVEL);
+        LEGACY_KEY_MAP.put("soulAffixSoulCostPerLevel", SOUL_AFFIX_SOUL_COST_PER_LEVEL);
+        LEGACY_KEY_MAP.put("disableSoulMending", DISABLE_SOUL_MENDING);
+        LEGACY_KEY_MAP.put("disableSoulHealing", DISABLE_SOUL_HEALING);
+        LEGACY_KEY_MAP.put("disableSoulAffix", DISABLE_SOUL_AFFIX);
+        LEGACY_KEY_MAP.put("skeletonRedEyeEffectEnabled", SKELETON_RED_EYE_EFFECT_ENABLED);
+        LEGACY_KEY_MAP.put("soulRepairBlacklist", SOUL_MENDING_BLACKLIST);
+        LEGACY_KEY_MAP.put("soulHealBlacklist", SOUL_HEALING_BLACKLIST);
+        LEGACY_KEY_MAP.put("soulAffixBlacklist", SOUL_AFFIX_BLACKLIST);
+        LEGACY_KEY_MAP.put("lichChaosStewBoostPercentage", LICH_CHAOS_STEW_BOOST_PERCENTAGE);
+        LEGACY_KEY_MAP.put("lichStewMaxCount", LICH_STEW_MAX_COUNT);
+        LEGACY_KEY_MAP.put("nightHeartPeaSoupBoostPercentage", NIGHT_HEART_PEA_SOUP_BOOST_PERCENTAGE);
+        LEGACY_KEY_MAP.put("nightPeaSoupMaxCount", NIGHT_PEA_SOUP_MAX_COUNT);
+        LEGACY_KEY_MAP.put("tenThousandPoisonFeastUseWhitelist", TEN_THOUSAND_POISON_FEAST_USE_WHITELIST);
+        LEGACY_KEY_MAP.put("tenThousandPoisonFeastEffectList", TEN_THOUSAND_POISON_FEAST_EFFECT_LIST);
+        LEGACY_KEY_MAP.put("tenThousandPoisonFeastLevelConfig", TEN_THOUSAND_POISON_FEAST_LEVEL_CONFIG);
+        LEGACY_KEY_MAP.put("tenThousandPoisonFeastDurationConfig", TEN_THOUSAND_POISON_FEAST_DURATION_CONFIG);
+        LEGACY_KEY_MAP.put("tenThousandPoisonFeastDefaultMinLevel", TEN_THOUSAND_POISON_FEAST_DEFAULT_MIN_LEVEL);
+        LEGACY_KEY_MAP.put("tenThousandPoisonFeastDefaultMaxLevel", TEN_THOUSAND_POISON_FEAST_DEFAULT_MAX_LEVEL);
+        LEGACY_KEY_MAP.put("tenThousandPoisonFeastDefaultMinDuration", TEN_THOUSAND_POISON_FEAST_DEFAULT_MIN_DURATION);
+        LEGACY_KEY_MAP.put("tenThousandPoisonFeastDefaultMaxDuration", TEN_THOUSAND_POISON_FEAST_DEFAULT_MAX_DURATION);
+        LEGACY_KEY_MAP.put("tenThousandPoisonFeastEffectCount", TEN_THOUSAND_POISON_FEAST_EFFECT_COUNT);
+        LEGACY_KEY_MAP.put("tenThousandPoisonFeastMinItemCount", TEN_THOUSAND_POISON_FEAST_MIN_ITEM_COUNT);
+        LEGACY_KEY_MAP.put("tenThousandPoisonFeastMinDebuffCount", TEN_THOUSAND_POISON_FEAST_MIN_DEBUFF_COUNT);
+        LEGACY_KEY_MAP.put("playerModelScales", PLAYER_MODEL_SCALES);
+        LEGACY_KEY_MAP.put("enableGoetyRevelationCompatibility", ENABLE_GOETY_REVELATION_COMPATIBILITY);
+    }
 
-    private static final ForgeConfigSpec.DoubleValue NIGHT_HEART_PEA_SOUP_BOOST_PERCENTAGE = BUILDER
-            .comment("Boost percentage per stack of Night Heart Pea Soup for minions (0.02 = 2%)\n暗夜之心豌豆汤每层为仆从提供的加成百分比（0.02 = 2%）")
-            .defineInRange("nightHeartPeaSoupBoostPercentage", 0.02, 0.0, 1.0);
 
-    private static final ForgeConfigSpec.IntValue NIGHT_PEA_SOUP_MAX_COUNT = BUILDER
-            .comment("Maximum stack count for Night Heart Pea Soup effect\n暗夜之心豌豆汤效果的最大叠加层数")
-            .defineInRange("nightPeaSoupMaxCount", 12, 1, 30);
+    // ==================== 迁移逻辑 ====================
 
-    private static final ForgeConfigSpec.BooleanValue TEN_THOUSAND_POISON_FEAST_USE_WHITELIST = BUILDER
-            .comment("If true, use whitelist mode (only apply debuffs in the list); if false, use blacklist mode (exclude debuffs in the list)\n" +
-                    "true=白名单模式（仅施加列表中的debuff），false=黑名单模式（排除列表中的debuff）")
-            .define("tenThousandPoisonFeastUseWhitelist", true);
+    /**
+     * 在 Mod 构造函数中、registerConfig 之前调用。
+     * 读取旧配置文件，缓存顶层旧 key 的值。
+     */
+    public static void captureLegacyConfig(Path configDir) {
+        if (!LEGACY_CAPTURED.compareAndSet(false, true)) return;
 
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> TEN_THOUSAND_POISON_FEAST_EFFECT_LIST = BUILDER
-            .comment("""
-                    A list of debuff effects for whitelist/blacklist (mode controlled by tenThousandPoisonFeastUseWhitelist)
-                    万毒盛宴的效果白名单/黑名单（模式由tenThousandPoisonFeastUseWhitelist控制）
-                    Supports:
-                      - Effect ID: 'minecraft:slowness' (exact match)
-                      - MOD ID partial match: 'mod:goety' (matches any effect from modid containing 'goety', supports sub-mods)
-                    支持格式：
-                      - 效果ID：'minecraft:slowness'（精确匹配）
-                      - MOD ID部分匹配：'mod:goety'（匹配modid包含'goety'的所有效果，支持附属模组）""")
-            .defineListAllowEmpty("tenThousandPoisonFeastEffectList", List.of(
-                    "minecraft:slowness", "minecraft:mining_fatigue", "minecraft:poison", "minecraft:wither",
-                    "minecraft:blindness", "minecraft:nausea", "minecraft:darkness", "minecraft:weakness",
-                    "minecraft:hunger", "minecraft:unluck", "minecraft:bad_omen", "minecraft:levitation",
-                    "mod:goety","mod:twilightforest","mod:quark","mod:jerotes","mod:delight","mod:cataclysm",
-                    "mod:enigmatic","mod:aether","mod:born_in_chaos_v1","mod:spell","mod:iron"
-            ), entry -> {
-                if (!(entry instanceof String str)) return false;
-                if (str.startsWith("mod:")) {
-                    String modidPartial = str.substring(4);
-                    return !modidPartial.isEmpty();
+        Path configPath = configDir.resolve("goetydelight-common.toml");
+        if (!Files.exists(configPath)) return;
+
+        try (CommentedFileConfig oldConfig = CommentedFileConfig.builder(configPath)
+                .preserveInsertionOrder()
+                .build()) {
+            oldConfig.load();
+
+            for (String oldKey : LEGACY_KEY_MAP.keySet()) {
+                Object value = oldConfig.get(oldKey);
+                if (value != null) {
+                    LEGACY_VALUES.put(oldKey, value);
                 }
-                return validateEffectName(str);
-            });
+            }
 
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> TEN_THOUSAND_POISON_FEAST_LEVEL_CONFIG = BUILDER
-            .comment("""
-                    Level range configuration for specific debuffs (format: effect_id=min-max)
-                    万毒宴特定效果等级范围配置（格式：效果id=最小值-最大值）
-                    Priority: Level/Duration Config > Whitelist/Blacklist > Default Config
-                    优先级：等级/时长配置 > 白名单/黑名单 > 默认配置""")
-            .defineListAllowEmpty("tenThousandPoisonFeastLevelConfig", List.of(
-                    "minecraft:slowness=0-4",
-                    "minecraft:weakness=0-3",
-                    "minecraft:wither=0-2",
-                    "minecraft:blindness=0-1",
-                    "minecraft:nausea=0-1",
-                    "minecraft:hunger=0-3",
-                    "minecraft:mining_fatigue=0-3"
-            ), entry -> {
-                if (!(entry instanceof String str)) return false;
-                String[] parts = str.split("=");
-                if (parts.length != 2) return false;
-                String[] range = parts[1].split("-");
-                if (range.length != 2) return false;
-                try {
-                    int min = Integer.parseInt(range[0]);
-                    int max = Integer.parseInt(range[1]);
-                    return min >= 0 && max >= min && validateEffectName(parts[0]);
-                } catch (NumberFormatException e) {
-                    return false;
+            if (!LEGACY_VALUES.isEmpty()) {
+                GoetyDelight.LOGGER.info("[Config] Captured {} legacy config entries for migration.", LEGACY_VALUES.size());
+                Path backup = configDir.resolve("goetydelight-common.toml.bak");
+                if (!Files.exists(backup)) {
+                    Files.copy(configPath, backup);
+                    GoetyDelight.LOGGER.info("[Config] Backed up legacy config to: {}", backup.getFileName());
                 }
-            });
+            }
+        } catch (Exception e) {
+            GoetyDelight.LOGGER.warn("[Config] Failed to capture legacy config", e);
+        }
+    }
 
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> TEN_THOUSAND_POISON_FEAST_DURATION_CONFIG = BUILDER
-            .comment("""
-                    Duration range configuration for specific debuffs (format: effect_id=min-max, unit: minutes)
-                    万毒宴特定效果时长范围配置（格式：效果id=最小值-最大值，单位：分钟）
-                    Priority: Level/Duration Config > Whitelist/Blacklist > Default Config
-                    优先级：等级/时长配置 > 白名单/黑名单 > 默认配置""")
-            .defineListAllowEmpty("tenThousandPoisonFeastDurationConfig", List.of(
-                    "minecraft:slowness=0.5-3",
-                    "minecraft:weakness=0.5-3",
-                    "minecraft:wither=0.25-1.5",
-                    "minecraft:blindness=0.25-0.5",
-                    "minecraft:nausea=0.25-0.5",
-                    "minecraft:hunger=0.5-2",
-                    "minecraft:mining_fatigue=0.5-2"
-            ), entry -> {
-                if (!(entry instanceof String str)) return false;
-                String[] parts = str.split("=");
-                if (parts.length != 2) return false;
-                String[] range = parts[1].split("-");
-                if (range.length != 2) return false;
-                try {
-                    double min = Double.parseDouble(range[0]);
-                    double max = Double.parseDouble(range[1]);
-                    return min > 0 && max >= min && validateEffectName(parts[0]);
-                } catch (NumberFormatException e) {
-                    return false;
-                }
-            });
+    /**
+     * 把缓存的旧值写入新 spec。线程安全，只执行一次。
+     * 返回是否实际执行了迁移。
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static boolean applyLegacyValues() {
+        if (!LEGACY_APPLIED.compareAndSet(false, true)) return false;
+        if (LEGACY_VALUES.isEmpty()) return false;
 
-    private static final ForgeConfigSpec.IntValue TEN_THOUSAND_POISON_FEAST_DEFAULT_MIN_LEVEL = BUILDER
-            .comment("Default minimum level for debuffs not configured in LevelConfig\n未在LevelConfig中配置的效果的默认最小等级")
-            .defineInRange("tenThousandPoisonFeastDefaultMinLevel", 0, 0, 255);
+        int applied = 0;
+        for (Map.Entry<String, Object> entry : LEGACY_VALUES.entrySet()) {
+            ForgeConfigSpec.ConfigValue<?> configValue = LEGACY_KEY_MAP.get(entry.getKey());
+            if (configValue == null) continue;
 
-    private static final ForgeConfigSpec.IntValue TEN_THOUSAND_POISON_FEAST_DEFAULT_MAX_LEVEL = BUILDER
-            .comment("Default maximum level for debuffs not configured in LevelConfig\n未在LevelConfig中配置的效果的默认最大等级")
-            .defineInRange("tenThousandPoisonFeastDefaultMaxLevel", 2, 0, 255);
+            try {
+                ((ForgeConfigSpec.ConfigValue) configValue).set(entry.getValue());
+                applied++;
+            } catch (Exception e) {
+                GoetyDelight.LOGGER.warn("[Config] Failed to migrate key {} = {}", entry.getKey(), entry.getValue(), e);
+            }
+        }
 
-    private static final ForgeConfigSpec.DoubleValue TEN_THOUSAND_POISON_FEAST_DEFAULT_MIN_DURATION = BUILDER
-            .comment("Default minimum duration (minutes) for debuffs not configured in DurationConfig\n未在DurationConfig中配置的效果的默认最短持续时间（分钟）")
-            .defineInRange("tenThousandPoisonFeastDefaultMinDuration", 0.1, 0.0, Double.MAX_VALUE);
+        LEGACY_VALUES.clear();
 
-    private static final ForgeConfigSpec.DoubleValue TEN_THOUSAND_POISON_FEAST_DEFAULT_MAX_DURATION = BUILDER
-            .comment("Default maximum duration (minutes) for debuffs not configured in DurationConfig\n未在DurationConfig中配置的效果的默认最长持续时间（分钟）")
-            .defineInRange("tenThousandPoisonFeastDefaultMaxDuration", 5.0, 0.0, Double.MAX_VALUE);
+        if (applied > 0) {
+            GoetyDelight.LOGGER.info("[Config] Migrated {} legacy entries to new sections.", applied);
+            return true;
+        }
+        return false;
+    }
 
-    private static final ForgeConfigSpec.IntValue TEN_THOUSAND_POISON_FEAST_EFFECT_COUNT = BUILDER
-            .comment("Number of random debuffs to apply when eating Ten Thousand Poison Feast\n食用万毒盛宴时随机施加的debuff数量")
-            .defineInRange("tenThousandPoisonFeastEffectCount", 6, 1, 100);
+    // ==================== 事件处理 ====================
 
-    // 万毒盛宴 - 合成所需最小物品数量
-    private static final ForgeConfigSpec.IntValue TEN_THOUSAND_POISON_FEAST_MIN_ITEM_COUNT = BUILDER
-            .comment("Minimum number of items required in crafting grid to create Ten Thousand Poison Feast\n" +
-                    "合成万毒盛宴所需的最少物品数量")
-            .defineInRange("tenThousandPoisonFeastMinItemCount", 4, 1, 9);
+    @SubscribeEvent
+    static void onLoad(final ModConfigEvent event) {
+        // 只处理我们自己的配置
+        if (!event.getConfig().getSpec().equals(SPEC)) return;
 
-    // 万毒盛宴 - 合成所需最小debuff种类数
-    private static final ForgeConfigSpec.IntValue TEN_THOUSAND_POISON_FEAST_MIN_DEBUFF_COUNT = BUILDER
-            .comment("Minimum number of unique debuff types from all ingredients required to create Ten Thousand Poison Feast\n" +
-                    "合成万毒盛宴所需的最少debuff种类数（所有材料提供的不同debuff种类之和）")
-            .defineInRange("tenThousandPoisonFeastMinDebuffCount", 8, 1, 100);
+        // 1. 尝试迁移
+        boolean migrated = applyLegacyValues();
+
+        // 2. 刷新缓存
+        blacklistedItems = BLACKLISTED_ITEMS.get().stream()
+                .map(itemName -> ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName)))
+                .collect(Collectors.toSet());
+
+        if (blackListUpdateListener != null) {
+            blackListUpdateListener.accept(null);
+        }
+
+        ConvertServantUtil.onConfigLoad();
+
+        // 3. 如果有迁移，保存新配置
+        if (migrated) {
+            try {
+                event.getConfig().save();
+                GoetyDelight.LOGGER.info("[Config] Saved migrated config to disk.");
+            } catch (Exception e) {
+                GoetyDelight.LOGGER.warn("[Config] Failed to save migrated config", e);
+            }
+        }
+    }
 
 
-    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> PLAYER_MODEL_SCALES = BUILDER
-            .comment("Player model scale settings (format: playerName=scale)\n玩家模型缩放设置（格式：玩家名称=缩放比例）\n注：请勿在高版本ysm中使用该功能（2.6.2版本可用，2.6.5版本不可用）")
-            .defineListAllowEmpty("playerModelScales", List.of(
-                    "Steve=1.0", "Alex=1.0", "wu1wu2=1.0"
-            ), Config::validatePlayerScaleEntry);
+    // ==================== 原有 getter（全部保留） ====================
 
     public static Set<Item> getSoulMendingBlacklist() {
         return SOUL_MENDING_BLACKLIST.get().stream()
@@ -383,24 +605,17 @@ public class Config
         return METAMORPHIC_SCENT_FRUIT_COPY_COUNT.get();
     }
 
-
     public static Set<Item> getMetamorphicScentGrassCopyBlacklist() {
         return METAMORPHIC_SCENT_GRASS_COPY_BLACKLIST.get().stream()
                 .map(itemName -> ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName)))
                 .collect(Collectors.toSet());
     }
 
-
     public static Set<Item> getMetamorphicScentFruitCopyBlacklist() {
         return METAMORPHIC_SCENT_FRUIT_COPY_BLACKLIST.get().stream()
                 .map(itemName -> ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName)))
                 .collect(Collectors.toSet());
     }
-
-    private static final ForgeConfigSpec.BooleanValue ENABLE_GOETY_REVELATION_COMPATIBILITY = BUILDER
-            .comment("Whether to enable compatibility with goety_revelation mod\n是否启用与goety_revelation模组的兼容性")
-            .define("enableGoetyRevelationCompatibility", true);
-
 
     public static boolean isGoetyRevelationCompatibilityEnabled() {
         return ENABLE_GOETY_REVELATION_COMPATIBILITY.get();
@@ -409,12 +624,15 @@ public class Config
     public static int getMetamorphicScentGrassCopyCount() {
         return METAMORPHIC_SCENT_GRASS_COPY_COUNT.get();
     }
+
     public static int getPolariceCount() {
         return POLARICE_COUNT.get();
     }
+
     public static int getPolariceCooldown() {
         return POLARICE_COOLDOWN.get();
     }
+
     public static boolean getPolariceAffectsBosses() {
         return POLARICE_AFFECTS_BOSSES.get();
     }
@@ -426,7 +644,6 @@ public class Config
     public static List<? extends String> getExtraBannedEntities() {
         return EXTRA_BANNED_ENTITIES.get();
     }
-
 
     public static double getCakeEffectRadius() {
         return CAKE_EFFECT_RADIUS.get();
@@ -446,12 +663,6 @@ public class Config
 
     public static double getLivingDamageBackstabMultiplier() {
         return LIVING_DAMAGE_BACKSTAB_MULTIPLIER.get();
-    }
-
-    // 添加验证方法
-    private static boolean validateEffectName(final Object obj) {
-        return obj instanceof final String effectName &&
-                ForgeRegistries.MOB_EFFECTS.containsKey(new ResourceLocation(effectName));
     }
 
     public static boolean isTenThousandPoisonFeastUseWhitelist() {
@@ -498,6 +709,33 @@ public class Config
         return TEN_THOUSAND_POISON_FEAST_MIN_DEBUFF_COUNT.get();
     }
 
+    public static int minutesToTicks(double minutes) {
+        return (int) Math.round(minutes * 60 * 20);
+    }
+
+    public static boolean isEffectInFilterList(ResourceLocation effectId) {
+        Set<String> effectList = getTenThousandPoisonFeastEffectList();
+        String effectIdStr = effectId.toString();
+        String effectModid = effectId.getNamespace();
+
+        for (String entry : effectList) {
+            if (entry.startsWith("mod:")) {
+                String modidPartial = entry.substring(4).toLowerCase();
+                if (effectModid.toLowerCase().contains(modidPartial)) {
+                    return true;
+                }
+            } else {
+                if (effectIdStr.equals(entry)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    // ==================== 私有工具方法 ====================
+
     private static Map<ResourceLocation, int[]> parseEffectRangeConfig(List<? extends String> configList) {
         Map<ResourceLocation, int[]> result = new HashMap<>();
         for (String entry : configList) {
@@ -535,84 +773,46 @@ public class Config
         }
         return result;
     }
-    public static int minutesToTicks(double minutes) {
-        return (int) Math.round(minutes * 60 * 20);
-    }
 
-    public static boolean isEffectInFilterList(ResourceLocation effectId) {
-        Set<String> effectList = getTenThousandPoisonFeastEffectList();
-        String effectIdStr = effectId.toString();
-        String effectModid = effectId.getNamespace();
-
-        for (String entry : effectList) {
-            if (entry.startsWith("mod:")) {
-                String modidPartial = entry.substring(4).toLowerCase();
-                if (effectModid.toLowerCase().contains(modidPartial)) {
-                    return true;
-                }
-            } else {
-                if (effectIdStr.equals(entry)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    private static boolean validateEffectName(final Object obj) {
+        return obj instanceof final String effectName &&
+                ForgeRegistries.MOB_EFFECTS.containsKey(new ResourceLocation(effectName));
     }
 
     private static boolean validateEntityName(final Object obj) {
-        return obj instanceof final String entityName && ForgeRegistries.ENTITY_TYPES.containsKey(new ResourceLocation(entityName));
+        return obj instanceof final String entityName &&
+                ForgeRegistries.ENTITY_TYPES.containsKey(new ResourceLocation(entityName));
     }
 
-    public static final ForgeConfigSpec SPEC = BUILDER.build();
-
-    public static Set<Item> blacklistedItems;
-
-    private static Consumer<Void> blackListUpdateListener;
-
-
-
-    private static boolean validateItemName(final Object obj)
-    {
-        return obj instanceof final String itemName && ForgeRegistries.ITEMS.containsKey(new ResourceLocation(itemName));
+    private static boolean validateItemName(final Object obj) {
+        return obj instanceof final String itemName &&
+                ForgeRegistries.ITEMS.containsKey(new ResourceLocation(itemName));
     }
-    private static boolean NoValidateItemName(final Object obj)
-    {
+
+    private static boolean NoValidateItemName(final Object obj) {
         return true;
     }
+
     private static boolean validatePlayerScaleEntry(final Object obj) {
-        if (!(obj instanceof String entry)) {
-            return false;
-        }
+        if (!(obj instanceof String entry)) return false;
         String[] parts = entry.split("=");
-        if (parts.length != 2) {
-            return false;
-        }
+        if (parts.length != 2) return false;
         try {
-            float scale = Float.parseFloat(parts[1].trim());
-            return scale > 0;
+            return Float.parseFloat(parts[1].trim()) > 0;
         } catch (NumberFormatException e) {
             return false;
         }
     }
 
-    @SubscribeEvent
-    static void onLoad(final ModConfigEvent event)
-    {
 
-        blacklistedItems = BLACKLISTED_ITEMS.get().stream()
-                .map(itemName -> ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName)))
-                .collect(Collectors.toSet());
+    // ==================== 静态常量 ====================
 
+    public static final ForgeConfigSpec SPEC = BUILDER.build();
 
-        if (blackListUpdateListener != null) {
-            blackListUpdateListener.accept(null);
-        }
-
-        ConvertServantUtil.onConfigLoad();
-    }
+    public static Set<Item> blacklistedItems;
+    private static Consumer<Void> blackListUpdateListener;
 
     public static void registerBlackListUpdateListener(Consumer<Void> listener) {
         blackListUpdateListener = listener;
     }
-
 }
