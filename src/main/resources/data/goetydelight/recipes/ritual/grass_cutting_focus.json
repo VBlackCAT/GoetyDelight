@@ -1,0 +1,31 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "goety:burrowing_focus"
+  },
+  "craftType": "forge",
+  "soulCost": 20,
+  "duration": 10,
+  "ingredients": [
+    {
+      "item": "farmersdelight:iron_knife"
+    },
+    {
+      "item": "farmersdelight:iron_knife"
+    },
+    {
+      "item": "farmersdelight:iron_knife"
+    },
+    {
+      "tag": "forge:gems/diamond"
+    },
+    {
+      "item": "goety:mystic_core"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:grass_cutting_focus",
+    "count": 1
+  }
+}

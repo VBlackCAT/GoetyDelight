@@ -1,6 +1,7 @@
 package net.v_black_cat.goetydelight.item;
 
 import com.Polarice3.Goety.common.items.ModTiers;
+import com.Polarice3.Goety.common.items.magic.MagicFocus;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -18,6 +19,14 @@ import net.v_black_cat.goetydelight.compat.goety_revelation.item.*;
 import net.v_black_cat.goetydelight.effect.ModEffects;
 import net.v_black_cat.goetydelight.entities.ModEntities;
 import net.v_black_cat.goetydelight.item.food.*;
+import net.v_black_cat.goetydelight.spell.CropGrowthSpell;
+import net.v_black_cat.goetydelight.spell.GrassCuttingSpell;
+import net.v_black_cat.goetydelight.spell.HoeHarvestSpell;
+import net.v_black_cat.goetydelight.spell.LaowangSpell;
+import net.v_black_cat.goetydelight.spell.LoveAndFertilitySpell;
+import net.v_black_cat.goetydelight.spell.MarbleWaterSpell;
+import net.v_black_cat.goetydelight.spell.RichSoilSpell;
+import net.v_black_cat.goetydelight.spell.TreeGrowthSpell;
 import net.v_black_cat.goetydelight.item.food.BaklavaItem;
 import net.v_black_cat.goetydelight.item.food.BowlFoodItem;
 import vectorwing.farmersdelight.common.item.KnifeItem;
@@ -148,6 +157,15 @@ public class ModItems {
     public static final RegistryObject<Item> ECTOPLASMIC_MELON_SEEDS;
     public static final RegistryObject<Item> METAMORPHIC_SCENT_GRASS_SEEDS;
 
+    // 聚晶（法杖 Focus）
+    public static final RegistryObject<Item> GRASS_CUTTING_FOCUS;
+    public static final RegistryObject<Item> HOE_FOCUS;
+    public static final RegistryObject<Item> MARBLE_FOCUS;
+    public static final RegistryObject<Item> LOVE_AND_FERTILITY_FOCUS;
+    public static final RegistryObject<Item> RICH_SOIL_FOCUS;
+    public static final RegistryObject<Item> LAOWANG_FOCUS;
+    public static final RegistryObject<Item> TREE_GROWTH_FOCUS;
+    public static final RegistryObject<Item> CROP_GROWTH_FOCUS;
 //    public static final RegistryObject<Item> MENU;
     public static final RegistryObject<Item> DOLL_ITEM;
 
@@ -266,7 +284,7 @@ public class ModItems {
                                 .build())));
 
         PROMOTION_HARD_CANDY = ITEMS.register("promotion_hard_candy",
-                () -> simpleFoodItem(1, 1, true)); 
+                () -> simpleFoodItem(1, 1, true));
 
         TOXIC_MEAL = ITEMS.register("toxic_meal",
                 () -> new ToxicMealItem(basicItem().stacksTo(16).food(
@@ -822,6 +840,24 @@ public class ModItems {
 //        MENU = registerWithTab("menu", () -> new MenuItem(new Item.Properties()));
 
         DOLL_ITEM = registerWithTab("doll_item", DollEntityItem::new);
+
+        // ==================== 聚晶（法杖 Focus，复用 Goety MagicFocus） ====================
+        GRASS_CUTTING_FOCUS = ITEMS.register("grass_cutting_focus",
+                () -> new MagicFocus(new GrassCuttingSpell()));
+        HOE_FOCUS = ITEMS.register("hoe_focus",
+                () -> new MagicFocus(new HoeHarvestSpell()));
+        MARBLE_FOCUS = ITEMS.register("marble_focus",
+                () -> new MagicFocus(new MarbleWaterSpell()));
+        LOVE_AND_FERTILITY_FOCUS = ITEMS.register("love_and_fertility_focus",
+                () -> new MagicFocus(new LoveAndFertilitySpell()));
+        RICH_SOIL_FOCUS = ITEMS.register("rich_soil_focus",
+                () -> new MagicFocus(new RichSoilSpell()));
+        LAOWANG_FOCUS = ITEMS.register("laowang_focus",
+                () -> new MagicFocus(new LaowangSpell()));
+        TREE_GROWTH_FOCUS = ITEMS.register("tree_growth_focus",
+                () -> new MagicFocus(new TreeGrowthSpell()));
+        CROP_GROWTH_FOCUS = ITEMS.register("crop_growth_focus",
+                () -> new MagicFocus(new CropGrowthSpell()));
     }
 
 
