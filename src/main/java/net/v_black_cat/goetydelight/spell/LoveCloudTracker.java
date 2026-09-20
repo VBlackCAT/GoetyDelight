@@ -36,7 +36,6 @@ public final class LoveCloudTracker {
      * 只花一次 long 比较（此前每 tick 都要对每片云做 getLevel 查找 + 递减计数）。
      */
     private static long nextWakeTick = Long.MAX_VALUE;
-    private static long lastWakeTick = 0L;
 
     private LoveCloudTracker() {
     }
@@ -62,10 +61,15 @@ public final class LoveCloudTracker {
     /** 登记一片药云，由 ticker 负责按时回收 */
     public static void track(ServerLevel level, LivingEntity owner, Map<BlockPos, UUID> cells,
                              List<BrewEffectInstance> effects, int durationTicks) {
+        long now = level.getServer().getTickCount();
         CLOUDS.add(new Cloud(level.dimension(), owner.getUUID(), List.copyOf(effects),
-                new LinkedHashMap<>(cells), durationTicks));
- /*       GoetyDelight.LOGGER.info("[爱与丰饶] 铺开药云 {} 格，时长 {} tick（{} 秒）",
-                cells.size(), durationTicks, durationTicks / 20);   */
+                new LinkedHashMap<>(cells), now + durationTicks, now + CHECK_INTERVAL_TICKS));
+
+        // 【关键】登记时必须唤醒 ticker。此前这里只 add 不设 nextWakeTick，
+        // nextWakeTick 会一直停在 Long.MAX_VALUE，onServerTick 的 `tick < nextWakeTick` 永远成立
+        // → 回收逻辑一次都不跑，药云只能等 Goety 自己的随机判废
+        // （area=0 时寿命在 0~内部时长内均匀分布，内部时长 10 分钟 → 平均约 5 分钟）。
+        nextWakeTick = Math.min(nextWakeTick, now + Math.min(durationTicks, CHECK_INTERVAL_TICKS));
     }
 
     public static void onServerTick(ServerTickEvent.Post event) {
@@ -80,8 +84,6 @@ public final class LoveCloudTracker {
             return; // 还没到任何一片云的检查/到期时刻：零成本
         }
 
-        long elapsed = Math.max(1L, tick - lastWakeTick);
-        lastWakeTick = tick;
         nextWakeTick = Long.MAX_VALUE;
 
         Iterator<Cloud> it = CLOUDS.iterator();
@@ -93,8 +95,7 @@ public final class LoveCloudTracker {
                 continue;
             }
 
-            cloud.ticksUntilEnd -= (int) elapsed;
-            if (cloud.ticksUntilEnd <= 0) {
+            if (tick >= cloud.endTick) {
                 int removed = 0;
                 for (UUID id : cloud.cells.values()) {
                     if (level.getEntity(id) instanceof BrewGas gas) {
@@ -108,13 +109,12 @@ public final class LoveCloudTracker {
                 continue;
             }
 
-            cloud.ticksUntilCheck -= (int) elapsed;
-            if (cloud.ticksUntilCheck <= 0) {
-                cloud.ticksUntilCheck = CHECK_INTERVAL_TICKS;
+            if (tick >= cloud.nextCheckTick) {
+                cloud.nextCheckTick = tick + CHECK_INTERVAL_TICKS;
                 reviveMissing(level, cloud);
             }
 
-            nextWakeTick = Math.min(nextWakeTick, tick + Math.min(cloud.ticksUntilEnd, cloud.ticksUntilCheck));
+            nextWakeTick = Math.min(nextWakeTick, Math.min(cloud.endTick, cloud.nextCheckTick));
         }
     }
 
@@ -145,24 +145,29 @@ public final class LoveCloudTracker {
         }
     }
 
-    /** 一片药云：维度 + 归属者 + 效果 + 每格实体 UUID + 倒计时（自己数，不依赖任何时钟） */
+    /**
+     * 一片药云：维度 + 归属者 + 效果 + 每格实体 UUID + 绝对到期/检查时刻。
+     *
+     * <p>用绝对 tick 而非「倒计时 - 共享 elapsed」：多片云在不同时刻登记时，
+     * 共享的 elapsed 会把后登记的云多扣、先登记的云少扣，导致到期时间漂移。
+     */
     private static final class Cloud {
         private final ResourceKey<Level> dimension;
         private final UUID ownerId;
         private final List<BrewEffectInstance> effects;
         private final Map<BlockPos, UUID> cells;
-        private int ticksUntilEnd;
-        private int ticksUntilCheck;
+        private final long endTick;
+        private long nextCheckTick;
         private int revives;
 
         private Cloud(ResourceKey<Level> dimension, UUID ownerId, List<BrewEffectInstance> effects,
-                      Map<BlockPos, UUID> cells, int durationTicks) {
+                      Map<BlockPos, UUID> cells, long endTick, long nextCheckTick) {
             this.dimension = dimension;
             this.ownerId = ownerId;
             this.effects = effects;
             this.cells = cells;
-            this.ticksUntilEnd = durationTicks;
-            this.ticksUntilCheck = CHECK_INTERVAL_TICKS;
+            this.endTick = endTick;
+            this.nextCheckTick = nextCheckTick;
         }
     }
 }

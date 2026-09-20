@@ -41,8 +41,8 @@ public class LoveAndFertilitySpell extends Spell {
     private static final int MAX_SIDE = 15;
 
     private static final int COOLDOWN_TICKS = 240 * 20;
-    private static final int BASE_DURATION_SECONDS = 3;
-    private static final int DURATION_PER_LEVEL_SECONDS = 2;
+    private static final int BASE_DURATION_SECONDS = 10;
+    private static final int DURATION_PER_LEVEL_SECONDS = 3;
 
     /** 默认平铺两层：脚下那一层 + 它上面一层 */
     private static final int[] LAYER_OFFSETS = {0, 1};
