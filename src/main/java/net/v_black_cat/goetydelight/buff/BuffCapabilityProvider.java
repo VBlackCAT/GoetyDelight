@@ -35,15 +35,16 @@ public class BuffCapabilityProvider implements ICapabilitySerializable<CompoundT
 
     @Override
     public CompoundTag serializeNBT() {
-        return buffs.serializeNBT();
+        return buffs.serializeNBT(owner.level().getGameTime());
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        buffs.deserializeNBT(nbt);
+        buffs.deserializeNBT(nbt, owner.level().getGameTime());
         if (owner instanceof IBuffHolder holder) {
             holder.goetydelight$setActiveBuffs(buffs);
         }
+        BuffSystem.schedule(owner);
     }
 
     public void invalidate() {

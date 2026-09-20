@@ -67,7 +67,7 @@ public final class ClientEntityVisualEffectPackets {
         if (entity instanceof IVisualEffectHolder holder) {
             EntityVisualEffects effects = holder.goetydelight$getVisualEffects();
             if (effects != null) {
-                effects.deserializeNBT(effectsTag);
+                effects.deserializeNBT(effectsTag, entity.level().getGameTime());
             }
         }
     }

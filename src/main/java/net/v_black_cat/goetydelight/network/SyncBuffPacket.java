@@ -43,7 +43,7 @@ public class SyncBuffPacket {
                 if (buffs == null) return;
 
                 if (msg.add) {
-                    buffs.addBuff(msg.typeId, -1, 0);
+                    buffs.addBuff(msg.typeId, -1, 0, livingEntity.level().getGameTime());
                 } else {
                     buffs.removeBuff(msg.typeId);
                 }

@@ -3,7 +3,6 @@ package net.v_black_cat.goetydelight.visual;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.capabilities.Capability;
@@ -14,12 +13,19 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.network.NetworkHandler;
 import net.v_black_cat.goetydelight.network.SyncEntityVisualEffectsPacket;
+
+import java.lang.ref.WeakReference;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.WeakHashMap;
 
 
 @Mod.EventBusSubscriber(modid = GoetyDelight.MODID)
@@ -35,6 +41,13 @@ public final class EntityVisualEffectSystem {
                     GoetyDelight.MODID,
                     "entity_visual_effects"
             );
+
+    private static final PriorityQueue<ScheduledEffects> EXPIRATION_QUEUE = new PriorityQueue<>(
+            Comparator.comparingLong(ScheduledEffects::expiresAt)
+                    .thenComparingLong(ScheduledEffects::sequence)
+    );
+    private static final Map<Entity, ScheduledEffects> SCHEDULED_BY_ENTITY = new WeakHashMap<>();
+    private static long scheduleSequence;
 
 
     private EntityVisualEffectSystem() {
@@ -123,13 +136,14 @@ public final class EntityVisualEffectSystem {
         CompoundTag effectData =
                 data.copy();
 
+        long gameTime = entity.level().getGameTime();
 
 
         if (!effectData.contains("StartGameTime")) {
 
             effectData.putLong(
                     "StartGameTime",
-                    entity.level().getGameTime()
+                    gameTime
             );
         }
 
@@ -139,9 +153,11 @@ public final class EntityVisualEffectSystem {
                 type,
                 effectId,
                 durationTicks,
-                effectData
+                effectData,
+                gameTime
         );
 
+        schedule(entity, effects);
 
         sync(entity);
 
@@ -184,6 +200,7 @@ public final class EntityVisualEffectSystem {
 
 
         if (removed) {
+            schedule(entity, effects);
             sync(entity);
         }
 
@@ -240,7 +257,7 @@ public final class EntityVisualEffectSystem {
 
             SyncEntityVisualEffectsPacket packet = new SyncEntityVisualEffectsPacket(
                     entity.getId(),
-                    effects.serializeNBTForSync()
+                    effects.serializeNBTForSync(entity.level().getGameTime())
             );
             NetworkHandler.INSTANCE.send(
                     PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity),
@@ -267,21 +284,90 @@ public final class EntityVisualEffectSystem {
 
 
     @SubscribeEvent
-    public static void onLevelTick(TickEvent.LevelTickEvent event) {
-        if (event.phase != TickEvent.Phase.END
-                || event.level.isClientSide
-                || !(event.level instanceof ServerLevel serverLevel)) {
+    public static void onServerTick(TickEvent.ServerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) {
             return;
         }
 
-        for (Entity entity : serverLevel.getAllEntities()) {
-            if (entity instanceof IVisualEffectHolder holder) {
-                EntityVisualEffects effects = holder.goetydelight$getVisualEffects();
-                if (effects != null && effects.tick()) {
-                    sync(entity);
-                }
+        long gameTime = event.getServer().overworld().getGameTime();
+        while (!EXPIRATION_QUEUE.isEmpty()) {
+            ScheduledEffects scheduled = EXPIRATION_QUEUE.peek();
+            if (scheduled.expiresAt() > gameTime) {
+                break;
             }
+
+            EXPIRATION_QUEUE.poll();
+            Entity entity = scheduled.entity();
+            if (entity == null) {
+                continue;
+            }
+            if (SCHEDULED_BY_ENTITY.get(entity) != scheduled) {
+                continue;
+            }
+            SCHEDULED_BY_ENTITY.remove(entity);
+
+            if (entity.isRemoved() || entity.level().isClientSide) {
+                continue;
+            }
+
+            EntityVisualEffects effects = getEffects(entity);
+            if (effects != scheduled.effects()
+                    || effects == null
+                    || effects.revision() != scheduled.revision()) {
+                continue;
+            }
+
+            if (effects.tick(gameTime)) {
+                sync(entity);
+            }
+
+            schedule(entity, effects);
         }
+    }
+
+    static void schedule(Entity entity, EntityVisualEffects effects) {
+        if (entity.level().isClientSide || effects == null || effects.isEmpty()) {
+            return;
+        }
+
+        long expiresAt = effects.nextExpiration();
+        if (expiresAt == Long.MAX_VALUE) {
+            return;
+        }
+
+        ScheduledEffects scheduled = new ScheduledEffects(
+                new WeakReference<>(entity),
+                effects,
+                effects.revision(),
+                expiresAt,
+                scheduleSequence++
+        );
+        EXPIRATION_QUEUE.add(scheduled);
+        SCHEDULED_BY_ENTITY.put(entity, scheduled);
+        compactScheduleQueueIfNeeded();
+    }
+
+    private static void compactScheduleQueueIfNeeded() {
+        if (EXPIRATION_QUEUE.size() <= SCHEDULED_BY_ENTITY.size() * 2 + 64) {
+            return;
+        }
+
+        EXPIRATION_QUEUE.clear();
+        EXPIRATION_QUEUE.addAll(SCHEDULED_BY_ENTITY.values());
+    }
+
+    @SubscribeEvent
+    public static void onServerStopped(ServerStoppedEvent event) {
+        EXPIRATION_QUEUE.clear();
+        SCHEDULED_BY_ENTITY.clear();
+        scheduleSequence = 0L;
+    }
+
+    private static EntityVisualEffects getEffects(Entity entity) {
+        if (entity instanceof IVisualEffectHolder holder) {
+            return holder.goetydelight$getVisualEffects();
+        }
+        return entity.getCapability(ENTITY_VISUAL_EFFECTS).resolve().orElse(null);
     }
 
 
@@ -340,7 +426,9 @@ public final class EntityVisualEffectSystem {
             EntityVisualEffects newEffects = newHolder.goetydelight$getVisualEffects();
 
             if (oldEffects != null && newEffects != null) {
-                newEffects.deserializeNBT(oldEffects.serializeNBT());
+                long gameTime = event.getEntity().level().getGameTime();
+                newEffects.deserializeNBT(oldEffects.serializeNBT(gameTime), gameTime);
+                schedule(event.getEntity(), newEffects);
             }
         }
     }
@@ -418,10 +506,22 @@ public final class EntityVisualEffectSystem {
                         () -> player
                 ),
                 new SyncEntityVisualEffectsPacket(
-                        entity.getId(),
-                        effects.serializeNBTForSync()
-                )
+                    entity.getId(),
+                    effects.serializeNBTForSync(entity.level().getGameTime())
+            )
         );
+    }
+
+    private record ScheduledEffects(
+            WeakReference<Entity> entityReference,
+            EntityVisualEffects effects,
+            long revision,
+            long expiresAt,
+            long sequence
+    ) {
+        private Entity entity() {
+            return entityReference.get();
+        }
     }
 
 

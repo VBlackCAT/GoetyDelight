@@ -8,8 +8,9 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
@@ -19,6 +20,10 @@ import net.v_black_cat.goetydelight.init.ModBuffTypes;
 import net.v_black_cat.goetydelight.network.NetworkHandler;
 import net.v_black_cat.goetydelight.network.SyncBuffPacket;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.IdentityHashMap;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 
@@ -30,6 +35,14 @@ public final class BuffSystem {
 
     private static final ResourceLocation CAPABILITY_ID =
             new ResourceLocation(GoetyDelight.MODID, "active_buffs");
+
+    private static final PriorityQueue<ScheduledBuffTick> BUFF_TICK_QUEUE = new PriorityQueue<>(
+            Comparator.comparingLong(ScheduledBuffTick::tick)
+                    .thenComparingLong(ScheduledBuffTick::sequence)
+    );
+    private static final Set<LivingEntity> SCHEDULED_ENTITIES =
+            Collections.newSetFromMap(new IdentityHashMap<>());
+    private static long tickSequence;
 
 
 
@@ -48,7 +61,8 @@ public final class BuffSystem {
             }
         }
 
-        buffs.addBuff(typeId, duration, amplifier);
+        long gameTime = entity.level().getGameTime();
+        buffs.addBuff(typeId, duration, amplifier, gameTime);
 
         // 触发新 Buff 的 onApply
         BuffEffect newEffect = ModBuffTypes.getEffect(typeId);
@@ -57,6 +71,7 @@ public final class BuffSystem {
         }
 
         syncToClients(entity, typeId, true);
+        schedule(entity, gameTime + 1);
         return true;
     }
 
@@ -118,24 +133,56 @@ public final class BuffSystem {
     // ========== Tick 事件 ==========
 
     @SubscribeEvent
-    public static void onLivingTick(LivingEvent.LivingTickEvent event) {
-        LivingEntity entity = event.getEntity();
-        if (entity.level().isClientSide) return;
+    public static void onServerTick(TickEvent.ServerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) return;
 
-        ActiveBuffs buffs = getBuffs(entity);
-        if (buffs == null || buffs.isEmpty()) return;
+        long gameTime = event.getServer().overworld().getGameTime();
+        while (!BUFF_TICK_QUEUE.isEmpty() && BUFF_TICK_QUEUE.peek().tick() <= gameTime) {
+            ScheduledBuffTick scheduled = BUFF_TICK_QUEUE.poll();
+            LivingEntity entity = scheduled.entity();
+            SCHEDULED_ENTITIES.remove(entity);
 
-        // tick 并自动移除过期的 Buff（触发 onRemove）
-        buffs.tickAllAndRemove(entity);
+            if (entity.isRemoved() || entity.level().isClientSide) {
+                continue;
+            }
 
-        // 对依然活跃的类型执行每 tick 效果（apply）
-        for (ResourceLocation typeId : buffs.getActiveTypes()) {
-            int totalAmplifier = buffs.getTotalAmplifier(typeId);
-            BuffEffect effect = ModBuffTypes.getEffect(typeId);
-            if (effect != null) {
-                effect.apply(entity, totalAmplifier);
+            ActiveBuffs buffs = getBuffs(entity);
+            if (buffs == null || buffs.isEmpty()) {
+                continue;
+            }
+
+            buffs.tickAllAndRemove(entity, gameTime);
+            for (ResourceLocation typeId : buffs.getActiveTypes()) {
+                BuffEffect effect = ModBuffTypes.getEffect(typeId);
+                if (effect != null) {
+                    effect.apply(entity, buffs.getTotalAmplifier(typeId));
+                }
+            }
+
+            if (!buffs.isEmpty()) {
+                schedule(entity, gameTime + 1);
             }
         }
+    }
+
+    static void schedule(LivingEntity entity) {
+        long gameTime = entity.level().getGameTime();
+        schedule(entity, gameTime + 1);
+    }
+
+    private static void schedule(LivingEntity entity, long tick) {
+        if (entity.level().isClientSide || entity.isRemoved() || !SCHEDULED_ENTITIES.add(entity)) {
+            return;
+        }
+
+        BUFF_TICK_QUEUE.add(new ScheduledBuffTick(entity, tick, tickSequence++));
+    }
+
+    @SubscribeEvent
+    public static void onServerStopped(ServerStoppedEvent event) {
+        BUFF_TICK_QUEUE.clear();
+        SCHEDULED_ENTITIES.clear();
+        tickSequence = 0L;
     }
 
     // ========== AttachCapabilities ==========
@@ -157,7 +204,9 @@ public final class BuffSystem {
         ActiveBuffs oldBuffs = getBuffs(event.getOriginal());
         ActiveBuffs newBuffs = getBuffs(event.getEntity());
         if (oldBuffs != null && newBuffs != null) {
-            newBuffs.deserializeNBT(oldBuffs.serializeNBT());
+            long gameTime = event.getEntity().level().getGameTime();
+            newBuffs.deserializeNBT(oldBuffs.serializeNBT(gameTime), gameTime);
+            schedule(event.getEntity(), gameTime + 1);
         }
     }
 
@@ -169,5 +218,8 @@ public final class BuffSystem {
         public static void registerCapabilities(RegisterCapabilitiesEvent event) {
             event.register(ActiveBuffs.class);
         }
+    }
+
+    private record ScheduledBuffTick(LivingEntity entity, long tick, long sequence) {
     }
 }

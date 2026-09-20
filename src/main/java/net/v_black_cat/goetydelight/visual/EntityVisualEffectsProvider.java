@@ -34,15 +34,16 @@ public class EntityVisualEffectsProvider implements ICapabilitySerializable<Comp
 
     @Override
     public CompoundTag serializeNBT() {
-        return effects.serializeNBT();
+        return effects.serializeNBT(owner.level().getGameTime());
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        effects.deserializeNBT(nbt);
+        effects.deserializeNBT(nbt, owner.level().getGameTime());
         if (owner instanceof IVisualEffectHolder holder) {
             holder.goetydelight$setVisualEffects(effects);
         }
+        EntityVisualEffectSystem.schedule(owner, effects);
     }
 
     public void invalidate() {
