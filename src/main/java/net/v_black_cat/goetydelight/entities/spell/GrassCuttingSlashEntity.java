@@ -1,9 +1,8 @@
 package net.v_black_cat.goetydelight.entities.spell;
 
+import com.Polarice3.Goety.common.entities.projectiles.SlashProjectile;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -16,138 +15,127 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
 import net.v_black_cat.goetydelight.entities.ModEntities;
 import net.v_black_cat.goetydelight.spell.GrassCuttingSpell;
 
-import java.util.UUID;
-
-public class GrassCuttingSlashEntity extends Entity {
+public class GrassCuttingSlashEntity extends SlashProjectile {
     public static final int FADE_TICKS = 5;
-    public static final int TOTAL_LIFETIME_TICKS = 18;
-    public static final double FLIGHT_SPEED = 0.72D;
-    public static final int MAX_RADIUS = 7;
 
-    private static final EntityDataAccessor<Integer> DATA_RADIUS =
-            SynchedEntityData.defineId(GrassCuttingSlashEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> DATA_SILK_TOUCH =
-            SynchedEntityData.defineId(GrassCuttingSlashEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Integer> DATA_FORTUNE =
-            SynchedEntityData.defineId(GrassCuttingSlashEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> DATA_MAGNET =
-            SynchedEntityData.defineId(GrassCuttingSlashEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Float> DATA_MAX_RADIUS =
+            SynchedEntityData.defineId(GrassCuttingSlashEntity.class, EntityDataSerializers.FLOAT);
 
-    private UUID ownerId;
+    private boolean silkTouch;
+    private int fortune;
+    private boolean magnet;
 
-    public GrassCuttingSlashEntity(EntityType<? extends GrassCuttingSlashEntity> entityType, Level level) {
+    public GrassCuttingSlashEntity(EntityType<? extends SlashProjectile> entityType, Level level) {
         super(entityType, level);
-        this.noPhysics = true;
         this.noCulling = true;
-        this.setNoGravity(true);
-        this.setInvulnerable(true);
-        this.setInvisible(true);
+        this.setDamage(0.0F);
     }
 
-    public GrassCuttingSlashEntity(Level level, LivingEntity caster, int radius,
-                                   boolean silkTouch, int fortune, boolean magnet) {
+    public GrassCuttingSlashEntity(Level level, LivingEntity caster, float speed, float maxRadius,
+                                   int lifeSpan, boolean silkTouch, int fortune, boolean magnet) {
         this(ModEntities.GRASS_CUTTING_SLASH.get(), level);
-        this.ownerId = caster.getUUID();
-        this.setRadius(radius);
+        this.setOwner(caster);
+        this.setMaxRadius(Math.max(0.75F, maxRadius));
+        this.setRadius(Math.min(0.65F, this.getMaxRadius()));
+        this.setMaxLifeSpan(Math.max(4, lifeSpan));
         this.setSilkTouch(silkTouch);
         this.setFortune(fortune);
         this.setMagnet(magnet);
+
         Vec3 look = caster.getLookAngle();
-        this.setYRot(caster.getYRot());
-        this.setXRot(caster.getXRot() * 0.5F);
-        this.setDeltaMovement(look.scale(FLIGHT_SPEED));
         this.setPos(caster.getX() + look.x, caster.getEyeY() - 0.25D + look.y,
                 caster.getZ() + look.z);
+        this.setYRot(caster.getYRot());
+        this.setXRot(caster.getXRot() * 0.5F);
+        this.slash(look, speed);
     }
 
     @Override
     public void tick() {
-        super.tick();
-
-        if (this.level().isClientSide()) {
-            return;
+        if (!this.level().isClientSide()) {
+            this.cutGrassAlongPath();
         }
 
-        if (this.tickCount == 1) {
+        if (this.tickCount == 1 && !this.level().isClientSide()) {
             this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1.0F, 1.35F);
         }
 
-        Vec3 movement = this.getDeltaMovement();
-        this.setPos(this.getX() + movement.x, this.getY() + movement.y, this.getZ() + movement.z);
-
-        ServerLevel serverLevel = (ServerLevel) this.level();
-        LivingEntity owner = this.ownerId == null
-                ? null
-                : serverLevel.getEntity(this.ownerId) instanceof LivingEntity living ? living : null;
-        int cutRadius = Math.max(1, Math.min(this.getRadius(), 2));
-        int harvested = GrassCuttingSpell.harvestArea(serverLevel, owner, this.blockPosition(),
-                cutRadius, this.isSilkTouch(), this.getFortune(), this.isMagnet());
-        if (harvested > 0 && this.tickCount % 2 == 0) {
-            this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 0.7F, 0.9F);
-        }
-        this.spawnTrailParticles();
-
-        if (this.tickCount >= TOTAL_LIFETIME_TICKS) {
-            this.discard();
+        super.tick();
+        if (!this.level().isClientSide() && !this.isRemoved()) {
+            float progress = Mth.clamp(this.tickCount / (float) this.getMaxLifeSpan(), 0.0F, 1.0F);
+            float eased = progress * progress * (3.0F - 2.0F * progress);
+            this.setRadius(0.65F + (this.getMaxRadius() - 0.65F) * eased);
         }
     }
 
-    private void spawnTrailParticles() {
-        if (!(this.level() instanceof ServerLevel serverLevel) || serverLevel.random.nextInt(2) != 0) {
+    private void cutGrassAlongPath() {
+        if (!(this.level() instanceof ServerLevel serverLevel)) {
             return;
         }
 
-        double angle = this.getYRot() * Mth.DEG_TO_RAD + Math.PI;
-        double side = (serverLevel.random.nextDouble() - 0.5D) * (2.0D + this.getRadius() * 0.7D);
-        double forward = (serverLevel.random.nextDouble() - 0.65D) * 1.2D;
-        double offsetX = -Mth.sin((float) angle) * forward + Mth.cos((float) angle) * side;
-        double offsetZ = Mth.cos((float) angle) * forward + Mth.sin((float) angle) * side;
-        double y = this.getY() + (serverLevel.random.nextDouble() - 0.5D) * 1.25D;
-
-        serverLevel.sendParticles(ParticleTypes.END_ROD,
-                this.getX() + offsetX, y, this.getZ() + offsetZ,
-                1, 0.01D, 0.02D, 0.01D, 0.01D);
-        if (serverLevel.random.nextInt(3) == 0) {
-            serverLevel.sendParticles(ParticleTypes.SOUL,
-                    this.getX() + offsetX, y, this.getZ() + offsetZ,
-                    1, 0.02D, 0.03D, 0.02D, 0.01D);
+        LivingEntity owner = this.getOwner() instanceof LivingEntity living ? living : null;
+        int cutRadius = Mth.clamp(Mth.ceil(this.getRadius()), 1, 3);
+        int harvested = GrassCuttingSpell.harvestArea(serverLevel, owner, this.blockPosition(),
+                cutRadius, this.isSilkTouch(), this.getFortune(), this.isMagnet());
+        if (harvested > 0 && this.tickCount % 2 == 0) {
+            this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 0.65F, 0.9F);
         }
     }
 
-    public int getRadius() {
-        return this.entityData.get(DATA_RADIUS);
+    @Override
+    public void damageEntity(Entity entity) {
+        // 斩击只切割植物，不伤害生物。
     }
 
-    public void setRadius(int radius) {
-        this.entityData.set(DATA_RADIUS, Mth.clamp(radius, 1, MAX_RADIUS));
+    @Override
+    public void spawnParticles() {
+        if (!(this.level() instanceof ServerLevel serverLevel) || this.tickCount % 2 != 0) {
+            return;
+        }
+
+        float width = this.getRadius();
+        int count = Math.max(2, Mth.ceil(width * 2.0F));
+        for (int i = 0; i < count; ++i) {
+            double side = (serverLevel.random.nextDouble() - 0.5D) * width * 2.0D;
+            double angle = this.getYRot() * Mth.DEG_TO_RAD + Math.PI * 0.5D;
+            double x = this.getX() + Math.cos(angle) * side;
+            double z = this.getZ() + Math.sin(angle) * side;
+            double y = this.getY() + (serverLevel.random.nextDouble() - 0.5D) * 0.7D;
+            serverLevel.sendParticles(ParticleTypes.END_ROD, x, y, z,
+                    1, 0.01D, 0.02D, 0.01D, 0.01D);
+        }
+        if (serverLevel.random.nextInt(3) == 0) {
+            serverLevel.sendParticles(ParticleTypes.SOUL,
+                    this.getX(), this.getY(), this.getZ(),
+                    1, width * 0.25D, 0.1D, width * 0.25D, 0.01D);
+        }
     }
 
     public boolean isSilkTouch() {
-        return this.entityData.get(DATA_SILK_TOUCH);
+        return this.silkTouch;
     }
 
     public void setSilkTouch(boolean silkTouch) {
-        this.entityData.set(DATA_SILK_TOUCH, silkTouch);
+        this.silkTouch = silkTouch;
     }
 
     public int getFortune() {
-        return this.entityData.get(DATA_FORTUNE);
+        return this.fortune;
     }
 
     public void setFortune(int fortune) {
-        this.entityData.set(DATA_FORTUNE, Mth.clamp(fortune, 0, 10));
+        this.fortune = Mth.clamp(fortune, 0, 10);
     }
 
     public boolean isMagnet() {
-        return this.entityData.get(DATA_MAGNET);
+        return this.magnet;
     }
 
     public void setMagnet(boolean magnet) {
-        this.entityData.set(DATA_MAGNET, magnet);
+        this.magnet = magnet;
     }
 
     public float animationTime(float partialTick) {
@@ -156,47 +144,45 @@ public class GrassCuttingSlashEntity extends Entity {
 
     @Override
     protected void defineSynchedData() {
-        this.entityData.define(DATA_RADIUS, 2);
-        this.entityData.define(DATA_SILK_TOUCH, false);
-        this.entityData.define(DATA_FORTUNE, 0);
-        this.entityData.define(DATA_MAGNET, false);
+        this.entityData.define(SlashProjectile.DATA_RADIUS, 0.5F);
+        this.entityData.define(DATA_MAX_RADIUS, 3.0F);
+    }
+
+    @Override
+    public float getMaxRadius() {
+        return this.entityData.get(DATA_MAX_RADIUS);
+    }
+
+    @Override
+    public void setMaxRadius(float radius) {
+        this.maxRadius = radius;
+        this.entityData.set(DATA_MAX_RADIUS, radius);
     }
 
     @Override
     protected void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        if (tag.contains("SilkTouch")) {
+            this.setSilkTouch(tag.getBoolean("SilkTouch"));
+        }
+        if (tag.contains("Fortune")) {
+            this.setFortune(tag.getInt("Fortune"));
+        }
+        if (tag.contains("Magnet")) {
+            this.setMagnet(tag.getBoolean("Magnet"));
+        }
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
-    }
-
-    @Override
-    public boolean save(CompoundTag tag) {
-        return false;
-    }
-
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
-    }
-
-    @Override
-    public boolean isPickable() {
-        return false;
-    }
-
-    @Override
-    public boolean canBeCollidedWith() {
-        return false;
+        super.addAdditionalSaveData(tag);
+        tag.putBoolean("SilkTouch", this.isSilkTouch());
+        tag.putInt("Fortune", this.getFortune());
+        tag.putBoolean("Magnet", this.isMagnet());
     }
 
     @Override
     public boolean isInvulnerableTo(DamageSource source) {
         return true;
-    }
-
-    @Override
-    public boolean shouldRenderAtSqrDistance(double distance) {
-        return distance < 128.0D * 128.0D;
     }
 }

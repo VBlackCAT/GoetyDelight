@@ -95,7 +95,7 @@
   "item.goetydelight.the_box_of_the_dead": "逝者之盒",
   "item.goetydelight.ectoplasmic_melon_seeds": "灵质瓜种子",
   "item.goetydelight.grass_cutting_focus": "割草聚晶",
-  "item.goetydelight.grass_cutting_focus.info":"释放淡蓝色斩击实体进行范围割草，可以通过范围附魔扩大作用范围",
+  "item.goetydelight.grass_cutting_focus.info":"射出淡蓝色斩击实体切割沿途草木，高速附魔提高飞行速度，半径附魔增加斩击宽度，范围附魔延长飞行距离，磁引附魔可直接收取掉落物",
   "item.goetydelight.hoe_focus": "锄头聚晶",
   "item.goetydelight.hoe_focus.info":"范围收割作物，按住shift右键使用可以范围耕地，可以通过范围附魔扩大作用范围",
   "item.goetydelight.marble_focus": "大理石聚晶",

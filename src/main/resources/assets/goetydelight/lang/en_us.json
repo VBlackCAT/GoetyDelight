@@ -95,7 +95,7 @@
   "item.goetydelight.the_box_of_the_dead": "The Box Of The Dead",
   "item.goetydelight.ectoplasmic_melon_seeds": "Ectoplasmic Melon Seeds",
   "item.goetydelight.grass_cutting_focus": "Grass Cutting Focus",
-  "item.goetydelight.grass_cutting_focus.info": "Releases a pale blue slash entity that cuts grass over a wide area. The Range enchantment expands the area.",
+  "item.goetydelight.grass_cutting_focus.info": "Launches a pale blue slash entity that cuts plants along its path. Velocity increases flight speed, Radius increases slash width, Range extends flight distance, and Magnet collects drops directly.",
   "item.goetydelight.hoe_focus": "Hoe Focus",
   "item.goetydelight.hoe_focus.info": "Harvests ripe crops over a wide area without breaking the plants. Sneaking while casting also tills the ground. The Range enchantment expands the area.",
   "item.goetydelight.marble_focus": "Marble Focus",

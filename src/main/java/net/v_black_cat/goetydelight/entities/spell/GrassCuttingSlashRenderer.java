@@ -1,20 +1,31 @@
 package net.v_black_cat.goetydelight.entities.spell;
 
+import com.Polarice3.Goety.common.items.ModItems;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import org.joml.Matrix4f;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import org.joml.Matrix3f;
 
 public class GrassCuttingSlashRenderer extends EntityRenderer<GrassCuttingSlashEntity> {
-    private static final ResourceLocation TEXTURE =
-            new ResourceLocation("minecraft", "textures/misc/white.png");
-    private static final int SEGMENTS = 32;
+    private static final Item[] SCYTHES = {
+            ModItems.OMINOUS_SCYTHE.get(),
+            ModItems.DARK_SCYTHE.get(),
+            ModItems.DEATH_SCYTHE.get()
+    };
 
     public GrassCuttingSlashRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -25,74 +36,140 @@ public class GrassCuttingSlashRenderer extends EntityRenderer<GrassCuttingSlashE
     public void render(GrassCuttingSlashEntity entity, float entityYaw, float partialTick, PoseStack poseStack,
                        MultiBufferSource bufferSource, int packedLight) {
         float age = entity.animationTime(partialTick);
-        float activeTicks = GrassCuttingSlashEntity.TOTAL_LIFETIME_TICKS - GrassCuttingSlashEntity.FADE_TICKS;
-        float fade = age <= activeTicks
+        int lifeSpan = Math.max(1, entity.getMaxLifeSpan());
+        float fade = age <= lifeSpan - GrassCuttingSlashEntity.FADE_TICKS
                 ? 1.0F
-                : 1.0F - Mth.clamp((age - activeTicks)
+                : 1.0F - Mth.clamp((age - (lifeSpan - GrassCuttingSlashEntity.FADE_TICKS))
                         / GrassCuttingSlashEntity.FADE_TICKS, 0.0F, 1.0F);
         if (fade <= 0.0F) {
             return;
         }
 
+        int variant = Math.floorMod(entity.getUUID().hashCode(), SCYTHES.length);
+        ItemStack stack = new ItemStack(SCYTHES[variant]);
+        float scale = 0.65F + entity.getRadius() * 0.35F;
+        float spin = (entity.tickCount + partialTick) * 36.0F;
+
         poseStack.pushPose();
-        poseStack.mulPose(Axis.YP.rotationDegrees(-entity.getYRot()));
-        poseStack.mulPose(Axis.XP.rotationDegrees(entity.getXRot()));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(-12.0F + Mth.clamp(age / 8.0F, 0.0F, 1.0F) * 24.0F));
+        poseStack.scale(scale, scale, scale);
+        poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
+        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(spin));
 
-        Matrix4f matrix = poseStack.last().pose();
-        VertexConsumer consumer = bufferSource.getBuffer(RenderType.debugQuads());
-        float radius = 0.8F + entity.getRadius() * 0.67F;
-        float expand = 0.82F + Mth.clamp(age / 8.0F, 0.0F, 1.0F) * 0.18F;
-
-        renderCrescent(consumer, matrix, radius * expand, 0.25F,
-                85, 205, 255, alpha(42.0F * fade));
-        renderCrescent(consumer, matrix, radius * expand * 0.86F, 0.17F,
-                145, 235, 255, alpha(72.0F * fade));
-        renderCrescent(consumer, matrix, radius * expand * 0.70F, 0.10F,
-                220, 250, 255, alpha(105.0F * fade));
-        renderCrescent(consumer, matrix, radius * expand * 0.94F, 0.08F,
-                90, 205, 255, alpha(30.0F * fade), -0.18F);
-        renderCrescent(consumer, matrix, radius * expand * 0.86F, 0.06F,
-                120, 220, 255, alpha(18.0F * fade), -0.36F);
-
+        Minecraft minecraft = Minecraft.getInstance();
+        minecraft.getItemRenderer().renderStatic(stack, ItemDisplayContext.GROUND, LightTexture.FULL_BRIGHT,
+                OverlayTexture.NO_OVERLAY, poseStack,
+                tintedBuffer(bufferSource, RenderType.entityTranslucentEmissive(TextureAtlas.LOCATION_BLOCKS),
+                        0.12F, 1.65F, fade * 0.32F),
+                entity.level(), entity.getId());
         poseStack.popPose();
+
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
     }
 
-    private static void renderCrescent(VertexConsumer consumer, Matrix4f matrix, float radius,
-                                       float thickness, int red, int green, int blue, int alpha) {
-        renderCrescent(consumer, matrix, radius, thickness, red, green, blue, alpha, 0.0F);
-    }
-
-    private static void renderCrescent(VertexConsumer consumer, Matrix4f matrix, float radius,
-                                       float thickness, int red, int green, int blue, int alpha, float z) {
-        float inner = Math.max(0.0F, radius - thickness);
-        for (int i = 0; i < SEGMENTS; i++) {
-            float angle0 = (float) (-Math.PI * 0.72D + Math.PI * 1.44D * i / SEGMENTS);
-            float angle1 = (float) (-Math.PI * 0.72D + Math.PI * 1.44D * (i + 1) / SEGMENTS);
-            float cos0 = Mth.cos(angle0);
-            float sin0 = Mth.sin(angle0);
-            float cos1 = Mth.cos(angle1);
-            float sin1 = Mth.sin(angle1);
-
-            vertex(consumer, matrix, cos0 * inner, sin0 * inner * 0.38F, z, red, green, blue, alpha);
-            vertex(consumer, matrix, cos1 * inner, sin1 * inner * 0.38F, z, red, green, blue, alpha);
-            vertex(consumer, matrix, cos1 * radius, sin1 * radius * 0.38F, z, red, green, blue, alpha);
-            vertex(consumer, matrix, cos0 * radius, sin0 * radius * 0.38F, z, red, green, blue, alpha);
-        }
-    }
-
-    private static void vertex(VertexConsumer consumer, Matrix4f matrix, float x, float y, float z,
-                               int red, int green, int blue, int alpha) {
-        consumer.vertex(matrix, x, y, z).color(red, green, blue, alpha).endVertex();
+    private static MultiBufferSource tintedBuffer(MultiBufferSource delegate, RenderType renderType,
+                                                  float blue, float colorIntensity, float opacity) {
+        return ignored -> new BlueTintVertexConsumer(delegate.getBuffer(renderType), blue, colorIntensity, opacity);
     }
 
     private static int alpha(float alpha) {
-        return Mth.clamp((int) alpha, 0, 255);
+        return Mth.clamp((int) (alpha * 255.0F), 0, 255);
+    }
+
+    private static int channel(float value) {
+        return Mth.clamp((int) (value * 255.0F), 0, 255);
     }
 
     @Override
     public ResourceLocation getTextureLocation(GrassCuttingSlashEntity entity) {
-        return TEXTURE;
+        return TextureAtlas.LOCATION_BLOCKS;
+    }
+
+    private static final class BlueTintVertexConsumer implements VertexConsumer {
+        private final VertexConsumer delegate;
+        private final float blueMix;
+        private final float colorIntensity;
+        private final int opacity;
+
+        private BlueTintVertexConsumer(VertexConsumer delegate, float blueMix,
+                                       float colorIntensity, float opacity) {
+            this.delegate = delegate;
+            this.blueMix = blueMix;
+            this.colorIntensity = colorIntensity;
+            this.opacity = alpha(opacity);
+        }
+
+        @Override
+        public VertexConsumer vertex(double x, double y, double z) {
+            this.delegate.vertex(x, y, z);
+            return this;
+        }
+
+        @Override
+        public VertexConsumer color(int red, int green, int blue, int alpha) {
+            this.delegate.color(
+                    channel(red / 255.0F * (1.0F - this.blueMix) * this.colorIntensity),
+                    channel(green / 255.0F * (1.0F - this.blueMix * 0.65F) * this.colorIntensity),
+                    channel(blue / 255.0F * (1.0F + this.blueMix) * this.colorIntensity),
+                    this.opacity);
+            return this;
+        }
+
+        @Override
+        public VertexConsumer uv(float u, float v) {
+            this.delegate.uv(u, v);
+            return this;
+        }
+
+        @Override
+        public VertexConsumer overlayCoords(int u, int v) {
+            this.delegate.overlayCoords(u, v);
+            return this;
+        }
+
+        @Override
+        public VertexConsumer uv2(int u, int v) {
+            this.delegate.uv2(u, v);
+            return this;
+        }
+
+        @Override
+        public VertexConsumer normal(float x, float y, float z) {
+            this.delegate.normal(x, y, z);
+            return this;
+        }
+
+        @Override
+        public VertexConsumer normal(Matrix3f matrix, float x, float y, float z) {
+            this.delegate.normal(matrix, x, y, z);
+            return this;
+        }
+
+        @Override
+        public void endVertex() {
+            this.delegate.endVertex();
+        }
+
+        @Override
+        public void defaultColor(int red, int green, int blue, int alpha) {
+            this.delegate.defaultColor(0, 0, 0, this.opacity);
+        }
+
+        @Override
+        public void unsetDefaultColor() {
+            this.delegate.unsetDefaultColor();
+        }
+
+        @Override
+        public void putBulkData(PoseStack.Pose pose, BakedQuad quad, float[] colorMuls,
+                                float red, float green, float blue, float alpha,
+                                int[] lightmap, int overlay, boolean readExistingColor) {
+            float tintedRed = Mth.clamp(red * (1.0F - this.blueMix) * this.colorIntensity, 0.0F, 1.0F);
+            float tintedGreen = Mth.clamp(green * (1.0F - this.blueMix * 0.65F) * this.colorIntensity, 0.0F, 1.0F);
+            float tintedBlue = Mth.clamp(blue * (1.0F + this.blueMix) * this.colorIntensity, 0.0F, 1.0F);
+            this.delegate.putBulkData(pose, quad, colorMuls,
+                    tintedRed, tintedGreen, tintedBlue, this.opacity / 255.0F,
+                    lightmap, overlay, readExistingColor);
+        }
     }
 }
