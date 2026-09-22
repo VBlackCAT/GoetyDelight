@@ -15,7 +15,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlocks;
-import net.v_black_cat.goetydelight.compat.goety_revelation.item.*;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.item.*;
 import net.v_black_cat.goetydelight.effect.ModEffects;
 import net.v_black_cat.goetydelight.entities.ModEntities;
 import net.v_black_cat.goetydelight.item.food.*;
@@ -84,6 +84,14 @@ public class ModItems {
     public static final RegistryObject<Item> CRYING_SHARK_SUGAR_PACK;
     public static final RegistryObject<Item> SEVEN_LEAF_PUDDING;
     public static final RegistryObject<Item> BEAR_PAW;
+    // ===== 1.21.1 独占食物移植 =====
+    public static final RegistryObject<Item> BREAM;
+    public static final RegistryObject<Item> COOKED_BREAM;
+    public static final RegistryObject<Item> SHARK_FIN;
+    public static final RegistryObject<Item> COOKED_SHARK_FIN;
+    public static final RegistryObject<Item> TAIYAKI;
+    public static final RegistryObject<Item> COLD_LEAF_CANDY;
+    public static final RegistryObject<Item> BRAISED_BEAR_PAW;
     public static final RegistryObject<Item> CAKE;
     public static final RegistryObject<Item> OMINOUS_ICE_CREAM;
     public static final RegistryObject<Item> ECTOPLASMIC_MELON;
@@ -364,6 +372,53 @@ public class ModItems {
                         simpleFoodItemProperties(6, 4)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(2), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.WATER_BREATHING, minToTick(3), 0), 1.0F)
+                                .build())));
+
+        // ===== 1.21.1 独占食物移植 =====
+        // 饱和度换算：1.21.1 写 saturationModifier(M)，本项目 helper 第二参 = M × nutrition
+        //（两边最终都是 nutrition × modifier × 2，故换算后效果与 1.21.1 一致）
+        BREAM = ITEMS.register("bream",
+                () -> new Item(basicItem().stacksTo(64).food(
+                        new FoodProperties.Builder().nutrition(2).saturationMod(0.4F).build())));
+
+        COOKED_BREAM = ITEMS.register("cooked_bream",
+                () -> new Item(basicItem().stacksTo(64).food(
+                        simpleFoodItemProperties(6, 4.8F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
+                                .build())));
+
+        SHARK_FIN = ITEMS.register("shark_fin",
+                () -> new Item(basicItem().stacksTo(64).food(
+                        new FoodProperties.Builder().nutrition(2).saturationMod(0.4F).build())));
+
+        COOKED_SHARK_FIN = ITEMS.register("cooked_shark_fin",
+                () -> new Item(basicItem().stacksTo(64).food(
+                        simpleFoodItemProperties(5, 4.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.WATER_BREATHING, sToTick(60), 0), 1.0F)
+                                .build())));
+
+        TAIYAKI = ITEMS.register("taiyaki",
+                () -> new Item(basicItem().stacksTo(64).food(
+                        simpleFoodItemProperties(6, 4.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(3), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.WATER_BREATHING, sToTick(30), 0), 1.0F)
+                                .build())));
+
+        COLD_LEAF_CANDY = ITEMS.register("cold_leaf_candy",
+                () -> new Item(basicItem().stacksTo(64).food(
+                        simpleFoodItemProperties(6, 3.6F)
+                                .effect(() -> new MobEffectInstance(ModEffects.TINGLING.get(), sToTick(10), 1), 1.0F)
+                                .effect(() -> new MobEffectInstance(FROSTY_AURA_SUPPLIER.get(), sToTick(90), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(INSIGHT.get(), sToTick(180), 0), 1.0F)
+                                .build())));
+
+        BRAISED_BEAR_PAW = ITEMS.register("braised_bear_paw",
+                () -> new Item(basicItem().stacksTo(64).food(
+                        simpleFoodItemProperties(9, 7.5F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(8), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(RAMPAGE_EFFECT_SUPPLIER.get(), 3600, 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, minToTick(1), 0), 1.0F)
                                 .build())));
 
         WHITE_SHARK_SUGAR_PACK = ITEMS.register("sugar_pack",

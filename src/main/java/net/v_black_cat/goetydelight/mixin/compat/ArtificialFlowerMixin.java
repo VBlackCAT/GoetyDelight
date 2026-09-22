@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.mixin;
+package net.v_black_cat.goetydelight.mixin.compat;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.ModList;

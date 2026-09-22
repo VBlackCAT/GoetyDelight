@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.compat.goety_revelation.item;
+package net.v_black_cat.goetydelight.compat.goetyrevelation.item;
 
 import com.Polarice3.Goety.common.effects.GoetyEffects;
 import com.mega.endinglib.api.client.text.TextColorUtils;

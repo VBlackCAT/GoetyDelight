@@ -498,7 +498,8 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
                     .getRecipeFor(ModRecipeTypes.COOKING.get(), wrapper, this.level).orElse(null);
 
             if (this.cachedRecipe != null) {
-                this.cachedResultStack = this.cachedRecipe.getResultItem(this.level.registryAccess());
+                // 同样取副本：cachedResultStack 只读，但不与配方内部栈共享引用
+                this.cachedResultStack = this.cachedRecipe.getResultItem(this.level.registryAccess()).copy();
                 this.cachedSoulCost = this.calculateSoulCost(this.cachedResultStack);
                 this.cookTimeTotal = this.cachedRecipe.getCookTime();
                 if (this.cookTime > this.cookTimeTotal) {
@@ -561,7 +562,9 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
         ItemStack currentMeal = this.inventory.getStackInSlot(MEAL_DISPLAY_SLOT);
         ItemStack outputStack = this.inventory.getStackInSlot(OUTPUT_SLOT);
         boolean anyHasMark = this.isSoulInfused(currentMeal) || this.isSoulInfused(outputStack);
-        ItemStack resultStack = recipe.getResultItem(this.level.registryAccess());
+        // 【修复】农夫乐事 1.20.1 的 getResultItem() 直接返回配方内部的 output 栈（没有 copy），
+        // 往它身上写 NBT 会永久污染这条配方：之后即使没有灵魂源，该菜谱的产物依旧带着 SoulInfused。
+        ItemStack resultStack = recipe.getResultItem(this.level.registryAccess()).copy();
 
         int soulCost = this.calculateSoulCost(resultStack);
         // 【优化】合并灵魂查询：一次调用同时判断"灵魂源是否可用"与"剩余数量"

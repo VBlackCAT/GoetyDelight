@@ -169,10 +169,8 @@ public class ModBlocks {
                     .noLootTable()
                     .lightLevel(state -> 15)));
 
-    public static final RegistryObject<Block> APOCALYPTIUM_POT = registerBlock("apocalyptium_pot",() ->
-            new Block(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
-                    .noLootTable()
-                    .sound(SoundType.AMETHYST)));
+    // apocalyptium_pot 已拆到联动模块：compat/goetyrevelation/RevelationCompatRegistry
+    //（仅当 goety_revelation 存在时才注册）
 
     //灵质瓜
     public static final RegistryObject<Block> ECTOPLASMIC_MELON_BLOCK = registerBlock("ectoplasmic_melon_block",

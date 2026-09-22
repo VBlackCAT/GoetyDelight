@@ -14,7 +14,7 @@ import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.GoetyDelight;
-import net.v_black_cat.goetydelight.compat.goety_revelation.item.QuietusMarrowItem;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.item.QuietusMarrowItem;
 
 @Mod.EventBusSubscriber(modid = GoetyDelight.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class FastingEffect extends MobEffect {

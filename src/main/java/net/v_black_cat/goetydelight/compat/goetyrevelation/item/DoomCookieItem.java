@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.compat.goety_revelation.item;
+package net.v_black_cat.goetydelight.compat.goetyrevelation.item;
 
 import com.mega.endinglib.api.client.text.TextColorUtils;
 import net.minecraft.ChatFormatting;
@@ -12,16 +12,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class AtonementVoucherWrapedCodItem extends Item {
-    private static final String USAGE_COUNT_TAG = "AtonementVoucherUsageCount";
+public class DoomCookieItem extends Item {
+    private static final String USAGE_COUNT_TAG = "DoomCookieUsageCount";
 
-    public AtonementVoucherWrapedCodItem(Properties properties) {
+    public DoomCookieItem(Properties properties) {
         super(properties);
     }
 
@@ -85,10 +84,20 @@ public class AtonementVoucherWrapedCodItem extends Item {
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.literal(""));
         if (Screen.hasShiftDown()) {
-            tooltip.add(Component.translatable("item.goetydelight.atonement_voucher_wraped_cod.tooltip.1")
+            tooltip.add(Component.translatable("item.goetydelight.doom_cookie.tooltip.1")
                     .withStyle(ChatFormatting.LIGHT_PURPLE));
         } else {
             tooltip.add(Component.translatable("item.goetydelight.tooltip.shift"));
         }
+        tooltip.add(Component.literal(""));
+        tooltip.add(Component.translatable("item.goetydelight.doom_cookie.tooltip.2")
+                .withStyle(TextColorUtils.MIDDLE)
+                .withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.add(Component.translatable("item.goetydelight.doom_cookie.tooltip.3")
+                .withStyle(TextColorUtils.MIDDLE)
+                .withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.add(Component.translatable("item.goetydelight.doom_cookie.tooltip.4")
+                .withStyle(TextColorUtils.MIDDLE)
+                .withStyle(ChatFormatting.DARK_GRAY));
     }
 }

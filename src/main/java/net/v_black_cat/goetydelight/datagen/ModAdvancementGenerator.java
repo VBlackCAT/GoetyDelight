@@ -11,7 +11,7 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.ForgeAdvancementProvider;
 import net.v_black_cat.goetydelight.GoetyDelight;
-import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompatRegistry;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.RevelationCompatRegistry;
 import net.v_black_cat.goetydelight.entities.ModEntities;
 import net.v_black_cat.goetydelight.item.ModItems;
 import net.v_black_cat.goetydelight.block.ModBlocks;

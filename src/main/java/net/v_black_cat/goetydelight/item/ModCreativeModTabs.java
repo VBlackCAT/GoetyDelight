@@ -12,8 +12,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlocks;
-import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompat;
-import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompatRegistry;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.GoetyRevelationCompat;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.RevelationCompatRegistry;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -34,7 +34,6 @@ public class ModCreativeModTabs {
          BLACKLIST.add(ModItems.METAMORPHIC_SCENT_FRUIT);
          BLACKLIST.add(ModItems.DOLL_ITEM);
 
-         BLACKLIST.add(ModBlocks.APOCALYPTIUM_POT);
          BLACKLIST.add(ModBlocks.NETHER_MARBLE);
          BLACKLIST.add(ModBlocks.POINTED_DRIPMARBLE);
          BLACKLIST.add(ModBlocks.DRIPMARBLE_BLOCK);
@@ -70,10 +69,12 @@ public class ModCreativeModTabs {
                             }
                         });
 
-                        if (RevelationCompat.IS_REVELATION_LOADED) {
+                        if (GoetyRevelationCompat.IS_LOADED) {
+                            // apocalyptium_pot 暂无模型/材质，隐藏它的 BlockItem
                             Set<RegistryObject<?>> compatBlacklist = Set.of(
                                     RevelationCompatRegistry.SPECTRE_KNIFE,
-                                    RevelationCompatRegistry.VENOMOUS_SPIDER_KNIFE
+                                    RevelationCompatRegistry.VENOMOUS_SPIDER_KNIFE,
+                                    RevelationCompatRegistry.APOCALYPTIUM_POT_ITEM
                             );
                             RevelationCompatRegistry.ITEMS.getEntries().forEach(item -> {
                                 if (item.isPresent() && !compatBlacklist.contains(item)) {

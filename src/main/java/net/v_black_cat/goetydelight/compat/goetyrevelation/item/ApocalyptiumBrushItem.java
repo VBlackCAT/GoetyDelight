@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.compat.goety_revelation.item;
+package net.v_black_cat.goetydelight.compat.goetyrevelation.item;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
@@ -34,7 +34,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompatRegistry;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.RevelationCompatRegistry;
 import net.v_black_cat.goetydelight.item.DarkBrushItem;
 import net.v_black_cat.goetydelight.item.ModItems;
 

@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.mixin;
+package net.v_black_cat.goetydelight.mixin.compat;
 
 import com.Polarice3.Goety.common.blocks.entities.DarkAltarBlockEntity;
 import com.Polarice3.Goety.common.entities.ModEntityType;
@@ -14,8 +14,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-import net.v_black_cat.goetydelight.compat.goety_revelation.item.AtonementVoucherWrapedCodItem;
-import net.v_black_cat.goetydelight.compat.goety_revelation.item.DoomCookieItem;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.item.AtonementVoucherWrapedCodItem;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.item.DoomCookieItem;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;

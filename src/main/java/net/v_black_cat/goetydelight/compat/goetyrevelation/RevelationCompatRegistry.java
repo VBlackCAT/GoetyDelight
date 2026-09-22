@@ -1,20 +1,25 @@
-package net.v_black_cat.goetydelight.compat.goety_revelation;
+package net.v_black_cat.goetydelight.compat.goetyrevelation;
 
 import com.Polarice3.Goety.common.effects.GoetyEffects;
 import com.mega.revelationfix.common.item.ModItemTiers;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.Tiers;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
-import net.v_black_cat.goetydelight.compat.goety_revelation.item.*;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.item.*;
 import net.v_black_cat.goetydelight.effect.ModEffects;
 import vectorwing.farmersdelight.common.item.KnifeItem;
 
@@ -23,11 +28,19 @@ import static net.v_black_cat.goetydelight.util.TimeConverter.minToTick;
 import static net.v_black_cat.goetydelight.util.TimeConverter.sToTick;
 import static vectorwing.farmersdelight.common.registry.ModItems.basicItem;
 
-@Mod.EventBusSubscriber(modid = RevelationCompat.ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = GoetyRevelationCompat.ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class RevelationCompatRegistry {
 
     public static final DeferredRegister<Item> ITEMS =
             DeferredRegister.create(ForgeRegistries.ITEMS, GoetyDelight.MODID);
+
+    /** 本模块的方块注册器（联动方块只在 goety_revelation 存在时注册） */
+    public static final DeferredRegister<Block> BLOCKS =
+            DeferredRegister.create(ForgeRegistries.BLOCKS, GoetyDelight.MODID);
+
+    /** 启示录方块：神金罐（原注册在主 ModBlocks，按联动拆分到本模块） */
+    public static final RegistryObject<Block> APOCALYPTIUM_POT;
+    public static final RegistryObject<Item> APOCALYPTIUM_POT_ITEM;
 
     public static final RegistryObject<Item> APOCALYPTIUM_KNIFE;
     public static final RegistryObject<Item> VENOMOUS_SPIDER_KNIFE;
@@ -43,6 +56,13 @@ public class RevelationCompatRegistry {
     public static final RegistryObject<Item> QUIETUS_MARROW;
 
     static {
+        APOCALYPTIUM_POT = BLOCKS.register("apocalyptium_pot", () -> new Block(
+                BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
+                        .noLootTable()
+                        .sound(SoundType.AMETHYST)));
+        APOCALYPTIUM_POT_ITEM = ITEMS.register("apocalyptium_pot",
+                () -> new BlockItem(APOCALYPTIUM_POT.get(), new Item.Properties()));
+
         APOCALYPTIUM_KNIFE = ITEMS.register("apocalyptium_knife",
                 () -> new ApocalyptiumKnifeItem(
                         ModItemTiers.APOCALYPTIUM, -5.0F, -2.0F,
@@ -120,6 +140,7 @@ public class RevelationCompatRegistry {
     }
 
     public static void register(IEventBus eventBus) {
+        BLOCKS.register(eventBus);
         ITEMS.register(eventBus);
     }
 }

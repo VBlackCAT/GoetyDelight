@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.compat.goety_revelation.item;
+package net.v_black_cat.goetydelight.compat.goetyrevelation.item;
 
 import com.mega.endinglib.api.client.text.TextColorUtils;
 import net.minecraft.ChatFormatting;
@@ -29,7 +29,7 @@ import net.minecraftforge.event.entity.player.ArrowLooseEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompat;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.GoetyRevelationCompat;
 
 import javax.annotation.Nullable;
 import java.util.*;

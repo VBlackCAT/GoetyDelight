@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.compat.goety_revelation.item;
+package net.v_black_cat.goetydelight.compat.goetyrevelation.item;
 
 import com.mega.endinglib.api.client.text.TextColorUtils;
 import com.mega.revelationfix.common.init.ModEffects;
@@ -30,7 +30,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.v_black_cat.goetydelight.GoetyDelight;
-import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompat;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.GoetyRevelationCompat;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;

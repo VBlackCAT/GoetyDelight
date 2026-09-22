@@ -3,10 +3,9 @@
   "minVersion": "0.8.5",
   "package": "net.v_black_cat.goetydelight.mixin",
   "refmap": "goetydelight.refmap.json",
-  "plugin": "net.v_black_cat.goetydelight.compat.goety_revelation.RevelationMixinPlugin",
+  "plugin": "net.v_black_cat.goetydelight.compat.goetyrevelation.RevelationMixinPlugin",
   "mixins": [
     "AnvilBlockMixin",
-    "ArtificialFlowerMixin",
     "BlockFinderMixin",
     "CookingPotBlockEntityMixin",
     "DarkAltarBlockEntityMixin",
@@ -17,7 +16,6 @@
     "MobMixin",
     "ModelBakeryMixin",
     "RecipeManagerMixin",
-    "SummonApollyonMixin",
     "SummonSpellMixin",
     "WightSpawnerMixin"
   ],

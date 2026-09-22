@@ -1,10 +1,11 @@
 package net.v_black_cat.goetydelight.compat;
 
-import net.minecraftforge.fml.ModList;
-
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 
+/**
+ * Oculus / Iris 光影联动。模组存在性判断统一走 {@link CompatManager}。
+ */
 public final class OculusCompat {
     @Nullable
     private static Method getInstanceMethod;
@@ -16,7 +17,7 @@ public final class OculusCompat {
     }
 
     public static boolean isShaderPackInUse() {
-        if (!ModList.get().isLoaded("oculus") && !ModList.get().isLoaded("iris")) {
+        if (!CompatManager.isShaderModLoaded()) {
             return false;
         }
 

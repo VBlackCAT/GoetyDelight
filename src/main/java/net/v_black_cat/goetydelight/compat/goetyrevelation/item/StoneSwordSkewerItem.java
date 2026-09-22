@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.compat.goety_revelation.item;
+package net.v_black_cat.goetydelight.compat.goetyrevelation.item;
 
 import com.mega.endinglib.api.client.text.TextColorUtils;
 import net.minecraft.ChatFormatting;
@@ -21,7 +21,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompat;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.GoetyRevelationCompat;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;

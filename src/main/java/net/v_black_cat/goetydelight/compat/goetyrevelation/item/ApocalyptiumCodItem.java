@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.compat.goety_revelation.item;
+package net.v_black_cat.goetydelight.compat.goetyrevelation.item;
 
 import com.Polarice3.Goety.common.entities.boss.Apostle;
 import com.mega.endinglib.api.client.text.TextColorUtils;
@@ -27,7 +27,7 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.v_black_cat.goetydelight.compat.goety_revelation.ApocalyptiumData;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.ApocalyptiumData;
 import top.theillusivec4.curios.api.CuriosApi;
 import z1gned.goetyrevelation.util.ApollyonAbilityHelper;
 

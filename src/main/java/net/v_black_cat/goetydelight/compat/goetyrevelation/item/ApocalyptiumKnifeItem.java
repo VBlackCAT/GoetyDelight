@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.compat.goety_revelation.item;
+package net.v_black_cat.goetydelight.compat.goetyrevelation.item;
 
 import com.mega.endinglib.api.client.text.TextColorUtils;
 import net.minecraft.ChatFormatting;
@@ -30,7 +30,7 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompat;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.GoetyRevelationCompat;
 import vectorwing.farmersdelight.common.item.KnifeItem;
 import net.v_black_cat.goetydelight.util.DelightLootTableCache;
 import com.Polarice3.Goety.common.blocks.SnapWartsBlock;

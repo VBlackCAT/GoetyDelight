@@ -12,7 +12,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.ModBlocks;
-import net.v_black_cat.goetydelight.compat.goety_revelation.RevelationCompatRegistry;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.RevelationCompatRegistry;
 import net.v_black_cat.goetydelight.event.ModRegisterEvent;
 import net.v_black_cat.goetydelight.item.ModItems;
 
@@ -53,6 +53,14 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.BLUE_ECTOPLASMIC_SUNDAE);
         simpleItem(ModItems.TOXIC_MEAL);
         simpleItem(ModItems.POACHED_NETHER_WART_EGG);
+        // 1.21.1 独占食物移植
+        simpleItem(ModItems.BREAM);
+        simpleItem(ModItems.COOKED_BREAM);
+        simpleItem(ModItems.SHARK_FIN);
+        simpleItem(ModItems.COOKED_SHARK_FIN);
+        simpleItem(ModItems.TAIYAKI);
+        simpleItem(ModItems.COLD_LEAF_CANDY);
+        simpleItem(ModItems.BRAISED_BEAR_PAW);
         simpleItem(ModItems.POACHED_SPIDER_EGG);
         simpleItem(ModItems.ECTOPLASM_JELLY);
         simpleItem(ModItems.ROASTED_CORPSE_MAGGOTS);

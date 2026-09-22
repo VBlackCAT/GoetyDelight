@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.compat.goety_revelation;
+package net.v_black_cat.goetydelight.compat.goetyrevelation;
 
 import net.minecraftforge.fml.loading.LoadingModList;
 import org.objectweb.asm.tree.ClassNode;

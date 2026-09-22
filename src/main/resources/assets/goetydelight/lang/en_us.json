@@ -63,6 +63,13 @@
   "item.goetydelight.sugar_scepter": "Sugar scepter",
   "item.goetydelight.sugar_pack": "Sugar Pack",
   "item.goetydelight.candy_fish": "Candy Fish",
+  "item.goetydelight.bream": "Bream",
+  "item.goetydelight.cooked_bream": "Cooked Bream",
+  "item.goetydelight.shark_fin": "Shark Fin",
+  "item.goetydelight.cooked_shark_fin": "Cooked Shark Fin",
+  "item.goetydelight.taiyaki": "Taiyaki",
+  "item.goetydelight.cold_leaf_candy": "Cold Leaf Candy",
+  "item.goetydelight.braised_bear_paw": "Braised Bear Paw",
   "item.goetydelight.gathering_soul_embryos": "Gathering Soul Embryos",
   "item.goetydelight.soul_convergence_room": "Soul Convergence Room",
   "item.goetydelight.grape_slush": "Grape Slush",
@@ -387,5 +394,7 @@
   "item.goetydelight.stone_sword_skewer.tooltip.4": "Immune to one fatal damage instance",
   "item.goetydelight.stone_sword_skewer.tooltip.5": "After death immunity triggers, health cap is locked to 1 and self-healing is disabled",
   "item.goetydelight.stone_sword_skewer.tooltip.6": "\"I did not come to bring peace to the earth\"",
-  "item.goetydelight.stone_sword_skewer.tooltip.7": "\"but a sword\""
+  "item.goetydelight.stone_sword_skewer.tooltip.7": "\"but a sword\"",
+  "tooltip.goetydelight.soul_infused": "Soul-Infused",
+  "tooltip.goetydelight.soul_energy_restore": "Restores %s Soul Energy upon consumption."
 }

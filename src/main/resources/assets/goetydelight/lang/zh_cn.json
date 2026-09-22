@@ -63,6 +63,13 @@
   "item.goetydelight.sugar_scepter": "糖权杖",
   "item.goetydelight.sugar_pack": "糖包",
   "item.goetydelight.candy_fish": "糖鱼",
+  "item.goetydelight.bream": "鲷鱼",
+  "item.goetydelight.cooked_bream": "熟鲷鱼",
+  "item.goetydelight.shark_fin": "鱼翅",
+  "item.goetydelight.cooked_shark_fin": "熟鱼翅",
+  "item.goetydelight.taiyaki": "鲷鱼烧",
+  "item.goetydelight.cold_leaf_candy": "冷叶糖",
+  "item.goetydelight.braised_bear_paw": "红烧熊掌",
   "item.goetydelight.gathering_soul_embryos": "聚魂胚",
   "item.goetydelight.soul_convergence_room": "聚魂室",
   "item.goetydelight.grape_slush": "葡萄冰沙",
@@ -387,5 +394,7 @@
   "item.goetydelight.stone_sword_skewer.tooltip.4": "免疫一次致死伤害",
   "item.goetydelight.stone_sword_skewer.tooltip.5": "免疫死亡后锁定血量上限为1并禁疗自身",
   "item.goetydelight.stone_sword_skewer.tooltip.6": "“我来并不是叫地上太平”",
-  "item.goetydelight.stone_sword_skewer.tooltip.7": "“乃是叫地上动刀兵”"
+  "item.goetydelight.stone_sword_skewer.tooltip.7": "“乃是叫地上动刀兵”",
+  "tooltip.goetydelight.soul_infused": "已注入灵魂",
+  "tooltip.goetydelight.soul_energy_restore": "食用后恢复%s点灵魂能量"
 }

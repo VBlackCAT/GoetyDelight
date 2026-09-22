@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.compat.goety_revelation;
+package net.v_black_cat.goetydelight.compat.goetyrevelation;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;

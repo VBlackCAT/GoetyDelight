@@ -1,0 +1,13 @@
+{
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8.5",
+  "package": "net.v_black_cat.goetydelight.mixin.compat",
+  "refmap": "goetydelight.refmap.json",
+  "plugin": "net.v_black_cat.goetydelight.compat.goetyrevelation.RevelationMixinPlugin",
+  "mixins": [
+    "ArtificialFlowerMixin",
+    "SummonApollyonMixin"
+  ],
+  "client": [],
+  "server": []
+}
