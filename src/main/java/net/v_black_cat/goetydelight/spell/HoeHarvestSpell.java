@@ -27,6 +27,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ToolActions;
+import net.v_black_cat.goetydelight.entities.spell.RichSoilSpellEntity;
 import net.v_black_cat.goetydelight.util.SpellCastUtil;
 import net.v_black_cat.goetydelight.util.SpellLootUtil;
 
@@ -72,6 +73,7 @@ public class HoeHarvestSpell extends Spell {
         list.add(Enchantments.SILK_TOUCH);
         list.add(Enchantments.BLOCK_FORTUNE);
         list.add(ModEnchantments.RANGE.get());
+        list.add(ModEnchantments.RADIUS.get());
         list.add(ModEnchantments.MAGNET.get()); // 磁引：收割掉落直接进背包（参考 Goety 的 burrowing_focus）
         return list;
     }
@@ -98,8 +100,9 @@ public class HoeHarvestSpell extends Spell {
     /** 范围 = 基础半径 + 强效(potency) + 半径属性加成 + 范围附魔(每级 +2)，上限 15×15 */
     private static int spellRadius(ItemStack focus, LivingEntity caster, SpellStat spellStat) {
         int rangeLevel = getEnchantLevel(focus, caster, ModEnchantments.RANGE.get());
+        int radiusLevel = getEnchantLevel(focus, caster, ModEnchantments.RADIUS.get());
         double radius = Math.max(BASE_RADIUS, spellStat.getRadius() + spellStat.getPotency());
-        radius += 1.0D * rangeLevel;
+        radius += rangeLevel + radiusLevel;
         radius = Math.min(radius, MAX_RADIUS);
         return (int) Math.floor(radius);
     }
@@ -112,33 +115,46 @@ public class HoeHarvestSpell extends Spell {
         if (focus.isEmpty()) focus = caster.getMainHandItem();
 
         int r = spellRadius(focus, caster, spellStat);
-        BlockPos center = SpellCastUtil.castCenter(caster); // 以右击的方块为中心
+        BlockPos center = SpellCastUtil.castCenter(caster);
         boolean magnet = getEnchantLevel(focus, caster, ModEnchantments.MAGNET.get()) > 0;
+        boolean shouldTill = caster.isShiftKeyDown();
+        boolean silkTouch = getEnchantLevel(focus, caster, Enchantments.SILK_TOUCH) > 0;
+        int fortune = getEnchantLevel(focus, caster, Enchantments.BLOCK_FORTUNE);
+        worldIn.addFreshEntity(new RichSoilSpellEntity(worldIn, caster, center, r,
+                RichSoilSpellEntity.EffectType.HOE_HARVEST)
+                .setStaff(staff)
+                .setEffectTool(focus)
+                .setShiftMode(shouldTill)
+                .setToolData(silkTouch, fortune, magnet));
+    }
+
+    public static boolean performDeferredEffect(ServerLevel worldIn, LivingEntity caster, BlockPos center,
+                                                int radius, boolean shouldTill, boolean silkTouch,
+                                                int fortune, boolean magnet, ItemStack tool) {
         int harvested = 0;
         int tilled = 0;
-        boolean shouldTill = caster.isShiftKeyDown();
-
         for (int y = -2; y <= 2; ++y) {
-            for (int dx = -r; dx <= r; ++dx) {
-                for (int dz = -r; dz <= r; ++dz) {
+            for (int dx = -radius; dx <= radius; ++dx) {
+                for (int dz = -radius; dz <= radius; ++dz) {
                     BlockPos pos = center.offset(dx, y, dz);
                     if (shouldTill) {
-                        if (tillBlock(worldIn, pos, caster)) tilled++;
+                        if (tillBlock(worldIn, pos)) tilled++;
                     } else {
-                        if (harvestCrop(worldIn, pos, caster, focus, magnet)) harvested++;
+                        if (harvestCrop(worldIn, pos, caster, tool, magnet, silkTouch, fortune)) harvested++;
                     }
                 }
             }
         }
 
         if (harvested > 0) {
-            worldIn.playSound(null, caster.getX(), caster.getY(), caster.getZ(),
+            worldIn.playSound(null, center.getX() + 0.5D, center.getY() + 0.5D, center.getZ() + 0.5D,
                     SoundEvents.CROP_BREAK, SoundSource.BLOCKS, 1.0F, 1.0F);
         }
         if (tilled > 0) {
-            worldIn.playSound(null, caster.getX(), caster.getY(), caster.getZ(),
+            worldIn.playSound(null, center.getX() + 0.5D, center.getY() + 0.5D, center.getZ() + 0.5D,
                     SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
         }
+        return harvested > 0 || tilled > 0;
     }
 
     // ========== 检测方法（只读） ==========
@@ -187,8 +203,9 @@ public class HoeHarvestSpell extends Spell {
     }
 
     // ========== 实际操作 ==========
-    private boolean harvestCrop(ServerLevel world, BlockPos pos, LivingEntity caster, ItemStack tool, boolean magnet) {
+    private static boolean harvestCrop(ServerLevel world, BlockPos pos, LivingEntity caster, ItemStack tool, boolean magnet, boolean silkTouch, int fortune) {
         BlockState state = world.getBlockState(pos);
+        tool = enchantedTool(tool, silkTouch, fortune);
         Block block = state.getBlock();
 
         if (block instanceof StemBlock || block instanceof AttachedStemBlock) return false;
@@ -226,7 +243,7 @@ public class HoeHarvestSpell extends Spell {
         return false;
     }
 
-    private void harvestAndRegrow(ServerLevel world, BlockPos pos, BlockState state, LivingEntity caster,
+    private static void harvestAndRegrow(ServerLevel world, BlockPos pos, BlockState state, LivingEntity caster,
                                   IntegerProperty ageProperty, int newAge, ItemStack tool, boolean magnet) {
         List<ItemStack> drops = Block.getDrops(state, world, pos, null, caster, tool);
         for (ItemStack drop : drops) {
@@ -235,7 +252,16 @@ public class HoeHarvestSpell extends Spell {
         world.setBlock(pos, state.setValue(ageProperty, newAge), 3);
     }
 
-    private boolean tillBlock(ServerLevel world, BlockPos pos, LivingEntity caster) {
+    private static ItemStack enchantedTool(ItemStack tool, boolean silkTouch, int fortune) {
+        ItemStack copy = tool.copy();
+        if (silkTouch) {
+            copy.enchant(Enchantments.SILK_TOUCH, 1);
+        } else if (fortune > 0) {
+            copy.enchant(Enchantments.BLOCK_FORTUNE, fortune);
+        }
+        return copy;
+    }
+    private static boolean tillBlock(ServerLevel world, BlockPos pos) {
         BlockState state = world.getBlockState(pos);
         if (!world.getBlockState(pos.above()).isAir()) return false;
 

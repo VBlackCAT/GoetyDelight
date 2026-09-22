@@ -63,6 +63,7 @@ public class RichSoilSpell extends Spell {
     public List<Enchantment> acceptedEnchantments() {
         List<Enchantment> list = new ArrayList<>();
         list.add(ModEnchantments.RANGE.get());
+        list.add(ModEnchantments.RADIUS.get());
         return list;
     }
 
@@ -77,7 +78,8 @@ public class RichSoilSpell extends Spell {
         }
         int r = spellRadius(focus, caster, spellStat);
         BlockPos center = SpellCastUtil.castCenter(caster); // 以右击的方块为中心，实体负责延迟执行
-        worldIn.addFreshEntity(new RichSoilSpellEntity(worldIn, center, r));
+        worldIn.addFreshEntity(new RichSoilSpellEntity(worldIn, caster, center, r,
+                RichSoilSpellEntity.EffectType.RICH_SOIL).setStaff(staff));
     }
 
     @Override
@@ -99,8 +101,9 @@ public class RichSoilSpell extends Spell {
     /** 范围 = 基础半径 + 强效(potency) + 半径属性加成 + 范围附魔(每级 +2)，上限 9×9 */
     private static int spellRadius(ItemStack focus, LivingEntity caster, SpellStat spellStat) {
         int rangeLevel = getEnchantLevel(focus, caster, ModEnchantments.RANGE.get());
+        int radiusLevel = getEnchantLevel(focus, caster, ModEnchantments.RADIUS.get());
         double radius = Math.max(BASE_RADIUS, spellStat.getRadius() + spellStat.getPotency());
-        radius += 2.0D * rangeLevel;
+        radius += 2.0D * rangeLevel + radiusLevel;
         radius = Math.min(radius, MAX_RADIUS);
         return (int) Math.floor(radius);
     }

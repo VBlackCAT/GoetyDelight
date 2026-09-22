@@ -1,9 +1,12 @@
 package net.v_black_cat.goetydelight.spell;
 
+import com.Polarice3.Goety.api.items.magic.IWand;
 import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.common.blocks.ModBlocks;
+import com.Polarice3.Goety.common.enchantments.ModEnchantments;
 import com.Polarice3.Goety.common.magic.BlockSpell;
 import com.Polarice3.Goety.common.magic.SpellStat;
+import com.Polarice3.Goety.utils.WandUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.core.Direction;
@@ -14,16 +17,25 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
+import net.v_black_cat.goetydelight.entities.spell.RichSoilSpellEntity;
+
+import java.util.List;
 
 public class MarbleWaterSpell extends BlockSpell {
 
     /** 可被替换为粉砂质大理石的方块（默认 #c:stones，数据包可扩展） */
     private static final TagKey<Block> SILTIFIABLE = TagKey.create(Registries.BLOCK,
             new ResourceLocation("goetydelight", "marble_focus/siltifiable"));
+
+    @Override
+    public SpellStat defaultStats() {
+        return new SpellStat(0, 0, 8, 1.0D, 0, 0.0F);
+    }
 
     @Override
     public int defaultSoulCost() {
@@ -53,27 +65,60 @@ public class MarbleWaterSpell extends BlockSpell {
     }
 
     @Override
+    public List<Enchantment> acceptedEnchantments() {
+        return List.of(ModEnchantments.RADIUS.get());
+    }
+
+    @Override
     public void blockResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff,
                             BlockPos target, Direction direction, SpellStat spellStat) {
-        BlockState state = worldIn.getBlockState(target);
+        ItemStack focus = IWand.getFocus(staff);
+        if (focus.isEmpty()) {
+            focus = WandUtil.findFocus(caster);
+        }
+        int radiusLevel = focus.isEmpty() ? 0 : focus.getEnchantmentLevel(ModEnchantments.RADIUS.get());
+        int radius = Math.max(1, 1 + radiusLevel);
+        worldIn.addFreshEntity(new RichSoilSpellEntity(worldIn, caster, target, radius,
+                RichSoilSpellEntity.EffectType.MARBLE_WATER)
+                .setStaff(staff)
+                .setShiftMode(caster.isShiftKeyDown())
+                .setDirection(direction));
+    }
 
-        if (caster.isShiftKeyDown()) {
-            if (!isSiltifiable(state)) {
-                return;
+    public static boolean performDeferredEffect(ServerLevel worldIn, LivingEntity caster, BlockPos target,
+                                                Direction direction, int radius, boolean shiftMode) {
+        if (shiftMode) {
+            int converted = 0;
+            for (int y = -2; y <= 2; ++y) {
+                for (int dx = -radius; dx <= radius; ++dx) {
+                    for (int dz = -radius; dz <= radius; ++dz) {
+                        BlockPos pos = target.offset(dx, y, dz);
+                        BlockState state = worldIn.getBlockState(pos);
+                        if (isSiltifiable(state)) {
+                            worldIn.setBlockAndUpdate(pos, ModBlocks.SILT_MARBLE_HEAVY_BLOCK.get().defaultBlockState());
+                            converted++;
+                        }
+                    }
+                }
             }
-            worldIn.setBlockAndUpdate(target, ModBlocks.SILT_MARBLE_HEAVY_BLOCK.get().defaultBlockState());
-            worldIn.playSound(null, target.getX() + 0.5D, target.getY() + 0.5D, target.getZ() + 0.5D,
-                    SoundEvents.STONE_PLACE, SoundSource.BLOCKS, 1.0F, 0.8F);
-            return;
+            if (converted > 0) {
+                worldIn.playSound(null, target.getX() + 0.5D, target.getY() + 0.5D, target.getZ() + 0.5D,
+                        SoundEvents.STONE_PLACE, SoundSource.BLOCKS, 1.0F, 0.8F);
+                return true;
+            }
+            return false;
         }
 
+        BlockState state = worldIn.getBlockState(target);
         BlockPos placePos = placeTarget(state, target, direction);
         BlockState placeState = worldIn.getBlockState(placePos);
         if (canPlaceWater(placeState)) {
             worldIn.setBlockAndUpdate(placePos, Blocks.WATER.defaultBlockState());
             worldIn.playSound(null, placePos.getX() + 0.5D, placePos.getY() + 0.5D, placePos.getZ() + 0.5D,
                     SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+            return true;
         }
+        return false;
     }
 
     /** 放水位置：目标可放水就放目标处，否则放在点击面的相邻处 */

@@ -55,7 +55,7 @@ public class TreeGrowthSpell extends BlockSpell {
     public void blockResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff,
                             BlockPos target, Direction direction, SpellStat spellStat) {
         if (worldIn.getBlockState(target).getBlock() instanceof SaplingBlock) {
-            worldIn.addFreshEntity(new TreeGrowthSpellEntity(worldIn, target));
+            worldIn.addFreshEntity(new TreeGrowthSpellEntity(worldIn, caster, target, staff));
         }
     }
 }

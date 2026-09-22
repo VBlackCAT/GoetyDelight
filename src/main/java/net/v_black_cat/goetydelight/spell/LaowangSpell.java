@@ -18,6 +18,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.v_black_cat.goetydelight.entities.spell.RichSoilSpellEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +72,16 @@ public class LaowangSpell extends Spell {
         // 直接从聚晶栈读取强效等级（不走 WandUtil 的间接门禁）
         int potency = getEnchantLevel(focus, caster, ModEnchantments.POTENCY.get());
 
+        BlockPos center = caster.blockPosition();
+        worldIn.addFreshEntity(new RichSoilSpellEntity(worldIn, caster, center, 1 + potency,
+                RichSoilSpellEntity.EffectType.LAOWANG).setPotency(potency).setStaff(staff));
+    }
+
+    public static boolean performDeferredEffect(ServerLevel worldIn, LivingEntity caster, int potency) {
+        if (caster == null) {
+            return false;
+        }
+
         int count = randomBetween(worldIn, BASE_MIN, BASE_MAX);
         for (int level = 0; level < potency; ++level) {
             count += randomBetween(worldIn, PER_LEVEL_MIN, PER_LEVEL_MAX);
@@ -84,8 +95,11 @@ public class LaowangSpell extends Spell {
         }
 
         if (summoned > 0) {
-            this.playSound(worldIn, caster, ModSounds.SUMMON_SPELL.get());
+            worldIn.playSound(null, caster.getX(), caster.getY(), caster.getZ(),
+                    ModSounds.SUMMON_SPELL.get(), caster.getSoundSource(), 1.0F, 1.0F);
+            return true;
         }
+        return false;
     }
 
     /** 在施法者附近召唤一只名为 laowang237 的成年猪 */

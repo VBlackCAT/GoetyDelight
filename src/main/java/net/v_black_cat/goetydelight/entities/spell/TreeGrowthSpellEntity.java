@@ -3,6 +3,8 @@ package net.v_black_cat.goetydelight.entities.spell;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -15,14 +17,16 @@ public class TreeGrowthSpellEntity extends RichSoilSpellEntity {
         super(entityType, level);
     }
 
-    public TreeGrowthSpellEntity(Level level, BlockPos target) {
+    public TreeGrowthSpellEntity(Level level, LivingEntity owner, BlockPos target, ItemStack staff) {
         this(ModEntities.TREE_GROWTH_SPELL.get(), level);
+        this.setOwner(owner);
+        this.setCastingStaff(staff);
         this.setRadius(1);
         this.setPos(target.getX() + 0.5D, target.getY() + 1.0D, target.getZ() + 0.5D);
     }
 
     @Override
-    protected boolean performImpact(ServerLevel serverLevel, BlockPos center, int radius) {
+    protected boolean performImpact(ServerLevel serverLevel, LivingEntity owner, BlockPos center, int radius) {
         BlockState state = serverLevel.getBlockState(center);
         if (!(state.getBlock() instanceof SaplingBlock sapling)) {
             return false;

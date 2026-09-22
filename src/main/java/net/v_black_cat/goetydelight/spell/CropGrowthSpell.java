@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.v_black_cat.goetydelight.entities.spell.RichSoilSpellEntity;
 import net.v_black_cat.goetydelight.util.SpellCastUtil;
 
 import java.util.ArrayList;
@@ -58,6 +59,7 @@ public class CropGrowthSpell extends Spell {
     public List<Enchantment> acceptedEnchantments() {
         List<Enchantment> list = new ArrayList<>();
         list.add(ModEnchantments.RANGE.get());
+        list.add(ModEnchantments.RADIUS.get());
         return list;
     }
 
@@ -80,8 +82,9 @@ public class CropGrowthSpell extends Spell {
     /** 范围 = 基础半径 + 强效(potency) + 半径属性加成 + 范围附魔(每级 +2)，上限 15×15（同锄头聚晶） */
     private static int spellRadius(ItemStack focus, LivingEntity caster, SpellStat spellStat) {
         int rangeLevel = getEnchantLevel(focus, caster, ModEnchantments.RANGE.get());
+        int radiusLevel = getEnchantLevel(focus, caster, ModEnchantments.RADIUS.get());
         double radius = Math.max(BASE_RADIUS, spellStat.getRadius() + spellStat.getPotency());
-        radius += 1.0D * rangeLevel;
+        radius += rangeLevel + radiusLevel;
         radius = Math.min(radius, MAX_RADIUS);
         return (int) Math.floor(radius);
     }
@@ -93,7 +96,12 @@ public class CropGrowthSpell extends Spell {
         if (focus.isEmpty()) focus = caster.getMainHandItem(); // 兜底
 
         int r = spellRadius(focus, caster, spellStat);
-        BlockPos center = SpellCastUtil.castCenter(caster); // 以右击的方块为中心
+        BlockPos center = SpellCastUtil.castCenter(caster);
+        worldIn.addFreshEntity(new RichSoilSpellEntity(worldIn, caster, center, r,
+                RichSoilSpellEntity.EffectType.CROP_GROWTH).setStaff(staff));
+    }
+
+    public static boolean performDeferredEffect(ServerLevel worldIn, BlockPos center, int r) {
         int grown = 0;
         for (int y = -2; y <= 2; ++y) {
             for (int dx = -r; dx <= r; ++dx) {
@@ -104,11 +112,11 @@ public class CropGrowthSpell extends Spell {
                 }
             }
         }
-
         if (grown > 0) {
-            worldIn.playSound(null, caster.getX(), caster.getY(), caster.getZ(),
+            worldIn.playSound(null, center.getX() + 0.5D, center.getY() + 0.5D, center.getZ() + 0.5D,
                     SoundEvents.BONE_MEAL_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
         }
+        return grown > 0;
     }
 
     /** 该方块是否可催熟：是 Bonemealable、可被骨粉催、且不是树苗 */

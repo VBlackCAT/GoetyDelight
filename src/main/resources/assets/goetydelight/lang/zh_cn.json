@@ -290,6 +290,7 @@
   "goetydelight.advancement.ghost_farmer_kill_player.title": "瓜农复仇",
   "goetydelight.advancement.find_ectoplasmic_melon_field.description": "瓜农警戒中",
   "goetydelight.advancement.find_ectoplasmic_melon_field.title": "有一个人前来偷瓜",
+  "config.jade.plugin_goetydelight.doll_block": "玩偶方块信息",
   "config.jade.plugin_goetydelight.doll_entity": "玩偶实体信息",
   "subtitle.goetydelight.block.touch_doll": "摸摸玩偶",
   "goetydelight.configuration.title": "诡厄乐事配置",
