@@ -111,6 +111,15 @@ repositories {
         name = "Jared's maven"
         url = "https://maven.blamejared.com/"
     }
+    // Aliyun mirror: force net.neoforged build tools such as AutoRenamingTool to resolve here.
+    exclusiveContent {
+        forRepository {
+            maven { url "https://maven.aliyun.com/repository/public" }
+        }
+        filter {
+            includeModule "net.neoforged", "AutoRenamingTool"
+        }
+    }
     mavenCentral()
 }
 
