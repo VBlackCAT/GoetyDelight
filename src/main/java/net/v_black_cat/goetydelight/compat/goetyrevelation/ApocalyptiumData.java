@@ -1,34 +1,62 @@
 package net.v_black_cat.goetydelight.compat.goetyrevelation;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.v_black_cat.goetydelight.api.ITimedEntityManager;
+import net.v_black_cat.goetydelight.util.TimedEntityManager;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * 亚形态使徒 / 使徒仆从的数据管理。
+ * <p>
+ * 本类只负责：
+ * <ul>
+ *     <li>运行时实体引用缓存（{@link #liveEntityCache}，不参与序列化）</li>
+ *     <li>作为兼容层，把旧的静态调用转发到 {@link ITimedEntityManager}</li>
+ * </ul>
+ * 所有计时数据的持久化、查询、清理均委托给 {@link TimedEntityManager}。
+ */
 public class ApocalyptiumData extends SavedData {
+
     private static final String DATA_NAME = "apocalyptium_data";
 
-    // ==================== 玩家 NBT 键 ====================
-    private static final String ROOT = "GoetyDelightApocalyptium";
-    private static final String SERVANT_EXPIRY = "ServantExpiry";
-    private static final String APOLLYON_EXPIRY = "ApollyonExpiry";
-    private static final String PREVENT_DROPS = "PreventDrops";
-
-    // 只保留运行时缓存，不参与序列化
+    /** 运行时实体缓存，不参与序列化 */
     private final ConcurrentHashMap<UUID, LivingEntity> liveEntityCache = new ConcurrentHashMap<>();
+
+    private static final TimedEntityManager MANAGER = TimedEntityManager.getInstance();
+
+    // ==================== SavedData 生命周期 ====================
+
+    public static ApocalyptiumData get(ServerLevel level) {
+        return level.getServer().overworld().getDataStorage()
+                .computeIfAbsent(ApocalyptiumData::load, ApocalyptiumData::new, DATA_NAME);
+    }
+
+    public static ApocalyptiumData load(CompoundTag tag) {
+        return new ApocalyptiumData();
+    }
+
+    @Override
+    public CompoundTag save(CompoundTag tag) {
+        // 计时数据在玩家 persistentData 中，这里不需要保存任何东西
+        return tag;
+    }
+
+    // ==================== 实体缓存（运行时） ====================
 
     public void cacheEntity(UUID uuid, LivingEntity entity) {
         liveEntityCache.put(uuid, entity);
     }
 
+    @Nullable
     public LivingEntity getCachedEntity(UUID uuid) {
         LivingEntity entity = liveEntityCache.get(uuid);
         if (entity == null) return null;
@@ -43,202 +71,95 @@ public class ApocalyptiumData extends SavedData {
         liveEntityCache.remove(uuid);
     }
 
-    public static ApocalyptiumData get(ServerLevel level) {
-        return level.getServer().overworld().getDataStorage()
-                .computeIfAbsent(ApocalyptiumData::load, ApocalyptiumData::new, DATA_NAME);
-    }
-
-    public static ApocalyptiumData load(CompoundTag tag) {
-        return new ApocalyptiumData();
-    }
-
-    @Override
-    public CompoundTag save(CompoundTag tag) {
-        return tag;
-    }
-
-    // ==================== 玩家 NBT 读写工具 ====================
-
-    private static CompoundTag getRoot(Player player) {
-        CompoundTag persistent = player.getPersistentData();
-        if (!persistent.contains(ROOT, Tag.TAG_COMPOUND)) {
-            persistent.put(ROOT, new CompoundTag());
-        }
-        return persistent.getCompound(ROOT);
-    }
-
-    private static void removeEntry(ListTag list, UUID uuid) {
-        for (int i = list.size() - 1; i >= 0; i--) {
-            CompoundTag entry = list.getCompound(i);
-            if (entry.hasUUID("UUID") && entry.getUUID("UUID").equals(uuid)) {
-                list.remove(i);
-            }
-        }
-    }
-
-    private static CompoundTag findEntry(ListTag list, UUID uuid) {
-        for (int i = 0; i < list.size(); i++) {
-            CompoundTag entry = list.getCompound(i);
-            if (entry.hasUUID("UUID") && entry.getUUID("UUID").equals(uuid)) {
-                return entry;
-            }
-        }
-        return null;
-    }
+    // ==================== 兼容层：转发到 ITimedEntityManager ====================
 
     // ---- 仆从过期 ----
 
     public static void addServantExpiry(Player player, UUID uuid, long expiryTime, String entityTypeId) {
-        CompoundTag root = getRoot(player);
-        ListTag list = root.getList(SERVANT_EXPIRY, Tag.TAG_COMPOUND);
-        removeEntry(list, uuid);
-        CompoundTag entry = new CompoundTag();
-        entry.putUUID("UUID", uuid);
-        entry.putLong("Time", expiryTime);
-        entry.putString("EntityType", entityTypeId == null ? "" : entityTypeId);
-        list.add(entry);
-        root.put(SERVANT_EXPIRY, list);
+        // 旧接口传入的是绝对时间，这里换算成相对时长
+        long duration = expiryTime - player.level().getGameTime();
+        if (duration < 0) duration = 0;
+        MANAGER.trackByExpiry(player, uuid, expiryTime, ITimedEntityManager.Category.SERVANT, entityTypeId);
     }
 
     public static void removeServantExpiry(Player player, UUID uuid) {
-        CompoundTag root = getRoot(player);
-        ListTag list = root.getList(SERVANT_EXPIRY, Tag.TAG_COMPOUND);
-        removeEntry(list, uuid);
-        root.put(SERVANT_EXPIRY, list);
+        MANAGER.untrack(player, uuid, ITimedEntityManager.Category.SERVANT);
     }
 
     public static long getServantExpiry(Player player, UUID uuid) {
-        CompoundTag entry = findEntry(getRoot(player).getList(SERVANT_EXPIRY, Tag.TAG_COMPOUND), uuid);
-        return entry == null ? -1L : entry.getLong("Time");
+        return MANAGER.getExpiry(player, uuid, ITimedEntityManager.Category.SERVANT);
     }
 
     public static Map<UUID, CompoundTag> getServantExpirySnapshot(Player player) {
-        Map<UUID, CompoundTag> map = new HashMap<>();
-        ListTag list = getRoot(player).getList(SERVANT_EXPIRY, Tag.TAG_COMPOUND);
-        for (int i = 0; i < list.size(); i++) {
-            CompoundTag entry = list.getCompound(i);
-            CompoundTag value = new CompoundTag();
-            value.putLong("Time", entry.getLong("Time"));
-            value.putString("EntityType", entry.getString("EntityType"));
-            map.put(entry.getUUID("UUID"), value);
-        }
-        return map;
+        return MANAGER.getSnapshot(player, ITimedEntityManager.Category.SERVANT);
     }
 
     // ---- 亚形态过期 ----
 
     public static void addApollyonExpiry(Player player, UUID uuid, long expiryTime, String entityTypeId) {
-        CompoundTag root = getRoot(player);
-        ListTag list = root.getList(APOLLYON_EXPIRY, Tag.TAG_COMPOUND);
-        removeEntry(list, uuid);
-        CompoundTag entry = new CompoundTag();
-        entry.putUUID("UUID", uuid);
-        entry.putLong("Time", expiryTime);
-        entry.putString("EntityType", entityTypeId == null ? "" : entityTypeId);
-        list.add(entry);
-        root.put(APOLLYON_EXPIRY, list);
+        MANAGER.trackByExpiry(player, uuid, expiryTime, ITimedEntityManager.Category.APOLLYON, entityTypeId);
     }
 
     public static void removeApollyonExpiry(Player player, UUID uuid) {
-        CompoundTag root = getRoot(player);
-        ListTag list = root.getList(APOLLYON_EXPIRY, Tag.TAG_COMPOUND);
-        removeEntry(list, uuid);
-        root.put(APOLLYON_EXPIRY, list);
+        MANAGER.untrack(player, uuid, ITimedEntityManager.Category.APOLLYON);
     }
 
     public static long getApollyonExpiry(Player player, UUID uuid) {
-        CompoundTag entry = findEntry(getRoot(player).getList(APOLLYON_EXPIRY, Tag.TAG_COMPOUND), uuid);
-        return entry == null ? -1L : entry.getLong("Time");
+        return MANAGER.getExpiry(player, uuid, ITimedEntityManager.Category.APOLLYON);
     }
 
     public static Map<UUID, CompoundTag> getApollyonExpirySnapshot(Player player) {
-        Map<UUID, CompoundTag> map = new HashMap<>();
-        ListTag list = getRoot(player).getList(APOLLYON_EXPIRY, Tag.TAG_COMPOUND);
-        for (int i = 0; i < list.size(); i++) {
-            CompoundTag entry = list.getCompound(i);
-            CompoundTag value = new CompoundTag();
-            value.putLong("Time", entry.getLong("Time"));
-            value.putString("EntityType", entry.getString("EntityType"));
-            map.put(entry.getUUID("UUID"), value);
-        }
-        return map;
+        return MANAGER.getSnapshot(player, ITimedEntityManager.Category.APOLLYON);
     }
 
     // ---- 防止掉落 ----
 
     public static void addPreventDrop(Player player, UUID uuid) {
-        CompoundTag root = getRoot(player);
-        ListTag list = root.getList(PREVENT_DROPS, Tag.TAG_STRING);
-        String s = uuid.toString();
-        for (int i = 0; i < list.size(); i++) {
-            if (list.getString(i).equals(s)) return;
-        }
-        list.add(StringTag.valueOf(s));
-        root.put(PREVENT_DROPS, list);
+        MANAGER.addPreventDrop(player, uuid);
     }
 
     public static void removePreventDrop(Player player, UUID uuid) {
-        CompoundTag root = getRoot(player);
-        ListTag list = root.getList(PREVENT_DROPS, Tag.TAG_STRING);
-        String s = uuid.toString();
-        for (int i = list.size() - 1; i >= 0; i--) {
-            if (list.getString(i).equals(s)) list.remove(i);
-        }
-        root.put(PREVENT_DROPS, list);
+        MANAGER.removePreventDrop(player, uuid);
     }
 
     public static boolean shouldPreventDrop(Player player, UUID uuid) {
-        ListTag list = getRoot(player).getList(PREVENT_DROPS, Tag.TAG_STRING);
-        String s = uuid.toString();
-        for (int i = 0; i < list.size(); i++) {
-            if (list.getString(i).equals(s)) return true;
-        }
-        return false;
+        return MANAGER.shouldPreventDrop(player, uuid);
     }
 
     public static boolean isEmpty(Player player) {
-        CompoundTag root = getRoot(player);
-        return root.getList(SERVANT_EXPIRY, Tag.TAG_COMPOUND).isEmpty()
-                && root.getList(APOLLYON_EXPIRY, Tag.TAG_COMPOUND).isEmpty()
-                && root.getList(PREVENT_DROPS, Tag.TAG_STRING).isEmpty();
+        return MANAGER.isEmpty(player);
     }
 
     public static void cleanupEntity(Player player, UUID uuid) {
-        removeServantExpiry(player, uuid);
-        removeApollyonExpiry(player, uuid);
-        removePreventDrop(player, uuid);
+        MANAGER.untrackAll(player, uuid);
     }
 
-    // ==================== 根据 UUID 反查玩家 ====================
+    // ==================== 反查 / 唯一性检查 ====================
 
-    /**
-     * 在所有在线玩家中查找哪个玩家的 PreventDrops 列表锁定了该 UUID。
-     * 找到后返回该玩家，未找到返回 null。
-     */
     @Nullable
     public static Player findOwnerByPreventDrop(ServerLevel level, UUID entityUUID) {
-        for (Player player : level.getServer().getPlayerList().getPlayers()) {
-            if (shouldPreventDrop(player, entityUUID)) {
-                return player;
-            }
-        }
-        return null;
+        return TimedEntityManager.findOwnerByPreventDrop(level, entityUUID);
     }
 
-    // ==================== 检查是否已存在转化后的使徒（同一玩家唯一） ====================
-
-    /**
-     * 检查指定玩家是否已经存在一个未过期的亚形态使徒。
-     * @return 已存在的那个亚形态实体的 UUID，不存在返回 null
-     */
     @Nullable
     public static UUID findExistingApollyonFor(Player player, long currentTime) {
-        Map<UUID, CompoundTag> snapshot = getApollyonExpirySnapshot(player);
-        for (Map.Entry<UUID, CompoundTag> entry : snapshot.entrySet()) {
-            long expiry = entry.getValue().getLong("Time");
-            if (expiry > 0 && currentTime < expiry) {
-                return entry.getKey();
-            }
+        return MANAGER.findExistingTrackedFor(player, ITimedEntityManager.Category.APOLLYON, currentTime);
+    }
+
+    // ==================== 便捷：带缓存的实体获取 ====================
+
+    /**
+     * 优先从缓存拿实体，缓存没有再按 UUID 从世界找并补缓存。
+     */
+    @Nullable
+    public LivingEntity getOrLookupEntity(ServerLevel level, UUID uuid) {
+        LivingEntity cached = getCachedEntity(uuid);
+        if (cached != null) return cached;
+
+        Entity entity = level.getEntity(uuid);
+        if (entity instanceof LivingEntity le) {
+            cacheEntity(uuid, le);
+            return le;
         }
         return null;
     }

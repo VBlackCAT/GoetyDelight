@@ -5,10 +5,9 @@ import com.Polarice3.Goety.api.entities.ally.IServant;
 import com.Polarice3.Goety.common.research.ResearchList;
 import com.Polarice3.Goety.utils.SEHelper;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.advancements.critereon.ConsumeItemTrigger;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -23,13 +22,22 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.v_black_cat.goetydelight.api.ITimedEntityManager;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.ApocalyptiumData;
 import net.v_black_cat.goetydelight.item.ModItems;
+import net.v_black_cat.goetydelight.util.TimedEntityManager;
 
-import java.util.Objects;
 import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = "goetydelight")
 public class HiddenPancakeItem extends Item {
+
+    /** 仆从寿命（tick），与 setLimitedLife 保持一致 */
+    private static final int SERVANT_LIFETIME = 6000;
+
+    /** 全局计时管理器 */
+    private static final TimedEntityManager MANAGER = TimedEntityManager.getInstance();
+
     public HiddenPancakeItem(Properties pProperties) {
         super(pProperties);
     }
@@ -90,7 +98,7 @@ public class HiddenPancakeItem extends Item {
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity target) {
         ResourceLocation entityId = ForgeRegistries.ENTITY_TYPES.getKey(target.getType());
         boolean isHiddenPancakeCopy = isIsHiddenPancakeCopy(entityId);
-        if (player.getMainHandItem().getItem() == ModItems.HIDDEN_PANCAKE.get()){
+        if (player.getMainHandItem().getItem() == ModItems.HIDDEN_PANCAKE.get()) {
             player.stopRiding();
         }
         // 服务端判定
@@ -143,15 +151,30 @@ public class HiddenPancakeItem extends Item {
 
                 IServant newServant = (IServant) newEntity;
 
-                // 设置属性
+                // 设置属性（原有寿命设置保持不变）
                 newServant.setTrueOwner(player);
                 newServant.setOwnerId(player.getUUID());
-                newServant.setLimitedLife(6000);
+                newServant.setLimitedLife(SERVANT_LIFETIME);
 
                 // 添加实体到世界
                 target.level().addFreshEntity(newEntity);
-                if(!player.isCreative()){
-                    stack.shrink(1);}
+
+                // ★ 额外一层保险：用计时管理器兜底注册
+                if (target.level() instanceof ServerLevel serverLevel) {
+                    UUID servantUUID = MANAGER.track(
+                            player,
+                            newEntity,
+                            SERVANT_LIFETIME,
+                            ITimedEntityManager.Category.SERVANT,
+                            entityId
+                    );
+                    // 补缓存到 ApocalyptiumData，保持与其他业务一致
+                    ApocalyptiumData.get(serverLevel).cacheEntity(servantUUID, newEntity);
+                }
+
+                if (!player.isCreative()) {
+                    stack.shrink(1);
+                }
 
                 return super.onLeftClickEntity(stack, player, target);
             }
@@ -170,10 +193,10 @@ public class HiddenPancakeItem extends Item {
     public static boolean isIsHiddenPancakeCopy(ResourceLocation entityId) {
         boolean isHiddenPancakeCopy = false;
         if (entityId.equals(new ResourceLocation("goety:redstone_monstrosity")) ||
-            entityId.equals(new ResourceLocation("goety_cataclysm:netherite_monstrosity")) ||
-            entityId.equals(new ResourceLocation("goety_cataclysm:ancient_remnant")) ||
-            entityId.equals(new ResourceLocation("goetyawaken:ender_keeper_servant")) ||
-            entityId.equals(new ResourceLocation("goetyawaken:mushroom_monstrosity"))
+                entityId.equals(new ResourceLocation("goety_cataclysm:netherite_monstrosity")) ||
+                entityId.equals(new ResourceLocation("goety_cataclysm:ancient_remnant")) ||
+                entityId.equals(new ResourceLocation("goetyawaken:ender_keeper_servant")) ||
+                entityId.equals(new ResourceLocation("goetyawaken:mushroom_monstrosity"))
         ){isHiddenPancakeCopy = true;}else {isHiddenPancakeCopy = false;}
         return isHiddenPancakeCopy;
     }
