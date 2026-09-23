@@ -28,6 +28,9 @@ import java.util.function.Predicate;
 public class GoetyDelightConfigScreen extends Screen {
     private static final String PREFIX = "goetydelight.configuration.";
 
+    /** 底部按钮区域高度（像素）。ConfigList 不会覆盖这个区域。 */
+    private static final int BOTTOM_BUTTON_AREA_HEIGHT = 32;
+
     private final Set<String> collapsedGroups = new HashSet<>();
     private final Screen parent;
     private ConfigList list;
@@ -51,7 +54,10 @@ public class GoetyDelightConfigScreen extends Screen {
 
     @Override
     protected void init() {
-        this.list = new ConfigList(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
+        // 列表底部边界：预留底部按钮区域，避免覆盖底部按钮
+        int listBottom = this.height - BOTTOM_BUTTON_AREA_HEIGHT;
+
+        this.list = new ConfigList(this.minecraft, this.width, this.height, 32, listBottom, 25);
         this.addWidget(this.list);
 
         int buttonY = this.height - 27;
@@ -185,10 +191,20 @@ public class GoetyDelightConfigScreen extends Screen {
 
     private class ConfigList extends ObjectSelectionList<ConfigList.Row> {
 
+        /** 底部禁交互区域的起始 Y 坐标（即此 Y 值以下不响应事件与 hover）。 */
+        private final int bottomMaskY;
+
         ConfigList(Minecraft mc, int width, int height, int y0, int y1, int itemHeight) {
             super(mc, width, height, y0, y1, itemHeight);
             this.setRenderHeader(false, 0);
+            // 列表实际的底部（getBottom()）以下都是禁交互区域
+            this.bottomMaskY = y1;
             this.rebuild();
+        }
+
+        /** 判断某个坐标是否落在底部遮罩区域内。 */
+        boolean isInBottomMask(double mouseX, double mouseY) {
+            return mouseY >= this.bottomMaskY;
         }
 
         void rebuild() {
@@ -279,7 +295,14 @@ public class GoetyDelightConfigScreen extends Screen {
         @Override
         public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
             this.layoutRows();
-            super.render(graphics, mouseX, mouseY, partialTick);
+
+            // 如果鼠标落在底部遮罩区域，向内部 widget 传递一个"无效"的鼠标坐标，
+            // 这样 widget 的 hover 状态和 tooltip 都不会被触发。
+            boolean masked = isInBottomMask(mouseX, mouseY);
+            int renderMouseX = masked ? -1 : mouseX;
+            int renderMouseY = masked ? -1 : mouseY;
+
+            super.render(graphics, renderMouseX, renderMouseY, partialTick);
         }
 
         // --------------------------------------------------------------------
@@ -287,6 +310,10 @@ public class GoetyDelightConfigScreen extends Screen {
         // --------------------------------------------------------------------
 
         private ValueRow rowAt(double mouseX, double mouseY) {
+            // 底部遮罩区域：直接返回 null，不命中任何行
+            if (isInBottomMask(mouseX, mouseY)) {
+                return null;
+            }
             for (Row row : this.children()) {
                 if (row instanceof ValueRow vr && vr.hitTest(mouseX, mouseY)) {
                     return vr;
@@ -307,6 +334,11 @@ public class GoetyDelightConfigScreen extends Screen {
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            // 底部遮罩区域：放行给底层按钮
+            if (isInBottomMask(mouseX, mouseY)) {
+                return false;
+            }
+
             this.layoutRows();
             ValueRow row = rowAt(mouseX, mouseY);
             if (row != null && row.mouseClicked(mouseX, mouseY, button)) {
@@ -319,26 +351,42 @@ public class GoetyDelightConfigScreen extends Screen {
             }
 
             clearEditFocus();
-            return super.mouseClicked(mouseX, mouseY, button);
+            // 没有命中任何行：不消耗事件，让事件继续传递（比如到底层按钮）
+            return false;
         }
 
         @Override
         public boolean mouseReleased(double mouseX, double mouseY, int button) {
+            if (isInBottomMask(mouseX, mouseY)) {
+                return false;
+            }
             this.layoutRows();
             ValueRow row = rowAt(mouseX, mouseY);
             if (row != null && row.mouseReleased(mouseX, mouseY, button)) {
                 return true;
             }
-            return super.mouseReleased(mouseX, mouseY, button);
+            return false;
         }
 
         @Override
         public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+            if (isInBottomMask(mouseX, mouseY)) {
+                return false;
+            }
             ValueRow row = rowAt(mouseX, mouseY);
             if (row != null && row.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
                 return true;
             }
-            return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+            return false;
+        }
+
+        @Override
+        public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+            // 鼠标在底部遮罩区域时，不响应滚动
+            if (isInBottomMask(mouseX, mouseY)) {
+                return false;
+            }
+            return super.mouseScrolled(mouseX, mouseY, delta);
         }
 
         @Override
@@ -724,13 +772,20 @@ public class GoetyDelightConfigScreen extends Screen {
                 graphics.drawString(GoetyDelightConfigScreen.this.font, this.label,
                         left + 5, top + 6, color);
 
-                this.widget.render(graphics, mouseX, mouseY, partialTick);
-                this.resetButton.render(graphics, mouseX, mouseY, partialTick);
+                // 底部遮罩区域：向 widget 传递无效坐标，禁止 hover / tooltip
+                boolean masked = ConfigList.this.isInBottomMask(mouseX, mouseY);
+                int renderMouseX = masked ? -1 : mouseX;
+                int renderMouseY = masked ? -1 : mouseY;
 
-                boolean hoverValue = this.widget.isMouseOver(mouseX, mouseY);
-                boolean hoverReset = this.resetButton.isMouseOver(mouseX, mouseY);
-                if (!tooltipLines.isEmpty() && (hoverValue || hoverReset)) {
-                    GoetyDelightConfigScreen.this.pendingTooltip = tooltipLines;
+                this.widget.render(graphics, renderMouseX, renderMouseY, partialTick);
+                this.resetButton.render(graphics, renderMouseX, renderMouseY, partialTick);
+
+                if (!masked) {
+                    boolean hoverValue = this.widget.isMouseOver(mouseX, mouseY);
+                    boolean hoverReset = this.resetButton.isMouseOver(mouseX, mouseY);
+                    if (!tooltipLines.isEmpty() && (hoverValue || hoverReset)) {
+                        GoetyDelightConfigScreen.this.pendingTooltip = tooltipLines;
+                    }
                 }
             }
 
