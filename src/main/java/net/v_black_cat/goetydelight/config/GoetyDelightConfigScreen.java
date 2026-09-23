@@ -15,44 +15,28 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.v_black_cat.goetydelight.GoetyDelight;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 @OnlyIn(Dist.CLIENT)
 public class GoetyDelightConfigScreen extends Screen {
     private static final String PREFIX = "goetydelight.configuration.";
 
-    /** 底部按钮区域高度（像素）。ConfigList 不会覆盖这个区域。 */
     private static final int BOTTOM_BUTTON_AREA_HEIGHT = 32;
 
     private final Set<String> collapsedGroups = new HashSet<>();
 
-    /**
-     * 已展开的列表配置 key 集合。
-     * 由于 ConfigList.rebuild() 会重建所有 ValueRow，展开状态不能放在 ValueRow 里，
-     * 必须提升到 Screen 层，按 key 保存。
-     */
     private final Set<String> expandedListKeys = new HashSet<>();
 
     private final Screen parent;
     private ConfigList list;
 
-    /** 当前帧待绘制的 tooltip。 */
     private List<Component> pendingTooltip = null;
 
-    /** 当前持有焦点的 EditBox（用于键盘输入路由）。 */
     private EditBox focusedBox = null;
 
-    /** 待保存的修改：key 为 ConfigValue 引用，value 为新值。 */
     private final Map<ForgeConfigSpec.ConfigValue<?>, Object> pendingChanges = new LinkedHashMap<>();
 
-    /** 保存按钮引用，用于根据脏数据状态切换是否可用。 */
     private Button saveButton;
 
     public GoetyDelightConfigScreen(Screen parent) {
@@ -304,7 +288,6 @@ public class GoetyDelightConfigScreen extends Screen {
             super.render(graphics, renderMouseX, renderMouseY, partialTick);
         }
 
-        /** 判断鼠标是否落在第 i 行的矩形范围内。 */
         private boolean isInsideRow(int i, double mouseX, double mouseY) {
             int top = this.getRowTop(i);
             int left = this.getRowLeft();
@@ -537,8 +520,6 @@ public class GoetyDelightConfigScreen extends Screen {
                         Component.literal("element " + index));
                 this.box.setMaxLength(4096);
                 this.box.setValue(initial);
-                // 关键：setValue 默认把光标放到末尾并自动右滚，导致初始显示字符串尾部。
-                // 显式把光标和选中位置归 0，让初始显示从左边开始。
                 this.box.setCursorPosition(0);
                 this.box.setHighlightPos(0);
 
@@ -652,24 +633,19 @@ public class GoetyDelightConfigScreen extends Screen {
             private final Button resetButton;
             private final List<Component> tooltipLines;
 
-            /** 列表展开状态：从 Screen 层的 expandedListKeys 恢复。 */
             boolean expanded;
 
             final List<ListElementRow> elementRows = new ArrayList<>();
 
             private boolean suppressResponder = false;
 
-            /**
-             * 标记本次 mouseClicked 已经在内部处理了 Button 的 press+release。
-             * 这样 ConfigList.mouseReleased 里就不会再触发一次 onPress。
-             */
             private boolean clickHandledInPress = false;
 
             ValueRow(String key, ForgeConfigSpec.ValueSpec spec, ForgeConfigSpec.ConfigValue<?> value) {
                 this.key = key;
                 this.spec = spec;
                 this.value = value;
-                this.label = Component.literal(relativeKey(key));
+                this.label = buildLabel(key, spec);
                 this.expanded = GoetyDelightConfigScreen.this.expandedListKeys.contains(key);
                 this.widget = createWidget();
                 this.resetButton = Button.builder(Component.literal("↺"), b -> resetToDefault())
@@ -679,20 +655,74 @@ public class GoetyDelightConfigScreen extends Screen {
             }
 
             /**
+             * 左侧显示文字：
+             * 1) 优先从 Config.COMMENT_MAP 读（en_us / zh_cn），按客户端语言选；
+             * 2) 回退到 spec.getComment()（跳过被 Forge 污染成 "Range: ..." 的文本）；
+             * 3) 最后回退到 key 的相对路径。
+             */
+            private static Component buildLabel(String key, ForgeConfigSpec.ValueSpec spec) {
+                // 1) COMMENT_MAP
+                String[] mapped = Config.COMMENT_MAP.get(key);
+                if (mapped != null) {
+                    String chosen = isChineseLanguage() && mapped.length >= 2 ? mapped[1] : mapped[0];
+                    if (chosen != null && !chosen.isBlank()) {
+                        return Component.literal(chosen);
+                    }
+                }
+
+                // 2) spec.getComment()
+                String comment = spec.getComment();
+                if (comment != null && !comment.isBlank() && !comment.startsWith("Range:")) {
+                    String[] lines = comment.split("\n");
+                    String chosen = isChineseLanguage() && lines.length >= 2
+                            ? lines[lines.length - 1]
+                            : lines[0];
+                    chosen = chosen.trim();
+                    if (!chosen.isEmpty()) {
+                        return Component.literal(chosen);
+                    }
+                }
+
+                // 3) 回退 key 相对路径
+                int idx = key.indexOf('.');
+                return Component.literal(idx >= 0 ? key.substring(idx + 1) : key);
+            }
+
+            /** 当前客户端语言是否为中文。 */
+            private static boolean isChineseLanguage() {
+                try {
+                    String code = Minecraft.getInstance().getLanguageManager().getSelected();
+                    if (code == null) return false;
+                    code = code.toLowerCase(Locale.ROOT);
+                    return code.startsWith("zh") || code.equals("lzh");
+                } catch (Exception e) {
+                    return false;
+                }
+            }
+
+            /**
              * 构建 tooltip。
-             * 顺序：注释 → 默认值（仅非列表） → 需要重启提示。
+             * 顺序：COMMENT_MAP / spec comment → 默认值（仅非列表） → 需要重启提示。
              */
             private List<Component> buildTooltip() {
                 List<Component> lines = new ArrayList<>();
 
-                String comment = spec.getComment();
-                if (comment != null && !comment.isBlank()) {
-                    for (String line : comment.split("\n")) {
-                        lines.add(Component.literal("§7" + line));
+                String[] mapped = Config.COMMENT_MAP.get(this.key);
+                if (mapped != null) {
+                    for (String line : mapped) {
+                        if (line != null && !line.isBlank()) {
+                            lines.add(Component.literal("§7" + line));
+                        }
+                    }
+                } else {
+                    String comment = spec.getComment();
+                    if (comment != null && !comment.isBlank() && !comment.startsWith("Range:")) {
+                        for (String line : comment.split("\n")) {
+                            lines.add(Component.literal("§7" + line));
+                        }
                     }
                 }
 
-                // 新增：显示默认值（列表类型不显示）
                 if (!isListValue()) {
                     lines.add(Component.literal("§7Default: §f" + formatDefault(spec.getDefault())));
                 }

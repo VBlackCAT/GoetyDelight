@@ -33,11 +33,19 @@ public class Config
     private static final AtomicBoolean LEGACY_CAPTURED = new AtomicBoolean(false);
 
     // ==================== 旧 key -> 新 ConfigValue 映射 ====================
-    // 只在 captureLegacyConfig 中用于推导新路径，不再用于 set()
     private static final Map<String, ForgeConfigSpec.ConfigValue<?>> LEGACY_KEY_MAP = new HashMap<>();
 
-    // ==================== 旧 key -> 新路径（"food.polarice.polariceCooldown"） ====================
+    // ==================== 旧 key -> 新路径 ====================
     private static final Map<String, String> LEGACY_PATH_MAP = new HashMap<>();
+
+    // ==================== 配置项注释映射（en_us / zh_cn） ====================
+    // key 为配置路径，如 "food.polarice.polariceCooldown"
+    // value[0] = en_us，value[1] = zh_cn
+    public static final Map<String, String[]> COMMENT_MAP = new HashMap<>();
+
+    private static void registerComment(String key, String enUs, String zhCn) {
+        COMMENT_MAP.put(key, new String[]{enUs, zhCn});
+    }
 
     // ==================== 字段声明（全部先声明，后赋值） ====================
 
@@ -377,14 +385,13 @@ public class Config
 
         // ============================================================
         //  填充旧 key -> 新 ConfigValue / 新路径 映射
-        //  旧 key 必须与原代码中 define 的字符串完全一致
         // ============================================================
         registerLegacy("blacklistedItems", BLACKLISTED_ITEMS);
         registerLegacy("cakeEffectRadius", CAKE_EFFECT_RADIUS);
         registerLegacy("polariceAffectsBosses", POLARICE_AFFECTS_BOSSES);
         registerLegacy("polariceHealthThreshold", POLARICE_HEALTH_THRESHOLD);
-        registerLegacy("polarice_cooldown", POLARICE_COOLDOWN);     // 原 key 带下划线
-        registerLegacy("polarice_count", POLARICE_COUNT);           // 原 key 带下划线
+        registerLegacy("polarice_cooldown", POLARICE_COOLDOWN);
+        registerLegacy("polarice_count", POLARICE_COUNT);
         registerLegacy("extraBannedEntities", EXTRA_BANNED_ENTITIES);
         registerLegacy("MetamorphicScentGrassCopyBlacklist", METAMORPHIC_SCENT_GRASS_COPY_BLACKLIST);
         registerLegacy("metamorphicScentGrassDurationMultiplier", METAMORPHIC_SCENT_GRASS_DURATION_MULTIPLIER);
@@ -422,11 +429,173 @@ public class Config
         registerLegacy("tenThousandPoisonFeastMinDebuffCount", TEN_THOUSAND_POISON_FEAST_MIN_DEBUFF_COUNT);
         registerLegacy("playerModelScales", PLAYER_MODEL_SCALES);
         registerLegacy("enableGoetyRevelationCompatibility", ENABLE_GOETY_REVELATION_COMPATIBILITY);
+
+        // ============================================================
+        //  注册配置项注释（en_us / zh_cn）
+        // ============================================================
+
+        // ---- food.polarice ----
+        registerComment("food.polarice.polariceAffectsBosses",
+                "Whether bosses are affected by Polarice item",
+                "Boss是否受北极刨冰影响");
+        registerComment("food.polarice.polariceHealthThreshold",
+                "Maximum health threshold for entities to be affected by Polarice item (in half-hearts)",
+                "实体受北极刨冰影响的最大生命值阈值（单位：半颗心）");
+        registerComment("food.polarice.polariceCooldown",
+                "The cooldown for Polarice item to use",
+                "北极刨冰的使用冷却时间（tick）");
+        registerComment("food.polarice.polariceCount",
+                "The number of Polarice item can affect",
+                "北极刨冰可以影响的实体数量");
+        registerComment("food.polarice.extraBannedEntities",
+                "Additional entity IDs that cannot be converted by Polarice item.",
+                "北极刨冰无法转化的额外实体黑名单");
+
+        // ---- food.cake ----
+        registerComment("food.cake.cakeEffectRadius",
+                "Effect radius for the cake item",
+                "皇家蛋糕的效果半径");
+
+        // ---- food.metamorphicScent.grass ----
+        registerComment("food.metamorphicScent.grass.copyBlacklist",
+                "A list of items that cannot be copied by Metamorphic Scent Grass",
+                "幻味草无法复制的物品黑名单");
+        registerComment("food.metamorphicScent.grass.durationMultiplier",
+                "Duration multiplier for Metamorphic Scent Grass effect (0.0 to 1.0)",
+                "幻味草效果持续时间倍率");
+        registerComment("food.metamorphicScent.grass.amplifierMultiplier",
+                "Amplifier multiplier for Metamorphic Scent Grass effect (0.0 to 1.0)",
+                "幻味草效果等级倍率");
+        registerComment("food.metamorphicScent.grass.copyCount",
+                "The maximum number of effects that can be copied by Metamorphic Scent Grass (0-64)",
+                "幻味草可复制的最大效果数量");
+
+        // ---- food.metamorphicScent.fruit ----
+        registerComment("food.metamorphicScent.fruit.copyBlacklist",
+                "A list of items that cannot be copied by Metamorphic Scent Fruit",
+                "幻味果无法复制的物品黑名单");
+        registerComment("food.metamorphicScent.fruit.copyCount",
+                "The maximum number of effects that can be copied by Metamorphic Scent Fruit (1-64)",
+                "幻味果可复制的最大效果数量");
+
+        // ---- food.lichChaosStew ----
+        registerComment("food.lichChaosStew.boostPercentage",
+                "Boost percentage per stack of Lich's Chaos Stew for minions (0.1 = 10%)",
+                "巫妖乱炖每层为仆从提供的加成百分比");
+        registerComment("food.lichChaosStew.maxCount",
+                "Maximum stack count for Lich's Chaos Stew effect",
+                "巫妖乱炖效果的最大叠加层数");
+
+        // ---- food.nightHeartPeaSoup ----
+        registerComment("food.nightHeartPeaSoup.boostPercentage",
+                "Boost percentage per stack of Night Heart Pea Soup for minions (0.02 = 2%)",
+                "暗夜之心豌豆汤每层为仆从提供的加成百分比");
+        registerComment("food.nightHeartPeaSoup.maxCount",
+                "Maximum stack count for Night Heart Pea Soup effect",
+                "暗夜之心豌豆汤效果的最大叠加层数");
+
+        // ---- food.tenThousandPoisonFeast ----
+        registerComment("food.tenThousandPoisonFeast.useWhitelist",
+                "If true, use whitelist mode; if false, use blacklist mode",
+                "true=白名单模式，false=黑名单模式");
+        registerComment("food.tenThousandPoisonFeast.effectList",
+                "A list of debuff effects for whitelist/blacklist",
+                "万毒盛宴的效果白名单/黑名单");
+        registerComment("food.tenThousandPoisonFeast.levelConfig",
+                "Level range configuration for specific debuffs (format: effect_id=min-max)",
+                "万毒宴特定效果等级范围配置");
+        registerComment("food.tenThousandPoisonFeast.durationConfig",
+                "Duration range configuration for specific debuffs (format: effect_id=min-max, unit: minutes)",
+                "万毒宴特定效果时长范围配置");
+        registerComment("food.tenThousandPoisonFeast.defaultMinLevel",
+                "Default minimum level for unconfigured debuffs",
+                "未配置效果的默认最小等级");
+        registerComment("food.tenThousandPoisonFeast.defaultMaxLevel",
+                "Default maximum level for unconfigured debuffs",
+                "未配置效果的默认最大等级");
+        registerComment("food.tenThousandPoisonFeast.defaultMinDuration",
+                "Default minimum duration (minutes) for unconfigured debuffs",
+                "未配置效果的默认最短持续时间");
+        registerComment("food.tenThousandPoisonFeast.defaultMaxDuration",
+                "Default maximum duration (minutes) for unconfigured debuffs",
+                "未配置效果的默认最长持续时间");
+        registerComment("food.tenThousandPoisonFeast.effectCount",
+                "Number of random debuffs to apply when eating Ten Thousand Poison Feast",
+                "食用万毒盛宴时随机施加的debuff数量");
+        registerComment("food.tenThousandPoisonFeast.minItemCount",
+                "Minimum number of items required in crafting grid",
+                "合成万毒盛宴所需的最少物品数量");
+        registerComment("food.tenThousandPoisonFeast.minDebuffCount",
+                "Minimum number of unique debuff types required",
+                "合成万毒盛宴所需的最少debuff种类数");
+
+        // ---- tools.combat ----
+        registerComment("tools.combat.shiftSpeedMultiplier",
+                "Movement speed multiplier when Shift key is pressed",
+                "按下Shift键时的移动速度倍率");
+        registerComment("tools.combat.livingHurtDamageMultiplier",
+                "Normal damage multiplier (when not sneaking)",
+                "正常的伤害增幅倍率");
+        registerComment("tools.combat.livingDamageGeneralMultiplier",
+                "Damage multiplier when sneaking but not backstabbing",
+                "潜行非背刺的伤害增幅倍率");
+        registerComment("tools.combat.livingDamageBackstabMultiplier",
+                "Damage multiplier when sneaking and backstabbing",
+                "潜行背刺的伤害增幅倍率");
+
+        // ---- tools.enchantments.soulAffix ----
+        registerComment("tools.enchantments.soulAffix.disable",
+                "Disable Soul Affix enchantment entirely",
+                "完全禁用灵魂附加附魔");
+        registerComment("tools.enchantments.soulAffix.damagePerLevel",
+                "Damage increase per level of Soul Affix enchantment",
+                "灵魂附加附魔每级增加的伤害值");
+        registerComment("tools.enchantments.soulAffix.soulCostPerLevel",
+                "Soul energy cost per level of Soul Affix enchantment",
+                "灵魂附加附魔每级消耗的灵魂能量");
+        registerComment("tools.enchantments.soulAffix.blacklist",
+                "A list of items that cannot be enchanted with Soul Affix",
+                "无法附魔灵魂附加的物品列表");
+
+        // ---- tools.enchantments.soulMending ----
+        registerComment("tools.enchantments.soulMending.disable",
+                "Disable Soul Mending enchantment entirely",
+                "完全禁用灵魂修补附魔");
+        registerComment("tools.enchantments.soulMending.blacklist",
+                "A list of items that cannot be enchanted with Soul Mending",
+                "无法附魔灵魂修补的物品列表");
+
+        // ---- tools.enchantments.soulHealing ----
+        registerComment("tools.enchantments.soulHealing.disable",
+                "Disable Soul Healing enchantment entirely",
+                "完全禁用溢魂弥躯附魔");
+        registerComment("tools.enchantments.soulHealing.blacklist",
+                "A list of items that cannot be enchanted with Soul Healing",
+                "无法附魔溢魂弥躯的物品列表");
+
+        // ---- misc.items ----
+        registerComment("misc.items.blacklistedItems",
+                "A list of blacklisted items that will be hidden from creative tabs and prevent drops",
+                "物品黑名单列表");
+
+        // ---- misc.playerModel ----
+        registerComment("misc.playerModel.playerModelScales",
+                "Player model scale settings (format: playerName=scale)",
+                "玩家模型缩放设置");
+
+        // ---- misc.skeletonEye ----
+        registerComment("misc.skeletonEye.enabled",
+                "Whether to enable the skeleton red-eye effect",
+                "是否启用骷髅红眼特效");
+
+        // ---- misc.compat ----
+        registerComment("misc.compat.enableGoetyRevelationCompatibility",
+                "Whether to enable compatibility with goety_revelation mod",
+                "是否启用与goety_revelation模组的兼容性");
     }
 
     /**
      * 注册旧 key 与新 ConfigValue 的映射，同时记录新路径。
-     * 新路径由 ConfigValue.getPath() 给出（例如 ["food","polarice","polariceCooldown"]）。
      */
     private static void registerLegacy(String oldKey, ForgeConfigSpec.ConfigValue<?> value) {
         LEGACY_KEY_MAP.put(oldKey, value);
@@ -436,11 +605,6 @@ public class Config
 
     // ==================== 迁移逻辑 ====================
 
-    /**
-     * 在 Mod 构造函数中、registerConfig 之前调用。
-     * 直接读取旧配置文件，把顶层旧 key 的值按新路径改写回同一个 TOML 文件，
-     * 这样 Forge 后续加载时天然读到新路径下的值，无需再依赖 ConfigValue.set()。
-     */
     public static void captureLegacyConfig(Path configDir) {
         if (!LEGACY_CAPTURED.compareAndSet(false, true)) return;
 
@@ -451,7 +615,6 @@ public class Config
         }
 
         try {
-            // 备份一份，防止写坏
             Path backup = configDir.resolve("goetydelight-common.toml.bak");
             if (!Files.exists(backup)) {
                 Files.copy(configPath, backup);
@@ -468,13 +631,11 @@ public class Config
                 String oldKey = entry.getKey();
                 String newPath = entry.getValue();
 
-                // 旧文件里顶层没有这个 key，跳过（可能是已经迁移过，或用户没配过）
                 if (!oldConfig.contains(oldKey)) continue;
 
                 Object oldValue = oldConfig.get(oldKey);
                 if (oldValue == null) continue;
 
-                // 新路径已经有值，说明迁移已完成，不覆盖用户新配置
                 if (oldConfig.contains(newPath)) {
                     oldConfig.remove(oldKey);
                     migrated++;
@@ -513,10 +674,6 @@ public class Config
         refreshCaches();
     }
 
-    /**
-     * 从当前已加载的 spec 中刷新运行时缓存。
-     * 必须保证不抛异常，否则会中断事件链。
-     */
     private static void refreshCaches() {
         try {
             List<? extends String> raw = BLACKLISTED_ITEMS.get();
