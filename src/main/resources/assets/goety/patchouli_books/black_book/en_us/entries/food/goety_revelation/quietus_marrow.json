@@ -1,6 +1,7 @@
 {
   "name": "Quietus Marrow",
   "icon": "goetydelight:quietus_marrow",
+  "flag": "mod:goety_revelation",
   "category": "goety:goetydelight/food/goety_revelation",
   "pages": [
     {

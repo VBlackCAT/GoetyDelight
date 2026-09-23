@@ -1,6 +1,7 @@
 {
   "name": "Apocalyptium Knife",
   "icon": "goetydelight:apocalyptium_knife",
+  "flag": "mod:goety_revelation",
   "category": "goety:goetydelight/food/goety_revelation",
   "pages": [
     {

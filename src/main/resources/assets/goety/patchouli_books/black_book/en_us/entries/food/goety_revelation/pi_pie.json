@@ -1,6 +1,7 @@
 {
   "name": "Pi Pie",
   "icon": "goetydelight:pi_pie",
+  "flag": "mod:goety_revelation",
   "category": "goety:goetydelight/food/goety_revelation",
   "pages": [
     {
