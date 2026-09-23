@@ -542,6 +542,9 @@ public class GoetyDelightConfigScreen extends Screen {
 
         graphics.flush();
 
+        graphics.pose().pushPose();
+        graphics.pose().translate(0.0F, 0.0F, 400.0F);
+
         int lineHeight = 10;
         int padding = 4;
         int maxWidth = 0;
