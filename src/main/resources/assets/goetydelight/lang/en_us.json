@@ -397,5 +397,7 @@
   "item.goetydelight.stone_sword_skewer.tooltip.6": "\"I did not come to bring peace to the earth\"",
   "item.goetydelight.stone_sword_skewer.tooltip.7": "\"but a sword\"",
   "tooltip.goetydelight.soul_infused": "Soul-Infused",
-  "tooltip.goetydelight.soul_energy_restore": "Restores %s Soul Energy upon consumption."
+  "tooltip.goetydelight.soul_energy_restore": "Restores %s Soul Energy upon consumption.",
+  "goetydelight.configuration.save": "Save",
+  "goetydelight.configuration.discard": "Discard"
 }

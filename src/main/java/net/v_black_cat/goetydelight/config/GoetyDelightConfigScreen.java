@@ -22,21 +22,35 @@ import java.util.function.Predicate;
 public class GoetyDelightConfigScreen extends Screen {
     private static final String PREFIX = "goetydelight.configuration.";
 
+    /** 底部按钮区域高度（像素）。ConfigList 不会覆盖这个区域。 */
     private static final int BOTTOM_BUTTON_AREA_HEIGHT = 32;
 
+    /**
+     * 已折叠的分组（用完整路径作为 key，例如 "food"、"food.polarice"、
+     * "food.metamorphicScent.grass"）。每一层都可以独立折叠。
+     */
     private final Set<String> collapsedGroups = new HashSet<>();
 
+    /**
+     * 已展开的列表配置 key 集合。
+     * 由于 ConfigList.rebuild() 会重建所有 ValueRow，展开状态不能放在 ValueRow 里，
+     * 必须提升到 Screen 层，按 key 保存。
+     */
     private final Set<String> expandedListKeys = new HashSet<>();
 
     private final Screen parent;
     private ConfigList list;
 
+    /** 当前帧待绘制的 tooltip。 */
     private List<Component> pendingTooltip = null;
 
+    /** 当前持有焦点的 EditBox（用于键盘输入路由）。 */
     private EditBox focusedBox = null;
 
+    /** 待保存的修改：key 为 ConfigValue 引用，value 为新值。 */
     private final Map<ForgeConfigSpec.ConfigValue<?>, Object> pendingChanges = new LinkedHashMap<>();
 
+    /** 保存按钮引用，用于根据脏数据状态切换是否可用。 */
     private Button saveButton;
 
     public GoetyDelightConfigScreen(Screen parent) {
@@ -169,6 +183,22 @@ public class GoetyDelightConfigScreen extends Screen {
     }
 
     // ========================================================================
+    //                          语言判断（类级）
+    // ========================================================================
+
+    /** 当前客户端语言是否为中文。 */
+    private static boolean isChineseLanguage() {
+        try {
+            String code = Minecraft.getInstance().getLanguageManager().getSelected();
+            if (code == null) return false;
+            code = code.toLowerCase(Locale.ROOT);
+            return code.startsWith("zh") || code.equals("lzh");
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // ========================================================================
     //                            配置列表
     // ========================================================================
 
@@ -187,41 +217,43 @@ public class GoetyDelightConfigScreen extends Screen {
             return mouseY >= this.bottomMaskY;
         }
 
-        void rebuild() {
-            this.clearEntries();
+        // --------------------------------------------------------------------
+        // 树形结构
+        // --------------------------------------------------------------------
 
-            if (!Config.SPEC.isLoaded()) {
-                GoetyDelight.LOGGER.warn("[ConfigScreen] SPEC not loaded, config list will be empty");
-                return;
-            }
+        /**
+         * 树节点：
+         * - valueRow != null 时表示这是个值节点（叶子）。
+         * - 否则是分组节点，children 里是它的子节点。
+         */
+        class Node {
+            final String name;
+            final String fullPath;
+            final int depth;
+            ValueRow valueRow;
+            final List<Node> children = new ArrayList<>();
 
-            List<ValueRow> values = new ArrayList<>();
-            collectEntries(Config.SPEC.getValues(), "", values);
-            values.sort(Comparator.comparing(v -> v.key));
-
-            String currentGroup = null;
-            for (ValueRow v : values) {
-                String group = v.key.contains(".")
-                        ? v.key.substring(0, v.key.indexOf('.'))
-                        : "(root)";
-                if (!group.equals(currentGroup)) {
-                    this.addEntry(new HeaderRow(group));
-                    currentGroup = group;
-                }
-                if (!collapsedGroups.contains(group)) {
-                    this.addEntry(v);
-                    if (v.expanded) {
-                        v.rebuildElementRows();
-                        for (ListElementRow er : v.elementRows) {
-                            this.addEntry(er);
-                        }
-                    }
-                }
+            Node(String name, String fullPath, int depth) {
+                this.name = name;
+                this.fullPath = fullPath;
+                this.depth = depth;
             }
         }
 
+        private Node buildTree() {
+            Node root = new Node("", "", -1);
+
+            if (!Config.SPEC.isLoaded()) {
+                GoetyDelight.LOGGER.warn("[ConfigScreen] SPEC not loaded, config list will be empty");
+                return root;
+            }
+
+            buildTreeRecursive(Config.SPEC.getValues(), "", root, 0);
+            return root;
+        }
+
         @SuppressWarnings("unchecked")
-        private void collectEntries(Object node, String prefix, List<ValueRow> out) {
+        private void buildTreeRecursive(Object node, String prefix, Node parent, int depth) {
             Map<String, Object> map;
 
             if (node instanceof com.electronwill.nightconfig.core.Config nc) {
@@ -232,22 +264,60 @@ public class GoetyDelightConfigScreen extends Screen {
                 return;
             }
 
-            for (Map.Entry<String, Object> e : map.entrySet()) {
-                String key = prefix.isEmpty() ? e.getKey() : prefix + "." + e.getKey();
-                Object v = e.getValue();
+            List<String> keys = new ArrayList<>(map.keySet());
+            keys.sort(Comparator.naturalOrder());
+
+            for (String keyName : keys) {
+                Object v = map.get(keyName);
+                String fullPath = prefix.isEmpty() ? keyName : prefix + "." + keyName;
 
                 if (v instanceof com.electronwill.nightconfig.core.Config) {
-                    collectEntries(v, key, out);
+                    Node child = new Node(keyName, fullPath, depth);
+                    parent.children.add(child);
+                    buildTreeRecursive(v, fullPath, child, depth + 1);
                 } else if (v instanceof ForgeConfigSpec.ConfigValue<?> configValue) {
                     ForgeConfigSpec.ValueSpec valueSpec =
                             Config.SPEC.getSpec().getRaw(configValue.getPath());
-                    if (valueSpec != null) {
-                        out.add(new ValueRow(key, valueSpec, configValue));
-                    } else {
+                    if (valueSpec == null) {
                         GoetyDelight.LOGGER.warn("[ConfigScreen] No ValueSpec for path {}",
                                 configValue.getPath());
+                        continue;
+                    }
+                    Node child = new Node(keyName, fullPath, depth);
+                    child.valueRow = new ValueRow(fullPath, valueSpec, configValue, depth);
+                    parent.children.add(child);
+                }
+            }
+        }
+
+        void rebuild() {
+            this.clearEntries();
+
+            Node root = buildTree();
+            for (Node child : root.children) {
+                addNodeRecursive(child);
+            }
+        }
+
+        private void addNodeRecursive(Node node) {
+            if (node.valueRow != null) {
+                this.addEntry(node.valueRow);
+                if (node.valueRow.expanded) {
+                    node.valueRow.rebuildElementRows();
+                    for (ListElementRow er : node.valueRow.elementRows) {
+                        this.addEntry(er);
                     }
                 }
+                return;
+            }
+
+            this.addEntry(new HeaderRow(node.name, node.fullPath, node.depth));
+
+            if (collapsedGroups.contains(node.fullPath)) {
+                return;
+            }
+            for (Node child : node.children) {
+                addNodeRecursive(child);
             }
         }
 
@@ -458,23 +528,41 @@ public class GoetyDelightConfigScreen extends Screen {
         }
 
         // --------------------------------------------------------------------
-        // 分组标题行
+        // 分组标题行（显示名走 GROUP_NAME_MAP）
         // --------------------------------------------------------------------
         class HeaderRow extends Row {
             private final String groupName;
+            private final String fullPath;
+            private final int depth;
             private final Component title;
 
-            HeaderRow(String groupName) {
+            HeaderRow(String groupName, String fullPath, int depth) {
                 this.groupName = groupName;
-                boolean collapsed = collapsedGroups.contains(groupName);
-                this.title = Component.literal("§e" + (collapsed ? "▶ " : "▼ ") + groupName);
+                this.fullPath = fullPath;
+                this.depth = depth;
+
+                boolean collapsed = collapsedGroups.contains(fullPath);
+                String display = displayName(fullPath, groupName);
+                String indent = "  ".repeat(Math.max(0, depth));
+                this.title = Component.literal("§e" + indent + (collapsed ? "▶ " : "▼ ") + display);
+            }
+
+            private static String displayName(String fullPath, String fallback) {
+                String[] mapped = Config.GROUP_NAME_MAP.get(fullPath);
+                if (mapped != null) {
+                    String chosen = isChineseLanguage() && mapped.length >= 2 ? mapped[1] : mapped[0];
+                    if (chosen != null && !chosen.isBlank()) {
+                        return chosen;
+                    }
+                }
+                return fallback;
             }
 
             private void toggle() {
-                if (collapsedGroups.contains(groupName)) {
-                    collapsedGroups.remove(groupName);
+                if (collapsedGroups.contains(fullPath)) {
+                    collapsedGroups.remove(fullPath);
                 } else {
-                    collapsedGroups.add(groupName);
+                    collapsedGroups.add(fullPath);
                 }
                 rebuild();
             }
@@ -628,6 +716,7 @@ public class GoetyDelightConfigScreen extends Screen {
             private final String key;
             private final ForgeConfigSpec.ValueSpec spec;
             private final ForgeConfigSpec.ConfigValue<?> value;
+            private final int depth;
             private final Component label;
             private final AbstractWidget widget;
             private final Button resetButton;
@@ -641,10 +730,11 @@ public class GoetyDelightConfigScreen extends Screen {
 
             private boolean clickHandledInPress = false;
 
-            ValueRow(String key, ForgeConfigSpec.ValueSpec spec, ForgeConfigSpec.ConfigValue<?> value) {
+            ValueRow(String key, ForgeConfigSpec.ValueSpec spec, ForgeConfigSpec.ConfigValue<?> value, int depth) {
                 this.key = key;
                 this.spec = spec;
                 this.value = value;
+                this.depth = depth;
                 this.label = buildLabel(key, spec);
                 this.expanded = GoetyDelightConfigScreen.this.expandedListKeys.contains(key);
                 this.widget = createWidget();
@@ -654,14 +744,7 @@ public class GoetyDelightConfigScreen extends Screen {
                 this.tooltipLines = buildTooltip();
             }
 
-            /**
-             * 左侧显示文字：
-             * 1) 优先从 Config.COMMENT_MAP 读（en_us / zh_cn），按客户端语言选；
-             * 2) 回退到 spec.getComment()（跳过被 Forge 污染成 "Range: ..." 的文本）；
-             * 3) 最后回退到 key 的相对路径。
-             */
             private static Component buildLabel(String key, ForgeConfigSpec.ValueSpec spec) {
-                // 1) COMMENT_MAP
                 String[] mapped = Config.COMMENT_MAP.get(key);
                 if (mapped != null) {
                     String chosen = isChineseLanguage() && mapped.length >= 2 ? mapped[1] : mapped[0];
@@ -670,7 +753,6 @@ public class GoetyDelightConfigScreen extends Screen {
                     }
                 }
 
-                // 2) spec.getComment()
                 String comment = spec.getComment();
                 if (comment != null && !comment.isBlank() && !comment.startsWith("Range:")) {
                     String[] lines = comment.split("\n");
@@ -683,27 +765,10 @@ public class GoetyDelightConfigScreen extends Screen {
                     }
                 }
 
-                // 3) 回退 key 相对路径
-                int idx = key.indexOf('.');
+                int idx = key.lastIndexOf('.');
                 return Component.literal(idx >= 0 ? key.substring(idx + 1) : key);
             }
 
-            /** 当前客户端语言是否为中文。 */
-            private static boolean isChineseLanguage() {
-                try {
-                    String code = Minecraft.getInstance().getLanguageManager().getSelected();
-                    if (code == null) return false;
-                    code = code.toLowerCase(Locale.ROOT);
-                    return code.startsWith("zh") || code.equals("lzh");
-                } catch (Exception e) {
-                    return false;
-                }
-            }
-
-            /**
-             * 构建 tooltip。
-             * 顺序：COMMENT_MAP / spec comment → 默认值（仅非列表） → 需要重启提示。
-             */
             private List<Component> buildTooltip() {
                 List<Component> lines = new ArrayList<>();
 
@@ -735,7 +800,6 @@ public class GoetyDelightConfigScreen extends Screen {
                 return lines;
             }
 
-            /** 把默认值格式化成可读字符串；列表显示成 [a, b, c] 形式。 */
             private String formatDefault(Object def) {
                 if (def == null) {
                     return "<null>";
@@ -756,10 +820,6 @@ public class GoetyDelightConfigScreen extends Screen {
                 }
                 return String.valueOf(def);
             }
-
-            // ----------------------------------------------------------------
-            // 值读取 / 列表辅助
-            // ----------------------------------------------------------------
 
             Object readCurrentValue() {
                 Object pending = GoetyDelightConfigScreen.this.getPendingChange(this.value);
@@ -1043,10 +1103,6 @@ public class GoetyDelightConfigScreen extends Screen {
                 }
             }
 
-            // ----------------------------------------------------------------
-            // 布局 / 交互判定
-            // ----------------------------------------------------------------
-
             void layout(int left, int top, int width, int height) {
                 int resetW = 20;
                 int gap = 4;
@@ -1064,10 +1120,6 @@ public class GoetyDelightConfigScreen extends Screen {
                         || this.resetButton.isMouseOver(mouseX, mouseY);
             }
 
-            // ----------------------------------------------------------------
-            // 渲染
-            // ----------------------------------------------------------------
-
             @Override
             public void render(GuiGraphics graphics, int index, int top, int left, int width, int height,
                                int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
@@ -1075,8 +1127,9 @@ public class GoetyDelightConfigScreen extends Screen {
                 if (GoetyDelightConfigScreen.this.hasPendingChange(this.value)) {
                     color = 0xFFDD44;
                 }
+                int indent = this.depth * 10;
                 graphics.drawString(GoetyDelightConfigScreen.this.font, this.label,
-                        left + 5, top + 6, color);
+                        left + 5 + indent, top + 6, color);
 
                 boolean masked = ConfigList.this.isInBottomMask(mouseX, mouseY);
                 int renderMouseX = masked ? -1 : mouseX;
@@ -1093,10 +1146,6 @@ public class GoetyDelightConfigScreen extends Screen {
                     }
                 }
             }
-
-            // ----------------------------------------------------------------
-            // 事件
-            // ----------------------------------------------------------------
 
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -1180,11 +1229,6 @@ public class GoetyDelightConfigScreen extends Screen {
             public Component getNarration() {
                 return this.label;
             }
-        }
-
-        private String relativeKey(String key) {
-            int idx = key.indexOf('.');
-            return idx >= 0 ? key.substring(idx + 1) : key;
         }
     }
 

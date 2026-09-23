@@ -47,6 +47,15 @@ public class Config
         COMMENT_MAP.put(key, new String[]{enUs, zhCn});
     }
 
+    // ==================== 分组显示名称映射（en_us / zh_cn） ====================
+    // key 为分组完整路径，如 "food"、"food.polarice"
+    // value[0] = en_us，value[1] = zh_cn
+    public static final Map<String, String[]> GROUP_NAME_MAP = new HashMap<>();
+
+    private static void registerGroupName(String path, String enUs, String zhCn) {
+        GROUP_NAME_MAP.put(path, new String[]{enUs, zhCn});
+    }
+
     // ==================== 字段声明（全部先声明，后赋值） ====================
 
     // 杂项 - 物品
@@ -592,6 +601,38 @@ public class Config
         registerComment("misc.compat.enableGoetyRevelationCompatibility",
                 "Whether to enable compatibility with goety_revelation mod",
                 "是否启用与goety_revelation模组的兼容性");
+
+        // ============================================================
+        //  注册分组显示名称（en_us / zh_cn）
+        // ============================================================
+
+        // 顶级
+        registerGroupName("food",  "Food",  "食物");
+        registerGroupName("tools", "Tools", "工具");
+        registerGroupName("misc",  "Misc",  "杂项");
+
+        // food 下
+        registerGroupName("food.polarice",              "Polarice",                "北极刨冰");
+        registerGroupName("food.cake",                  "Cake",                    "皇家蛋糕");
+        registerGroupName("food.metamorphicScent",      "Metamorphic Scent",       "幻味");
+        registerGroupName("food.metamorphicScent.grass","Grass",                   "幻味草");
+        registerGroupName("food.metamorphicScent.fruit","Fruit",                   "幻味果");
+        registerGroupName("food.lichChaosStew",         "Lich Chaos Stew",         "巫妖乱炖");
+        registerGroupName("food.nightHeartPeaSoup",     "Night Heart Pea Soup",    "暗夜之心豌豆汤");
+        registerGroupName("food.tenThousandPoisonFeast","Ten Thousand Poison Feast","万毒盛宴");
+
+        // tools 下
+        registerGroupName("tools.combat",                            "Combat",       "战斗");
+        registerGroupName("tools.enchantments",                      "Enchantments", "附魔");
+        registerGroupName("tools.enchantments.soulAffix",            "Soul Affix",   "灵魂附加");
+        registerGroupName("tools.enchantments.soulMending",          "Soul Mending", "灵魂修补");
+        registerGroupName("tools.enchantments.soulHealing",          "Soul Healing", "溢魂弥躯");
+
+        // misc 下
+        registerGroupName("misc.items",       "Items",        "物品");
+        registerGroupName("misc.playerModel", "Player Model", "玩家模型");
+        registerGroupName("misc.skeletonEye", "Skeleton Eye", "骷髅红眼");
+        registerGroupName("misc.compat",      "Compat",       "兼容");
     }
 
     /**

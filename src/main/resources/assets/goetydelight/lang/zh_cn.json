@@ -397,5 +397,7 @@
   "item.goetydelight.stone_sword_skewer.tooltip.6": "“我来并不是叫地上太平”",
   "item.goetydelight.stone_sword_skewer.tooltip.7": "“乃是叫地上动刀兵”",
   "tooltip.goetydelight.soul_infused": "已注入灵魂",
-  "tooltip.goetydelight.soul_energy_restore": "食用后恢复%s点灵魂能量"
+  "tooltip.goetydelight.soul_energy_restore": "食用后恢复%s点灵魂能量",
+  "goetydelight.configuration.save": "保存",
+  "goetydelight.configuration.discard": "放弃"
 }
