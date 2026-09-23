@@ -1,6 +1,7 @@
 {
   "name": "赎罪劵纸包鱼",
   "icon": "goetydelight:atonement_voucher_wraped_cod",
+  "flag": "mod:goety_revelation",
   "category": "goety:goetydelight/food/goety_revelation",
   "pages": [
     {

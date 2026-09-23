@@ -1,6 +1,7 @@
 {
   "name": "石剑烤串",
   "icon": "goetydelight:stone_sword_skewer",
+  "flag": "mod:goety_revelation",
   "category": "goety:goetydelight/food/goety_revelation",
   "pages": [
     {

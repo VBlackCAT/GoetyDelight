@@ -1,6 +1,7 @@
 {
   "name": "鲨鱼软糖",
   "icon": "goetydelight:shark_gummy",
+  "flag": "mod:goety_revelation",
   "category": "goety:goetydelight/food/goety_revelation",
   "pages": [
     {

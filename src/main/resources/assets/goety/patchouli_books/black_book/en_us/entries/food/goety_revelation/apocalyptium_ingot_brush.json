@@ -1,6 +1,7 @@
 {
   "name": "Apocalyptium Ingot Brush",
   "icon": "goetydelight:apocalyptium_ingot_brush",
+  "flag": "mod:goety_revelation",
   "category": "goety:goetydelight/food/goety_revelation",
   "pages": [
     {

@@ -1,6 +1,7 @@
 {
   "name": "烤制末日曲奇",
   "icon": "goetydelight:doom_cookie",
+  "flag": "mod:goety_revelation",
   "category": "goety:goetydelight/food/goety_revelation",
   "pages": [
     {

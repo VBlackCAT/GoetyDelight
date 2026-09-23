@@ -1,6 +1,7 @@
 {
   "name": "Apocalyptium Cod",
   "icon": "goetydelight:apocalyptium_cod",
+  "flag": "mod:goety_revelation",
   "category": "goety:goetydelight/food/goety_revelation",
   "pages": [
     {

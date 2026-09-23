@@ -1,6 +1,7 @@
 {
   "name": "晋升月饼",
   "icon": "goetydelight:ascension_mooncake",
+  "flag": "mod:goety_revelation",
   "category": "goety:goetydelight/food/goety_revelation",
   "pages": [
     {

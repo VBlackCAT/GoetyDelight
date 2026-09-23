@@ -1,6 +1,7 @@
 {
   "name": "神灵金属刀",
   "icon": "goetydelight:apocalyptium_knife",
+  "flag": "mod:goety_revelation",
   "category": "goety:goetydelight/food/goety_revelation",
   "pages": [
     {
