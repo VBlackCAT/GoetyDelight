@@ -346,10 +346,6 @@ public class GoetyDelightConfigScreen extends Screen {
 
             this.layoutRows();
 
-            // 统一按行边界命中：
-            // 1) HeaderRow：折叠/展开分组
-            // 2) ListElementRow：编辑/删除列表元素
-            // 3) ValueRow：编辑配置项
             for (int i = 0; i < this.getItemCount(); i++) {
                 Row r = this.children().get(i);
                 if (!isInsideRow(i, mouseX, mouseY)) {
@@ -366,7 +362,6 @@ public class GoetyDelightConfigScreen extends Screen {
                                 er.box.isFocused() ? er.box : null;
                         return true;
                     }
-                    // 命中行但内部 widget 没处理，继续往下（一般不发生）
                 }
                 if (r instanceof ValueRow vr) {
                     if (vr.mouseClicked(mouseX, mouseY, button)) {
@@ -380,7 +375,6 @@ public class GoetyDelightConfigScreen extends Screen {
                 }
             }
 
-            // 没有命中任何行：清除焦点，不消费事件，让事件继续传递（比如到底层按钮）
             clearEditFocus();
             return false;
         }
@@ -597,7 +591,6 @@ public class GoetyDelightConfigScreen extends Screen {
 
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                // 删除按钮：直接触发 onPress，不依赖 release
                 if (this.removeBtn.isMouseOver(mouseX, mouseY)) {
                     this.removeBtn.mouseClicked(mouseX, mouseY, button);
                     this.removeBtn.mouseReleased(mouseX, mouseY, button);
@@ -612,7 +605,6 @@ public class GoetyDelightConfigScreen extends Screen {
 
             @Override
             public boolean mouseReleased(double mouseX, double mouseY, int button) {
-                // removeBtn 已在 mouseClicked 里手动 release，这里只处理 box
                 return this.box.mouseReleased(mouseX, mouseY, button);
             }
 
@@ -686,6 +678,10 @@ public class GoetyDelightConfigScreen extends Screen {
                 this.tooltipLines = buildTooltip();
             }
 
+            /**
+             * 构建 tooltip。
+             * 顺序：注释 → 默认值（仅非列表） → 需要重启提示。
+             */
             private List<Component> buildTooltip() {
                 List<Component> lines = new ArrayList<>();
 
@@ -696,14 +692,39 @@ public class GoetyDelightConfigScreen extends Screen {
                     }
                 }
 
+                // 新增：显示默认值（列表类型不显示）
+                if (!isListValue()) {
+                    lines.add(Component.literal("§7Default: §f" + formatDefault(spec.getDefault())));
+                }
+
                 if (spec.needsWorldRestart()) {
-                    if (!lines.isEmpty()) {
-                        lines.add(Component.literal(""));
-                    }
+                    lines.add(Component.literal(""));
                     lines.add(Component.literal("§cRequires world restart"));
                 }
 
                 return lines;
+            }
+
+            /** 把默认值格式化成可读字符串；列表显示成 [a, b, c] 形式。 */
+            private String formatDefault(Object def) {
+                if (def == null) {
+                    return "<null>";
+                }
+                if (def instanceof List<?> list) {
+                    if (list.isEmpty()) {
+                        return "[]";
+                    }
+                    StringBuilder sb = new StringBuilder("[");
+                    for (int i = 0; i < list.size(); i++) {
+                        if (i > 0) {
+                            sb.append(", ");
+                        }
+                        sb.append(String.valueOf(list.get(i)));
+                    }
+                    sb.append("]");
+                    return sb.toString();
+                }
+                return String.valueOf(def);
             }
 
             // ----------------------------------------------------------------
@@ -816,7 +837,6 @@ public class GoetyDelightConfigScreen extends Screen {
                     return box;
                 }
 
-                // 列表值：显示 [n] ▼/▶ 的按钮
                 if (isListValue()) {
                     return Button.builder(
                                     Component.literal(displayValue() + "  " + (expanded ? "▼" : "▶")),
@@ -825,7 +845,6 @@ public class GoetyDelightConfigScreen extends Screen {
                             .build();
                 }
 
-                // 其它（字符串等）：点击打开编辑框
                 return Button.builder(Component.literal(displayValue()), button -> openEditor())
                         .width(130)
                         .build();
@@ -1053,7 +1072,6 @@ public class GoetyDelightConfigScreen extends Screen {
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
                 this.clickHandledInPress = false;
 
-                // 重置按钮：手动 press + release 触发 onPress
                 if (this.resetButton.isMouseOver(mouseX, mouseY)) {
                     this.resetButton.mouseClicked(mouseX, mouseY, button);
                     this.resetButton.mouseReleased(mouseX, mouseY, button);
@@ -1067,9 +1085,6 @@ public class GoetyDelightConfigScreen extends Screen {
                         return box.mouseClicked(mouseX, mouseY, button);
                     }
                     if (this.widget instanceof Button btn) {
-                        // Button 的 onPress 只在 mouseReleased 里触发，
-                        // 但 ObjectSelectionList 的事件分发不会把 release 送到行内 widget。
-                        // 这里直接 press + release，一次到位。
                         btn.mouseClicked(mouseX, mouseY, button);
                         btn.mouseReleased(mouseX, mouseY, button);
                         this.clickHandledInPress = true;
