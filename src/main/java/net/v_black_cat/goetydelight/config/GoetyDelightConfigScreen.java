@@ -18,40 +18,31 @@ import net.v_black_cat.goetydelight.GoetyDelight;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
-/**
- * 一个自包含的 Forge 1.20.1 配置屏。
- *
- * <p>Forge 1.20.1 没有 NeoForge 风格的 {@code ConfigurationScreen}，所以本屏通用地
- * 读取 {@link Config#SPEC} 并为每个配置项渲染一行。布尔值用开关，数字用 EditBox（回车提交），
- * 字符串/列表打开文本编辑子屏。</p>
- *
- * <p>ForgeConfigSpec 里的嵌套节点是 {@code com.electronwill.nightconfig.core.Config} 实例
- * （不是 {@code Map}，也不是 {@code ConfigGroup}——后者在 Forge 1.20.1 里不存在）。
- * 我们递归遍历 {@code SPEC.getValues().valueMap()}，只对叶子 {@link ForgeConfigSpec.ConfigValue}
- * 创建行。</p>
- *
- * <p>特性：可折叠分组、每行"重置为默认值"按钮、tooltip 显示 {@code .comment(...)} 内容
- * （Range 已由 defineInRange 自动追加到 comment 中）。tooltip 在 {@link #render} 的最后
- * 一步绘制，保证位于所有列表条目之上；鼠标坐标直接使用屏幕传入的 GUI 坐标，不经过任何
- * 手动换算，避免 RenderGuiEvent 的坐标系错乱。</p>
- */
 @OnlyIn(Dist.CLIENT)
 public class GoetyDelightConfigScreen extends Screen {
     private static final String PREFIX = "goetydelight.configuration.";
 
-    /** 已折叠的分组名（顶层 key）。 */
     private final Set<String> collapsedGroups = new HashSet<>();
-
     private final Screen parent;
     private ConfigList list;
 
-    /** 当前帧待绘制的 tooltip（在所有条目之上绘制）。 */
+    /** 当前帧待绘制的 tooltip。 */
     private List<Component> pendingTooltip = null;
+
+    /** 当前持有焦点的 EditBox（用于键盘输入路由）。 */
+    private EditBox focusedBox = null;
+
+    /** 待保存的修改：key 为 ConfigValue 引用，value 为新值。 */
+    private final Map<ForgeConfigSpec.ConfigValue<?>, Object> pendingChanges = new LinkedHashMap<>();
+
+    /** 保存按钮引用，用于根据脏数据状态切换是否可用。 */
+    private Button saveButton;
 
     public GoetyDelightConfigScreen(Screen parent) {
         super(Component.translatable(PREFIX + "title"));
@@ -62,14 +53,108 @@ public class GoetyDelightConfigScreen extends Screen {
     protected void init() {
         this.list = new ConfigList(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
         this.addWidget(this.list);
-        this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose())
-                .bounds(this.width / 2 - 100, this.height - 27, 200, 20)
-                .build());
+
+        int buttonY = this.height - 27;
+        int buttonWidth = 100;
+        int gap = 8;
+        int totalWidth = buttonWidth * 3 + gap * 2;
+        int startX = this.width / 2 - totalWidth / 2;
+
+        // 保存按钮
+        this.saveButton = Button.builder(
+                        Component.translatable(PREFIX + "save"),
+                        button -> this.saveChanges())
+                .bounds(startX, buttonY, buttonWidth, 20)
+                .build();
+
+        // 撤销按钮
+        Button discardButton = Button.builder(
+                        Component.translatable(PREFIX + "discard"),
+                        button -> this.discardChanges())
+                .bounds(startX + buttonWidth + gap, buttonY, buttonWidth, 20)
+                .build();
+
+        // 完成按钮
+        Button doneButton = Button.builder(CommonComponents.GUI_DONE, button -> this.onClose())
+                .bounds(startX + (buttonWidth + gap) * 2, buttonY, buttonWidth, 20)
+                .build();
+
+        this.addRenderableWidget(this.saveButton);
+        this.addRenderableWidget(discardButton);
+        this.addRenderableWidget(doneButton);
+
+        this.updateSaveButtonState();
     }
+
+    // ========================================================================
+    //                            暂存管理
+    // ========================================================================
+
+    /** 记录一个待保存的修改。 */
+    void stageChange(ForgeConfigSpec.ConfigValue<?> cv, Object newValue) {
+        this.pendingChanges.put(cv, newValue);
+        this.updateSaveButtonState();
+    }
+
+    /** 判断某项是否已被暂存修改。 */
+    boolean hasPendingChange(ForgeConfigSpec.ConfigValue<?> cv) {
+        return this.pendingChanges.containsKey(cv);
+    }
+
+    /** 取暂存值，若没有则返回 null。 */
+    Object getPendingChange(ForgeConfigSpec.ConfigValue<?> cv) {
+        return this.pendingChanges.get(cv);
+    }
+
+    /** 提交所有暂存修改并写入磁盘。 */
+    @SuppressWarnings("unchecked")
+    private void saveChanges() {
+        if (this.pendingChanges.isEmpty()) {
+            return;
+        }
+        if (!Config.SPEC.isLoaded()) {
+            GoetyDelight.LOGGER.warn("[ConfigScreen] Spec not loaded, cannot save");
+            return;
+        }
+
+        for (Map.Entry<ForgeConfigSpec.ConfigValue<?>, Object> entry : this.pendingChanges.entrySet()) {
+            try {
+                ((ForgeConfigSpec.ConfigValue<Object>) entry.getKey()).set(entry.getValue());
+            } catch (Exception e) {
+                GoetyDelight.LOGGER.warn("[ConfigScreen] Failed to set value: {}", e.toString());
+            }
+        }
+
+        try {
+            Config.SPEC.save();
+        } catch (Exception e) {
+            GoetyDelight.LOGGER.warn("[ConfigScreen] Failed to save config: {}", e.toString());
+        }
+
+        this.pendingChanges.clear();
+        this.updateSaveButtonState();
+        this.list.rebuild(); // 刷新显示
+    }
+
+    /** 丢弃所有暂存修改。 */
+    private void discardChanges() {
+        this.pendingChanges.clear();
+        this.updateSaveButtonState();
+        this.list.rebuild();
+    }
+
+    private void updateSaveButtonState() {
+        if (this.saveButton != null) {
+            this.saveButton.active = !this.pendingChanges.isEmpty();
+        }
+    }
+
+    // ========================================================================
+    //                            渲染 & 生命周期
+    // ========================================================================
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        // 本帧先清空 tooltip，由列表条目在 render 时重新登记。
         this.pendingTooltip = null;
 
         this.renderBackground(graphics);
@@ -77,8 +162,6 @@ public class GoetyDelightConfigScreen extends Screen {
         graphics.drawCenteredString(this.font, this.title, this.width / 2, 8, 0xFFFFFF);
         super.render(graphics, mouseX, mouseY, partialTick);
 
-        // 关键：tooltip 在屏幕渲染的最后一步绘制，位于所有列表条目之上。
-        // mouseX/mouseY 是 Screen.render 传入的 GUI 缩放坐标，与 widget 坐标系一致。
         if (this.pendingTooltip != null && !this.pendingTooltip.isEmpty()) {
             this.renderTooltipNoShadow(graphics, this.pendingTooltip, mouseX, mouseY);
         }
@@ -87,6 +170,11 @@ public class GoetyDelightConfigScreen extends Screen {
     @Override
     public void onClose() {
         if (this.minecraft != null) {
+            if (!this.pendingChanges.isEmpty()) {
+                GoetyDelight.LOGGER.info("[ConfigScreen] Discarding {} unsaved change(s)",
+                        this.pendingChanges.size());
+                this.pendingChanges.clear();
+            }
             this.minecraft.setScreen(this.parent);
         }
     }
@@ -172,13 +260,127 @@ public class GoetyDelightConfigScreen extends Screen {
         }
 
         // --------------------------------------------------------------------
-        // 公共行基类
+        // 布局：把每行及内部 widget 的坐标刷新一遍
+        // --------------------------------------------------------------------
+
+        void layoutRows() {
+            for (int i = 0; i < this.getItemCount(); i++) {
+                Row row = this.children().get(i);
+                if (row instanceof ValueRow vr) {
+                    int top = this.getRowTop(i);
+                    int left = this.getRowLeft();
+                    int width = this.getRowWidth();
+                    int height = this.itemHeight;
+                    vr.layout(left, top, width, height);
+                }
+            }
+        }
+
+        @Override
+        public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+            this.layoutRows();
+            super.render(graphics, mouseX, mouseY, partialTick);
+        }
+
+        // --------------------------------------------------------------------
+        // 事件转发：找到鼠标下的 ValueRow
+        // --------------------------------------------------------------------
+
+        private ValueRow rowAt(double mouseX, double mouseY) {
+            for (Row row : this.children()) {
+                if (row instanceof ValueRow vr && vr.hitTest(mouseX, mouseY)) {
+                    return vr;
+                }
+            }
+            return null;
+        }
+
+        /** 清除所有 EditBox 的焦点，并同步屏幕的 focusedBox。 */
+        void clearEditFocus() {
+            for (Row r : this.children()) {
+                if (r instanceof ValueRow vr && vr.widget instanceof EditBox box) {
+                    box.setFocused(false);
+                }
+            }
+            GoetyDelightConfigScreen.this.focusedBox = null;
+        }
+
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            this.layoutRows();
+            ValueRow row = rowAt(mouseX, mouseY);
+            if (row != null && row.mouseClicked(mouseX, mouseY, button)) {
+                if (row.widget instanceof EditBox box && box.isFocused()) {
+                    GoetyDelightConfigScreen.this.focusedBox = box;
+                } else {
+                    GoetyDelightConfigScreen.this.focusedBox = null;
+                }
+                return true;
+            }
+
+            clearEditFocus();
+            return super.mouseClicked(mouseX, mouseY, button);
+        }
+
+        @Override
+        public boolean mouseReleased(double mouseX, double mouseY, int button) {
+            this.layoutRows();
+            ValueRow row = rowAt(mouseX, mouseY);
+            if (row != null && row.mouseReleased(mouseX, mouseY, button)) {
+                return true;
+            }
+            return super.mouseReleased(mouseX, mouseY, button);
+        }
+
+        @Override
+        public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+            ValueRow row = rowAt(mouseX, mouseY);
+            if (row != null && row.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
+                return true;
+            }
+            return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        }
+
+        @Override
+        public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+            EditBox focused = GoetyDelightConfigScreen.this.focusedBox;
+            if (focused != null && focused.isFocused()) {
+                for (Row row : this.children()) {
+                    if (row instanceof ValueRow vr && vr.widget == focused) {
+                        if (vr.keyPressed(keyCode, scanCode, modifiers)) {
+                            return true;
+                        }
+                        break;
+                    }
+                }
+            }
+            return super.keyPressed(keyCode, scanCode, modifiers);
+        }
+
+        @Override
+        public boolean charTyped(char codePoint, int modifiers) {
+            EditBox focused = GoetyDelightConfigScreen.this.focusedBox;
+            if (focused != null && focused.isFocused()) {
+                for (Row row : this.children()) {
+                    if (row instanceof ValueRow vr && vr.widget == focused) {
+                        if (vr.charTyped(codePoint, modifiers)) {
+                            return true;
+                        }
+                        break;
+                    }
+                }
+            }
+            return super.charTyped(codePoint, modifiers);
+        }
+
+        // --------------------------------------------------------------------
+        // 行基类
         // --------------------------------------------------------------------
         abstract class Row extends ObjectSelectionList.Entry<Row> {
         }
 
         // --------------------------------------------------------------------
-        // 分组标题行（整行点击可折叠）
+        // 分组标题行
         // --------------------------------------------------------------------
         class HeaderRow extends Row {
             private final String groupName;
@@ -233,6 +435,9 @@ public class GoetyDelightConfigScreen extends Screen {
             private final Button resetButton;
             private final List<Component> tooltipLines;
 
+            /** 用于在 EditBox responder 里避免递归触发（构造时 setValue 会触发 responder）。 */
+            private boolean suppressResponder = false;
+
             ValueRow(String key, ForgeConfigSpec.ValueSpec spec, ForgeConfigSpec.ConfigValue<?> value) {
                 this.key = key;
                 this.spec = spec;
@@ -245,11 +450,6 @@ public class GoetyDelightConfigScreen extends Screen {
                 this.tooltipLines = buildTooltip();
             }
 
-            /**
-             * comment 直接来自 {@code .comment(...)}。
-             * {@code defineInRange} 会自动把 {@code Range: min ~ max} 追加到 comment 末尾，
-             * 所以这里不再手动添加 Range。
-             */
             private List<Component> buildTooltip() {
                 List<Component> lines = new ArrayList<>();
 
@@ -271,59 +471,86 @@ public class GoetyDelightConfigScreen extends Screen {
             }
 
             private AbstractWidget createWidget() {
-                // 布尔值：开关
                 if (value instanceof ForgeConfigSpec.BooleanValue) {
                     boolean current = false;
-                    try {
-                        Object raw = value.get();
-                        if (raw instanceof Boolean b) {
-                            current = b;
+                    Object pending = GoetyDelightConfigScreen.this.getPendingChange(value);
+                    if (pending instanceof Boolean b) {
+                        current = b;
+                    } else {
+                        try {
+                            Object raw = value.get();
+                            if (raw instanceof Boolean b) {
+                                current = b;
+                            }
+                        } catch (Exception e) {
+                            GoetyDelight.LOGGER.warn("[ConfigScreen] Cannot read boolean for {}: {}",
+                                    key, e.toString());
                         }
-                    } catch (Exception e) {
-                        GoetyDelight.LOGGER.warn("[ConfigScreen] Cannot read boolean for {}: {}",
-                                key, e.toString());
                     }
                     return CycleButton.onOffBuilder(current)
                             .displayOnlyValue()
                             .create(0, 0, 130, 20, label, (button, newValue) -> setValue(newValue));
                 }
 
-                // 数字：EditBox，回车提交
                 if (value instanceof ForgeConfigSpec.IntValue
                         || value instanceof ForgeConfigSpec.DoubleValue
                         || value instanceof ForgeConfigSpec.LongValue) {
                     EditBox box = new EditBox(GoetyDelightConfigScreen.this.font, 0, 0, 130, 20, label);
-                    box.setValue(displayValue());
                     box.setMaxLength(32);
+
+                    // 先设值（此时 responder 还没设置，不会触发）
+                    box.setValue(displayValue());
+
+                    // 设置 responder：每次输入都尝试暂存
+                    box.setResponder(text -> {
+                        if (suppressResponder) {
+                            return;
+                        }
+                        if (value instanceof ForgeConfigSpec.IntValue) {
+                            applyInteger(text);
+                        } else if (value instanceof ForgeConfigSpec.DoubleValue) {
+                            applyDouble(text);
+                        } else if (value instanceof ForgeConfigSpec.LongValue) {
+                            applyLong(text);
+                        }
+                    });
                     return box;
                 }
 
-                // 字符串/列表：打开编辑子屏
                 return Button.builder(Component.literal(displayValue()), button -> openEditor())
                         .width(130)
                         .build();
             }
 
             private String displayValue() {
-                try {
-                    Object current = value.get();
-                    if (current instanceof List<?> list) {
-                        return "[" + list.size() + "]";
+                // 优先读取暂存值
+                Object current = GoetyDelightConfigScreen.this.getPendingChange(this.value);
+                if (current == null) {
+                    try {
+                        current = value.get();
+                    } catch (Exception e) {
+                        return "<unloaded>";
                     }
-                    return String.valueOf(current);
-                } catch (Exception e) {
-                    return "<unloaded>";
                 }
+                if (current instanceof List<?> list) {
+                    return "[" + list.size() + "]";
+                }
+                return String.valueOf(current);
             }
 
             private void openEditor() {
                 EditValueScreen editor;
                 Object current;
-                try {
-                    current = value.get();
-                } catch (Exception e) {
-                    GoetyDelight.LOGGER.warn("[ConfigScreen] Cannot read value for {}: {}", key, e.toString());
-                    return;
+                Object pending = GoetyDelightConfigScreen.this.getPendingChange(this.value);
+                if (pending != null) {
+                    current = pending;
+                } else {
+                    try {
+                        current = value.get();
+                    } catch (Exception e) {
+                        GoetyDelight.LOGGER.warn("[ConfigScreen] Cannot read value for {}: {}", key, e.toString());
+                        return;
+                    }
                 }
 
                 if (current instanceof List<?> list) {
@@ -422,58 +649,84 @@ public class GoetyDelightConfigScreen extends Screen {
                     return;
                 }
                 try {
-                    ((ForgeConfigSpec.ConfigValue<Object>) value).set(newValue);
-                    Config.SPEC.save();
+                    // 只暂存，不立刻写入磁盘
+                    GoetyDelightConfigScreen.this.stageChange(this.value, newValue);
 
+                    // 同步 Button（非 CycleButton）的显示
                     if (widget instanceof Button btn && !(widget instanceof CycleButton)) {
+                        // 抑制 responder，避免 setMessage 递归
+                        suppressResponder = true;
                         btn.setMessage(Component.literal(displayValue()));
+                        suppressResponder = false;
                     }
                 } catch (Exception e) {
-                    GoetyDelight.LOGGER.warn("[ConfigScreen] Failed to set value for {}: {}", key, e.toString());
+                    GoetyDelight.LOGGER.warn("[ConfigScreen] Failed to stage value for {}: {}", key, e.toString());
                 }
             }
 
-            /** 重置为 spec 里注册的默认值。 */
+            @SuppressWarnings("unchecked")
             private void resetToDefault() {
                 Object def = spec.getDefault();
-                setValue(def);
 
+                // 直接同步 UI，再暂存，避免 setValue 里 setMessage 引起死循环
                 if (widget instanceof EditBox box) {
+                    suppressResponder = true;
                     box.setValue(String.valueOf(def));
+                    suppressResponder = false;
                     box.setTextColor(0xFFFFFF);
-                } else if (widget instanceof CycleButton<?>) {
-                    rebuild();
+                } else if (widget instanceof CycleButton<?> cycle) {
+                    ((CycleButton<Boolean>) cycle).setValue((Boolean) def);
                 } else if (widget instanceof Button btn) {
-                    btn.setMessage(Component.literal(displayValue()));
+                    // 按钮的显示下面统一刷新
                 }
+
+                setValue(def);
             }
 
-            @Override
-            public void render(GuiGraphics graphics, int index, int top, int left, int width, int height,
-                               int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
-                // 先绘制左侧标签
-                graphics.drawString(GoetyDelightConfigScreen.this.font, this.label,
-                        left + 5, top + 6, 0xFFFFFF);
+            // ----------------------------------------------------------------
+            // 布局 / 交互判定
+            // ----------------------------------------------------------------
 
-                // 计算控件位置（屏幕绝对坐标）
+            /** 由 ConfigList.layoutRows() 调用，设置本行及内部 widget 的坐标。 */
+            void layout(int left, int top, int width, int height) {
                 int resetW = 20;
                 int gap = 4;
                 int widgetW = this.widget.getWidth();
                 int widgetX = left + width - resetW - gap - widgetW - 5;
                 int resetX = left + width - resetW - 5;
-
-                // 关键：先设置控件坐标，再进行 hover 检测。否则 widget 的 getX/getY 还是上一帧的，
-                // 或者初始 (0,0)，导致 isMouseOver 永远返回 false。
                 this.widget.setX(widgetX);
                 this.widget.setY(top + 1);
                 this.resetButton.setX(resetX);
                 this.resetButton.setY(top + 1);
+            }
 
-                // 绘制控件
+            boolean hitTest(double mouseX, double mouseY) {
+                return this.widget.isMouseOver(mouseX, mouseY)
+                        || this.resetButton.isMouseOver(mouseX, mouseY);
+            }
+
+            boolean isEditing() {
+                return this.widget instanceof EditBox box && box.isFocused();
+            }
+
+            // ----------------------------------------------------------------
+            // 渲染
+            // ----------------------------------------------------------------
+
+            @Override
+            public void render(GuiGraphics graphics, int index, int top, int left, int width, int height,
+                               int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
+                int color = 0xFFFFFF;
+                // 有未保存修改时用黄色显示
+                if (GoetyDelightConfigScreen.this.hasPendingChange(this.value)) {
+                    color = 0xFFDD44;
+                }
+                graphics.drawString(GoetyDelightConfigScreen.this.font, this.label,
+                        left + 5, top + 6, color);
+
                 this.widget.render(graphics, mouseX, mouseY, partialTick);
                 this.resetButton.render(graphics, mouseX, mouseY, partialTick);
 
-                // 登记 tooltip（不在这一层绘制，避免被后续条目覆盖）。
                 boolean hoverValue = this.widget.isMouseOver(mouseX, mouseY);
                 boolean hoverReset = this.resetButton.isMouseOver(mouseX, mouseY);
                 if (!tooltipLines.isEmpty() && (hoverValue || hoverReset)) {
@@ -481,37 +734,73 @@ public class GoetyDelightConfigScreen extends Screen {
                 }
             }
 
+            // ----------------------------------------------------------------
+            // 事件
+            // ----------------------------------------------------------------
+
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
                 if (this.resetButton.mouseClicked(mouseX, mouseY, button)) {
                     return true;
                 }
-                return this.widget.mouseClicked(mouseX, mouseY, button);
+                if (this.widget.isMouseOver(mouseX, mouseY)) {
+                    if (this.widget instanceof EditBox box) {
+                        box.setFocused(true);
+                    }
+                    if (this.widget.mouseClicked(mouseX, mouseY, button)) {
+                        return true;
+                    }
+                }
+                return false;
             }
 
             @Override
             public boolean mouseReleased(double mouseX, double mouseY, int button) {
-                this.resetButton.mouseReleased(mouseX, mouseY, button);
-                return this.widget.mouseReleased(mouseX, mouseY, button);
+                boolean a = this.resetButton.mouseReleased(mouseX, mouseY, button);
+                boolean b = this.widget.mouseReleased(mouseX, mouseY, button);
+                return a || b;
+            }
+
+            @Override
+            public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+                boolean a = this.resetButton.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+                boolean b = this.widget.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+                return a || b;
             }
 
             @Override
             public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-                // 数字 EditBox：回车提交
-                if (keyCode == 257 /* ENTER */ && this.widget instanceof EditBox box) {
-                    if (applyNumeric(box.getValue())) {
-                        box.setTextColor(0xFFFFFF);
-                    } else {
-                        box.setTextColor(0xFF5555);
+                if (this.widget instanceof EditBox box && box.isFocused()) {
+                    // ESC：退出编辑
+                    if (keyCode == 256 /* ESC */) {
+                        box.setFocused(false);
+                        GoetyDelightConfigScreen.this.focusedBox = null;
+                        return true;
                     }
-                    return true;
+                    // ENTER：立即校验（值已在 responder 中暂存）
+                    if (keyCode == 257 /* ENTER */) {
+                        boolean ok;
+                        if (value instanceof ForgeConfigSpec.IntValue
+                                || value instanceof ForgeConfigSpec.DoubleValue
+                                || value instanceof ForgeConfigSpec.LongValue) {
+                            ok = applyNumeric(box.getValue());
+                        } else {
+                            ok = applyString(box.getValue());
+                        }
+                        box.setTextColor(ok ? 0xFFFFFF : 0xFF5555);
+                        return true;
+                    }
+                    return box.keyPressed(keyCode, scanCode, modifiers);
                 }
                 return this.widget.keyPressed(keyCode, scanCode, modifiers);
             }
 
             @Override
             public boolean charTyped(char codePoint, int modifiers) {
-                return this.widget.charTyped(codePoint, modifiers);
+                if (this.widget instanceof EditBox box && box.isFocused()) {
+                    return box.charTyped(codePoint, modifiers);
+                }
+                return false;
             }
 
             @Override
@@ -520,9 +809,6 @@ public class GoetyDelightConfigScreen extends Screen {
             }
         }
 
-        /**
-         * 去掉顶层路径，例如 {@code food.cake.cakeEffectRadius} -> {@code cake.cakeEffectRadius}。
-         */
         private String relativeKey(String key) {
             int idx = key.indexOf('.');
             return idx >= 0 ? key.substring(idx + 1) : key;
@@ -530,13 +816,9 @@ public class GoetyDelightConfigScreen extends Screen {
     }
 
     // ========================================================================
-    //                          无阴影 tooltip（屏幕层）
+    //                          无阴影 tooltip
     // ========================================================================
 
-    /**
-     * 手动绘制 tooltip，不带阴影。
-     * 必须在所有列表条目绘制完成之后再调用（本类在 {@link #render} 末尾调用）。
-     */
     private void renderTooltipNoShadow(GuiGraphics graphics, List<Component> lines, int mouseX, int mouseY) {
         if (lines.isEmpty()) return;
 
@@ -561,17 +843,19 @@ public class GoetyDelightConfigScreen extends Screen {
         if (tx < 4) tx = 4;
         if (ty < 4) ty = 4;
 
-        // 黑色背景（不透明）
-        graphics.fill(tx, ty, tx + tooltipWidth, ty + tooltipHeight, 0xF0100010);
+        graphics.fill(tx, ty, tx + tooltipWidth, ty + tooltipHeight, 0xFF100010);
         graphics.fill(tx, ty, tx + tooltipWidth, ty + 1, 0xFF505000);
         graphics.fill(tx, ty + tooltipHeight - 1, tx + tooltipWidth, ty + tooltipHeight, 0xFF505000);
         graphics.fill(tx, ty, tx + 1, ty + tooltipHeight, 0xFF505000);
         graphics.fill(tx + tooltipWidth - 1, ty, tx + tooltipWidth, ty + tooltipHeight, 0xFF505000);
+
         int lineY = ty + padding;
         for (Component line : lines) {
             graphics.drawString(this.font, line, tx + padding, lineY, 0xFFFFFF, false);
             lineY += lineHeight;
         }
+
+        graphics.pose().popPose();
         graphics.flush();
     }
 
@@ -628,7 +912,6 @@ public class GoetyDelightConfigScreen extends Screen {
             this.renderBackground(graphics);
             graphics.drawCenteredString(this.font, this.title, this.width / 2, this.height / 2 - 50, 0xFFFFFF);
 
-            // 在编辑框下方显示 comment / range（无阴影）
             if (!tooltipLines.isEmpty()) {
                 int y = this.height / 2 + 30;
                 for (Component line : tooltipLines) {
