@@ -31,10 +31,13 @@ public class Config
     // ==================== 旧值缓存（线程安全） ====================
     private static final Map<String, Object> LEGACY_VALUES = new ConcurrentHashMap<>();
     private static final AtomicBoolean LEGACY_CAPTURED = new AtomicBoolean(false);
-    private static final AtomicBoolean LEGACY_APPLIED = new AtomicBoolean(false);
 
     // ==================== 旧 key -> 新 ConfigValue 映射 ====================
+    // 只在 captureLegacyConfig 中用于推导新路径，不再用于 set()
     private static final Map<String, ForgeConfigSpec.ConfigValue<?>> LEGACY_KEY_MAP = new HashMap<>();
+
+    // ==================== 旧 key -> 新路径（"food.polarice.polariceCooldown"） ====================
+    private static final Map<String, String> LEGACY_PATH_MAP = new HashMap<>();
 
     // ==================== 字段声明（全部先声明，后赋值） ====================
 
@@ -373,52 +376,61 @@ public class Config
         BUILDER.pop(); // 结束 misc
 
         // ============================================================
-        //  填充旧 key -> 新 ConfigValue 映射
+        //  填充旧 key -> 新 ConfigValue / 新路径 映射
         //  旧 key 必须与原代码中 define 的字符串完全一致
         // ============================================================
-        LEGACY_KEY_MAP.put("blacklistedItems", BLACKLISTED_ITEMS);
-        LEGACY_KEY_MAP.put("cakeEffectRadius", CAKE_EFFECT_RADIUS);
-        LEGACY_KEY_MAP.put("polariceAffectsBosses", POLARICE_AFFECTS_BOSSES);
-        LEGACY_KEY_MAP.put("polariceHealthThreshold", POLARICE_HEALTH_THRESHOLD);
-        LEGACY_KEY_MAP.put("polarice_cooldown", POLARICE_COOLDOWN);     // 原 key 带下划线
-        LEGACY_KEY_MAP.put("polarice_count", POLARICE_COUNT);           // 原 key 带下划线
-        LEGACY_KEY_MAP.put("extraBannedEntities", EXTRA_BANNED_ENTITIES);
-        LEGACY_KEY_MAP.put("MetamorphicScentGrassCopyBlacklist", METAMORPHIC_SCENT_GRASS_COPY_BLACKLIST);
-        LEGACY_KEY_MAP.put("metamorphicScentGrassDurationMultiplier", METAMORPHIC_SCENT_GRASS_DURATION_MULTIPLIER);
-        LEGACY_KEY_MAP.put("metamorphicScentGrassAmplifierMultiplier", METAMORPHIC_SCENT_GRASS_AMPLIFIER_MULTIPLIER);
-        LEGACY_KEY_MAP.put("metamorphicScentGrassCopyCount", METAMORPHIC_SCENT_GRASS_COPY_COUNT);
-        LEGACY_KEY_MAP.put("MetamorphicScentFruitCopyBlacklist", METAMORPHIC_SCENT_FRUIT_COPY_BLACKLIST);
-        LEGACY_KEY_MAP.put("metamorphicScentFruitCopyCount", METAMORPHIC_SCENT_FRUIT_COPY_COUNT);
-        LEGACY_KEY_MAP.put("shiftSpeedMultiplier", SHIFT_SPEED_MULTIPLIER);
-        LEGACY_KEY_MAP.put("livingHurtDamageMultiplier", LIVING_HURT_DAMAGE_MULTIPLIER);
-        LEGACY_KEY_MAP.put("livingDamageGeneralMultiplier", LIVING_DAMAGE_GENERAL_MULTIPLIER);
-        LEGACY_KEY_MAP.put("livingDamageBackstabMultiplier", LIVING_DAMAGE_BACKSTAB_MULTIPLIER);
-        LEGACY_KEY_MAP.put("soulAffixDamagePerLevel", SOUL_AFFIX_DAMAGE_PER_LEVEL);
-        LEGACY_KEY_MAP.put("soulAffixSoulCostPerLevel", SOUL_AFFIX_SOUL_COST_PER_LEVEL);
-        LEGACY_KEY_MAP.put("disableSoulMending", DISABLE_SOUL_MENDING);
-        LEGACY_KEY_MAP.put("disableSoulHealing", DISABLE_SOUL_HEALING);
-        LEGACY_KEY_MAP.put("disableSoulAffix", DISABLE_SOUL_AFFIX);
-        LEGACY_KEY_MAP.put("skeletonRedEyeEffectEnabled", SKELETON_RED_EYE_EFFECT_ENABLED);
-        LEGACY_KEY_MAP.put("soulRepairBlacklist", SOUL_MENDING_BLACKLIST);
-        LEGACY_KEY_MAP.put("soulHealBlacklist", SOUL_HEALING_BLACKLIST);
-        LEGACY_KEY_MAP.put("soulAffixBlacklist", SOUL_AFFIX_BLACKLIST);
-        LEGACY_KEY_MAP.put("lichChaosStewBoostPercentage", LICH_CHAOS_STEW_BOOST_PERCENTAGE);
-        LEGACY_KEY_MAP.put("lichStewMaxCount", LICH_STEW_MAX_COUNT);
-        LEGACY_KEY_MAP.put("nightHeartPeaSoupBoostPercentage", NIGHT_HEART_PEA_SOUP_BOOST_PERCENTAGE);
-        LEGACY_KEY_MAP.put("nightPeaSoupMaxCount", NIGHT_PEA_SOUP_MAX_COUNT);
-        LEGACY_KEY_MAP.put("tenThousandPoisonFeastUseWhitelist", TEN_THOUSAND_POISON_FEAST_USE_WHITELIST);
-        LEGACY_KEY_MAP.put("tenThousandPoisonFeastEffectList", TEN_THOUSAND_POISON_FEAST_EFFECT_LIST);
-        LEGACY_KEY_MAP.put("tenThousandPoisonFeastLevelConfig", TEN_THOUSAND_POISON_FEAST_LEVEL_CONFIG);
-        LEGACY_KEY_MAP.put("tenThousandPoisonFeastDurationConfig", TEN_THOUSAND_POISON_FEAST_DURATION_CONFIG);
-        LEGACY_KEY_MAP.put("tenThousandPoisonFeastDefaultMinLevel", TEN_THOUSAND_POISON_FEAST_DEFAULT_MIN_LEVEL);
-        LEGACY_KEY_MAP.put("tenThousandPoisonFeastDefaultMaxLevel", TEN_THOUSAND_POISON_FEAST_DEFAULT_MAX_LEVEL);
-        LEGACY_KEY_MAP.put("tenThousandPoisonFeastDefaultMinDuration", TEN_THOUSAND_POISON_FEAST_DEFAULT_MIN_DURATION);
-        LEGACY_KEY_MAP.put("tenThousandPoisonFeastDefaultMaxDuration", TEN_THOUSAND_POISON_FEAST_DEFAULT_MAX_DURATION);
-        LEGACY_KEY_MAP.put("tenThousandPoisonFeastEffectCount", TEN_THOUSAND_POISON_FEAST_EFFECT_COUNT);
-        LEGACY_KEY_MAP.put("tenThousandPoisonFeastMinItemCount", TEN_THOUSAND_POISON_FEAST_MIN_ITEM_COUNT);
-        LEGACY_KEY_MAP.put("tenThousandPoisonFeastMinDebuffCount", TEN_THOUSAND_POISON_FEAST_MIN_DEBUFF_COUNT);
-        LEGACY_KEY_MAP.put("playerModelScales", PLAYER_MODEL_SCALES);
-        LEGACY_KEY_MAP.put("enableGoetyRevelationCompatibility", ENABLE_GOETY_REVELATION_COMPATIBILITY);
+        registerLegacy("blacklistedItems", BLACKLISTED_ITEMS);
+        registerLegacy("cakeEffectRadius", CAKE_EFFECT_RADIUS);
+        registerLegacy("polariceAffectsBosses", POLARICE_AFFECTS_BOSSES);
+        registerLegacy("polariceHealthThreshold", POLARICE_HEALTH_THRESHOLD);
+        registerLegacy("polarice_cooldown", POLARICE_COOLDOWN);     // 原 key 带下划线
+        registerLegacy("polarice_count", POLARICE_COUNT);           // 原 key 带下划线
+        registerLegacy("extraBannedEntities", EXTRA_BANNED_ENTITIES);
+        registerLegacy("MetamorphicScentGrassCopyBlacklist", METAMORPHIC_SCENT_GRASS_COPY_BLACKLIST);
+        registerLegacy("metamorphicScentGrassDurationMultiplier", METAMORPHIC_SCENT_GRASS_DURATION_MULTIPLIER);
+        registerLegacy("metamorphicScentGrassAmplifierMultiplier", METAMORPHIC_SCENT_GRASS_AMPLIFIER_MULTIPLIER);
+        registerLegacy("metamorphicScentGrassCopyCount", METAMORPHIC_SCENT_GRASS_COPY_COUNT);
+        registerLegacy("MetamorphicScentFruitCopyBlacklist", METAMORPHIC_SCENT_FRUIT_COPY_BLACKLIST);
+        registerLegacy("metamorphicScentFruitCopyCount", METAMORPHIC_SCENT_FRUIT_COPY_COUNT);
+        registerLegacy("shiftSpeedMultiplier", SHIFT_SPEED_MULTIPLIER);
+        registerLegacy("livingHurtDamageMultiplier", LIVING_HURT_DAMAGE_MULTIPLIER);
+        registerLegacy("livingDamageGeneralMultiplier", LIVING_DAMAGE_GENERAL_MULTIPLIER);
+        registerLegacy("livingDamageBackstabMultiplier", LIVING_DAMAGE_BACKSTAB_MULTIPLIER);
+        registerLegacy("soulAffixDamagePerLevel", SOUL_AFFIX_DAMAGE_PER_LEVEL);
+        registerLegacy("soulAffixSoulCostPerLevel", SOUL_AFFIX_SOUL_COST_PER_LEVEL);
+        registerLegacy("disableSoulMending", DISABLE_SOUL_MENDING);
+        registerLegacy("disableSoulHealing", DISABLE_SOUL_HEALING);
+        registerLegacy("disableSoulAffix", DISABLE_SOUL_AFFIX);
+        registerLegacy("skeletonRedEyeEffectEnabled", SKELETON_RED_EYE_EFFECT_ENABLED);
+        registerLegacy("soulRepairBlacklist", SOUL_MENDING_BLACKLIST);
+        registerLegacy("soulHealBlacklist", SOUL_HEALING_BLACKLIST);
+        registerLegacy("soulAffixBlacklist", SOUL_AFFIX_BLACKLIST);
+        registerLegacy("lichChaosStewBoostPercentage", LICH_CHAOS_STEW_BOOST_PERCENTAGE);
+        registerLegacy("lichStewMaxCount", LICH_STEW_MAX_COUNT);
+        registerLegacy("nightHeartPeaSoupBoostPercentage", NIGHT_HEART_PEA_SOUP_BOOST_PERCENTAGE);
+        registerLegacy("nightPeaSoupMaxCount", NIGHT_PEA_SOUP_MAX_COUNT);
+        registerLegacy("tenThousandPoisonFeastUseWhitelist", TEN_THOUSAND_POISON_FEAST_USE_WHITELIST);
+        registerLegacy("tenThousandPoisonFeastEffectList", TEN_THOUSAND_POISON_FEAST_EFFECT_LIST);
+        registerLegacy("tenThousandPoisonFeastLevelConfig", TEN_THOUSAND_POISON_FEAST_LEVEL_CONFIG);
+        registerLegacy("tenThousandPoisonFeastDurationConfig", TEN_THOUSAND_POISON_FEAST_DURATION_CONFIG);
+        registerLegacy("tenThousandPoisonFeastDefaultMinLevel", TEN_THOUSAND_POISON_FEAST_DEFAULT_MIN_LEVEL);
+        registerLegacy("tenThousandPoisonFeastDefaultMaxLevel", TEN_THOUSAND_POISON_FEAST_DEFAULT_MAX_LEVEL);
+        registerLegacy("tenThousandPoisonFeastDefaultMinDuration", TEN_THOUSAND_POISON_FEAST_DEFAULT_MIN_DURATION);
+        registerLegacy("tenThousandPoisonFeastDefaultMaxDuration", TEN_THOUSAND_POISON_FEAST_DEFAULT_MAX_DURATION);
+        registerLegacy("tenThousandPoisonFeastEffectCount", TEN_THOUSAND_POISON_FEAST_EFFECT_COUNT);
+        registerLegacy("tenThousandPoisonFeastMinItemCount", TEN_THOUSAND_POISON_FEAST_MIN_ITEM_COUNT);
+        registerLegacy("tenThousandPoisonFeastMinDebuffCount", TEN_THOUSAND_POISON_FEAST_MIN_DEBUFF_COUNT);
+        registerLegacy("playerModelScales", PLAYER_MODEL_SCALES);
+        registerLegacy("enableGoetyRevelationCompatibility", ENABLE_GOETY_REVELATION_COMPATIBILITY);
+    }
+
+    /**
+     * 注册旧 key 与新 ConfigValue 的映射，同时记录新路径。
+     * 新路径由 ConfigValue.getPath() 给出（例如 ["food","polarice","polariceCooldown"]）。
+     */
+    private static void registerLegacy(String oldKey, ForgeConfigSpec.ConfigValue<?> value) {
+        LEGACY_KEY_MAP.put(oldKey, value);
+        LEGACY_PATH_MAP.put(oldKey, String.join(".", value.getPath()));
     }
 
 
@@ -426,99 +438,119 @@ public class Config
 
     /**
      * 在 Mod 构造函数中、registerConfig 之前调用。
-     * 读取旧配置文件，缓存顶层旧 key 的值。
+     * 直接读取旧配置文件，把顶层旧 key 的值按新路径改写回同一个 TOML 文件，
+     * 这样 Forge 后续加载时天然读到新路径下的值，无需再依赖 ConfigValue.set()。
      */
     public static void captureLegacyConfig(Path configDir) {
         if (!LEGACY_CAPTURED.compareAndSet(false, true)) return;
 
         Path configPath = configDir.resolve("goetydelight-common.toml");
-        if (!Files.exists(configPath)) return;
+        if (!Files.exists(configPath)) {
+            GoetyDelight.LOGGER.info("[Config] No legacy config file found, skip migration.");
+            return;
+        }
 
-        try (CommentedFileConfig oldConfig = CommentedFileConfig.builder(configPath)
-                .preserveInsertionOrder()
-                .build()) {
+        try {
+            // 备份一份，防止写坏
+            Path backup = configDir.resolve("goetydelight-common.toml.bak");
+            if (!Files.exists(backup)) {
+                Files.copy(configPath, backup);
+                GoetyDelight.LOGGER.info("[Config] Backed up legacy config to: {}", backup.getFileName());
+            }
+
+            CommentedFileConfig oldConfig = CommentedFileConfig.builder(configPath)
+                    .preserveInsertionOrder()
+                    .build();
             oldConfig.load();
 
-            for (String oldKey : LEGACY_KEY_MAP.keySet()) {
-                Object value = oldConfig.get(oldKey);
-                if (value != null) {
-                    LEGACY_VALUES.put(oldKey, value);
+            int migrated = 0;
+            for (Map.Entry<String, String> entry : LEGACY_PATH_MAP.entrySet()) {
+                String oldKey = entry.getKey();
+                String newPath = entry.getValue();
+
+                // 旧文件里顶层没有这个 key，跳过（可能是已经迁移过，或用户没配过）
+                if (!oldConfig.contains(oldKey)) continue;
+
+                Object oldValue = oldConfig.get(oldKey);
+                if (oldValue == null) continue;
+
+                // 新路径已经有值，说明迁移已完成，不覆盖用户新配置
+                if (oldConfig.contains(newPath)) {
+                    oldConfig.remove(oldKey);
+                    migrated++;
+                    continue;
                 }
+
+                oldConfig.set(newPath, oldValue);
+                oldConfig.remove(oldKey);
+                migrated++;
             }
 
-            if (!LEGACY_VALUES.isEmpty()) {
-                GoetyDelight.LOGGER.info("[Config] Captured {} legacy config entries for migration.", LEGACY_VALUES.size());
-                Path backup = configDir.resolve("goetydelight-common.toml.bak");
-                if (!Files.exists(backup)) {
-                    Files.copy(configPath, backup);
-                    GoetyDelight.LOGGER.info("[Config] Backed up legacy config to: {}", backup.getFileName());
-                }
+            if (migrated > 0) {
+                oldConfig.save();
+                GoetyDelight.LOGGER.info("[Config] Migrated {} legacy entries into new sections.", migrated);
+            } else {
+                GoetyDelight.LOGGER.info("[Config] No legacy entries needed migration.");
             }
+
+            oldConfig.close();
         } catch (Exception e) {
-            GoetyDelight.LOGGER.warn("[Config] Failed to capture legacy config", e);
+            GoetyDelight.LOGGER.warn("[Config] Failed to migrate legacy config", e);
         }
-    }
-
-    /**
-     * 把缓存的旧值写入新 spec。线程安全，只执行一次。
-     * 返回是否实际执行了迁移。
-     */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private static boolean applyLegacyValues() {
-        if (!LEGACY_APPLIED.compareAndSet(false, true)) return false;
-        if (LEGACY_VALUES.isEmpty()) return false;
-
-        int applied = 0;
-        for (Map.Entry<String, Object> entry : LEGACY_VALUES.entrySet()) {
-            ForgeConfigSpec.ConfigValue<?> configValue = LEGACY_KEY_MAP.get(entry.getKey());
-            if (configValue == null) continue;
-
-            try {
-                ((ForgeConfigSpec.ConfigValue) configValue).set(entry.getValue());
-                applied++;
-            } catch (Exception e) {
-                GoetyDelight.LOGGER.warn("[Config] Failed to migrate key {} = {}", entry.getKey(), entry.getValue(), e);
-            }
-        }
-
-        LEGACY_VALUES.clear();
-
-        if (applied > 0) {
-            GoetyDelight.LOGGER.info("[Config] Migrated {} legacy entries to new sections.", applied);
-            return true;
-        }
-        return false;
     }
 
     // ==================== 事件处理 ====================
 
     @SubscribeEvent
-    static void onLoad(final ModConfigEvent event) {
-        // 只处理我们自己的配置
+    static void onLoad(final ModConfigEvent.Loading event) {
         if (!event.getConfig().getSpec().equals(SPEC)) return;
+        refreshCaches();
+    }
 
-        // 1. 尝试迁移
-        boolean migrated = applyLegacyValues();
+    @SubscribeEvent
+    static void onReload(final ModConfigEvent.Reloading event) {
+        if (!event.getConfig().getSpec().equals(SPEC)) return;
+        refreshCaches();
+    }
 
-        // 2. 刷新缓存
-        blacklistedItems = BLACKLISTED_ITEMS.get().stream()
-                .map(itemName -> ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName)))
-                .collect(Collectors.toSet());
-
-        if (blackListUpdateListener != null) {
-            blackListUpdateListener.accept(null);
+    /**
+     * 从当前已加载的 spec 中刷新运行时缓存。
+     * 必须保证不抛异常，否则会中断事件链。
+     */
+    private static void refreshCaches() {
+        try {
+            List<? extends String> raw = BLACKLISTED_ITEMS.get();
+            if (raw == null) {
+                blacklistedItems = Set.of();
+            } else {
+                blacklistedItems = raw.stream()
+                        .map(itemName -> {
+                            try {
+                                return ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName));
+                            } catch (Exception e) {
+                                return null;
+                            }
+                        })
+                        .filter(java.util.Objects::nonNull)
+                        .collect(Collectors.toSet());
+            }
+        } catch (Exception e) {
+            GoetyDelight.LOGGER.warn("[Config] Failed to refresh blacklistedItems cache", e);
+            if (blacklistedItems == null) blacklistedItems = Set.of();
         }
 
-        ConvertServantUtil.onConfigLoad();
-
-        // 3. 如果有迁移，保存新配置
-        if (migrated) {
+        if (blackListUpdateListener != null) {
             try {
-                event.getConfig().save();
-                GoetyDelight.LOGGER.info("[Config] Saved migrated config to disk.");
+                blackListUpdateListener.accept(null);
             } catch (Exception e) {
-                GoetyDelight.LOGGER.warn("[Config] Failed to save migrated config", e);
+                GoetyDelight.LOGGER.warn("[Config] blackListUpdateListener threw", e);
             }
+        }
+
+        try {
+            ConvertServantUtil.onConfigLoad();
+        } catch (Exception e) {
+            GoetyDelight.LOGGER.warn("[Config] ConvertServantUtil.onConfigLoad threw", e);
         }
     }
 
@@ -809,7 +841,7 @@ public class Config
 
     public static final ForgeConfigSpec SPEC = BUILDER.build();
 
-    public static Set<Item> blacklistedItems;
+    public static Set<Item> blacklistedItems = Set.of();
     private static Consumer<Void> blackListUpdateListener;
 
     public static void registerBlackListUpdateListener(Consumer<Void> listener) {

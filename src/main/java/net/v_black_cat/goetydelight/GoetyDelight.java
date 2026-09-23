@@ -111,12 +111,11 @@ public class GoetyDelight
 
         // 挂载所有模组联动（各模块自带模组存在性判断）
         CompatRegistry.register(modEventBus);
+        MinecraftForge.registerConfigScreen(GoetyDelightConfigScreen::new);
 
-        // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
-
+        modEventBus.register(Config.class);
         Config.captureLegacyConfig(FMLPaths.CONFIGDIR.get());
-
-        ModLoadingContext.get().registerConfig(
+        context.registerConfig(
                 ModConfig.Type.COMMON,
                 Config.SPEC,
                 "goetydelight-common.toml"
