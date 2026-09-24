@@ -59,7 +59,6 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.SHARK_FIN);
         simpleItem(ModItems.COOKED_SHARK_FIN);
         simpleItem(ModItems.TAIYAKI);
-        simpleItem(ModItems.COLD_LEAF_CANDY);
         simpleItem(ModItems.BRAISED_BEAR_PAW);
         simpleItem(ModItems.POACHED_SPIDER_EGG);
         simpleItem(ModItems.ECTOPLASM_JELLY);

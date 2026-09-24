@@ -1,0 +1,29 @@
+{
+  "type": "farmersdelight:cooking",
+  "cookingtime": 200,
+  "experience": 0.8,
+  "ingredients": [
+    {
+      "item": "goetydelight:bream"
+    },
+    {
+      "item": "minecraft:sugar"
+    },
+    {
+      "item": "minecraft:honey_bottle"
+    },
+    {
+      "item": "minecraft:egg"
+    },
+    {
+      "tag": "forge:milk"
+    },
+    {
+      "tag": "forge:dough"
+    }
+  ],
+  "recipe_book_tab": "misc",
+  "result": {
+    "item": "goetydelight:taiyaki"
+  }
+}

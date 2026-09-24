@@ -90,8 +90,8 @@ public class ModItems {
     public static final RegistryObject<Item> SHARK_FIN;
     public static final RegistryObject<Item> COOKED_SHARK_FIN;
     public static final RegistryObject<Item> TAIYAKI;
-    public static final RegistryObject<Item> COLD_LEAF_CANDY;
     public static final RegistryObject<Item> BRAISED_BEAR_PAW;
+
     public static final RegistryObject<Item> CAKE;
     public static final RegistryObject<Item> OMINOUS_ICE_CREAM;
     public static final RegistryObject<Item> ECTOPLASMIC_MELON;
@@ -403,14 +403,6 @@ public class ModItems {
                         simpleFoodItemProperties(6, 4.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(3), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.WATER_BREATHING, sToTick(30), 0), 1.0F)
-                                .build())));
-
-        COLD_LEAF_CANDY = ITEMS.register("cold_leaf_candy",
-                () -> new Item(basicItem().stacksTo(64).food(
-                        simpleFoodItemProperties(6, 3.6F)
-                                .effect(() -> new MobEffectInstance(ModEffects.TINGLING.get(), sToTick(10), 1), 1.0F)
-                                .effect(() -> new MobEffectInstance(FROSTY_AURA_SUPPLIER.get(), sToTick(90), 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(INSIGHT.get(), sToTick(180), 0), 1.0F)
                                 .build())));
 
         BRAISED_BEAR_PAW = ITEMS.register("braised_bear_paw",

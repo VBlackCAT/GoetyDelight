@@ -1,0 +1,13 @@
+{
+  "values": [
+    "goety:gnasher",
+    {
+      "id": "alexsmobs:hammerhead_shark",
+      "required": false
+    },
+    {
+      "id": "goetyawaken:hostile_gnasher",
+      "required": false
+    }
+  ]
+}

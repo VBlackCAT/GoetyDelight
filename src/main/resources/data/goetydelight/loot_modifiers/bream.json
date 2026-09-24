@@ -1,0 +1,15 @@
+{
+  "type": "goetydelight:goetydelight_loot_modifier",
+  "conditions": [
+    {
+      "condition": "goetydelight:entity_tag",
+      "tag": "goetydelight:snapper"
+
+    }
+  ],
+  "itemToAdd": "goetydelight:bream",
+  "chance": 1.0,
+  "min": 1,
+  "max": 1,
+  "looting_multiplier": 0
+}

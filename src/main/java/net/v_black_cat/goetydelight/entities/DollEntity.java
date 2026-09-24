@@ -343,6 +343,7 @@ public class DollEntity extends Entity {
                 case "doll_vblackcat", "doll_lamiao", "doll_sim" -> soundEvent = SoundEvents.CAT_AMBIENT;
                 case "doll_maid1" -> soundEvent = SoundEvents.PLAYER_SWIM;
                 case "doll_kunkun" -> soundEvent = SoundEvents.CHICKEN_AMBIENT;
+                case "doll_luo" -> soundEvent = com.Polarice3.Goety.init.ModSounds.CRONE_LAUGH.get();
                 default -> soundEvent = ModSounds.TOUCH_DOLL.get();
             }
         } else {
