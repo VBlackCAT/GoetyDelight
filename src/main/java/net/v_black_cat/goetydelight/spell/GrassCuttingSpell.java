@@ -31,7 +31,7 @@ public class GrassCuttingSpell extends Spell {
 
     private static final double BASE_RADIUS = 2.0D;   // 5×5
     private static final double MAX_RADIUS = 7.0D;    // 斩击最大半径
-    private static final int COOLDOWN_TICKS = 10 * 20; // 10 秒
+    private static final int COOLDOWN_TICKS = 3 * 20; // 10 秒
 
 
     private static final TagKey<Block> GRASS_LIKE = TagKey.create(Registries.BLOCK,

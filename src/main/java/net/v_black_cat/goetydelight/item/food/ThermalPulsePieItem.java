@@ -65,7 +65,7 @@ public class ThermalPulsePieItem extends Item {
         LivingEntity target = event.getEntity();
         if (!(target instanceof LivingEntity)) {return;}
         if (!(target.level() instanceof ServerLevel level)) return;
-        if (!isThermalActive(target)) return;
+        if (!isThermalActive(attacker)) return;
 
         ResourceLocation targetId = net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES.getKey(target.getType());
         if (targetId == null || ConvertServantUtil.isBannedEntity(target)) return;

@@ -28,7 +28,6 @@ import java.util.List;
 
 public class MarbleWaterSpell extends BlockSpell {
 
-    /** 可被替换为粉砂质大理石的方块（默认 #c:stones，数据包可扩展） */
     private static final TagKey<Block> SILTIFIABLE = TagKey.create(Registries.BLOCK,
             new ResourceLocation("goetydelight", "marble_focus/siltifiable"));
 

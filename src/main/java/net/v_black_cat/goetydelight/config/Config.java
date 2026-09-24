@@ -499,13 +499,11 @@ public class Config
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent.Loading event) {
-        if (!event.getConfig().getSpec().equals(SPEC)) return;
         refreshCaches();
     }
 
     @SubscribeEvent
     static void onReload(final ModConfigEvent.Reloading event) {
-        if (!event.getConfig().getSpec().equals(SPEC)) return;
         refreshCaches();
     }
 

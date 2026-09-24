@@ -111,6 +111,7 @@ public final class ConvertServantUtil {
         Entity attacker = event.getSource().getEntity();
         if (!(targetEntity instanceof LivingEntity)) {return;}
         if (!(attacker instanceof LivingEntity)) {return;}
+        if (!(isPolariceActive(attacker))) {return;}
 
         handleApostleSpecialCase(targetEntity, attacker);
 
@@ -123,7 +124,7 @@ public final class ConvertServantUtil {
             return;
         }
 
-        if (targetEntity.level() instanceof ServerLevel level && isPolariceActive(attacker)) {
+        if (targetEntity.level() instanceof ServerLevel level) {
             transformToServant(targetEntity, attacker, level, targetMaxHealth, targetHealth);
         }
     }

@@ -37,13 +37,6 @@ public class PolariceItem extends BowlFoodItem {
     // ==================== 事件订阅（仅转发） ====================
 
     @SubscribeEvent
-    public static void onConfigLoad(ModConfigEvent.Loading event) {
-        if (event.getConfig().getModId().equals("goetydelight")) {
-            ConvertServantUtil.onConfigLoad();
-        }
-    }
-
-    @SubscribeEvent
     public static void onItemUseFinish(LivingEntityUseItemEvent.Finish event) {
         if (event.getItem().getItem() instanceof PolariceItem) {
             ConvertServantUtil.onEaten(event.getEntity());
