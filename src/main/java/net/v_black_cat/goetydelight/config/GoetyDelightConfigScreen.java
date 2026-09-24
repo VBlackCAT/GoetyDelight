@@ -9,6 +9,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -179,22 +180,6 @@ public class GoetyDelightConfigScreen extends Screen {
                 this.pendingChanges.clear();
             }
             this.minecraft.setScreen(this.parent);
-        }
-    }
-
-    // ========================================================================
-    //                          语言判断（类级）
-    // ========================================================================
-
-    /** 当前客户端语言是否为中文。 */
-    private static boolean isChineseLanguage() {
-        try {
-            String code = Minecraft.getInstance().getLanguageManager().getSelected();
-            if (code == null) return false;
-            code = code.toLowerCase(Locale.ROOT);
-            return code.startsWith("zh") || code.equals("lzh");
-        } catch (Exception e) {
-            return false;
         }
     }
 
@@ -528,7 +513,7 @@ public class GoetyDelightConfigScreen extends Screen {
         }
 
         // --------------------------------------------------------------------
-        // 分组标题行（显示名走 GROUP_NAME_MAP）
+        // 分组标题行（显示名走 lang 键 goetydelight.configuration.group.<分组路径>）
         // --------------------------------------------------------------------
         class HeaderRow extends Row {
             private final String groupName;
@@ -548,12 +533,10 @@ public class GoetyDelightConfigScreen extends Screen {
             }
 
             private static String displayName(String fullPath, String fallback) {
-                String[] mapped = Config.GROUP_NAME_MAP.get(fullPath);
-                if (mapped != null) {
-                    String chosen = isChineseLanguage() && mapped.length >= 2 ? mapped[1] : mapped[0];
-                    if (chosen != null && !chosen.isBlank()) {
-                        return chosen;
-                    }
+                // 分组名走翻译键：goetydelight.configuration.group.<完整路径>
+                String groupKey = PREFIX + "group." + fullPath;
+                if (I18n.exists(groupKey)) {
+                    return I18n.get(groupKey);
                 }
                 return fallback;
             }
@@ -605,7 +588,7 @@ public class GoetyDelightConfigScreen extends Screen {
                 this.index = index;
 
                 this.box = new EditBox(GoetyDelightConfigScreen.this.font, 0, 0, 160, 18,
-                        Component.literal("element " + index));
+                        Component.literal(I18n.get(PREFIX + "element", index)));
                 this.box.setMaxLength(4096);
                 this.box.setValue(initial);
                 this.box.setCursorPosition(0);
@@ -705,7 +688,7 @@ public class GoetyDelightConfigScreen extends Screen {
 
             @Override
             public Component getNarration() {
-                return Component.literal("element " + this.index);
+                return Component.literal(I18n.get(PREFIX + "element", this.index));
             }
         }
 
@@ -745,21 +728,16 @@ public class GoetyDelightConfigScreen extends Screen {
             }
 
             private static Component buildLabel(String key, ForgeConfigSpec.ValueSpec spec) {
-                String[] mapped = Config.COMMENT_MAP.get(key);
-                if (mapped != null) {
-                    String chosen = isChineseLanguage() && mapped.length >= 2 ? mapped[1] : mapped[0];
-                    if (chosen != null && !chosen.isBlank()) {
-                        return Component.literal(chosen);
-                    }
+                // 标签走翻译键：goetydelight.configuration.<完整路径>
+                String labelKey = PREFIX + key;
+                if (I18n.exists(labelKey)) {
+                    return Component.translatable(labelKey);
                 }
 
                 String comment = spec.getComment();
                 if (comment != null && !comment.isBlank() && !comment.startsWith("Range:")) {
-                    String[] lines = comment.split("\n");
-                    String chosen = isChineseLanguage() && lines.length >= 2
-                            ? lines[lines.length - 1]
-                            : lines[0];
-                    chosen = chosen.trim();
+                    // 没有翻译键时的兜底：取 TOML 注释首行
+                    String chosen = comment.split("\n")[0].trim();
                     if (!chosen.isEmpty()) {
                         return Component.literal(chosen);
                     }
@@ -772,32 +750,40 @@ public class GoetyDelightConfigScreen extends Screen {
             private List<Component> buildTooltip() {
                 List<Component> lines = new ArrayList<>();
 
-                String[] mapped = Config.COMMENT_MAP.get(this.key);
-                if (mapped != null) {
-                    for (String line : mapped) {
-                        if (line != null && !line.isBlank()) {
-                            lines.add(Component.literal("§7" + line));
-                        }
-                    }
+                // 说明走翻译键：<路径>.tooltip 优先，其次 <路径>，最后回退 spec 注释
+                String tipKey = PREFIX + this.key + ".tooltip";
+                String labelKey = PREFIX + this.key;
+                if (I18n.exists(tipKey)) {
+                    addCommentLines(lines, I18n.get(tipKey));
+                } else if (I18n.exists(labelKey)) {
+                    addCommentLines(lines, I18n.get(labelKey));
                 } else {
                     String comment = spec.getComment();
                     if (comment != null && !comment.isBlank() && !comment.startsWith("Range:")) {
-                        for (String line : comment.split("\n")) {
-                            lines.add(Component.literal("§7" + line));
-                        }
+                        addCommentLines(lines, comment);
                     }
                 }
 
                 if (!isListValue()) {
-                    lines.add(Component.literal("§7Default: §f" + formatDefault(spec.getDefault())));
+                    lines.add(Component.literal("§7" + I18n.get(PREFIX + "default_text")
+                            + "§f" + formatDefault(spec.getDefault())));
                 }
 
                 if (spec.needsWorldRestart()) {
                     lines.add(Component.literal(""));
-                    lines.add(Component.literal("§cRequires world restart"));
+                    lines.add(Component.literal("§c" + I18n.get(PREFIX + "requires_world_restart")));
                 }
 
                 return lines;
+            }
+
+            /** 把一段（可能多行的）说明文本按灰色逐行加入 tooltip。 */
+            private static void addCommentLines(List<Component> lines, String text) {
+                for (String line : text.split("\n")) {
+                    if (!line.isBlank()) {
+                        lines.add(Component.literal("§7" + line));
+                    }
+                }
             }
 
             private String formatDefault(Object def) {
