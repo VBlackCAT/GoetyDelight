@@ -89,6 +89,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.DARK_BRUSH);
         simpleItem(RevelationCompatRegistry.APOCALYPTIUM_INGOT_BRUSH);
         simpleItem(RevelationCompatRegistry.ASCENSION_MOONCAKE);
+        simpleItem(RevelationCompatRegistry.MALEVOLENT_SHRINE_FOCUS);
         simpleItem(ModItems.VILLAGERS_FEAST);
         simpleItem(ModItems.WARPED_WART_OMELETTE);
         simpleItem(ModItems.NETHER_WART_OMELETTE);

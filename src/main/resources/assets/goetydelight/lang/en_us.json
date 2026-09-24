@@ -110,6 +110,8 @@
   "item.goetydelight.love_and_fertility_focus.info": "Spreads a cloud of Love and Fertility brew gas at the target, granting Love to animals and Fertility to young creatures. The Range enchantment expands the area, and the Duration enchantment extends the cloud's lifetime.",
   "item.goetydelight.rich_soil_focus": "Rich Soil Focus",
   "item.goetydelight.rich_soil_focus.info": "Calls down a blue soul light. After a short delay, it turns vanilla soil such as dirt, grass blocks and podzol into Rich Soil, and vanilla farmland into Rich Soil Farmland. The Range enchantment expands the area.",
+  "item.goetydelight.petroleum_mist_focus": "Petroleum Mist Focus",
+  "item.goetydelight.petroleum_mist_focus.info": "Hold right-click to spread Petroleum Mist, draining 2000 soul energy per second. Blood-red clouds churn within the mist, and designated creatures are periodically slashed.",
   "item.goetydelight.laowang_focus": "Laowang Focus",
   "item.goetydelight.laowang_focus.info": "Summons 3-5 pigs named laowang237. Each level of Potency summons 1-3 more.",
   "item.goetydelight.tree_growth_focus": "Tree Growth Focus",

@@ -59,6 +59,17 @@ float valueNoise(vec2 p) {
     return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
 }
 
+float fbm(vec2 p) {
+    float value = 0.0;
+    float amplitude = 0.5;
+    for (int i = 0; i < 4; i++) {
+        value += amplitude * valueNoise(p);
+        p *= 2.17;
+        amplitude *= 0.52;
+    }
+    return value;
+}
+
 vec3 effectCenter(int index) {
     if (index == 0) return EffectCenter0;
     if (index == 1) return EffectCenter1;
@@ -97,6 +108,13 @@ vec3 reconstructWorldPosition(vec2 uv, float depth) {
     vec4 world = InvViewProjMat * clip;
     float invW = abs(world.w) > 0.000001 ? 1.0 / world.w : 1.0;
     return world.xyz * invW;
+}
+
+vec3 viewRay(vec2 uv) {
+    vec4 clip = vec4(uv * 2.0 - 1.0, 1.0, 1.0);
+    vec4 world = InvViewProjMat * clip;
+    float invW = abs(world.w) > 0.000001 ? 1.0 / world.w : 1.0;
+    return normalize(world.xyz * invW);
 }
 
 vec2 cameraRelativeWorldToUv(vec3 relWorld) {
@@ -264,20 +282,988 @@ vec3 applyDepthRefractionPressure(vec3 color, vec3 scenePos, vec2 uv, vec3 cente
     return distorted + rim * (pressure * 0.16 + fog * 0.12);
 }
 
+
+vec3 applyMalevolentShrineDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data, vec3 tint) {
+    float radius = max(data.y, 0.001);
+    float height = max(data.z, 1.0);
+    float intensity = max(data.w, 0.0);
+
+    vec3 ro = vec3(0.0);
+    vec3 rd = normalize(scenePos);
+    float maxDist = length(scenePos);
+    float boundRadius = length(vec3(radius, height, radius));
+
+    vec3 toCenter = center - ro;
+    float centerProj = dot(rd, toCenter);
+    float tNear = max(centerProj - boundRadius, 0.0);
+    float tFar = min(centerProj + boundRadius, maxDist);
+    if (tNear >= tFar) {
+        return color;
+    }
+
+    float span = max(tFar - tNear, 0.001);
+    float stepSize = span / 34.0;
+    vec3 fogColor = mix(vec3(0.010, 0.0, 0.005), vec3(0.30, 0.010, 0.020), 0.45);
+    float transmittance = 1.0;
+    vec3 fog = vec3(0.0);
+
+    for (int i = 0; i < 34; i++) {
+        float t = tNear + (float(i) + 0.5) * stepSize;
+        vec3 p = ro + rd * t;
+        vec3 delta = p - center;
+        float horizontal = length(delta.xz);
+
+        float inside = 1.0 - smoothstep(radius * 0.68, radius, horizontal);
+        float vertical = smoothstep(-0.10, height * 0.18, delta.y)
+                * (1.0 - smoothstep(height * 0.60, height * 1.20, delta.y));
+        float body = inside * vertical;
+        if (body <= 0.001) {
+            continue;
+        }
+
+        // 近处稀薄，远处逐渐厚重，边缘浓到足以吞掉天空。
+        float nearFade = smoothstep(0.35, radius * 0.52, t);
+        float farBoost = smoothstep(radius * 0.42, radius * 0.94, horizontal);
+        float distanceFactor = nearFade * (0.70 + farBoost * 0.75);
+
+        vec2 flow = vec2(Time * 0.06, -Time * 0.038);
+        vec2 q = delta.xz * 0.46 + flow;
+        float n = fbm(q);
+        float n2 = fbm(q * 2.3 - flow * 1.4 + delta.y * 0.18);
+        float warp = fbm(q + vec2(n * 1.7 - n2 * 1.2, n2 * 1.5 + n * 0.8));
+        float angle = atan(delta.z, delta.x) * 5.0 + warp * 6.5 + Time * 0.18;
+        float strand = pow(1.0 - abs(sin(angle + n * 2.6)), 11.0);
+        float verticalWisp = pow(1.0 - abs(sin(delta.y * 1.7 + fbm(q) * 3.6 - Time * 0.2)), 5.0);
+        float density = body * (0.05 + 1.9 * strand * (0.22 + 0.78 * n) * (0.40 + 0.60 * verticalWisp));
+        density *= distanceFactor;
+
+        float wall = (1.0 - smoothstep(radius * 0.82, radius, horizontal)) * vertical;
+        density += wall * (0.12 + 0.55 * n2) * (0.5 + 0.5 * strand) * nearFade;
+
+        density *= intensity * 0.72;
+        float sampleOpacity = 1.0 - exp(-density * stepSize * 2.2);
+
+        vec3 sheen = spectral(Time * 0.75 + warp * 4.2);
+        vec3 sampleFog = mix(fogColor, sheen, clamp(strand * 0.45 + wall * 0.12, 0.0, 0.55));
+        sampleFog = mix(sampleFog, vec3(0.018, 0.0, 0.009), 0.16);
+
+        fog += sampleFog * sampleOpacity * transmittance;
+        transmittance *= 1.0 - sampleOpacity;
+
+        if (transmittance < 0.02) {
+            break;
+        }
+    }
+
+    float fogAmount = 1.0 - transmittance;
+    vec3 integratedFog = fog / max(fogAmount, 0.001);
+    vec3 result = mix(color, integratedFog, clamp(fogAmount, 0.0, 0.94));
+    result *= 1.0 - fogAmount * intensity * 0.10;
+    return result;
+}
+
+vec3 applyMalevolentShrineSlash(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data, vec3 tint) {
+    float radius = max(data.y, 0.001);
+    float height = max(data.z, 1.0);
+    float intensity = max(data.w, 0.0);
+    vec3 p = scenePos - center;
+    float horizontal = length(p.xz);
+    float inside = 1.0 - smoothstep(radius * 0.80, radius, horizontal);
+    float vertical = smoothstep(-0.15, height * 0.10, p.y) * (1.0 - smoothstep(height * 0.72, height * 1.22, p.y));
+    float field = inside * vertical;
+
+    float cuts = 0.0;
+    float glow = 0.0;
+    for (int i = 0; i < 8; i++) {
+        float angle = float(i) * 0.785398 + Time * 0.075;
+        vec3 dir = normalize(vec3(cos(angle), sin(angle * 1.73 + Time * 0.31) * 0.42, sin(angle)));
+        float along = dot(p, dir);
+        float perpendicular = length(p - dir * along);
+        float travel = abs(fract(along * 0.42 - Time * 0.95) - 0.5);
+        float line = 1.0 - smoothstep(0.012, 0.10, perpendicular);
+        float fade = 1.0 - smoothstep(0.0, radius * 0.72, abs(along));
+        cuts += line * travel * fade;
+        glow += line * fade * 0.12;
+    }
+
+    float ring1 = ring(length(p.xz), radius * (0.18 + 0.16 * fract(Time * 0.41)), radius * 0.035);
+    float ring2 = ring(length(p.xz), radius * (0.55 + 0.22 * fract(Time * 0.27 + 0.5)), radius * 0.025);
+    float ripple = (ring1 * 0.5 + ring2 * 0.7) * field;
+
+    vec3 rift = mix(vec3(0.0), vec3(0.55, 0.006, 0.016), clamp(cuts * intensity * 1.7, 0.0, 0.82));
+    vec3 fractured = mix(color, rift, clamp(cuts * intensity * 0.85, 0.0, 0.68));
+    fractured += tint * (glow + ripple) * intensity * 1.1;
+    return fractured;
+}
+
+vec3 applyMalevolentShrineFire(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data, vec3 tint, float edge) {
+
+    float radius = max(data.y, 0.001);
+    float progress = clamp(data.z, 0.0, 1.0);
+    float intensity = max(data.w, 0.0);
+
+
+    /*
+        相机射线
+
+        scenePos 是当前像素世界位置（相机相对）
+        对天空像素由 viewRay * 320 提供
+    */
+    vec3 ro = vec3(0.0);
+    vec3 rd = normalize(scenePos);
+
+
+    /*
+        火焰形态参数
+
+        前期快速膨胀：
+        progress < 0.35
+
+        后期保持并衰减
+    */
+    float expand =
+        mix(
+            0.18,
+            1.0,
+            smoothstep(0.0, 0.35, progress)
+        );
+
+    float decay =
+        1.0 -
+        smoothstep(0.62, 1.0, progress);
+
+
+    /*
+        上尖下宽液滴包围盒
+
+        yScale 控制火焰高度
+    */
+    float height = radius * mix(1.35, 2.15, expand);
+
+
+    vec3 boxRadius = vec3(
+        radius,
+        height,
+        radius
+    );
+
+
+    /*
+        ray-box 粗裁剪
+
+        避免无意义采样
+    */
+    vec3 invRd = 1.0 / max(abs(rd), vec3(0.0001));
+
+    vec3 t0 = (-boxRadius - (ro - center)) * invRd;
+    vec3 t1 = ( boxRadius - (ro - center)) * invRd;
+
+
+    vec3 tMin3 = min(t0, t1);
+    vec3 tMax3 = max(t0, t1);
+
+
+    float tNear = max(
+        max(tMin3.x, tMin3.y),
+        tMin3.z
+    );
+
+    float tFar = min(
+        min(tMax3.x, tMax3.y),
+        tMax3.z
+    );
+
+
+    float maxDistance = length(scenePos);
+
+    tNear = max(tNear, 0.0);
+    tFar = min(tFar, maxDistance);
+
+
+    if (tNear >= tFar) {
+        return color;
+    }
+
+
+
+    /*
+        64步体积积分
+    */
+    const int STEPS = 64;
+
+    float span = max(
+        tFar - tNear,
+        0.001
+    );
+
+    float stepSize = span / float(STEPS);
+
+
+
+    float transmittance = 1.0;
+
+    vec3 accumulated = vec3(0.0);
+
+
+
+    /*
+        低频大尺度翻滚速度
+
+        火焰向上运动
+    */
+    vec3 flow3 =
+        vec3(
+            Time * 0.18,
+            Time * 0.42,
+            -Time * 0.13
+        );
+
+
+
+    for (int i = 0; i < STEPS; i++) {
+
+
+        float t =
+            tNear +
+            (float(i) + 0.5)
+            * stepSize;
+
+
+        vec3 p =
+            ro + rd * t;
+
+
+        vec3 q =
+            p - center;
+
+
+
+        /*
+            火焰坐标
+
+            y 方向拉长
+            底部宽
+            顶部尖
+        */
+        float y01 =
+            clamp(
+                (q.y + radius * 0.45)
+                /
+                max(height,0.001),
+                0.0,
+                1.0
+            );
+
+
+        float width =
+            mix(
+                1.25,
+                0.25,
+                pow(y01,1.35)
+            );
+
+
+        vec2 horizontal =
+            q.xz /
+            max(radius * width,0.001);
+
+
+
+        float radial =
+            length(horizontal);
+
+
+
+        /*
+            液滴形主体
+        */
+        float body =
+            1.0 -
+            smoothstep(
+                0.35,
+                1.05,
+                radial
+            );
+
+
+        float vertical =
+            smoothstep(
+                -radius*0.35,
+                radius*0.05,
+                q.y
+            )
+            *
+            (
+                1.0 -
+                smoothstep(
+                    height*0.65,
+                    height,
+                    q.y
+                )
+            );
+
+
+
+        /*
+            伪3D noise
+
+            xz采样:
+            大尺度卷动
+
+            y采样:
+            火舌断裂
+        */
+        vec2 baseXZ =
+            q.xz * 0.42
+            +
+            flow3.xz;
+
+
+        float nXZ1 =
+            fbm(baseXZ);
+
+
+        float nXZ2 =
+            fbm(
+                baseXZ * 2.3
+                -
+                flow3.zx
+            );
+
+
+        float nY =
+            fbm(
+                vec2(
+                    q.y * 0.55,
+                    Time * 0.16
+                )
+            );
+
+
+        float noise3D =
+            mix(
+                nXZ1,
+                nXZ2,
+                0.45
+            );
+
+
+        noise3D =
+            mix(
+                noise3D,
+                nY,
+                0.35
+            );
+
+
+
+        /*
+            domain warp
+
+            让火焰不是固定纹理
+        */
+        vec2 warpUV =
+            baseXZ
+            +
+            vec2(
+                noise3D * 1.8,
+                nY * 1.5
+            );
+
+
+        float warped =
+            fbm(warpUV);
+
+
+
+        /*
+            swirl
+
+            内卷火舌
+        */
+        float angle =
+            atan(q.z,q.x)
+            +
+            warped * 5.5
+            +
+            Time*0.45;
+
+
+        float swirl =
+            sin(
+                angle*3.0
+                +
+                q.y*1.7
+            );
+
+
+        swirl =
+            0.5+
+            0.5*swirl;
+
+
+
+        /*
+            边缘撕裂
+
+            制造缺口
+        */
+        float tear =
+            smoothstep(
+                0.25,
+                0.85,
+                warped
+            );
+
+
+        float density =
+            body
+            *
+            vertical
+            *
+            (
+                0.25
+                +
+                noise3D*0.85
+                +
+                swirl*0.55
+            );
+
+
+        density *=
+            mix(
+                0.55,
+                1.35,
+                tear
+            );
+
+
+        density *=
+            intensity
+            *
+            decay;
+
+        /*
+            密度微调
+
+            核心更厚
+            外层更稀
+        */
+        float coreMask =
+            1.0 -
+            smoothstep(
+                0.0,
+                0.42,
+                radial
+            );
+
+
+        float edgeMask =
+            smoothstep(
+                0.55,
+                1.0,
+                radial
+            );
+
+
+        density *=
+            mix(
+                0.65,
+                1.25,
+                coreMask
+            );
+
+
+        density *=
+            mix(
+                1.0,
+                0.45,
+                edgeMask
+            );
+
+
+
+        /*
+            Beer-Lambert
+
+            真正体积吸收
+            不再是透明贴片
+        */
+        float opticalDepth =
+            density *
+            stepSize *
+            3.4;
+
+
+        float alpha =
+            1.0 -
+            exp(
+                -opticalDepth
+            );
+
+
+
+        /*
+            温度场
+
+            由密度 + 核心距离决定
+
+            越靠近核心:
+            温度越高
+        */
+        float temperature =
+            clamp(
+                coreMask * 1.15
+                +
+                density * 0.35
+                +
+                (1.0-radial)*0.35,
+                0.0,
+                1.0
+            );
+
+
+
+        /*
+            黑体近似颜色
+
+            高温:
+            白
+
+            中温:
+            黄橙
+
+            低温:
+            红黑烟
+        */
+
+        vec3 whiteHot =
+            vec3(
+                1.0,
+                1.0,
+                1.0
+            );
+
+
+        vec3 hotYellow =
+            vec3(
+                1.0,
+                0.96,
+                0.84
+            );
+
+
+        vec3 yellow =
+            vec3(
+                1.0,
+                0.78,
+                0.32
+            );
+
+
+        vec3 orange =
+            vec3(
+                1.0,
+                0.38,
+                0.055
+            );
+
+
+        vec3 red =
+            vec3(
+                0.72,
+                0.055,
+                0.01
+            );
+
+
+        vec3 smoke =
+            vec3(
+                0.018,
+                0.004,
+                0.003
+            );
+
+
+
+        vec3 fireColor;
+
+
+        fireColor =
+            mix(
+                smoke,
+                red,
+                smoothstep(
+                    0.05,
+                    0.25,
+                    temperature
+                )
+            );
+
+
+        fireColor =
+            mix(
+                red,
+                orange,
+                smoothstep(
+                    0.25,
+                    0.50,
+                    temperature
+                )
+            );
+
+
+        fireColor =
+            mix(
+                fireColor,
+                yellow,
+                smoothstep(
+                    0.50,
+                    0.72,
+                    temperature
+                )
+            );
+
+
+        fireColor =
+            mix(
+                fireColor,
+                hotYellow,
+                smoothstep(
+                    0.72,
+                    0.90,
+                    temperature
+                )
+            );
+
+
+        fireColor =
+            mix(
+                fireColor,
+                whiteHot,
+                smoothstep(
+                    0.90,
+                    1.0,
+                    temperature
+                )
+            );
+
+
+
+        /*
+            自发光
+
+            核心过曝
+        */
+        float emission =
+            pow(
+                temperature,
+                2.4
+            )
+            *
+            density
+            *
+            5.5;
+
+
+
+        fireColor *=
+            1.0
+            +
+            emission;
+
+
+
+        /*
+            tint 作为额外魔法色调
+        */
+        fireColor =
+            mix(
+                fireColor,
+                fireColor + tint * 0.35,
+                0.18
+            );
+
+
+
+        accumulated +=
+            fireColor
+            *
+            alpha
+            *
+            transmittance;
+
+
+
+        transmittance *=
+            1.0-alpha;
+
+
+
+        if(transmittance < 0.015)
+        {
+            break;
+        }
+    }
+
+
+
+    /*
+        体积积分结果
+    */
+    float fireAmount =
+        1.0 -
+        transmittance;
+
+
+    vec3 integrated =
+        accumulated /
+        max(
+            fireAmount,
+            0.001
+        );
+
+
+    vec3 result =
+        mix(
+            color,
+            integrated,
+            clamp(
+                fireAmount,
+                0.0,
+                0.96
+            )
+        );
+
+
+
+    /*
+        热浪折射
+
+        径向 + 切向 + 上升扰动
+    */
+    vec3 surface =
+        scenePos-center;
+
+
+    float surfaceDist =
+        length(surface);
+
+
+    vec3 radial =
+        surfaceDist > 0.001
+        ?
+        surface/surfaceDist
+        :
+        vec3(1.0,0.0,0.0);
+
+
+    vec3 tangent =
+        vec3(
+            -radial.z,
+            0.0,
+            radial.x
+        );
+
+
+
+    float heat =
+        decay
+        *
+        intensity
+        *
+        smoothstep(
+            radius*0.35,
+            radius*1.25,
+            surfaceDist
+        )
+        *
+        (
+            1.0 -
+            smoothstep(
+                radius*0.8,
+                radius*1.8,
+                surfaceDist
+            )
+        );
+
+
+
+    float heatWave =
+        sin(
+            surfaceDist*9.0
+            -
+            Time*12.0
+        )
+        *
+        0.5
+        +
+        0.5;
+
+
+
+    vec3 worldOffset =
+        radial
+        *
+        (
+            heatWave
+            *
+            radius
+            *
+            0.045
+        )
+        +
+        tangent
+        *
+        (
+            cos(
+                surfaceDist*13.0
+                +
+                Time*8.0
+            )
+            *
+            radius
+            *
+            0.028
+        )
+        +
+        vec3(0.0,1.0,0.0)
+        *
+        (
+            sin(
+                Time*5.0
+                +
+                surfaceDist*4.0
+            )
+            *
+            radius
+            *
+            0.018
+        );
+
+
+    vec2 refractOffset =
+        projectedWorldOffset(
+            scenePos,
+            worldOffset
+        )
+        *
+        heat;
+
+
+    vec3 refracted =
+        texture(
+            DiffuseSampler,
+            clamp(
+                uv+refractOffset,
+                vec2(0.0),
+                vec2(1.0)
+            )
+        ).rgb;
+
+
+    result =
+        mix(
+            refracted,
+            result,
+            clamp(
+                1.0-heat*0.35,
+                0.0,
+                1.0
+            )
+        );
+
+
+
+    /*
+        冲击波环
+
+        快速扩散
+        透明锐利
+    */
+    float shockRadius =
+        mix(
+            radius*0.45,
+            radius*1.8,
+            progress
+        );
+
+
+    float shock =
+        ring(
+            surfaceDist,
+            shockRadius,
+            radius*0.018
+        );
+
+
+    shock *=
+        (1.0-progress)
+        *
+        intensity;
+
+
+
+    result +=
+        vec3(
+            1.0,
+            0.55,
+            0.18
+        )
+        *
+        shock
+        *
+        0.45;
+
+
+
+    return result;
+}
+
+vec3 applyMalevolentShrineTargetGlow(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data, vec3 tint, float edge) {
+    float radius = max(data.y, 0.001);
+    float height = max(data.z, 0.5);
+    float intensity = max(data.w, 0.0);
+    vec3 delta = scenePos - center;
+    float dist = length(delta);
+    float body = 1.0 - smoothstep(radius * 0.45, radius * 1.05, dist);
+    float vertical = 1.0 - smoothstep(height * 0.42, height * 0.82, abs(delta.y));
+    float pulse = 0.72 + 0.28 * sin(Time * 4.2 + length(delta.xz) * 3.1);
+    float glow = (body * vertical * 0.46 + edge * 0.54) * intensity * pulse;
+    vec3 blood = mix(vec3(0.06, 0.0, 0.01), vec3(0.95, 0.025, 0.035), edge);
+    return color * (1.0 - glow * 0.28) + blood * glow;
+}
 void main() {
     vec2 uv = texCoord;
     vec4 base = texture(DiffuseSampler, uv);
     float depth = depthAt(uv);
+    bool sky = depth >= 0.999999;
 
-    if (depth >= 0.999999) {
-        fragColor = base;
-        return;
+    vec3 scenePos;
+    float edge;
+    if (sky) {
+        scenePos = viewRay(uv) * 320.0;
+        edge = 0.0;
+    } else {
+        scenePos = reconstructWorldPosition(uv, depth);
+        edge = depthEdge(uv, depth);
     }
 
-    vec3 scenePos = reconstructWorldPosition(uv, depth);
     vec3 color = base.rgb;
-    float edge = depthEdge(uv, depth);
 
+    // 先应用领域雾场，让其他屏幕空间特效叠在雾上，避免被雾盖住。
+    for (int i = 0; i < 8; i++) {
+        if (i >= EffectCount) {
+            break;
+        }
+        vec4 data = effectData(i);
+        int mode = int(data.x + 0.5);
+        if (mode == 7) {
+            color = applyMalevolentShrineDomain(color, scenePos, uv, effectCenter(i), data, effectColor(i));
+        }
+    }
+
+    // 再应用斩击、目标血光和既有的冲击波/热浪/光柱等特效。
     for (int i = 0; i < 8; i++) {
         if (i >= EffectCount) {
             break;
@@ -287,6 +1273,16 @@ void main() {
         int mode = int(data.x + 0.5);
         vec3 center = effectCenter(i);
         vec3 tint = effectColor(i);
+
+        if (sky) {
+            if (mode == 10) {
+                color = applyMalevolentShrineFire(color, scenePos, uv, center, data, tint, edge);
+            }
+            continue;
+        }
+        if (mode == 7) {
+            continue;
+        }
 
         if (mode == 0) {
             color = applyShockwave(color, scenePos, uv, center, data, tint);
@@ -300,8 +1296,14 @@ void main() {
             color = applyContactEdgeGlow(color, scenePos, center, data, tint, edge);
         } else if (mode == 5) {
             color = applyVolumetricLightColumn(color, scenePos, center, data, tint, edge);
-        } else {
+        } else if (mode == 6) {
             color = applyDepthRefractionPressure(color, scenePos, uv, center, data, tint, edge);
+        } else if (mode == 8) {
+            color = applyMalevolentShrineSlash(color, scenePos, uv, center, data, tint);
+        } else if (mode == 10) {
+            color = applyMalevolentShrineFire(color, scenePos, uv, center, data, tint, edge);
+        } else {
+            color = applyMalevolentShrineTargetGlow(color, scenePos, uv, center, data, tint, edge);
         }
     }
 

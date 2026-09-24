@@ -110,6 +110,8 @@
   "item.goetydelight.love_and_fertility_focus.info": "在目标处展开爱与丰饶药酿云，使云中的生物获得爱与丰饶。范围附魔可扩大药云范围，持久附魔可延长持续时间",
   "item.goetydelight.rich_soil_focus": "沃土聚晶",
   "item.goetydelight.rich_soil_focus.info":"召唤一道蓝色灵魂光柱，短暂延迟后将范围内的泥土、草方块、灰化土等原版土壤转化为沃土，将原版耕地转化为沃土耕地，可以通过范围附魔扩大作用范围",
+  "item.goetydelight.petroleum_mist_focus": "石油雾聚晶",
+  "item.goetydelight.petroleum_mist_focus.info":"按住右键持续展开石油雾，每秒消耗2000灵魂能量；雾中血云翻涌，并周期性对指定生物造成斩击。",
   "item.goetydelight.laowang_focus": "老王聚晶",
   "item.goetydelight.laowang_focus.info":"召唤3~5只名为laowang237的猪，每有一级强效附魔额外召唤1~3只",
   "item.goetydelight.tree_growth_focus": "树木催生聚晶",

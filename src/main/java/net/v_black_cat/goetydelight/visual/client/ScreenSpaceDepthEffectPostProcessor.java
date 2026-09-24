@@ -238,6 +238,22 @@ public final class ScreenSpaceDepthEffectPostProcessor {
             return 6;
         }
 
+        if (effect.id().equals(GDVisualEffects.MALEVOLENT_SHRINE_DOMAIN.getId())) {
+            return 7;
+        }
+
+        if (effect.id().equals(GDVisualEffects.MALEVOLENT_SHRINE_SLASH.getId())) {
+            return 8;
+        }
+
+        if (effect.id().equals(GDVisualEffects.MALEVOLENT_SHRINE_TARGET_GLOW.getId())) {
+            return 9;
+        }
+
+        if (effect.id().equals(GDVisualEffects.MALEVOLENT_SHRINE_FIRE.getId())) {
+            return 10;
+        }
+
         return -1;
     }
 
@@ -268,6 +284,22 @@ public final class ScreenSpaceDepthEffectPostProcessor {
 
         if (effect.id().equals(GDVisualEffects.DEPTH_REFRACTION_PRESSURE.getId())) {
             return GDVisualEffects.DEPTH_REFRACTION_PRESSURE.get().renderDistance();
+        }
+
+        if (effect.id().equals(GDVisualEffects.MALEVOLENT_SHRINE_DOMAIN.getId())) {
+            return GDVisualEffects.MALEVOLENT_SHRINE_DOMAIN.get().renderDistance();
+        }
+
+        if (effect.id().equals(GDVisualEffects.MALEVOLENT_SHRINE_SLASH.getId())) {
+            return GDVisualEffects.MALEVOLENT_SHRINE_SLASH.get().renderDistance();
+        }
+
+        if (effect.id().equals(GDVisualEffects.MALEVOLENT_SHRINE_TARGET_GLOW.getId())) {
+            return GDVisualEffects.MALEVOLENT_SHRINE_TARGET_GLOW.get().renderDistance();
+        }
+
+        if (effect.id().equals(GDVisualEffects.MALEVOLENT_SHRINE_FIRE.getId())) {
+            return GDVisualEffects.MALEVOLENT_SHRINE_FIRE.get().renderDistance();
         }
 
         return 0.0D;
@@ -376,7 +408,7 @@ public final class ScreenSpaceDepthEffectPostProcessor {
             float progress = progress(entity, effect, event);
             float radius = radius(entity, effect, mode, progress);
             float intensity = intensity(effect, mode, progress);
-            float secondary = secondary(entity, mode, progress);
+            float secondary = secondary(entity, effect, mode, progress);
             int offset3 = count * 3;
             int offset4 = count * 4;
 
@@ -389,15 +421,34 @@ public final class ScreenSpaceDepthEffectPostProcessor {
             data[offset4 + 3] = intensity;
 
             float phase = (event.getRenderTick() + event.getPartialTick()) * 0.08F + count * 1.37F;
-            colors[offset3] = 0.55F + 0.45F * Mth.sin(phase);
-            colors[offset3 + 1] = 0.55F + 0.45F * Mth.sin(phase + 2.0943952F);
-            colors[offset3 + 2] = 0.55F + 0.45F * Mth.sin(phase + 4.1887903F);
+            if (mode == 7) {
+                colors[offset3] = 0.46F;
+                colors[offset3 + 1] = 0.03F;
+                colors[offset3 + 2] = 0.055F;
+            } else if (mode == 8) {
+                colors[offset3] = 0.12F;
+                colors[offset3 + 1] = 0.01F;
+                colors[offset3 + 2] = 0.02F;
+            } else if (mode == 9) {
+                colors[offset3] = 0.62F;
+                colors[offset3 + 1] = 0.04F;
+                colors[offset3 + 2] = 0.07F;
+            } else if (mode == 10) {
+                colors[offset3] = 1.0F;
+                colors[offset3 + 1] = 0.55F;
+                colors[offset3 + 2] = 0.08F;
+            } else {
+                colors[offset3] = 0.55F + 0.45F * Mth.sin(phase);
+                colors[offset3 + 1] = 0.55F + 0.45F * Mth.sin(phase + 2.0943952F);
+                colors[offset3 + 2] = 0.55F + 0.45F * Mth.sin(phase + 4.1887903F);
+            }
             count++;
         }
 
         private static Vec3 center(Entity entity, float partialTick, int mode) {
             double heightScale = switch (mode) {
-                case 4, 5 -> 0.04D;
+                case 4, 5, 7, 8 -> 0.04D;
+                case 10 -> 0.52D;
                 default -> 0.52D;
             };
             return entity.getPosition(partialTick).add(0.0D, entity.getBbHeight() * heightScale, 0.0D);
@@ -426,11 +477,28 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                 case 4 -> Math.max(0.85F, entity.getBbWidth() * 1.2F);
                 case 5 -> Math.max(0.72F, entity.getBbWidth() * 0.82F);
                 case 6 -> Math.max(2.1F, Math.max(entity.getBbHeight() * 1.05F, entity.getBbWidth() * 2.35F));
+                case 7, 8 -> DEFAULT_RADIUS;
+                case 9 -> Math.max(0.9F, entity.getBbWidth() * 1.6F);
+                case 10 -> DEFAULT_RADIUS;
                 default -> DEFAULT_RADIUS;
             };
         }
 
-        private static float secondary(Entity entity, int mode, float progress) {
+        private static float secondary(Entity entity, ActiveEntityVisualEffect effect, int mode, float progress) {
+            if (mode == 7 || mode == 8) {
+                return effect.data().contains("Height")
+                        ? effect.data().getFloat("Height")
+                        : 6.0F;
+            }
+
+            if (mode == 9) {
+                return Math.max(1.1F, entity.getBbHeight());
+            }
+
+            if (mode == 10) {
+                return progress;
+            }
+
             return switch (mode) {
                 case 4 -> Math.max(0.8F, entity.getBbHeight());
                 case 5 -> Math.max(3.6F, entity.getBbHeight() * 2.8F);
@@ -441,8 +509,16 @@ public final class ScreenSpaceDepthEffectPostProcessor {
         }
 
         private static float intensity(ActiveEntityVisualEffect effect, int mode, float progress) {
-            if (effect.data().contains("Intensity")) {
-                return effect.data().getFloat("Intensity");
+            float base = effect.data().contains("Intensity")
+                    ? effect.data().getFloat("Intensity")
+                    : 1.0F;
+
+            // 领域雾和斩击在展开时逐渐浮现，避免瞬间铺满。
+            if (mode == 7) {
+                return base * Mth.clamp(progress * 1.6F, 0.0F, 1.0F);
+            }
+            if (mode == 8) {
+                return base * Mth.clamp(progress * 1.3F, 0.0F, 1.0F);
             }
 
             return switch (mode) {
@@ -453,7 +529,9 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                 case 4 -> 1.0F;
                 case 5 -> 0.78F;
                 case 6 -> 0.92F;
-                default -> 1.0F;
+                case 9 -> 0.9F;
+                case 10 -> 1.0F;
+                default -> base;
             };
         }
     }

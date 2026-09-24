@@ -81,6 +81,8 @@
   "item.goetydelight.dark_knife": "Faca Sombria",
   "item.goetydelight.dark_brush": "Escova Sombria",
   "item.goetydelight.ascension_mooncake": "Bolo da Lua da Ascensão",
+  "item.goetydelight.petroleum_mist_focus": "Foco da Névoa de Petróleo",
+  "item.goetydelight.petroleum_mist_focus.info": "Segure o botão direito para expandir a Névoa de Petróleo, consumindo 2000 de energia de alma por segundo. Nuvens vermelho-sangue giram dentro da névoa, e criaturas designadas são periodicamente golpeadas.",
   "item.goetydelight.villagers_feast": "Banquete dos Aldeões",
   "item.goetydelight.nether_wart_omelette": "Omelete de Verruga do Nether",
   "item.goetydelight.warped_wart_omelette": "Omelete de Verruga Distorcida",

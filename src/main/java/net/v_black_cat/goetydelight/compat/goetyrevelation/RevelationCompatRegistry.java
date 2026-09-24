@@ -1,6 +1,7 @@
 package net.v_black_cat.goetydelight.compat.goetyrevelation;
 
 import com.Polarice3.Goety.common.effects.GoetyEffects;
+import com.Polarice3.Goety.common.items.magic.MagicFocus;
 import com.mega.revelationfix.common.item.ModItemTiers;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.BlockItem;
@@ -21,6 +22,7 @@ import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.item.*;
 import net.v_black_cat.goetydelight.effect.ModEffects;
+import net.v_black_cat.goetydelight.spell.MalevolentShrineSpell;
 import vectorwing.farmersdelight.common.item.KnifeItem;
 
 import static net.v_black_cat.goetydelight.item.ModItems.NOURISHMENT_EFFECT_SUPPLIER;
@@ -54,6 +56,7 @@ public class RevelationCompatRegistry {
     public static final RegistryObject<Item> ATONEMENT_VOUCHER_WRAPED_COD;
     public static final RegistryObject<Item> ASCENSION_MOONCAKE;
     public static final RegistryObject<Item> QUIETUS_MARROW;
+    public static final RegistryObject<Item> MALEVOLENT_SHRINE_FOCUS;
 
     static {
         APOCALYPTIUM_POT = BLOCKS.register("apocalyptium_pot", () -> new Block(
@@ -130,6 +133,9 @@ public class RevelationCompatRegistry {
                                  .effect(() -> new MobEffectInstance(com.mega.revelationfix.common.init.ModEffects.QUIETUS.get(), -1, 1), 1.0F)
                                  .effect(() -> new MobEffectInstance(net.v_black_cat.goetydelight.effect.ModEffects.FASTING.get(), -1, 0), 1.0F)
                                  .build())));
+
+        MALEVOLENT_SHRINE_FOCUS = ITEMS.register("malevolent_shrine_focus",
+                () -> new PetroleumMistFocus(new MalevolentShrineSpell()));
     }
 
     private static FoodProperties.Builder simpleFoodItemProperties(int nutrition, float saturationMod) {

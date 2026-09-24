@@ -287,7 +287,7 @@ dependencies {
 //    modImplementation "curse.maven:goety-586095:8242254"//2.5.54.5
     modImplementation "curse.maven:goety-586095:8390977"//2.5.55.2
 
-//    modImplementation "curse.maven:goety-revelation-1236817:6892481"
+    modImplementation "curse.maven:goety-revelation-1236817:6892481"
 
     compileOnly "blank:[Forge]RevelationFix-1.20.1-4.4"//启示录内置的jar，单独弄出来是因为直接用启示录会导致工作区被肘击
     compileOnly "blank:goety-2.5.55.2"//我没活了，真连不上cf库
