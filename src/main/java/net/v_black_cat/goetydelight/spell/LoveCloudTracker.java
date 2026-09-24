@@ -36,10 +36,9 @@ public final class LoveCloudTracker {
 
     /**
      * 下一次需要被唤醒的服务器 tick。没有云、或距离下次检查/到期还早时，整个 tick 处理
-     * 只花一次 long 比较（此前每 tick 都要对每片云做 getLevel 查找 + 递减计数）。
+     * 只花一次 long 比较。
      */
     private static long nextWakeTick = Long.MAX_VALUE;
-    private static long lastWakeTick = 0L;
 
     private LoveCloudTracker() {
     }
@@ -65,10 +64,11 @@ public final class LoveCloudTracker {
     /** 登记一片药云，由 ticker 负责按时回收 */
     public static void track(ServerLevel level, LivingEntity owner, Map<BlockPos, UUID> cells,
                              List<BrewEffectInstance> effects, int durationTicks) {
+        long now = level.getServer().getTickCount();
         CLOUDS.add(new Cloud(level.dimension(), owner.getUUID(), List.copyOf(effects),
-                new LinkedHashMap<>(cells), durationTicks));
- /*       GoetyDelight.LOGGER.info("[爱与丰饶] 铺开药云 {} 格，时长 {} tick（{} 秒）",
-                cells.size(), durationTicks, durationTicks / 20);   */
+                new LinkedHashMap<>(cells), now, durationTicks));
+        // 关键修复：新云加入后强制下一 tick 重新调度，否则 nextWakeTick 可能仍是 MAX_VALUE
+        nextWakeTick = 0L;
     }
 
     @SubscribeEvent
@@ -87,8 +87,6 @@ public final class LoveCloudTracker {
             return; // 还没到任何一片云的检查/到期时刻：零成本
         }
 
-        long elapsed = Math.max(1L, tick - lastWakeTick);
-        lastWakeTick = tick;
         nextWakeTick = Long.MAX_VALUE;
 
         Iterator<Cloud> it = CLOUDS.iterator();
@@ -100,8 +98,8 @@ public final class LoveCloudTracker {
                 continue;
             }
 
-            cloud.ticksUntilEnd -= (int) elapsed;
-            if (cloud.ticksUntilEnd <= 0) {
+            // 到期回收
+            if (tick >= cloud.endTick) {
                 int removed = 0;
                 for (UUID id : cloud.cells.values()) {
                     if (level.getEntity(id) instanceof BrewGas gas) {
@@ -115,13 +113,13 @@ public final class LoveCloudTracker {
                 continue;
             }
 
-            cloud.ticksUntilCheck -= (int) elapsed;
-            if (cloud.ticksUntilCheck <= 0) {
-                cloud.ticksUntilCheck = CHECK_INTERVAL_TICKS;
+            // 周期检查补回
+            if (tick >= cloud.nextCheckTick) {
+                cloud.nextCheckTick = tick + CHECK_INTERVAL_TICKS;
                 reviveMissing(level, cloud);
             }
 
-            nextWakeTick = Math.min(nextWakeTick, tick + Math.min(cloud.ticksUntilEnd, cloud.ticksUntilCheck));
+            nextWakeTick = Math.min(nextWakeTick, Math.min(cloud.endTick, cloud.nextCheckTick));
         }
     }
 
@@ -147,29 +145,27 @@ public final class LoveCloudTracker {
         }
         if (revived > 0) {
             cloud.revives += revived;
- /*           GoetyDelight.LOGGER.warn("[爱与丰饶] 有 {} 格药云被提前判废并已补回（累计 {}/{} 格）",
-                    revived, cloud.revives, MAX_REVIVES);   */
         }
     }
 
-    /** 一片药云：维度 + 归属者 + 效果 + 每格实体 UUID + 倒计时（自己数，不依赖任何时钟） */
+    /** 一片药云：维度 + 归属者 + 效果 + 每格实体 UUID + 绝对到期/检查 tick（不依赖任何外部时钟） */
     private static final class Cloud {
         private final ResourceKey<Level> dimension;
         private final UUID ownerId;
         private final List<BrewEffectInstance> effects;
         private final Map<BlockPos, UUID> cells;
-        private int ticksUntilEnd;
-        private int ticksUntilCheck;
+        private final long endTick;
+        private long nextCheckTick;
         private int revives;
 
         private Cloud(ResourceKey<Level> dimension, UUID ownerId, List<BrewEffectInstance> effects,
-                      Map<BlockPos, UUID> cells, int durationTicks) {
+                      Map<BlockPos, UUID> cells, long now, int durationTicks) {
             this.dimension = dimension;
             this.ownerId = ownerId;
             this.effects = effects;
             this.cells = cells;
-            this.ticksUntilEnd = durationTicks;
-            this.ticksUntilCheck = CHECK_INTERVAL_TICKS;
+            this.endTick = now + durationTicks;
+            this.nextCheckTick = now + CHECK_INTERVAL_TICKS;
         }
     }
 }
