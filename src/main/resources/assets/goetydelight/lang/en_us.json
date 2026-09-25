@@ -467,5 +467,8 @@
   "goetydelight.configuration.group.misc.compat": "Compat",
   "goetydelight.configuration.default_text": "Default: ",
   "goetydelight.configuration.requires_world_restart": "Requires world restart",
-  "goetydelight.configuration.element": "Element %s"
+  "goetydelight.configuration.element": "Element %s",
+
+  "goetydelight.configuration.tools.spells.disableMarbleFocusInUltrawarm": "Disable Marble Focus casting in ultrawarm dimensions (e.g. the Nether)",
+  "goetydelight.configuration.group.tools.spells": "Spells"
 }

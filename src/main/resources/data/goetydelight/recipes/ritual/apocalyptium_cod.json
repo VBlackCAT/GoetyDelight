@@ -39,5 +39,11 @@
   ],
   "result": {
     "item": "goetydelight:apocalyptium_cod"
-  }
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "goety_revelation"
+    }
+  ]
 }

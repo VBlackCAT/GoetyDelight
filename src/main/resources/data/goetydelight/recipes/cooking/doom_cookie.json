@@ -22,5 +22,11 @@
     "count": 1
   },
   "experience": 666,
-  "cookingtime": 300
+  "cookingtime": 300,
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "goety_revelation"
+    }
+  ]
 }

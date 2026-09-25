@@ -1,6 +1,5 @@
 package net.v_black_cat.goetydelight.spell;
 
-import com.Polarice3.Goety.api.items.magic.IWand;
 import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.common.enchantments.ModEnchantments;
 import com.Polarice3.Goety.common.magic.Spell;
@@ -18,7 +17,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.v_black_cat.goetydelight.entities.spell.RichSoilSpellEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,22 +59,14 @@ public class LaowangSpell extends Spell {
 
     @Override
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
-        ItemStack focus = IWand.getFocus(staff);
-        if (focus.isEmpty()) {
-            focus = WandUtil.findFocus(caster);
-        }
-        if (focus.isEmpty()) {
-            focus = caster.getMainHandItem(); // 兜底
-        }
-
-        // 直接从聚晶栈读取强效等级（不走 WandUtil 的间接门禁）
+        // 用 Goety 自己的 WandUtil.findFocus 取聚晶：它只对 instanceof IWand 的栈调用 IWand.getFocus，
+        // 所以卷轴等非法杖的栈不会再抛出 "ItemStack is missing item capability"
+        ItemStack focus = WandUtil.findFocus(caster);
         int potency = getEnchantLevel(focus, caster, ModEnchantments.POTENCY.get());
-
-        BlockPos center = caster.blockPosition();
-        worldIn.addFreshEntity(new RichSoilSpellEntity(worldIn, caster, center, 1 + potency,
-                RichSoilSpellEntity.EffectType.LAOWANG).setPotency(potency).setStaff(staff));
+        performDeferredEffect(worldIn, caster, potency);
     }
 
+    /** 实际召唤逻辑：由 {@link #SpellResult} 直接调用（与光柱解耦后不再走实体延迟） */
     public static boolean performDeferredEffect(ServerLevel worldIn, LivingEntity caster, int potency) {
         if (caster == null) {
             return false;

@@ -1,6 +1,5 @@
 package net.v_black_cat.goetydelight.spell;
 
-import com.Polarice3.Goety.api.items.magic.IWand;
 import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.common.enchantments.ModEnchantments;
 import com.Polarice3.Goety.common.magic.Spell;
@@ -78,10 +77,7 @@ public class GrassCuttingSpell extends Spell {
 
     @Override
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
-        ItemStack focus = IWand.getFocus(staff);
-        if (focus.isEmpty()) {
-            focus = WandUtil.findFocus(caster);
-        }
+        ItemStack focus = WandUtil.findFocus(caster);
 
         // 直接从聚晶栈读取附魔等级（绕过 enchantedFocus/isEnchanted 等间接门禁）
         boolean silkTouch = getEnchantLevel(focus, caster, Enchantments.SILK_TOUCH) > 0;

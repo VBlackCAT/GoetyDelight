@@ -1,6 +1,5 @@
 package net.v_black_cat.goetydelight.spell;
 
-import com.Polarice3.Goety.api.items.magic.IWand;
 import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.common.blocks.ModBlocks;
 import com.Polarice3.Goety.common.enchantments.ModEnchantments;
@@ -22,6 +21,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
+import net.v_black_cat.goetydelight.config.Config;
 import net.v_black_cat.goetydelight.entities.spell.RichSoilSpellEntity;
 
 import java.util.List;
@@ -54,6 +54,10 @@ public class MarbleWaterSpell extends BlockSpell {
     /** 施法前判定：返回 false 时既不耗灵魂也不进冷却 */
     @Override
     public boolean rightBlock(ServerLevel worldIn, LivingEntity caster, BlockPos target, Direction direction, SpellStat spellStat) {
+        // 超热维度（如下界）默认禁止施法，可由配置放开
+        if (isCastingDisabled(worldIn)) {
+            return false;
+        }
         BlockState state = worldIn.getBlockState(target);
         if (caster.isShiftKeyDown()) {
             // 替换模式：只有石头类方块才有效
@@ -71,10 +75,7 @@ public class MarbleWaterSpell extends BlockSpell {
     @Override
     public void blockResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff,
                             BlockPos target, Direction direction, SpellStat spellStat) {
-        ItemStack focus = IWand.getFocus(staff);
-        if (focus.isEmpty()) {
-            focus = WandUtil.findFocus(caster);
-        }
+        ItemStack focus = WandUtil.findFocus(caster);
         int radiusLevel = focus.isEmpty() ? 0 : focus.getEnchantmentLevel(ModEnchantments.RADIUS.get());
         int radius = Math.max(1, 1 + radiusLevel);
         worldIn.addFreshEntity(new RichSoilSpellEntity(worldIn, caster, target, radius,
@@ -118,6 +119,12 @@ public class MarbleWaterSpell extends BlockSpell {
             return true;
         }
         return false;
+    }
+
+
+    /** 超热维度 + 配置禁止 → 不允许施法（不耗灵魂、不进冷却、不放水/不替换） */
+    private static boolean isCastingDisabled(ServerLevel worldIn) {
+        return worldIn.dimensionType().ultraWarm() && Config.isMarbleFocusDisabledInUltrawarm();
     }
 
     /** 放水位置：目标可放水就放目标处，否则放在点击面的相邻处 */

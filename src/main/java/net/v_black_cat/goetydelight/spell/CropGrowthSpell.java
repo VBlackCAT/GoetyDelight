@@ -1,6 +1,5 @@
 package net.v_black_cat.goetydelight.spell;
 
-import com.Polarice3.Goety.api.items.magic.IWand;
 import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.common.enchantments.ModEnchantments;
 import com.Polarice3.Goety.common.magic.Spell;
@@ -91,9 +90,7 @@ public class CropGrowthSpell extends Spell {
 
     @Override
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
-        ItemStack focus = IWand.getFocus(staff);
-        if (focus.isEmpty()) focus = WandUtil.findFocus(caster);
-        if (focus.isEmpty()) focus = caster.getMainHandItem(); // 兜底
+        ItemStack focus = WandUtil.findFocus(caster);
 
         int r = spellRadius(focus, caster, spellStat);
         BlockPos center = SpellCastUtil.castCenter(caster);

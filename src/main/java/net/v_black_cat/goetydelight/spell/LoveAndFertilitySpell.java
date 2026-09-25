@@ -1,6 +1,5 @@
 package net.v_black_cat.goetydelight.spell;
 
-import com.Polarice3.Goety.api.items.magic.IWand;
 import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.common.effects.brew.BrewEffect;
 import com.Polarice3.Goety.common.effects.brew.BrewEffectInstance;
@@ -40,8 +39,9 @@ public class LoveAndFertilitySpell extends Spell {
     private static final int MAX_SIDE = 15;
 
     private static final int COOLDOWN_TICKS = 240 * 20;
-    private static final int BASE_DURATION_SECONDS = 3;
-    private static final int DURATION_PER_LEVEL_SECONDS = 2;
+    // 与 1.21.1 修复（faafb3b）后的取值保持一致：基础 10 秒，每级持续时间附魔 +3 秒
+    private static final int BASE_DURATION_SECONDS = 10;
+    private static final int DURATION_PER_LEVEL_SECONDS = 3;
 
     /** 默认平铺两层：脚下那一层 + 它上面一层 */
     private static final int[] LAYER_OFFSETS = {0, 1};
@@ -87,13 +87,7 @@ public class LoveAndFertilitySpell extends Spell {
 
     @Override
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
-        ItemStack focus = IWand.getFocus(staff);
-        if (focus.isEmpty()) {
-            focus = WandUtil.findFocus(caster);
-        }
-        if (focus.isEmpty()) {
-            focus = caster.getMainHandItem(); // 兜底
-        }
+        ItemStack focus = WandUtil.findFocus(caster);
 
         int rangeLevel = getEnchantLevel(focus, caster, ModEnchantments.RANGE.get());
         int radiusLevel = getEnchantLevel(focus, caster, ModEnchantments.RADIUS.get());

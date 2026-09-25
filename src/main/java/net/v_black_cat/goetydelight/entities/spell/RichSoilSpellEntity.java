@@ -183,6 +183,7 @@ public class RichSoilSpellEntity extends SpellEntity {
         return switch (this.effectType) {
             case RICH_SOIL -> this.convertRichSoil(serverLevel, center, radius);
             case CROP_GROWTH -> CropGrowthSpell.performDeferredEffect(serverLevel, center, radius);
+            // 老王聚晶已与光柱解耦（改由 LaowangSpell.SpellResult 直接召唤），此分支保留仅作兼容
             case LAOWANG -> LaowangSpell.performDeferredEffect(serverLevel, owner, this.potency);
             case HOE_HARVEST -> HoeHarvestSpell.performDeferredEffect(
                     serverLevel, owner, center, radius, this.shiftMode, this.silkTouch, this.fortune, this.magnet, this.effectTool);

@@ -26,5 +26,11 @@
   ],
   "result": {
     "item": "goetydelight:stone_sword_skewer"
-  }
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "goety_revelation"
+    }
+  ]
 }

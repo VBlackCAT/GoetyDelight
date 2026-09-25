@@ -29,6 +29,11 @@
   ],
   "result": {
     "item": "goetydelight:quietus_marrow"
-  }
-
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "goety_revelation"
+    }
+  ]
 }

@@ -467,5 +467,8 @@
   "goetydelight.configuration.group.misc.compat": "兼容",
   "goetydelight.configuration.default_text": "默认：",
   "goetydelight.configuration.requires_world_restart": "需要重启世界才能生效",
-  "goetydelight.configuration.element": "元素 %s"
+  "goetydelight.configuration.element": "元素 %s",
+
+  "goetydelight.configuration.tools.spells.disableMarbleFocusInUltrawarm": "在超热维度（如下界）禁用大理石聚晶施法",
+  "goetydelight.configuration.group.tools.spells": "法术"
 }

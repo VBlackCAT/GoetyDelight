@@ -11,5 +11,11 @@
   },
   "template": {
     "item": "goety_revelation:apocalyptium_upgrade_smithing_template"
-  }
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "goety_revelation"
+    }
+  ]
 }

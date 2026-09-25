@@ -37,5 +37,11 @@
   ],
   "result": {
     "item": "goetydelight:pi_pie"
-  }
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "goety_revelation"
+    }
+  ]
 }

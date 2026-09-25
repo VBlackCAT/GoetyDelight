@@ -103,6 +103,8 @@ public class Config
     private static final ForgeConfigSpec.BooleanValue SKELETON_RED_EYE_EFFECT_ENABLED;
     // 杂项 - 兼容
     private static final ForgeConfigSpec.BooleanValue ENABLE_GOETY_REVELATION_COMPATIBILITY;
+    // 工具 - 法术
+    private static final ForgeConfigSpec.BooleanValue DISABLE_MARBLE_FOCUS_IN_ULTRAWARM;
 
 
     // ==================== 初始化块：分区 + 映射填充 ====================
@@ -337,6 +339,13 @@ public class Config
                 .comment("A list of items that cannot be enchanted with Soul Healing\n无法附魔溢魂弥躯的物品列表")
                 .defineListAllowEmpty("blacklist", List.of(), Config::NoValidateItemName);
         BUILDER.pop();
+        BUILDER.pop();
+
+        // ---------- 法术 ----------
+        BUILDER.push("spells");
+        DISABLE_MARBLE_FOCUS_IN_ULTRAWARM = BUILDER
+                .comment("Disable Marble Focus casting in ultrawarm dimensions (e.g. the Nether)\n在超热维度（如下界）禁用大理石聚晶施法")
+                .define("disableMarbleFocusInUltrawarm", true);
         BUILDER.pop();
 
         BUILDER.pop(); // 结束 tools
@@ -595,6 +604,11 @@ public class Config
 
     public static boolean isSkeletonRedEyeEffectEnabled() {
         return SKELETON_RED_EYE_EFFECT_ENABLED.get();
+    }
+
+    /** 超热维度（下界等）是否禁止大理石聚晶施法。 */
+    public static boolean isMarbleFocusDisabledInUltrawarm() {
+        return DISABLE_MARBLE_FOCUS_IN_ULTRAWARM.get();
     }
 
     public static int getSoulAffixSoulCostPerLevel() {

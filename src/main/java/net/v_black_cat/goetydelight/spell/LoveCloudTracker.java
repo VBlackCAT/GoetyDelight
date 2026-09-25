@@ -30,7 +30,7 @@ public final class LoveCloudTracker {
     private static final int MAX_REVIVES = 2;
 
     /** 药云里每格交给 Goety 的内部 duration：远大于实际时长，避免它的随机判废抢先生效 */
-    public static final int GAS_INTERNAL_DURATION_TICKS = 20 * 60 * 10; // 10 分钟保险
+    public static final int GAS_INTERNAL_DURATION_TICKS = 20 * 60 * 1;
 
     private static final List<Cloud> CLOUDS = new ArrayList<>();
 
@@ -67,8 +67,7 @@ public final class LoveCloudTracker {
         long now = level.getServer().getTickCount();
         CLOUDS.add(new Cloud(level.dimension(), owner.getUUID(), List.copyOf(effects),
                 new LinkedHashMap<>(cells), now, durationTicks));
-        // 关键修复：新云加入后强制下一 tick 重新调度，否则 nextWakeTick 可能仍是 MAX_VALUE
-        nextWakeTick = 0L;
+        nextWakeTick = Math.min(nextWakeTick, now + Math.min(durationTicks, CHECK_INTERVAL_TICKS));
     }
 
     @SubscribeEvent

@@ -4,33 +4,33 @@
   "activation_item": {
     "item": "goety:mystic_core"
   },
-  "craftType": "forge",
+  "craftType": "culinary",
   "soulCost": 100,
   "duration": 10,
   "ingredients": [
     {
-      "item": "farmersdelight:rich_soil"
+      "item": "goetydelight:roast_laowang"
     },
     {
-      "item": "farmersdelight:rich_soil"
+      "item": "goetydelight:roast_laowang"
     },
     {
-      "item": "farmersdelight:rich_soil"
+      "item": "goetydelight:roast_laowang"
     },
     {
-      "item": "farmersdelight:rich_soil"
+      "item": "goetydelight:roast_laowang"
     },
     {
-      "item": "goety:snap_warts"
+      "item": "goetydelight:roast_laowang"
     },
     {
-      "item": "goety:quick_growing_seed"
+      "item": "goetydelight:roast_laowang"
     },
     {
-      "item": "goety:grave_dust"
+      "item": "goetydelight:roast_laowang"
     },
     {
-      "item": "goety:grave_dust"
+      "item": "goetydelight:roast_laowang"
     }
   ],
   "result": {

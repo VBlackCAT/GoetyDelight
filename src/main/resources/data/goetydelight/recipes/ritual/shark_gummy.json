@@ -29,5 +29,11 @@
   ],
   "result": {
     "item": "goetydelight:shark_gummy"
-  }
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "goety_revelation"
+    }
+  ]
 }
