@@ -129,7 +129,7 @@ public class EntityVisualEffects implements INBTSerializable<CompoundTag> {
 
     @Override
     public CompoundTag serializeNBT() {
-        return serializeNBT(0L, false);
+        return serializeNBT(ActiveEntityVisualEffect.NO_GAME_TIME, false);
     }
 
     public CompoundTag serializeNBT(long gameTime) {
@@ -137,7 +137,7 @@ public class EntityVisualEffects implements INBTSerializable<CompoundTag> {
     }
 
     public CompoundTag serializeNBTForSync() {
-        return serializeNBT(0L, true);
+        return serializeNBT(ActiveEntityVisualEffect.NO_GAME_TIME, true);
     }
 
     public CompoundTag serializeNBTForSync(long gameTime) {
@@ -149,8 +149,11 @@ public class EntityVisualEffects implements INBTSerializable<CompoundTag> {
         CompoundTag effectsTag = new CompoundTag();
         activeEffects.forEach((id, effect) -> {
             EntityVisualEffectType type = GDVisualEffects.get(id);
-            if (type != null && (includeTransient || type.persistent() || effect.initialDuration() == INFINITE)) {
-                effectsTag.put(id.toString(), effect.serializeNBT(gameTime));
+            if (includeTransient || type == null || type.persistent() || effect.initialDuration() == INFINITE) {
+                CompoundTag effectTag = gameTime == ActiveEntityVisualEffect.NO_GAME_TIME
+                        ? effect.serializeNBTStored()
+                        : effect.serializeNBT(gameTime);
+                effectsTag.put(id.toString(), effectTag);
             }
         });
         tag.put(EFFECTS, effectsTag);
@@ -159,7 +162,7 @@ public class EntityVisualEffects implements INBTSerializable<CompoundTag> {
 
     @Override
     public void deserializeNBT(CompoundTag tag) {
-        deserializeNBT(tag, 0L);
+        deserializeNBT(tag, ActiveEntityVisualEffect.NO_GAME_TIME);
     }
 
     public void deserializeNBT(CompoundTag tag, long gameTime) {
@@ -174,7 +177,8 @@ public class EntityVisualEffects implements INBTSerializable<CompoundTag> {
                         gameTime
                 );
                 activeEffects.put(effect.id(), effect);
-                if (effect.expiresAtGameTime() != Long.MAX_VALUE) {
+                if (effect.expiresAtGameTime() != Long.MAX_VALUE
+                        && effect.expiresAtGameTime() != ActiveEntityVisualEffect.NO_GAME_TIME) {
                     expirationQueue.add(effect);
                 }
             }

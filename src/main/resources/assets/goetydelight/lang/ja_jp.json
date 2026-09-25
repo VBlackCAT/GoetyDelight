@@ -81,6 +81,8 @@
   "item.goetydelight.dark_knife": "闇の包丁",
   "item.goetydelight.dark_brush": "闇のブラシ",
   "item.goetydelight.ascension_mooncake": "昇天の月餅",
+  "item.goetydelight.petroleum_mist_focus": "石油の霧のフォーカス",
+  "item.goetydelight.petroleum_mist_focus.info": "右クリックを押し続けると石油の霧を展開し、毎秒2000のソウルエネルギーを消費します。霧の中では血の雲が渦巻き、指定された生物に定期的に斬撃を与えます。",
   "item.goetydelight.villagers_feast": "村人のごちそう",
   "item.goetydelight.nether_wart_omelette": "ネザーウォートオムレツ",
   "item.goetydelight.warped_wart_omelette": "歪んだウォートオムレツ",

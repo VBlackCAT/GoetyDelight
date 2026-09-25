@@ -38,6 +38,7 @@ import net.v_black_cat.goetydelight.entities.ai.ModMemory;
 import net.v_black_cat.goetydelight.entities.ai.ModSensor;
 import net.v_black_cat.goetydelight.entities.soul_lich.SoulLichRenderer;
 import net.v_black_cat.goetydelight.entities.spell.GrassCuttingSlashRenderer;
+import net.v_black_cat.goetydelight.entities.spell.MalevolentShrineEntityRenderer;
 import net.v_black_cat.goetydelight.entities.spell.RichSoilSpellRenderer;
 import net.v_black_cat.goetydelight.item.ModCreativeModTabs;
 import net.v_black_cat.goetydelight.item.ModItems;
@@ -181,6 +182,7 @@ public class GoetyDelight
             EntityRenderers.register(ModEntities.RICH_SOIL_SPELL.get(), RichSoilSpellRenderer::new);
             EntityRenderers.register(ModEntities.TREE_GROWTH_SPELL.get(), RichSoilSpellRenderer::new);
             EntityRenderers.register(ModEntities.GRASS_CUTTING_SLASH.get(), GrassCuttingSlashRenderer::new);
+            EntityRenderers.register(ModEntities.MALEVOLENT_SHRINE.get(), MalevolentShrineEntityRenderer::new);
             EntityRenderers.register(ModEntities.DOLL_ENTITY.get(),DollEntityRender::new);
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.ECTOPLASMIC_MELON_STEM.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.ATTACHED_ECTOPLASMIC_MELON_STEM.get(), RenderType.cutout());

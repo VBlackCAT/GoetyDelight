@@ -11,6 +11,7 @@ import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.entities.ghostfarmer.GhostFarmerEntity;
 import net.v_black_cat.goetydelight.entities.soul_lich.SoulLichEntity;
 import net.v_black_cat.goetydelight.entities.spell.GrassCuttingSlashEntity;
+import net.v_black_cat.goetydelight.entities.spell.MalevolentShrineEntity;
 import net.v_black_cat.goetydelight.entities.spell.RichSoilSpellEntity;
 import net.v_black_cat.goetydelight.entities.spell.TreeGrowthSpellEntity;
 
@@ -48,6 +49,15 @@ public class ModEntities {
                             .updateInterval(1)
                             .noSummon()
                             .build("grass_cutting_slash"));
+
+    public static final RegistryObject<EntityType<MalevolentShrineEntity>> MALEVOLENT_SHRINE =
+            ENTITY_TYPES.register("malevolent_shrine", () ->
+                    EntityType.Builder.<MalevolentShrineEntity>of(MalevolentShrineEntity::new, MobCategory.MISC)
+                            .sized(0.5F, 0.5F)
+                            .clientTrackingRange(128)
+                            .updateInterval(1)
+                            .noSummon()
+                            .build("malevolent_shrine"));
     public static final RegistryObject<EntityType<DollEntity>> DOLL_ENTITY =
             ENTITY_TYPES.register("doll_entity",  () ->
                     EntityType.Builder.<DollEntity>of(DollEntity::new, MobCategory.MISC)
