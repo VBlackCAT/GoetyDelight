@@ -8,6 +8,12 @@ public class ActiveEntityVisualEffect {
     static final long NO_GAME_TIME = Long.MIN_VALUE;
     /** 效果开始时的游戏时间，由 {@code EntityVisualEffectSystem#addEffect} 写入 data。 */
     public static final String START_GAME_TIME = "StartGameTime";
+    /** 入场展开时长（tick，默认 {@link #DEFAULT_GROW_TICKS}，<=0 关闭）。 */
+    public static final String GROW_TICKS = "GrowTicks";
+    /** 入场展开的起始比例（默认 {@link #DEFAULT_GROW_FROM}，0~1）。 */
+    public static final String GROW_FROM = "GrowFrom";
+    private static final int DEFAULT_GROW_TICKS = 12;
+    private static final float DEFAULT_GROW_FROM = 0.15F;
     private static final String EXPIRES_AT_GAME_TIME = "ExpiresAtGameTime";
     private static final String REMAINING_TICKS = "RemainingTicks";
 
@@ -99,6 +105,41 @@ public class ActiveEntityVisualEffect {
                 ? (float) (gameTime - start) + partialTick
                 : (float) (initialDuration - remainingTicks) + partialTick;
         return Mth.clamp(elapsed / (float) initialDuration, 0.0F, 1.0F);
+    }
+
+    /**
+     * 入场展开系数：特效刚 add 时是 {@code GrowFrom} 的比例（默认 15%），在 {@code GrowTicks}
+     * （默认 12 tick）内 ease-out 平滑长到 1.0 —— 也就是 data 里设定的 Radius / Height / Scale 范围。
+     *
+     * <ul>
+     *     <li>{@code GrowTicks:0} 或负数 = 关闭，保持瞬间成型；</li>
+     *     <li>有限时长的特效最多用生命的前 1/3 做展开，短命特效不会整段都在长大；</li>
+     *     <li>没有 StartGameTime（旧存档 / 旧同步）时返回 1.0，不做展开。</li>
+     * </ul>
+     */
+    public float growthScale(long gameTime, float partialTick) {
+        long start = startGameTime();
+        if (start < 0) {
+            return 1.0F;
+        }
+
+        int growTicks = data.contains(GROW_TICKS) ? data.getInt(GROW_TICKS) : DEFAULT_GROW_TICKS;
+        if (growTicks <= 0) {
+            return 1.0F;
+        }
+
+        if (initialDuration > 0) {
+            growTicks = Math.min(growTicks, Math.max(1, initialDuration / 3));
+        }
+
+        float from = data.contains(GROW_FROM)
+                ? Mth.clamp(data.getFloat(GROW_FROM), 0.0F, 1.0F)
+                : DEFAULT_GROW_FROM;
+
+        float elapsed = (float) (gameTime - start) + partialTick;
+        float t = Mth.clamp(elapsed / (float) growTicks, 0.0F, 1.0F);
+        float eased = 1.0F - (1.0F - t) * (1.0F - t) * (1.0F - t);
+        return from + (1.0F - from) * eased;
     }
 
     private void refreshRemainingTicks(long gameTime) {

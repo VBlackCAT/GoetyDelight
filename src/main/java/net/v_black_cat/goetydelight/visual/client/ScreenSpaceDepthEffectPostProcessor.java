@@ -10,7 +10,6 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexSorting;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.EffectInstance;
@@ -32,9 +31,11 @@ import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.visual.ActiveEntityVisualEffect;
 import net.v_black_cat.goetydelight.visual.EntityVisualEffectSystem;
+import net.v_black_cat.goetydelight.visual.EntityVisualEffects;
 import net.v_black_cat.goetydelight.visual.GDVisualEffects;
 import net.v_black_cat.goetydelight.visual.IVisualEffectHolder;
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,50 +44,58 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.IntSupplier;
 
+/**
+ * 屏幕空间深度特效（{@code entity_depth_reconstruct}）。
+ *
+ * <p>渲染方式：每个特效<b>各占一次 draw</b>，用只覆盖它屏幕包围盒的四边形，绑一份单特效 uniform
+ * （{@code EffectCenter0}/{@code EffectData0}/{@code EffectColor0}）。
+ *
+ * <ul>
+ *     <li>没有槽位上限：想画多少个就画多少个，只受 GPU 填充率限制；</li>
+ *     <li>比旧的「一次全屏 pass 里循环 N 个槽位」更省：每个特效只在它的包围盒里跑像素，
+ *     现在还会顺手叠回 main target，不再需要整屏 blit；</li>
+ *     <li>累积顺序仍然保持：「先领域雾（mode 7），再按相机距离」。</li>
+ * </ul>
+ *
+ * <p>累积是正确的：每个特效绘制前，把它包围盒内「已经叠好的画面」blit 到 {@link #colorScratch}，
+ * shader 采样这张副本、写回 main target 的同一区域 —— 既不会读写同一张纹理，也不会破坏盒子外的像素。
+ */
 @Mod.EventBusSubscriber(modid = GoetyDelight.MODID, value = Dist.CLIENT)
 public final class ScreenSpaceDepthEffectPostProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScreenSpaceDepthEffectPostProcessor.class);
     private static final ResourceLocation SHADER = new ResourceLocation(GoetyDelight.MODID, "entity_depth_reconstruct");
-    /** 屏幕空间特效同屏槽位上限；必须与 entity_depth_reconstruct.fsh/.json 里 EffectCenterN / EffectDataN / EffectColorN 的数量一致。 */
-    private static final int MAX_EFFECTS = 24;
     private static final float DEFAULT_RADIUS = 3.5F;
+
+    /** 纯性能提醒阈值：同屏超过这个数量会每 5 秒提示一次（不会丢弃任何特效）。 */
+    private static final int PERF_WARN_THRESHOLD = 48;
+
+    // 每次 draw 只绑一个特效，所以 uniform 名字是固定的
+    private static final String EFFECT_CENTER = "EffectCenter0";
+    private static final String EFFECT_DATA = "EffectData0";
+    private static final String EFFECT_COLOR = "EffectColor0";
 
     @Nullable
     private static EffectInstance effect;
+    /** 逐特效拷贝「当前累积画面」用：shader 不能同时采样它正在写入的 main target。 */
     @Nullable
-    private static TextureTarget scratchTarget;
+    private static TextureTarget colorScratch;
+    /** 场景深度副本：main 的深度附件属于当前 FBO，不能再当 sampler 用。 */
+    @Nullable
+    private static TextureTarget depthCopy;
     @Nullable
     private static Matrix4f cachedViewProjection;
     private static Matrix4f orthoMatrix = new Matrix4f();
-    private static int scratchWidth = -1;
-    private static int scratchHeight = -1;
+    private static int targetWidth = -1;
+    private static int targetHeight = -1;
     private static boolean warnedLoadFailure;
-    private static long lastSlotWarningMillis;
+    private static long lastPerfWarnMillis;
 
     // ── 可复用矩阵（渲染线程单线程，静态安全） ──
     private static final Matrix4f TEMP_OLD_PROJECTION = new Matrix4f();
     private static final Matrix4f TEMP_VIEW_PROJECTION = new Matrix4f();
     private static final Matrix4f TEMP_INV_VIEW = new Matrix4f();
-
-    // ── 采样器缓存 ──
-    private static RenderTarget samplerTarget;
-    private static final IntSupplier COLOR_SAMPLER = () -> samplerTarget.getColorTextureId();
-    private static final IntSupplier DEPTH_SAMPLER = () -> samplerTarget.getDepthTextureId();
-
-    // ── Uniform 名称缓存 ──
-    private static final String[] CENTER_NAMES = new String[MAX_EFFECTS];
-    private static final String[] DATA_NAMES = new String[MAX_EFFECTS];
-    private static final String[] COLOR_NAMES = new String[MAX_EFFECTS];
-
-    static {
-        for (int i = 0; i < MAX_EFFECTS; i++) {
-            CENTER_NAMES[i] = "EffectCenter" + i;
-            DATA_NAMES[i] = "EffectData" + i;
-            COLOR_NAMES[i] = "EffectColor" + i;
-        }
-    }
+    private static final float[] COLOR_SCRATCH = new float[3];
 
     private ScreenSpaceDepthEffectPostProcessor() {
     }
@@ -117,22 +126,391 @@ public final class ScreenSpaceDepthEffectPostProcessor {
             return;
         }
 
-        EffectPacket packet = collectEffects(level, event);
-        if (packet.count == 0) {
+        List<EffectDraw> draws = collectEffects(level, event);
+        if (draws.isEmpty()) {
             return;
         }
 
         RenderTarget mainTarget = minecraft.getMainRenderTarget();
-        ensureScratchTarget(mainTarget.width, mainTarget.height);
-        if (scratchTarget == null) {
+        if (!ensureTargets(mainTarget.width, mainTarget.height)) {
             return;
         }
 
-        runPostPass(minecraft, mainTarget, scratchTarget, event, packet);
+        TEMP_OLD_PROJECTION.set(RenderSystem.getProjectionMatrix());
+        VertexSorting oldSorting = RenderSystem.getVertexSorting();
+
+        if (cachedViewProjection != null) {
+            TEMP_VIEW_PROJECTION.set(cachedViewProjection);
+        } else {
+            TEMP_VIEW_PROJECTION.set(event.getProjectionMatrix());
+        }
+
+        // 深度只要一份场景副本，整帧共用（我们的 draw 不写深度，main 的深度始终是原始场景深度）
+        copySceneDepth(mainTarget);
+
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.disableBlend();
+        RenderSystem.resetTextureMatrix();
+        RenderSystem.depthFunc(519);
+        RenderSystem.viewport(0, 0, mainTarget.width, mainTarget.height);
+        mainTarget.bindWrite(false);
+
+        for (EffectDraw draw : draws) {
+            renderEffect(mainTarget, draw, event);
+        }
+
+        RenderSystem.depthFunc(515);
+        RenderSystem.depthMask(true);
+        RenderSystem.enableDepthTest();
+        RenderSystem.setProjectionMatrix(TEMP_OLD_PROJECTION, oldSorting);
+        mainTarget.bindWrite(false);
     }
 
+    // ────────────────────────── 收集 ──────────────────────────
+
+    private static List<EffectDraw> collectEffects(ClientLevel level, RenderLevelStageEvent event) {
+        List<EffectDraw> draws = new ArrayList<>();
+        Vec3 cameraPosition = event.getCamera().getPosition();
+
+        for (Entity entity : level.entitiesForRendering()) {
+            if (entity.isRemoved()) {
+                continue;
+            }
+
+            if (!entity.getCapability(EntityVisualEffectSystem.ENTITY_VISUAL_EFFECTS).isPresent()) {
+                continue;
+            }
+
+            EntityVisualEffects effects = entity instanceof IVisualEffectHolder holder
+                    ? holder.goetydelight$getVisualEffects()
+                    : null;
+            if (effects == null || effects.isEmpty()) {
+                continue;
+            }
+
+            for (ActiveEntityVisualEffect activeEffect : effects.effects()) {
+                int mode = mode(activeEffect);
+                if (mode < 0) {
+                    continue;
+                }
+
+                Vec3 center = effectCenter(entity, event.getPartialTick(), mode, activeEffect).subtract(cameraPosition);
+                double distanceSqr = center.lengthSqr();
+
+                double renderDistance = renderDistance(activeEffect);
+                if (renderDistance > 0.0D && distanceSqr > renderDistance * renderDistance) {
+                    continue;
+                }
+
+                float progress = effectProgress(entity, activeEffect, event);
+                // 入场展开：刚 add 时按比例缩小，GrowTicks 内长到 data 设定的 Radius/Height
+                float growth = activeEffect.growthScale(entity.level().getGameTime(), event.getPartialTick());
+                float radius = effectRadius(entity, activeEffect, mode, progress) * growth;
+                float secondary = effectSecondary(entity, activeEffect, mode, progress);
+                if (isHeightSecondary(mode)) {
+                    secondary *= growth; // 高度类 second 一起长，否则展开过程会被压扁
+                }
+                float intensity = effectIntensity(activeEffect, mode, progress);
+                effectColor(activeEffect, mode, event, COLOR_SCRATCH);
+                double bound = boundRadius(entity, mode, radius, secondary);
+
+                draws.add(new EffectDraw(
+                        mode,
+                        center,
+                        radius,
+                        secondary,
+                        intensity,
+                        COLOR_SCRATCH[0],
+                        COLOR_SCRATCH[1],
+                        COLOR_SCRATCH[2],
+                        distanceSqr,
+                        bound
+                ));
+            }
+        }
+
+        // mode 7 的领域雾先画，其它特效叠在雾上（保持原来的层次），同层内按相机距离
+        draws.sort(Comparator
+                .comparingInt((EffectDraw draw) -> draw.mode() == 7 ? 0 : 1)
+                .thenComparingDouble(EffectDraw::distanceSqr));
+
+        warnIfTooMany(draws.size());
+        return draws;
+    }
+
+    private record EffectDraw(
+            int mode,
+            Vec3 center,
+            float radius,
+            float secondary,
+            float intensity,
+            float red,
+            float green,
+            float blue,
+            double distanceSqr,
+            double bound
+    ) {
+    }
+
+    private static void warnIfTooMany(int count) {
+        if (count <= PERF_WARN_THRESHOLD) {
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+        if (now - lastPerfWarnMillis < 5000L) {
+            return;
+        }
+
+        lastPerfWarnMillis = now;
+        LOGGER.warn(
+                "同屏屏幕空间特效 {} 个（> {}）：每个特效一次 draw，数量太多会拖慢帧率，"
+                        + "建议用 /goetydelightvisual clear 清理后逐个测试。",
+                count, PERF_WARN_THRESHOLD
+        );
+    }
+
+    // ────────────────────────── 绘制 ──────────────────────────
+
+    private static void renderEffect(RenderTarget mainTarget, EffectDraw draw, RenderLevelStageEvent event) {
+        EffectInstance shader = effect;
+        if (shader == null || colorScratch == null || depthCopy == null) {
+            return;
+        }
+
+        ScreenRect rect = projectToScreen(draw, mainTarget.width, mainTarget.height);
+        if (rect == null) {
+            return; // 整个特效在相机后面或屏幕外
+        }
+
+        // 把这个矩形内「已经叠好的画面」拷进 scratch，shader 才能安全地采样它
+        copyColorRegion(mainTarget, colorScratch, rect);
+
+        // Forge 的 EffectInstance 只接受 IntSupplier 形式的 sampler（它自己的 apply() 里按需取 id 并绑定）
+        TextureTarget colorSource = colorScratch;
+        TextureTarget depthSource = depthCopy;
+        shader.setSampler("DiffuseSampler", colorSource::getColorTextureId);
+        shader.setSampler("DepthSampler", depthSource::getDepthTextureId);
+
+        shader.safeGetUniform("ProjMat").set(orthoMatrix);
+        shader.safeGetUniform("ViewProjMat").set(TEMP_VIEW_PROJECTION);
+
+        TEMP_INV_VIEW.set(TEMP_VIEW_PROJECTION).invert();
+        shader.safeGetUniform("InvViewProjMat").set(TEMP_INV_VIEW);
+
+        shader.safeGetUniform("InSize").set((float) mainTarget.width, (float) mainTarget.height);
+        shader.safeGetUniform("OutSize").set((float) mainTarget.width, (float) mainTarget.height);
+        shader.safeGetUniform("Time").set((event.getRenderTick() + event.getPartialTick()) / 20.0F);
+
+        // 本次 draw 只画这一个特效
+        shader.safeGetUniform(EFFECT_CENTER).set((float) draw.center().x, (float) draw.center().y, (float) draw.center().z);
+        shader.safeGetUniform(EFFECT_DATA).set((float) draw.mode(), draw.radius(), draw.secondary(), draw.intensity());
+        shader.safeGetUniform(EFFECT_COLOR).set(draw.red(), draw.green(), draw.blue());
+
+        shader.apply();
+        mainTarget.bindWrite(false);
+        drawQuad(rect);
+        shader.clear();
+    }
+
+    private static void drawQuad(ScreenRect rect) {
+        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
+        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+        bufferBuilder.vertex(rect.x0(), rect.y0(), 500.0D).endVertex();
+        bufferBuilder.vertex(rect.x1(), rect.y0(), 500.0D).endVertex();
+        bufferBuilder.vertex(rect.x1(), rect.y1(), 500.0D).endVertex();
+        bufferBuilder.vertex(rect.x0(), rect.y1(), 500.0D).endVertex();
+        BufferUploader.draw(bufferBuilder.end());
+    }
+
+    /**
+     * 把特效的包围盒投影成屏幕像素矩形（保守放大，宁可多画也别裁掉）。
+     *
+     * <p>实现要点：投的是包围盒的 <b>8 个角</b>，再取 NDC 的 min/max。
+     * 不能像以前那样用 {@code ViewProjMat.m00/m11} 乘一乘当像素半径 —— {@code VP = P·V}，
+     * 这两个元素里混着相机旋转（m00 含 {@code cos(yaw)·cos(pitch)}，m11 含 {@code cos(pitch)}），
+     * 于是转视角时横向半径会跟着缩小、把特效从两侧裁进来，转过头又变回来。
+     * 投 8 个角还顺带解决了「特效贴脸 / 在画面边缘」时线性近似偏小的问题。
+     */
+    @Nullable
+    private static ScreenRect projectToScreen(EffectDraw draw, int width, int height) {
+        Matrix4f viewProjection = TEMP_VIEW_PROJECTION;
+        double bound = Math.max(0.5D, draw.bound());
+        Vec3 center = draw.center();
+
+        Vector4f clip = new Vector4f((float) center.x, (float) center.y, (float) center.z, 1.0F);
+        viewProjection.transform(clip);
+
+        float centerW = clip.w();
+        if (!Float.isFinite(centerW) || !Float.isFinite(clip.x()) || !Float.isFinite(clip.y())) {
+            return ScreenRect.full(width, height);
+        }
+
+        if (centerW + bound <= 0.0F) {
+            return null; // 整个包围盒都在相机平面之后
+        }
+        if (centerW - bound <= 0.0F) {
+            return ScreenRect.full(width, height); // 跨过相机平面，保守整屏
+        }
+
+        float minX = Float.POSITIVE_INFINITY;
+        float minY = Float.POSITIVE_INFINITY;
+        float maxX = Float.NEGATIVE_INFINITY;
+        float maxY = Float.NEGATIVE_INFINITY;
+
+        Vector4f corner = new Vector4f();
+        for (int i = 0; i < 8; i++) {
+            float offsetX = (i & 1) == 0 ? (float) -bound : (float) bound;
+            float offsetY = (i & 2) == 0 ? (float) -bound : (float) bound;
+            float offsetZ = (i & 4) == 0 ? (float) -bound : (float) bound;
+
+            corner.set(
+                    (float) center.x + offsetX,
+                    (float) center.y + offsetY,
+                    (float) center.z + offsetZ,
+                    1.0F
+            );
+            viewProjection.transform(corner);
+
+            float w = corner.w();
+            if (!Float.isFinite(w) || w <= 0.0001F) {
+                return ScreenRect.full(width, height);
+            }
+
+            float ndcX = corner.x() / w;
+            float ndcY = corner.y() / w;
+            if (!Float.isFinite(ndcX) || !Float.isFinite(ndcY)) {
+                return ScreenRect.full(width, height);
+            }
+
+            minX = Math.min(minX, ndcX);
+            minY = Math.min(minY, ndcY);
+            maxX = Math.max(maxX, ndcX);
+            maxY = Math.max(maxY, ndcY);
+        }
+
+        // 深度边缘检测会读邻域，另外再留一点余量
+        float pad = 8.0F;
+        int x0 = Mth.floor(Math.max(0.0F, (minX * 0.5F + 0.5F) * width - pad));
+        int y0 = Mth.floor(Math.max(0.0F, (minY * 0.5F + 0.5F) * height - pad));
+        int x1 = Mth.ceil(Math.min((float) width, (maxX * 0.5F + 0.5F) * width + pad));
+        int y1 = Mth.ceil(Math.min((float) height, (maxY * 0.5F + 0.5F) * height + pad));
+
+        if (x1 - x0 < 1 || y1 - y0 < 1) {
+            return null;
+        }
+
+        return new ScreenRect(x0, y0, x1, y1);
+    }
+
+    /**
+     * 包围球半径（格）：取特效自身的半径/高度，再保守放大 —— 少画一点只是浪费填充率，
+     * 画少了就是特效被切掉，所以这里宁多勿少。
+     *
+     * <p>{@link #MODE_RADIAL_SCALE} 里的系数是从 {@code entity_depth_reconstruct.fsh} 各模式函数里
+     * 实际用到的 {@code radius * N} 上限推出来的（例如 mode 3 的 halo 到 2.65r、mode 10 的火焰球形边界是 3r），
+     * 改 shader 里的空间尺度时记得同步这张表。
+     */
+    private static double boundRadius(Entity entity, int mode, float radius, float secondary) {
+        double extent = Math.max(radius * radialScale(mode), entity.getBbHeight() * 1.25D);
+
+        // 这些模式下 secondary 表示高度（见 effectSecondary）
+        if (isHeightSecondary(mode)) {
+            extent = Math.max(extent, secondary);
+        }
+
+        return extent * 1.15D + 0.75D;
+    }
+
+    /** 这些 mode 的 {@code data.z}(secondary) 是高度而不是进度/朝向。 */
+    private static boolean isHeightSecondary(int mode) {
+        return mode == 3 || mode == 4 || mode == 5 || mode == 6 || mode == 7 || mode == 8 || mode == 9;
+    }
+
+    /** 每个 mode 在 shader 里相对 {@code data.y}(=radius) 的最大空间放大倍数。 */
+    private static double radialScale(int mode) {
+        return switch (mode) {
+            case 2 -> 1.9D;   // outline_scan: radius * 1.65
+            case 3 -> 3.0D;   // depth_occluded_halo: radius * 2.65
+            case 4 -> 1.7D;   // contact_edge_glow: radius * 1.38
+            case 5 -> 2.1D;   // volumetric_light_column: radius * 1.8
+            case 6 -> 2.0D;   // depth_refraction_pressure: radius * 1.75
+            case 8 -> 1.2D;   // shrine_slash: radius * 0.8（高度由 secondary 覆盖）
+            case 9 -> 1.4D;   // shrine_target_glow: radius * 1.05
+            case 10 -> 3.4D;  // shrine_fire: 球形边界 radius * 3.0
+            case 13 -> 2.1D;  // shrine_fire_legacy: radius * 1.8
+            case 14 -> 1.5D;  // shrine_black_domain: radius * 1.2
+            case 15 -> 1.4D;  // shrine_black_mist: radius * 1.1
+            case 16 -> 1.9D;  // black_cat_head_fog: 雾球 radius * 1.58
+            default -> 1.3D;  // 0/1/7/11/12 等：视觉边界基本就是 radius 本身
+        };
+    }
+
+    // ────────────────────────── 临时 RT ──────────────────────────
+
+    private static boolean ensureTargets(int width, int height) {
+        if (colorScratch != null && depthCopy != null && targetWidth == width && targetHeight == height) {
+            return true;
+        }
+
+        closeTargets();
+
+        try {
+            colorScratch = new TextureTarget(width, height, false, Minecraft.ON_OSX);
+            colorScratch.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
+            depthCopy = new TextureTarget(width, height, true, Minecraft.ON_OSX);
+            depthCopy.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
+        } catch (RuntimeException exception) {
+            LOGGER.error("创建屏幕空间特效临时 RT 失败（{}x{}）", width, height, exception);
+            closeTargets();
+            return false;
+        }
+
+        targetWidth = width;
+        targetHeight = height;
+        orthoMatrix = new Matrix4f().setOrtho(0.0F, (float) width, 0.0F, (float) height, 0.1F, 1000.0F);
+        return true;
+    }
+
+    private static void copySceneDepth(RenderTarget mainTarget) {
+        TextureTarget depth = depthCopy;
+        if (depth == null) {
+            return;
+        }
+
+        GlStateManager._glBindFramebuffer(36008, mainTarget.frameBufferId);
+        GlStateManager._glBindFramebuffer(36009, depth.frameBufferId);
+        GlStateManager._glBlitFrameBuffer(
+                0, 0, mainTarget.width, mainTarget.height,
+                0, 0, depth.width, depth.height,
+                256, 9728 // GL_DEPTH_BUFFER_BIT, GL_NEAREST
+        );
+        GlStateManager._glBindFramebuffer(36160, 0);
+    }
+
+    private static void copyColorRegion(RenderTarget source, RenderTarget destination, ScreenRect rect) {
+        GlStateManager._glBindFramebuffer(36008, source.frameBufferId);
+        GlStateManager._glBindFramebuffer(36009, destination.frameBufferId);
+        GlStateManager._glBlitFrameBuffer(
+                rect.x0(), rect.y0(), rect.x1(), rect.y1(),
+                rect.x0(), rect.y0(), rect.x1(), rect.y1(),
+                16384, 9728 // GL_COLOR_BUFFER_BIT, GL_NEAREST
+        );
+        GlStateManager._glBindFramebuffer(36160, 0);
+    }
+
+    private record ScreenRect(int x0, int y0, int x1, int y1) {
+        private static ScreenRect full(int width, int height) {
+            return new ScreenRect(0, 0, width, height);
+        }
+    }
+
+    // ────────────────────────── 生命周期 ──────────────────────────
+
     private static void reload(ResourceManager resourceManager) {
-        close();
+        closeShader();
+        closeTargets();
 
         try {
             effect = new EffectInstance(resourceManager, SHADER.toString());
@@ -146,120 +524,27 @@ public final class ScreenSpaceDepthEffectPostProcessor {
         }
     }
 
-    private static void close() {
+    private static void closeShader() {
         if (effect != null) {
             effect.close();
             effect = null;
         }
-
-        if (scratchTarget != null) {
-            scratchTarget.destroyBuffers();
-            scratchTarget = null;
-        }
-
-        scratchWidth = -1;
-        scratchHeight = -1;
     }
 
-    private static void ensureScratchTarget(int width, int height) {
-        if (scratchTarget != null && scratchWidth == width && scratchHeight == height) {
-            return;
+    private static void closeTargets() {
+        if (colorScratch != null) {
+            colorScratch.destroyBuffers();
+            colorScratch = null;
         }
-
-        if (scratchTarget != null) {
-            scratchTarget.destroyBuffers();
+        if (depthCopy != null) {
+            depthCopy.destroyBuffers();
+            depthCopy = null;
         }
-
-        scratchTarget = new TextureTarget(width, height, false, Minecraft.ON_OSX);
-        scratchTarget.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
-        scratchWidth = width;
-        scratchHeight = height;
-        orthoMatrix = new Matrix4f().setOrtho(0.0F, (float) width, 0.0F, (float) height, 0.1F, 1000.0F);
+        targetWidth = -1;
+        targetHeight = -1;
     }
 
-    private static EffectPacket collectEffects(ClientLevel level, RenderLevelStageEvent event) {
-        EffectPacket packet = new EffectPacket();
-        Vec3 cameraPosition = event.getCamera().getPosition();
-
-        // 先收集候选（带相机距离）再按距离排序填充：槽位不够时保留离相机最近的，
-        // 而不是按「谁先进容器」决定。旧写法满了就直接 break，最后加的特效（比如猫雾）会被静默丢掉，
-        // 表现就是「特效明明加上了却不显示」。
-        List<Candidate> candidates = new ArrayList<>();
-
-        for (Entity entity : level.entitiesForRendering()) {
-            if (entity.isRemoved()) {
-                continue;
-            }
-
-            var capability = entity.getCapability(EntityVisualEffectSystem.ENTITY_VISUAL_EFFECTS);
-            if (!capability.isPresent()) {
-                continue;
-            }
-
-            var effects = entity instanceof IVisualEffectHolder holder
-                    ? holder.goetydelight$getVisualEffects()
-                    : null;
-            if (effects == null || effects.isEmpty()) continue;
-
-            for (ActiveEntityVisualEffect activeEffect : effects.effects()) {
-                int mode = mode(activeEffect);
-                if (mode < 0) {
-                    continue;
-                }
-
-                double renderDistance = renderDistance(activeEffect);
-                Vec3 effectCenter = EffectPacket.center(entity, event.getPartialTick(), mode, activeEffect);
-                double distanceSqr = effectCenter.distanceToSqr(cameraPosition);
-                if (renderDistance > 0.0D && distanceSqr > renderDistance * renderDistance) {
-                    continue;
-                }
-
-                candidates.add(new Candidate(entity, activeEffect, mode, effectCenter, distanceSqr));
-            }
-        }
-
-        if (candidates.isEmpty()) {
-            return packet;
-        }
-
-        candidates.sort(Comparator.comparingDouble(Candidate::distanceSqr));
-        int used = Math.min(candidates.size(), MAX_EFFECTS);
-        for (int i = 0; i < used; i++) {
-            Candidate candidate = candidates.get(i);
-            packet.add(candidate.entity(), candidate.effect(), event, candidate.mode(), candidate.center());
-        }
-
-        warnIfSlotsExhausted(candidates.size() - used);
-        return packet;
-    }
-
-    private record Candidate(
-            Entity entity,
-            ActiveEntityVisualEffect effect,
-            int mode,
-            Vec3 center,
-            double distanceSqr
-    ) {
-    }
-
-    /** 槽位被占满时不再静默丢特效，最多每 5 秒提醒一次。 */
-    private static void warnIfSlotsExhausted(int dropped) {
-        if (dropped <= 0) {
-            return;
-        }
-
-        long now = System.currentTimeMillis();
-        if (now - lastSlotWarningMillis < 5000L) {
-            return;
-        }
-
-        lastSlotWarningMillis = now;
-        LOGGER.warn(
-                "屏幕空间特效槽位已满：本帧丢弃 {} 个（上限 {} 个）。用 /goetydelightvisual clear 清理后逐个测试，"
-                        + "或提高 MAX_EFFECTS / entity_depth_reconstruct 的槽位数。",
-                dropped, MAX_EFFECTS
-        );
-    }
+    // ────────────────────────── 单特效参数 ──────────────────────────
 
     private static int mode(ActiveEntityVisualEffect effect) {
         if (effect.id().equals(GDVisualEffects.SCREEN_SPACE_SHOCKWAVE.getId())) {
@@ -401,336 +686,232 @@ public final class ScreenSpaceDepthEffectPostProcessor {
         return 0.0D;
     }
 
-    private static void runPostPass(Minecraft minecraft, RenderTarget mainTarget, TextureTarget outTarget, RenderLevelStageEvent event, EffectPacket packet) {
-        EffectInstance shader = effect;
-        if (shader == null) {
+    private static Vec3 effectCenter(Entity entity, float partialTick, int mode, ActiveEntityVisualEffect effect) {
+        double yOffset = effect.data().contains("YOffset")
+                ? Mth.clamp(effect.data().getDouble("YOffset"), -4.0D, 4.0D)
+                : -0.04D;
+
+        if ((mode == 10 || mode == 13 || mode == 14 || mode == 15 || mode == 16)
+                && effect.data().contains("AnchorX")
+                && effect.data().contains("AnchorY")
+                && effect.data().contains("AnchorZ")) {
+            return new Vec3(
+                    effect.data().getDouble("AnchorX"),
+                    effect.data().getDouble("AnchorY"),
+                    effect.data().getDouble("AnchorZ")
+            ).add(0.0D, mode == 16 ? yOffset : 0.0D, 0.0D);
+        }
+
+        if (mode == 16) {
+            return entity.getEyePosition(partialTick).add(0.0D, yOffset, 0.0D);
+        }
+
+        double heightScale = switch (mode) {
+            case 4, 5, 7, 8 -> 0.04D;
+            default -> 0.52D;
+        };
+        return entity.getPosition(partialTick).add(0.0D, entity.getBbHeight() * heightScale, 0.0D);
+    }
+
+    private static float effectProgress(Entity entity, ActiveEntityVisualEffect effect, RenderLevelStageEvent event) {
+        float partialTick = event.getPartialTick();
+        if (effect.initialDuration() > 0) {
+            // 进度按 StartGameTime + 当前游戏时间计算（客户端自走），不再依赖只在同步时刷新的 remainingTicks。
+            return effect.progress(entity.level().getGameTime(), partialTick);
+        }
+
+        long start = effect.startGameTime() >= 0 ? effect.startGameTime() : entity.level().getGameTime();
+        return Mth.clamp((entity.level().getGameTime() + partialTick - start) / 80.0F, 0.0F, 1.0F);
+    }
+
+    private static float effectRadius(Entity entity, ActiveEntityVisualEffect effect, int mode, float progress) {
+        if (effect.data().contains("Radius")) {
+            return effect.data().getFloat("Radius");
+        }
+
+        float scale = Math.max(1.0F, entity.getBbWidth());
+        return switch (mode) {
+            case 0 -> (1.1F + progress * 6.4F) * scale;
+            case 1 -> Math.max(2.2F, Math.max(entity.getBbHeight() * 1.15F, entity.getBbWidth() * 2.0F));
+            case 2 -> Math.max(1.6F, entity.getBbHeight() * 0.95F);
+            case 3 -> Math.max(1.1F, entity.getBbWidth() * 1.6F);
+            case 4 -> Math.max(0.85F, entity.getBbWidth() * 1.2F);
+            case 5 -> Math.max(0.72F, entity.getBbWidth() * 0.82F);
+            case 6 -> Math.max(2.1F, Math.max(entity.getBbHeight() * 1.05F, entity.getBbWidth() * 2.35F));
+            case 7, 8 -> DEFAULT_RADIUS;
+            case 9 -> Math.max(0.9F, entity.getBbWidth() * 1.6F);
+            case 10, 11, 12, 13, 14, 15 -> DEFAULT_RADIUS;
+            case 16 -> {
+                float sizeScale = effect.data().contains("Scale")
+                        ? Mth.clamp(effect.data().getFloat("Scale"), 0.2F, 4.0F)
+                        : 1.0F;
+                yield Math.max(1.15F, entity.getBbWidth() * 1.25F) * sizeScale;
+            }
+            default -> DEFAULT_RADIUS;
+        };
+    }
+
+    private static float effectSecondary(Entity entity, ActiveEntityVisualEffect effect, int mode, float progress) {
+        if (mode == 7 || mode == 8) {
+            return effect.data().contains("Height")
+                    ? effect.data().getFloat("Height")
+                    : 6.0F;
+        }
+
+        if (mode == 9) {
+            return Math.max(1.1F, entity.getBbHeight());
+        }
+
+        if (mode == 16) {
+            float yawDegrees = effect.data().contains("Yaw")
+                    ? effect.data().getFloat("Yaw")
+                    : entity.getViewYRot(1.0F);
+            return yawDegrees * ((float) Math.PI / 180.0F);
+        }
+
+        if (mode == 10 || mode == 11 || mode == 12 || mode == 13 || mode == 14 || mode == 15) {
+            return progress;
+        }
+
+        return switch (mode) {
+            case 4 -> Math.max(0.8F, entity.getBbHeight());
+            case 5 -> Math.max(3.6F, entity.getBbHeight() * 2.8F);
+            case 3 -> entity.getBbHeight();
+            case 6 -> Math.max(0.9F, entity.getBbHeight());
+            default -> progress;
+        };
+    }
+
+    private static float effectIntensity(ActiveEntityVisualEffect effect, int mode, float progress) {
+        float base = effect.data().contains("Intensity")
+                ? effect.data().getFloat("Intensity")
+                : 1.0F;
+
+        // 领域雾和斩击在展开时逐渐浮现，避免瞬间铺满。
+        if (mode == 7) {
+            return base * Mth.clamp(progress * 1.6F, 0.0F, 1.0F);
+        }
+        if (mode == 8) {
+            return base * Mth.clamp(progress * 1.3F, 0.0F, 1.0F);
+        }
+
+        return switch (mode) {
+            case 0 -> 1.15F * (1.0F - progress);
+            case 1 -> 0.85F;
+            case 2 -> 0.95F;
+            case 3 -> 0.82F;
+            case 4 -> 1.0F;
+            case 5 -> 0.78F;
+            case 6 -> 0.92F;
+            case 9 -> 0.9F;
+            case 10, 11, 12, 13, 14, 15, 16 -> 1.0F;
+            default -> base;
+        };
+    }
+
+    private static void effectColor(ActiveEntityVisualEffect effect, int mode, RenderLevelStageEvent event, float[] output) {
+        switch (mode) {
+            case 7 -> {
+                output[0] = 0.46F;
+                output[1] = 0.03F;
+                output[2] = 0.055F;
+            }
+            case 8 -> {
+                output[0] = 0.12F;
+                output[1] = 0.01F;
+                output[2] = 0.02F;
+            }
+            case 9 -> {
+                output[0] = 0.62F;
+                output[1] = 0.04F;
+                output[2] = 0.07F;
+            }
+            case 10 -> {
+                output[0] = 1.0F;
+                output[1] = 0.55F;
+                output[2] = 0.08F;
+            }
+            case 11 -> {
+                output[0] = 0.25F;
+                output[1] = 0.08F;
+                output[2] = 0.55F;
+            }
+            case 12 -> {
+                output[0] = 0.85F;
+                output[1] = 0.85F;
+                output[2] = 1.0F;
+            }
+            case 13 -> {
+                output[0] = 1.0F;
+                output[1] = 0.45F;
+                output[2] = 0.08F;
+            }
+            case 14 -> {
+                output[0] = 0.24F;
+                output[1] = 0.025F;
+                output[2] = 0.34F;
+            }
+            case 15 -> {
+                output[0] = 0.12F;
+                output[1] = 0.006F;
+                output[2] = 0.02F;
+            }
+            case 16 -> readColor(effect.data(), "FogColor", output, 0.03F, 0.01F, 0.06F);
+            default -> {
+                // 其它模式用会流动的彩虹色；相位按特效 id 固定，避免特效顺序变化导致颜色跳变
+                float phase = (event.getRenderTick() + event.getPartialTick()) * 0.08F + stablePhase(effect);
+                output[0] = 0.55F + 0.45F * Mth.sin(phase);
+                output[1] = 0.55F + 0.45F * Mth.sin(phase + 2.0943952F);
+                output[2] = 0.55F + 0.45F * Mth.sin(phase + 4.1887903F);
+            }
+        }
+    }
+
+    private static float stablePhase(ActiveEntityVisualEffect effect) {
+        return Math.abs(effect.id().hashCode() % 628) / 100.0F;
+    }
+
+    private static void readColor(
+            CompoundTag data,
+            String key,
+            float[] output,
+            float defaultRed,
+            float defaultGreen,
+            float defaultBlue
+    ) {
+        if (!data.contains(key)) {
+            output[0] = defaultRed;
+            output[1] = defaultGreen;
+            output[2] = defaultBlue;
             return;
         }
 
-        // 复用矩阵
-        TEMP_OLD_PROJECTION.set(RenderSystem.getProjectionMatrix());
-        VertexSorting oldSorting = RenderSystem.getVertexSorting();
-
-        if (cachedViewProjection != null) {
-            TEMP_VIEW_PROJECTION.set(cachedViewProjection);
-        } else {
-            TEMP_VIEW_PROJECTION.set(event.getProjectionMatrix());
+        Tag tag = data.get(key);
+        if (tag instanceof NumericTag) {
+            int rgb = data.getInt(key);
+            output[0] = ((rgb >> 16) & 255) / 255.0F;
+            output[1] = ((rgb >> 8) & 255) / 255.0F;
+            output[2] = (rgb & 255) / 255.0F;
+            return;
         }
 
-        mainTarget.unbindWrite();
-        RenderSystem.viewport(0, 0, outTarget.width, outTarget.height);
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderSystem.disableBlend();
-        RenderSystem.resetTextureMatrix();
+        if (tag instanceof ListTag list && list.size() >= 3) {
+            output[0] = channel(list.get(0));
+            output[1] = channel(list.get(1));
+            output[2] = channel(list.get(2));
+            return;
+        }
 
-        // 设置采样器（使用静态 supplier，避免每帧 lambda）
-        samplerTarget = mainTarget;
-        shader.setSampler("DiffuseSampler", COLOR_SAMPLER);
-        shader.setSampler("DepthSampler", DEPTH_SAMPLER);
-
-        shader.safeGetUniform("ProjMat").set(orthoMatrix);
-        shader.safeGetUniform("ViewProjMat").set(TEMP_VIEW_PROJECTION);
-
-        // 逆矩阵：复用 TEMP_INV_VIEW
-        TEMP_INV_VIEW.set(TEMP_VIEW_PROJECTION).invert();
-        shader.safeGetUniform("InvViewProjMat").set(TEMP_INV_VIEW);
-
-        shader.safeGetUniform("InSize").set((float) mainTarget.width, (float) mainTarget.height);
-        shader.safeGetUniform("OutSize").set((float) outTarget.width, (float) outTarget.height);
-        shader.safeGetUniform("Time").set((event.getRenderTick() + event.getPartialTick()) / 20.0F);
-        shader.safeGetUniform("EffectCount").set(packet.count);
-        uploadPacket(shader, packet);
-
-        shader.apply();
-        outTarget.clear(Minecraft.ON_OSX);
-        outTarget.bindWrite(false);
-        RenderSystem.depthFunc(519);
-
-        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-        bufferBuilder.vertex(0.0D, 0.0D, 500.0D).endVertex();
-        bufferBuilder.vertex((double) outTarget.width, 0.0D, 500.0D).endVertex();
-        bufferBuilder.vertex((double) outTarget.width, (double) outTarget.height, 500.0D).endVertex();
-        bufferBuilder.vertex(0.0D, (double) outTarget.height, 500.0D).endVertex();
-        BufferUploader.draw(bufferBuilder.end());
-
-        RenderSystem.depthFunc(515);
-        shader.clear();
-        outTarget.unbindWrite();
-        mainTarget.unbindRead();
-
-        GlStateManager._glBindFramebuffer(36008, outTarget.frameBufferId);
-        GlStateManager._glBindFramebuffer(36009, mainTarget.frameBufferId);
-        GlStateManager._glBlitFrameBuffer(0, 0, outTarget.width, outTarget.height, 0, 0, mainTarget.width, mainTarget.height, 16384, 9728);
-        GlStateManager._glBindFramebuffer(36160, 0);
-
-        RenderSystem.depthMask(true);
-        RenderSystem.setProjectionMatrix(TEMP_OLD_PROJECTION, oldSorting);
-        mainTarget.bindWrite(false);
+        output[0] = defaultRed;
+        output[1] = defaultGreen;
+        output[2] = defaultBlue;
     }
 
-    // ── 使用预定义 uniform 名称数组 ──
-    private static void uploadPacket(EffectInstance shader, EffectPacket packet) {
-        for (int i = 0; i < MAX_EFFECTS; i++) {
-            shader.safeGetUniform(CENTER_NAMES[i]).set(
-                    packet.centers[i * 3],
-                    packet.centers[i * 3 + 1],
-                    packet.centers[i * 3 + 2]
-            );
-            shader.safeGetUniform(DATA_NAMES[i]).set(
-                    packet.data[i * 4],
-                    packet.data[i * 4 + 1],
-                    packet.data[i * 4 + 2],
-                    packet.data[i * 4 + 3]
-            );
-            shader.safeGetUniform(COLOR_NAMES[i]).set(
-                    packet.colors[i * 3],
-                    packet.colors[i * 3 + 1],
-                    packet.colors[i * 3 + 2]
-            );
+    private static float channel(Tag tag) {
+        if (tag instanceof NumericTag numericTag) {
+            float value = numericTag.getAsFloat();
+            return Mth.clamp(value > 1.0F ? value / 255.0F : value, 0.0F, 1.0F);
         }
-    }
-
-    private static final class EffectPacket {
-        private final float[] centers = new float[MAX_EFFECTS * 3];
-        private final float[] data = new float[MAX_EFFECTS * 4];
-        private final float[] colors = new float[MAX_EFFECTS * 3];
-        private int count;
-
-        private void add(Entity entity, ActiveEntityVisualEffect effect, RenderLevelStageEvent event, int mode, Vec3 center) {
-            Vec3 cameraRelative = center.subtract(event.getCamera().getPosition());
-            float progress = progress(entity, effect, event);
-            float radius = radius(entity, effect, mode, progress);
-            float intensity = intensity(effect, mode, progress);
-            float secondary = secondary(entity, effect, mode, progress);
-            int offset3 = count * 3;
-            int offset4 = count * 4;
-
-            centers[offset3] = (float) cameraRelative.x;
-            centers[offset3 + 1] = (float) cameraRelative.y;
-            centers[offset3 + 2] = (float) cameraRelative.z;
-            data[offset4] = mode;
-            data[offset4 + 1] = radius;
-            data[offset4 + 2] = secondary;
-            data[offset4 + 3] = intensity;
-
-            float phase = (event.getRenderTick() + event.getPartialTick()) * 0.08F + count * 1.37F;
-            if (mode == 7) {
-                colors[offset3] = 0.46F;
-                colors[offset3 + 1] = 0.03F;
-                colors[offset3 + 2] = 0.055F;
-            } else if (mode == 8) {
-                colors[offset3] = 0.12F;
-                colors[offset3 + 1] = 0.01F;
-                colors[offset3 + 2] = 0.02F;
-            } else if (mode == 9) {
-                colors[offset3] = 0.62F;
-                colors[offset3 + 1] = 0.04F;
-                colors[offset3 + 2] = 0.07F;
-            } else if (mode == 10) {
-                colors[offset3] = 1.0F;
-                colors[offset3 + 1] = 0.55F;
-                colors[offset3 + 2] = 0.08F;
-            } else if (mode == 11) {
-                colors[offset3] = 0.25F;
-                colors[offset3 + 1] = 0.08F;
-                colors[offset3 + 2] = 0.55F;
-            } else if (mode == 12) {
-                colors[offset3] = 0.85F;
-                colors[offset3 + 1] = 0.85F;
-                colors[offset3 + 2] = 1.0F;
-            } else if (mode == 13) {
-                colors[offset3] = 1.0F;
-                colors[offset3 + 1] = 0.45F;
-                colors[offset3 + 2] = 0.08F;
-            } else if (mode == 14) {
-                colors[offset3] = 0.24F;
-                colors[offset3 + 1] = 0.025F;
-                colors[offset3 + 2] = 0.34F;
-            } else if (mode == 15) {
-                colors[offset3] = 0.12F;
-                colors[offset3 + 1] = 0.006F;
-                colors[offset3 + 2] = 0.02F;
-            } else if (mode == 16) {
-                readColor(effect.data(), "FogColor", colors, offset3, 0.03F, 0.01F, 0.06F);
-            } else {
-                colors[offset3] = 0.55F + 0.45F * Mth.sin(phase);
-                colors[offset3 + 1] = 0.55F + 0.45F * Mth.sin(phase + 2.0943952F);
-                colors[offset3 + 2] = 0.55F + 0.45F * Mth.sin(phase + 4.1887903F);
-            }
-            count++;
-        }
-
-        private static Vec3 center(Entity entity, float partialTick, int mode, ActiveEntityVisualEffect effect) {
-            double yOffset = effect.data().contains("YOffset")
-                    ? Mth.clamp(effect.data().getDouble("YOffset"), -4.0D, 4.0D)
-                    : -0.04D;
-
-            if ((mode == 10 || mode == 13 || mode == 14 || mode == 15 || mode == 16)
-                    && effect.data().contains("AnchorX")
-                    && effect.data().contains("AnchorY")
-                    && effect.data().contains("AnchorZ")) {
-                return new Vec3(
-                        effect.data().getDouble("AnchorX"),
-                        effect.data().getDouble("AnchorY"),
-                        effect.data().getDouble("AnchorZ")
-                ).add(0.0D, mode == 16 ? yOffset : 0.0D, 0.0D);
-            }
-
-            if (mode == 16) {
-                return entity.getEyePosition(partialTick).add(0.0D, yOffset, 0.0D);
-            }
-
-            double heightScale = switch (mode) {
-                case 4, 5, 7, 8 -> 0.04D;
-                case 10, 11, 13 -> 0.52D;
-                default -> 0.52D;
-            };
-            return entity.getPosition(partialTick).add(0.0D, entity.getBbHeight() * heightScale, 0.0D);
-        }
-
-        private static float progress(Entity entity, ActiveEntityVisualEffect effect, RenderLevelStageEvent event) {
-            float partialTick = event.getPartialTick();
-            if (effect.initialDuration() > 0) {
-                // 【修复】原实现按 remainingTicks 反向推算进度，但客户端从不递减该值（服务端也只在增删/到期时同步），
-                // 于是有限时长的特效进度恒为 0：领域雾/斩击的 intensity = base * clamp(progress * 1.6) 被锁死在 0，
-                // 表现就是「时间到了以后再 add 不显示」。改为按 StartGameTime + 当前游戏时间计算，进度由客户端自走。
-                return effect.progress(entity.level().getGameTime(), partialTick);
-            }
-
-            long start = effect.startGameTime() >= 0 ? effect.startGameTime() : entity.level().getGameTime();
-            return Mth.clamp((entity.level().getGameTime() + partialTick - start) / 80.0F, 0.0F, 1.0F);
-        }
-
-        private static float radius(Entity entity, ActiveEntityVisualEffect effect, int mode, float progress) {
-            if (effect.data().contains("Radius")) {
-                return effect.data().getFloat("Radius");
-            }
-
-            float scale = Math.max(1.0F, entity.getBbWidth());
-            return switch (mode) {
-                case 0 -> (1.1F + progress * 6.4F) * scale;
-                case 1 -> Math.max(2.2F, Math.max(entity.getBbHeight() * 1.15F, entity.getBbWidth() * 2.0F));
-                case 2 -> Math.max(1.6F, entity.getBbHeight() * 0.95F);
-                case 3 -> Math.max(1.1F, entity.getBbWidth() * 1.6F);
-                case 4 -> Math.max(0.85F, entity.getBbWidth() * 1.2F);
-                case 5 -> Math.max(0.72F, entity.getBbWidth() * 0.82F);
-                case 6 -> Math.max(2.1F, Math.max(entity.getBbHeight() * 1.05F, entity.getBbWidth() * 2.35F));
-                case 7, 8 -> DEFAULT_RADIUS;
-                case 9 -> Math.max(0.9F, entity.getBbWidth() * 1.6F);
-                case 10, 11, 12, 13, 14, 15 -> DEFAULT_RADIUS;
-                case 16 -> {
-                    float sizeScale = effect.data().contains("Scale")
-                            ? Mth.clamp(effect.data().getFloat("Scale"), 0.2F, 4.0F)
-                            : 1.0F;
-                    yield Math.max(1.15F, entity.getBbWidth() * 1.25F) * sizeScale;
-                }
-                default -> DEFAULT_RADIUS;
-            };
-        }
-
-        private static float secondary(Entity entity, ActiveEntityVisualEffect effect, int mode, float progress) {
-            if (mode == 7 || mode == 8) {
-                return effect.data().contains("Height")
-                        ? effect.data().getFloat("Height")
-                        : 6.0F;
-            }
-
-            if (mode == 9) {
-                return Math.max(1.1F, entity.getBbHeight());
-            }
-
-            if (mode == 16) {
-                float yawDegrees = effect.data().contains("Yaw")
-                        ? effect.data().getFloat("Yaw")
-                        : entity.getViewYRot(1.0F);
-                return yawDegrees * ((float) Math.PI / 180.0F);
-            }
-
-            if (mode == 10 || mode == 11 || mode == 12 || mode == 13 || mode == 14 || mode == 15) {
-                return progress;
-            }
-
-            return switch (mode) {
-                case 4 -> Math.max(0.8F, entity.getBbHeight());
-                case 5 -> Math.max(3.6F, entity.getBbHeight() * 2.8F);
-                case 3 -> entity.getBbHeight();
-                case 6 -> Math.max(0.9F, entity.getBbHeight());
-                default -> progress;
-            };
-        }
-
-        private static void readColor(
-                CompoundTag data,
-                String key,
-                float[] output,
-                int offset,
-                float defaultRed,
-                float defaultGreen,
-                float defaultBlue
-        ) {
-            if (!data.contains(key)) {
-                output[offset] = defaultRed;
-                output[offset + 1] = defaultGreen;
-                output[offset + 2] = defaultBlue;
-                return;
-            }
-
-            Tag tag = data.get(key);
-            if (tag instanceof NumericTag) {
-                int rgb = data.getInt(key);
-                output[offset] = ((rgb >> 16) & 255) / 255.0F;
-                output[offset + 1] = ((rgb >> 8) & 255) / 255.0F;
-                output[offset + 2] = (rgb & 255) / 255.0F;
-                return;
-            }
-
-            if (tag instanceof ListTag list && list.size() >= 3) {
-                output[offset] = channel(list.get(0));
-                output[offset + 1] = channel(list.get(1));
-                output[offset + 2] = channel(list.get(2));
-                return;
-            }
-
-            output[offset] = defaultRed;
-            output[offset + 1] = defaultGreen;
-            output[offset + 2] = defaultBlue;
-        }
-
-        private static float channel(Tag tag) {
-            if (tag instanceof NumericTag numericTag) {
-                float value = numericTag.getAsFloat();
-                return Mth.clamp(value > 1.0F ? value / 255.0F : value, 0.0F, 1.0F);
-            }
-            return 1.0F;
-        }
-
-        private static float intensity(ActiveEntityVisualEffect effect, int mode, float progress) {
-            float base = effect.data().contains("Intensity")
-                    ? effect.data().getFloat("Intensity")
-                    : 1.0F;
-
-            // 领域雾和斩击在展开时逐渐浮现，避免瞬间铺满。
-            if (mode == 7) {
-                return base * Mth.clamp(progress * 1.6F, 0.0F, 1.0F);
-            }
-            if (mode == 8) {
-                return base * Mth.clamp(progress * 1.3F, 0.0F, 1.0F);
-            }
-
-            return switch (mode) {
-                case 0 -> 1.15F * (1.0F - progress);
-                case 1 -> 0.85F;
-                case 2 -> 0.95F;
-                case 3 -> 0.82F;
-                case 4 -> 1.0F;
-                case 5 -> 0.78F;
-                case 6 -> 0.92F;
-                case 9 -> 0.9F;
-                case 10, 11, 12, 13, 14, 15, 16 -> 1.0F;
-                default -> base;
-            };
-        }
+        return 1.0F;
     }
 }

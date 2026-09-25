@@ -6,79 +6,9 @@ uniform mat4 ViewProjMat;
 uniform mat4 InvViewProjMat;
 uniform vec2 InSize;
 uniform float Time;
-uniform int EffectCount;
 uniform vec3 EffectCenter0;
-uniform vec3 EffectCenter1;
-uniform vec3 EffectCenter2;
-uniform vec3 EffectCenter3;
-uniform vec3 EffectCenter4;
-uniform vec3 EffectCenter5;
-uniform vec3 EffectCenter6;
-uniform vec3 EffectCenter7;
-uniform vec3 EffectCenter8;
-uniform vec3 EffectCenter9;
-uniform vec3 EffectCenter10;
-uniform vec3 EffectCenter11;
-uniform vec3 EffectCenter12;
-uniform vec3 EffectCenter13;
-uniform vec3 EffectCenter14;
-uniform vec3 EffectCenter15;
-uniform vec3 EffectCenter16;
-uniform vec3 EffectCenter17;
-uniform vec3 EffectCenter18;
-uniform vec3 EffectCenter19;
-uniform vec3 EffectCenter20;
-uniform vec3 EffectCenter21;
-uniform vec3 EffectCenter22;
-uniform vec3 EffectCenter23;
 uniform vec4 EffectData0;
-uniform vec4 EffectData1;
-uniform vec4 EffectData2;
-uniform vec4 EffectData3;
-uniform vec4 EffectData4;
-uniform vec4 EffectData5;
-uniform vec4 EffectData6;
-uniform vec4 EffectData7;
-uniform vec4 EffectData8;
-uniform vec4 EffectData9;
-uniform vec4 EffectData10;
-uniform vec4 EffectData11;
-uniform vec4 EffectData12;
-uniform vec4 EffectData13;
-uniform vec4 EffectData14;
-uniform vec4 EffectData15;
-uniform vec4 EffectData16;
-uniform vec4 EffectData17;
-uniform vec4 EffectData18;
-uniform vec4 EffectData19;
-uniform vec4 EffectData20;
-uniform vec4 EffectData21;
-uniform vec4 EffectData22;
-uniform vec4 EffectData23;
 uniform vec3 EffectColor0;
-uniform vec3 EffectColor1;
-uniform vec3 EffectColor2;
-uniform vec3 EffectColor3;
-uniform vec3 EffectColor4;
-uniform vec3 EffectColor5;
-uniform vec3 EffectColor6;
-uniform vec3 EffectColor7;
-uniform vec3 EffectColor8;
-uniform vec3 EffectColor9;
-uniform vec3 EffectColor10;
-uniform vec3 EffectColor11;
-uniform vec3 EffectColor12;
-uniform vec3 EffectColor13;
-uniform vec3 EffectColor14;
-uniform vec3 EffectColor15;
-uniform vec3 EffectColor16;
-uniform vec3 EffectColor17;
-uniform vec3 EffectColor18;
-uniform vec3 EffectColor19;
-uniform vec3 EffectColor20;
-uniform vec3 EffectColor21;
-uniform vec3 EffectColor22;
-uniform vec3 EffectColor23;
 
 in vec2 texCoord;
 
@@ -116,87 +46,6 @@ float fbm(vec2 p) {
         amplitude *= 0.52;
     }
     return value;
-}
-
-vec3 effectCenter(int index) {
-    if (index == 0) return EffectCenter0;
-    if (index == 1) return EffectCenter1;
-    if (index == 2) return EffectCenter2;
-    if (index == 3) return EffectCenter3;
-    if (index == 4) return EffectCenter4;
-    if (index == 5) return EffectCenter5;
-    if (index == 6) return EffectCenter6;
-    if (index == 7) return EffectCenter7;
-    if (index == 8) return EffectCenter8;
-    if (index == 9) return EffectCenter9;
-    if (index == 10) return EffectCenter10;
-    if (index == 11) return EffectCenter11;
-    if (index == 12) return EffectCenter12;
-    if (index == 13) return EffectCenter13;
-    if (index == 14) return EffectCenter14;
-    if (index == 15) return EffectCenter15;
-    if (index == 16) return EffectCenter16;
-    if (index == 17) return EffectCenter17;
-    if (index == 18) return EffectCenter18;
-    if (index == 19) return EffectCenter19;
-    if (index == 20) return EffectCenter20;
-    if (index == 21) return EffectCenter21;
-    if (index == 22) return EffectCenter22;
-    return EffectCenter23;
-}
-
-vec4 effectData(int index) {
-    if (index == 0) return EffectData0;
-    if (index == 1) return EffectData1;
-    if (index == 2) return EffectData2;
-    if (index == 3) return EffectData3;
-    if (index == 4) return EffectData4;
-    if (index == 5) return EffectData5;
-    if (index == 6) return EffectData6;
-    if (index == 7) return EffectData7;
-    if (index == 8) return EffectData8;
-    if (index == 9) return EffectData9;
-    if (index == 10) return EffectData10;
-    if (index == 11) return EffectData11;
-    if (index == 12) return EffectData12;
-    if (index == 13) return EffectData13;
-    if (index == 14) return EffectData14;
-    if (index == 15) return EffectData15;
-    if (index == 16) return EffectData16;
-    if (index == 17) return EffectData17;
-    if (index == 18) return EffectData18;
-    if (index == 19) return EffectData19;
-    if (index == 20) return EffectData20;
-    if (index == 21) return EffectData21;
-    if (index == 22) return EffectData22;
-    return EffectData23;
-}
-
-vec3 effectColor(int index) {
-    if (index == 0) return EffectColor0;
-    if (index == 1) return EffectColor1;
-    if (index == 2) return EffectColor2;
-    if (index == 3) return EffectColor3;
-    if (index == 4) return EffectColor4;
-    if (index == 5) return EffectColor5;
-    if (index == 6) return EffectColor6;
-    if (index == 7) return EffectColor7;
-    if (index == 8) return EffectColor8;
-    if (index == 9) return EffectColor9;
-    if (index == 10) return EffectColor10;
-    if (index == 11) return EffectColor11;
-    if (index == 12) return EffectColor12;
-    if (index == 13) return EffectColor13;
-    if (index == 14) return EffectColor14;
-    if (index == 15) return EffectColor15;
-    if (index == 16) return EffectColor16;
-    if (index == 17) return EffectColor17;
-    if (index == 18) return EffectColor18;
-    if (index == 19) return EffectColor19;
-    if (index == 20) return EffectColor20;
-    if (index == 21) return EffectColor21;
-    if (index == 22) return EffectColor22;
-    return EffectColor23;
 }
 
 vec3 reconstructWorldPosition(vec2 uv, float depth) {
@@ -1359,7 +1208,7 @@ vec3 applyBlackCatHeadFog(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 
     return mix(color, integrated, clamp(fogAmount * intensity, 0.0, 0.95));
 }
 void main() {
-    vec2 uv = texCoord;
+    vec2 uv = gl_FragCoord.xy / InSize;
     vec4 base = texture(DiffuseSampler, uv);
     float depth = depthAt(uv);
     bool sky = depth >= 0.999999;
@@ -1375,70 +1224,17 @@ void main() {
     }
 
     vec3 color = base.rgb;
+    vec4 data = EffectData0;
+    int mode = int(data.x + 0.5);
+    vec3 center = EffectCenter0;
+    vec3 tint = EffectColor0;
 
-    // 先应用领域雾场，让其他屏幕空间特效叠在雾上，避免被雾盖住。
-    for (int i = 0; i < 24; i++) {
-        if (i >= EffectCount) {
-            break;
-        }
-        vec4 data = effectData(i);
-        int mode = int(data.x + 0.5);
-        if (mode == 7) {
-            color = applyMalevolentShrineDomain(color, scenePos, uv, effectCenter(i), data, effectColor(i));
-        }
-    }
-
-    // 再应用斩击、目标血光和既有的冲击波/热浪/光柱等特效。
-    for (int i = 0; i < 24; i++) {
-        if (i >= EffectCount) {
-            break;
-        }
-
-        vec4 data = effectData(i);
-        int mode = int(data.x + 0.5);
-        vec3 center = effectCenter(i);
-        vec3 tint = effectColor(i);
-
-        if (sky) {
-            if (mode == 10) {
-                color = applyMalevolentShrineFire(color, scenePos, uv, center, data, tint, edge);
-            } else if (mode == 13) {
-                color = applyMalevolentShrineFireLegacy(color, scenePos, uv, center, data, tint, edge);
-            } else if (mode == 14) {
-                color = applyMalevolentShrineBlackDomain(color, scenePos, uv, center, data, tint, edge);
-            } else if (mode == 15) {
-                color = applyMalevolentShrineBlackMist(color, scenePos, uv, center, data, tint, edge);
-            } else if (mode == 16) {
-                color = applyBlackCatHeadFog(color, scenePos, uv, center, data, tint, 320.0);
-            } else if (mode == 11) {
-                color = applyMalevolentShrineVoid(color, scenePos, uv, center, data, tint, edge);
-            } else if (mode == 12) {
-                color = applyMalevolentShrineStarfield(color, scenePos, uv, center, data, tint, edge);
-            }
-            continue;
-        }
-
-        if (mode == 7) {
-            continue;
-        }
-
-        if (mode == 0) {
-            color = applyShockwave(color, scenePos, uv, center, data, tint);
-        } else if (mode == 1) {
-            color = applyHeatwave(color, scenePos, uv, center, data, tint);
-        } else if (mode == 2) {
-            color = applyOutlineScan(color, scenePos, uv, center, data, tint, edge);
-        } else if (mode == 3) {
-            color = applyDepthOccludedHalo(color, scenePos, uv, center, data, tint, edge);
-        } else if (mode == 4) {
-            color = applyContactEdgeGlow(color, scenePos, center, data, tint, edge);
-        } else if (mode == 5) {
-            color = applyVolumetricLightColumn(color, scenePos, center, data, tint, edge);
-        } else if (mode == 6) {
-            color = applyDepthRefractionPressure(color, scenePos, uv, center, data, tint, edge);
-        } else if (mode == 8) {
-            color = applyMalevolentShrineSlash(color, scenePos, uv, center, data, tint);
-        } else if (mode == 10) {
+    // 每个特效各占一次 draw，这里只处理当前绑定的这一个。
+    // mode 7（领域雾）仍然先于其它模式处理，保持原来「雾在底层」的层次。
+    if (mode == 7) {
+        color = applyMalevolentShrineDomain(color, scenePos, uv, center, data, tint);
+    } else if (sky) {
+        if (mode == 10) {
             color = applyMalevolentShrineFire(color, scenePos, uv, center, data, tint, edge);
         } else if (mode == 13) {
             color = applyMalevolentShrineFireLegacy(color, scenePos, uv, center, data, tint, edge);
@@ -1447,14 +1243,44 @@ void main() {
         } else if (mode == 15) {
             color = applyMalevolentShrineBlackMist(color, scenePos, uv, center, data, tint, edge);
         } else if (mode == 16) {
-            color = applyBlackCatHeadFog(color, scenePos, uv, center, data, tint, length(scenePos));
+            color = applyBlackCatHeadFog(color, scenePos, uv, center, data, tint, 320.0);
         } else if (mode == 11) {
             color = applyMalevolentShrineVoid(color, scenePos, uv, center, data, tint, edge);
         } else if (mode == 12) {
             color = applyMalevolentShrineStarfield(color, scenePos, uv, center, data, tint, edge);
-        } else {
-            color = applyMalevolentShrineTargetGlow(color, scenePos, uv, center, data, tint, edge);
         }
+    } else if (mode == 0) {
+        color = applyShockwave(color, scenePos, uv, center, data, tint);
+    } else if (mode == 1) {
+        color = applyHeatwave(color, scenePos, uv, center, data, tint);
+    } else if (mode == 2) {
+        color = applyOutlineScan(color, scenePos, uv, center, data, tint, edge);
+    } else if (mode == 3) {
+        color = applyDepthOccludedHalo(color, scenePos, uv, center, data, tint, edge);
+    } else if (mode == 4) {
+        color = applyContactEdgeGlow(color, scenePos, center, data, tint, edge);
+    } else if (mode == 5) {
+        color = applyVolumetricLightColumn(color, scenePos, center, data, tint, edge);
+    } else if (mode == 6) {
+        color = applyDepthRefractionPressure(color, scenePos, uv, center, data, tint, edge);
+    } else if (mode == 8) {
+        color = applyMalevolentShrineSlash(color, scenePos, uv, center, data, tint);
+    } else if (mode == 10) {
+        color = applyMalevolentShrineFire(color, scenePos, uv, center, data, tint, edge);
+    } else if (mode == 13) {
+        color = applyMalevolentShrineFireLegacy(color, scenePos, uv, center, data, tint, edge);
+    } else if (mode == 14) {
+        color = applyMalevolentShrineBlackDomain(color, scenePos, uv, center, data, tint, edge);
+    } else if (mode == 15) {
+        color = applyMalevolentShrineBlackMist(color, scenePos, uv, center, data, tint, edge);
+    } else if (mode == 16) {
+        color = applyBlackCatHeadFog(color, scenePos, uv, center, data, tint, length(scenePos));
+    } else if (mode == 11) {
+        color = applyMalevolentShrineVoid(color, scenePos, uv, center, data, tint, edge);
+    } else if (mode == 12) {
+        color = applyMalevolentShrineStarfield(color, scenePos, uv, center, data, tint, edge);
+    } else {
+        color = applyMalevolentShrineTargetGlow(color, scenePos, uv, center, data, tint, edge);
     }
     fragColor = vec4(color, base.a);
 }

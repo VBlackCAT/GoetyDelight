@@ -14,13 +14,16 @@ import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.GoetyDelight;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Mod.EventBusSubscriber(modid = GoetyDelight.MODID)
 public final class EntityVisualEffectCommands {
@@ -31,6 +34,12 @@ public final class EntityVisualEffectCommands {
     private static final DynamicCommandExceptionType NO_EFFECT_CONTAINER =
             new DynamicCommandExceptionType(count -> Component.literal(
                     "目标实体没有视觉特效容器（capability 未注册或已失效），已跳过 " + count + " 个实体"));
+    /** random 子指令省略 duration 时用的时长（tick）。 */
+    private static final int DEFAULT_RANDOM_DURATION = 200;
+    /** random 子指令的 count 上限（真正能加多少由注册表大小决定，pickRandom 会自己夹住）。 */
+    private static final int MAX_RANDOM_EFFECTS = 64;
+    /** 回执里最多列几个特效名。 */
+    private static final int MAX_FEEDBACK_EFFECTS = 8;
 
     private EntityVisualEffectCommands() {
     }
@@ -40,8 +49,40 @@ public final class EntityVisualEffectCommands {
         event.getDispatcher().register(Commands.literal("goetydelightvisual")
                 .requires(source -> source.hasPermission(2))
                 .then(addCommand())
+                .then(randomCommand())
                 .then(removeCommand())
                 .then(clearCommand()));
+    }
+
+    /**
+     * {@code /goetydelightvisual random <targets> [count] [duration]}
+     *
+     * <p>给 targets（用选择器表达范围，例如 {@code @e[distance=..16,type=!minecraft:player]}）里的每个实体
+     * 随机加 count 个不重复的特效，数值也随机（只随机该特效真正读取的键）。duration 默认 200 tick。
+     */
+    private static LiteralArgumentBuilder<CommandSourceStack> randomCommand() {
+        return Commands.literal("random")
+                .then(Commands.argument("targets", EntityArgument.entities())
+                        .executes(context -> addRandomEffects(
+                                context.getSource(),
+                                EntityArgument.getEntities(context, "targets"),
+                                1,
+                                DEFAULT_RANDOM_DURATION
+                        ))
+                        .then(Commands.argument("count", IntegerArgumentType.integer(1, MAX_RANDOM_EFFECTS))
+                                .executes(context -> addRandomEffects(
+                                        context.getSource(),
+                                        EntityArgument.getEntities(context, "targets"),
+                                        IntegerArgumentType.getInteger(context, "count"),
+                                        DEFAULT_RANDOM_DURATION
+                                ))
+                                .then(Commands.argument("duration", IntegerArgumentType.integer(EntityVisualEffects.INFINITE))
+                                        .executes(context -> addRandomEffects(
+                                                context.getSource(),
+                                                EntityArgument.getEntities(context, "targets"),
+                                                IntegerArgumentType.getInteger(context, "count"),
+                                                IntegerArgumentType.getInteger(context, "duration")
+                                        )))));
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> addCommand() {
@@ -118,6 +159,44 @@ public final class EntityVisualEffectCommands {
 
     private static int addEffect(Collection<? extends Entity> entities, ResourceLocation effectId) throws CommandSyntaxException {
         return addEffect(entities, effectId, 0);
+    }
+
+    private static int addRandomEffects(CommandSourceStack source, Collection<? extends Entity> entities, int count, int duration) throws CommandSyntaxException {
+        RandomSource random = source.getLevel().getRandom();
+        int changed = 0;
+        int missing = 0;
+        List<String> applied = new ArrayList<>();
+
+        for (Entity entity : entities) {
+            if (EntityVisualEffectSystem.getEffects(entity) == null) {
+                missing++;
+                continue;
+            }
+
+            for (ResourceLocation effectId : EntityVisualEffectRandomizer.pickRandom(random, count)) {
+                CompoundTag data = EntityVisualEffectRandomizer.randomData(random, effectId);
+                if (EntityVisualEffectSystem.addEffect(entity, effectId, duration, data)) {
+                    changed++;
+                    if (applied.size() < MAX_FEEDBACK_EFFECTS) {
+                        applied.add(effectId.getPath());
+                    }
+                }
+            }
+        }
+
+        if (changed == 0 && missing > 0) {
+            throw NO_EFFECT_CONTAINER.create(missing);
+        }
+
+        if (!applied.isEmpty()) {
+            int total = changed;
+            int entityCount = entities.size();
+            String summary = String.join(", ", applied) + (changed > applied.size() ? ", ..." : "");
+            source.sendSuccess(() -> Component.literal(
+                    "已随机添加 " + total + " 个特效（" + entityCount + " 个实体）: " + summary), false);
+        }
+
+        return changed;
     }
 
     private static int removeEffect(Collection<? extends Entity> entities, ResourceLocation effectId) throws CommandSyntaxException {
