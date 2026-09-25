@@ -25,7 +25,8 @@ import java.util.List;
 public class CropGrowthSpell extends Spell {
 
     private static final double BASE_RADIUS = 2.0D;    // 5×5
-    private static final double MAX_RADIUS = 7.0D;     // 15×15（范围附魔每级 +2，III 级封顶）
+    private static final double MAX_RADIUS = 7.0D;     // 15×15
+    private static final double RADIUS_PER_LEVEL = 2.0D; // 半径附魔每级 +2，III 级到顶
     private static final int COOLDOWN_TICKS = 10 * 20;  // 10 秒
     private static final int MAX_BONE_MEAL_PER_BLOCK = 8; // 小麦 0→7 每次 +2~5，8 次足够
 
@@ -57,7 +58,6 @@ public class CropGrowthSpell extends Spell {
     @Override
     public List<Enchantment> acceptedEnchantments() {
         List<Enchantment> list = new ArrayList<>();
-        list.add(ModEnchantments.RANGE.get());
         list.add(ModEnchantments.RADIUS.get());
         return list;
     }
@@ -78,12 +78,11 @@ public class CropGrowthSpell extends Spell {
         return false;
     }
 
-    /** 范围 = 基础半径 + 强效(potency) + 半径属性加成 + 范围附魔(每级 +2)，上限 15×15（同锄头聚晶） */
+    /** 范围 = 基础半径 + 强效(potency) + 半径属性加成 + 半径附魔(每级 +2)，上限 15×15（同锄头聚晶） */
     private static int spellRadius(ItemStack focus, LivingEntity caster, SpellStat spellStat) {
-        int rangeLevel = getEnchantLevel(focus, caster, ModEnchantments.RANGE.get());
         int radiusLevel = getEnchantLevel(focus, caster, ModEnchantments.RADIUS.get());
         double radius = Math.max(BASE_RADIUS, spellStat.getRadius() + spellStat.getPotency());
-        radius += rangeLevel + radiusLevel;
+        radius += RADIUS_PER_LEVEL * radiusLevel;
         radius = Math.min(radius, MAX_RADIUS);
         return (int) Math.floor(radius);
     }

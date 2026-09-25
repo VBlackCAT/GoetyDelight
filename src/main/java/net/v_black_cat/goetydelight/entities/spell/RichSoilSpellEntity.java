@@ -50,6 +50,7 @@ public class RichSoilSpellEntity extends SpellEntity {
     private boolean magnet;
     private int durationTicks;
     private int cloudSide;
+    private int penetration;
     private Direction direction = Direction.UP;
     private ItemStack effectTool = ItemStack.EMPTY;
     private boolean completed;
@@ -109,6 +110,12 @@ public class RichSoilSpellEntity extends SpellEntity {
 
     public RichSoilSpellEntity setCloudSide(int cloudSide) {
         this.cloudSide = cloudSide;
+        return this;
+    }
+
+    /** 穿透层数：y ∈ [-penetration, +penetration]；0 = 只转化光柱落地那一层 */
+    public RichSoilSpellEntity setPenetration(int penetration) {
+        this.penetration = Math.max(0, penetration);
         return this;
     }
 
@@ -196,7 +203,7 @@ public class RichSoilSpellEntity extends SpellEntity {
 
     private boolean convertRichSoil(ServerLevel serverLevel, BlockPos center, int radius) {
         int converted = 0;
-        for (int y = -2; y <= 2; ++y) {
+        for (int y = -this.penetration; y <= this.penetration; ++y) {
             for (int dx = -radius; dx <= radius; ++dx) {
                 for (int dz = -radius; dz <= radius; ++dz) {
                     BlockPos pos = center.offset(dx, y, dz);

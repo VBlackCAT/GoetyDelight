@@ -68,7 +68,6 @@ public class GrassCuttingSpell extends Spell {
         List<Enchantment> list = new ArrayList<>();
         list.add(Enchantments.SILK_TOUCH);
         list.add(Enchantments.BLOCK_FORTUNE);
-        list.add(ModEnchantments.RANGE.get());
         list.add(ModEnchantments.RADIUS.get());
         list.add(ModEnchantments.VELOCITY.get());
         list.add(ModEnchantments.MAGNET.get()); // 磁引：掉落直接进背包（参考 Goety 的 burrowing_focus）
@@ -85,10 +84,11 @@ public class GrassCuttingSpell extends Spell {
         boolean magnet = getEnchantLevel(focus, caster, ModEnchantments.MAGNET.get()) > 0;
 
         int r = spellRadius(focus, caster, spellStat);
-        int rangeLevel = getEnchantLevel(focus, caster, ModEnchantments.RANGE.get());
+        int radiusLevel = getEnchantLevel(focus, caster, ModEnchantments.RADIUS.get());
         int velocityLevel = getEnchantLevel(focus, caster, ModEnchantments.VELOCITY.get());
         float speed = Math.max(0.35F, spellStat.getVelocity() + velocityLevel * 0.5F);
-        float range = Math.max(4.0F, spellStat.getRange() + rangeLevel * 2.0F);
+        // 飞行距离改用半径附魔：只有 III 级，所以每级 +4（旧的范围附魔 V 级每级 +2，上限 +10）
+        float range = Math.max(4.0F, spellStat.getRange() + radiusLevel * 4.0F);
         int lifeSpan = Math.max(4, Mth.ceil(range / speed));
         worldIn.addFreshEntity(new GrassCuttingSlashEntity(
                 worldIn, caster, speed, r, lifeSpan, silkTouch, fortune, magnet));

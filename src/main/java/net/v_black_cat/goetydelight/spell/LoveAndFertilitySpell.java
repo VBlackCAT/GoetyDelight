@@ -35,7 +35,7 @@ import java.util.UUID;
 public class LoveAndFertilitySpell extends Spell {
 
     private static final int DEFAULT_SIDE = 9;
-    private static final int SIDE_PER_LEVEL = 1;
+    private static final int SIDE_PER_LEVEL = 2; // 半径附魔每级长宽各 +2（III 级到顶 15×15）
     private static final int MAX_SIDE = 15;
 
     private static final int COOLDOWN_TICKS = 240 * 20;
@@ -79,8 +79,7 @@ public class LoveAndFertilitySpell extends Spell {
     @Override
     public List<Enchantment> acceptedEnchantments() {
         List<Enchantment> list = new ArrayList<>();
-        list.add(ModEnchantments.RANGE.get());     // 每级长宽各 +1，最大 15×15
-        list.add(ModEnchantments.RADIUS.get());
+        list.add(ModEnchantments.RADIUS.get());    // 每级长宽各 +2，最大 15×15
         list.add(ModEnchantments.DURATION.get());  // 持续时间
         return list;
     }
@@ -89,11 +88,10 @@ public class LoveAndFertilitySpell extends Spell {
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
         ItemStack focus = WandUtil.findFocus(caster);
 
-        int rangeLevel = getEnchantLevel(focus, caster, ModEnchantments.RANGE.get());
         int radiusLevel = getEnchantLevel(focus, caster, ModEnchantments.RADIUS.get());
         int durationLevel = getEnchantLevel(focus, caster, ModEnchantments.DURATION.get());
         int durationTicks = (BASE_DURATION_SECONDS + DURATION_PER_LEVEL_SECONDS * durationLevel) * 20;
-        int side = cloudSide(rangeLevel + radiusLevel);
+        int side = cloudSide(radiusLevel);
         BlockPos center = SpellCastUtil.castCenterOrEntity(caster);
         worldIn.addFreshEntity(new RichSoilSpellEntity(worldIn, caster, center,
                 Math.max(1, side / 2), RichSoilSpellEntity.EffectType.LOVE_AND_FERTILITY)
@@ -129,9 +127,9 @@ public class LoveAndFertilitySpell extends Spell {
         return true;
     }
 
-    /** 边长 = 默认 8 + 每级范围 +1，上限 15 */
-    private static int cloudSide(int rangeLevel) {
-        return Math.min(DEFAULT_SIDE + SIDE_PER_LEVEL * rangeLevel, MAX_SIDE);
+    /** 边长 = 默认 9 + 每级半径 +2，上限 15 */
+    private static int cloudSide(int radiusLevel) {
+        return Math.min(DEFAULT_SIDE + SIDE_PER_LEVEL * radiusLevel, MAX_SIDE);
     }
 
 
@@ -180,8 +178,7 @@ public class LoveAndFertilitySpell extends Spell {
     @Override
     public boolean conditionsMet(ServerLevel worldIn, LivingEntity caster, SpellStat spellStat) {
         ItemStack focus = WandUtil.findFocus(caster);
-        int side = cloudSide(getEnchantLevel(focus, caster, ModEnchantments.RANGE.get())
-                + getEnchantLevel(focus, caster, ModEnchantments.RADIUS.get()));
+        int side = cloudSide(getEnchantLevel(focus, caster, ModEnchantments.RADIUS.get()));
         int half = side / 2;
         AABB area = areaOf(SpellCastUtil.castCenterOrEntity(caster), -half, side - 1 - half);
         for (LivingEntity target : worldIn.getEntitiesOfClass(LivingEntity.class, area)) {
