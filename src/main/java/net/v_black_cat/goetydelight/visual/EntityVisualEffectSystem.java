@@ -385,7 +385,10 @@ public final class EntityVisualEffectSystem {
 
     private static EntityVisualEffects getEffects(Entity entity) {
         if (entity instanceof IVisualEffectHolder holder) {
-            return holder.goetydelight$getVisualEffects();
+            EntityVisualEffects effects = holder.goetydelight$getVisualEffects();
+            if (effects != null) {
+                return effects;
+            }
         }
         return entity.getCapability(ENTITY_VISUAL_EFFECTS).resolve().orElse(null);
     }
@@ -439,17 +442,13 @@ public final class EntityVisualEffectSystem {
     public static void onPlayerClone(PlayerEvent.Clone event) {
         if (event.getEntity().level().isClientSide) return;
 
-        if (event.getOriginal() instanceof IVisualEffectHolder oldHolder
-                && event.getEntity() instanceof IVisualEffectHolder newHolder) {
+        EntityVisualEffects oldEffects = getEffects(event.getOriginal());
+        EntityVisualEffects newEffects = getEffects(event.getEntity());
 
-            EntityVisualEffects oldEffects = oldHolder.goetydelight$getVisualEffects();
-            EntityVisualEffects newEffects = newHolder.goetydelight$getVisualEffects();
-
-            if (oldEffects != null && newEffects != null) {
-                long gameTime = event.getEntity().level().getGameTime();
-                newEffects.deserializeNBT(oldEffects.serializeNBT(gameTime), gameTime);
-                schedule(event.getEntity(), newEffects);
-            }
+        if (oldEffects != null && newEffects != null) {
+            long gameTime = event.getEntity().level().getGameTime();
+            newEffects.deserializeNBT(oldEffects.serializeNBT(gameTime), gameTime);
+            schedule(event.getEntity(), newEffects);
         }
     }
 

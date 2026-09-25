@@ -1038,6 +1038,230 @@ vec3 applyMalevolentShrineTargetGlow(vec3 color, vec3 scenePos, vec2 uv, vec3 ce
     vec3 blood = mix(vec3(0.06, 0.0, 0.01), vec3(0.95, 0.025, 0.035), edge);
     return color * (1.0 - glow * 0.28) + blood * glow;
 }
+float catHash3(vec3 p) {
+    return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453);
+}
+
+float catNoise3(vec3 p) {
+    vec3 i = floor(p);
+    vec3 f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    float n000 = catHash3(i + vec3(0.0, 0.0, 0.0));
+    float n100 = catHash3(i + vec3(1.0, 0.0, 0.0));
+    float n010 = catHash3(i + vec3(0.0, 1.0, 0.0));
+    float n110 = catHash3(i + vec3(1.0, 1.0, 0.0));
+    float n001 = catHash3(i + vec3(0.0, 0.0, 1.0));
+    float n101 = catHash3(i + vec3(1.0, 0.0, 1.0));
+    float n011 = catHash3(i + vec3(0.0, 1.0, 1.0));
+    float n111 = catHash3(i + vec3(1.0, 1.0, 1.0));
+    float nx00 = mix(n000, n100, f.x);
+    float nx10 = mix(n010, n110, f.x);
+    float nx01 = mix(n001, n101, f.x);
+    float nx11 = mix(n011, n111, f.x);
+    return mix(mix(nx00, nx10, f.y), mix(nx01, nx11, f.y), f.z);
+}
+
+float catFbm3(vec3 p) {
+    float value = 0.0;
+    float amplitude = 0.55;
+    for (int i = 0; i < 3; i++) {
+        value += amplitude * catNoise3(p);
+        p = p * 2.07 + vec3(11.3, 7.1, 5.7);
+        amplitude *= 0.48;
+    }
+    return value;
+}
+
+float catSmin(float a, float b, float k) {
+    float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
+    return mix(b, a, h) - k * h * (1.0 - h);
+}
+
+float catSdEllipsoid(vec3 p, vec3 center, vec3 radius) {
+    vec3 q = (p - center) / radius;
+    return (length(q) - 1.0) * min(min(radius.x, radius.y), radius.z);
+}
+
+
+float catSdSegment3(vec3 p, vec3 a, vec3 b) {
+    vec3 pa = p - a;
+    vec3 ba = b - a;
+    float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+    return length(pa - ba * h);
+}
+
+float catSdQuadraticBezier3(vec3 p, vec3 a, vec3 b, vec3 c) {
+    vec3 previous = a;
+    float best = 1000000.0;
+    for (int i = 1; i <= 10; i++) {
+        float t = float(i) / 10.0;
+        vec3 point = mix(mix(a, b, t), mix(b, c, t), t);
+        best = min(best, catSdSegment3(p, previous, point));
+        previous = point;
+    }
+    return best;
+}
+
+float catSdTriangle2D(vec2 p, vec2 a, vec2 b, vec2 c) {
+    vec2 e0 = b - a;
+    vec2 e1 = c - b;
+    vec2 e2 = a - c;
+    vec2 v0 = p - a;
+    vec2 v1 = p - b;
+    vec2 v2 = p - c;
+
+    vec2 pq0 = v0 - e0 * clamp(dot(v0, e0) / dot(e0, e0), 0.0, 1.0);
+    vec2 pq1 = v1 - e1 * clamp(dot(v1, e1) / dot(e1, e1), 0.0, 1.0);
+    vec2 pq2 = v2 - e2 * clamp(dot(v2, e2) / dot(e2, e2), 0.0, 1.0);
+    float s = sign(e0.x * e2.y - e0.y * e2.x);
+    vec2 d = min(
+        min(vec2(dot(pq0, pq0), s * (v0.x * e0.y - v0.y * e0.x)),
+            vec2(dot(pq1, pq1), s * (v1.x * e1.y - v1.y * e1.x))),
+        vec2(dot(pq2, pq2), s * (v2.x * e2.y - v2.y * e2.x))
+    );
+    return -sqrt(d.x) * sign(d.y);
+}
+
+float catSdRoundedEar(vec3 p, vec2 a, vec2 b, vec2 c, float cornerRadius, float baseDepth) {
+    float frontShape = catSdTriangle2D(p.xy, a, b, c) - cornerRadius;
+    float height01 = clamp((p.y - 0.10) / 0.82, 0.0, 1.0);
+    float halfDepth = mix(baseDepth, baseDepth * 0.62, height01);
+    vec2 extruded = vec2(frontShape, abs(p.z) - halfDepth);
+    return min(max(extruded.x, extruded.y), 0.0) + length(max(extruded, 0.0));
+}
+
+float catHeadField(vec3 p) {
+    vec3 q = p - vec3(0.0, -0.06, 0.0);
+
+    float head = catSdEllipsoid(q, vec3(0.0, 0.0, 0.0), vec3(0.68, 0.58, 0.56));
+    float leftEar = catSdRoundedEar(q, vec2(-0.14, 0.29), vec2(-0.74, 0.18), vec2(-0.80, 0.94), 0.090, 0.205);
+    float rightEar = catSdRoundedEar(q, vec2(0.14, 0.29), vec2(0.74, 0.18), vec2(0.80, 0.94), 0.090, 0.205);
+    float leftCheek = catSdEllipsoid(q, vec3(-0.33, -0.20, 0.23), vec3(0.32, 0.22, 0.34));
+    float rightCheek = catSdEllipsoid(q, vec3(0.33, -0.20, 0.23), vec3(0.32, 0.22, 0.34));
+    float muzzle = catSdEllipsoid(q, vec3(0.0, -0.31, 0.34), vec3(0.24, 0.13, 0.14));
+    float chin = catSdEllipsoid(q, vec3(0.0, -0.47, 0.24), vec3(0.28, 0.16, 0.31));
+
+    float d = catSmin(head, leftEar, 0.072);
+    d = catSmin(d, rightEar, 0.072);
+    d = catSmin(d, leftCheek, 0.085);
+    d = catSmin(d, rightCheek, 0.085);
+    d = catSmin(d, muzzle, 0.075);
+    d = catSmin(d, chin, 0.085);
+    return d;
+}
+
+float catEyeMask(vec3 p) {
+    // Eyes sit deeper in the head volume; the mouth stays on the front surface.
+    float front = smoothstep(0.22, 0.40, p.z);
+    float left = 1.0 - smoothstep(0.060, 0.102, length(p - vec3(-0.25, 0.015, 0.405)));
+    float right = 1.0 - smoothstep(0.060, 0.102, length(p - vec3(0.25, 0.015, 0.405)));
+    return (left + right) * front;
+}
+
+float catNoseMask(vec3 p) {
+    vec3 n = p - vec3(0.0, -0.145, 0.50);
+    float irregularity = catNoise3(n * 19.0 + vec3(Time * 0.11, -Time * 0.07, Time * 0.09));
+    float noseRadius = 0.034 + irregularity * 0.012;
+    float d = length(n) - noseRadius;
+    return 1.0 - smoothstep(0.008, 0.042, d);
+}
+
+float catMouthMask(vec3 p) {
+    // One smooth U-shaped half; mirroring it across x produces a rounded W.
+    vec3 q = vec3(abs(p.x), p.y, p.z);
+    vec3 centerTop = vec3(0.00, -0.20, 0.490);
+    vec3 valleyControl = vec3(0.145, -0.360, 0.455);
+    vec3 outerTop = vec3(0.29, -0.20, 0.425);
+
+    float d = catSdQuadraticBezier3(q, centerTop, valleyControl, outerTop);
+    return 1.0 - smoothstep(0.018, 0.052, d);
+}
+
+vec3 applyBlackCatHeadFog(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data, vec3 tint, float maxDistance) {
+    float radius = max(data.y, 0.35);
+    float yaw = data.z;
+    float intensity = max(data.w, 0.0);
+    vec3 eyeColor = vec3(0.52, 0.94, 1.0);
+    vec3 noseColor = vec3(1.0, 0.42, 0.66);
+    vec3 mouthColor = vec3(1.0, 0.75, 0.88);
+
+    vec3 forward = vec3(-sin(yaw), 0.0, cos(yaw));
+    vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), forward));
+    vec3 up = normalize(cross(forward, right));
+
+    vec3 ro = vec3(0.0);
+    vec3 rd = normalize(viewRay(uv));
+    float boundRadius = radius * 1.58;
+    vec3 oc = ro - center;
+    float b = dot(oc, rd);
+    float c = dot(oc, oc) - boundRadius * boundRadius;
+    float h = b * b - c;
+    if (h < 0.0) {
+        return color;
+    }
+
+    h = sqrt(h);
+    float tNear = max(-b - h, 0.0);
+    float tFar = min(-b + h, maxDistance);
+    if (tNear >= tFar) {
+        return color;
+    }
+
+    const int CAT_STEPS = 44;
+    float span = max(tFar - tNear, 0.001);
+    float stepSize = span / float(CAT_STEPS);
+    float dither = fireBayerDither(uv);
+    float transmittance = 1.0;
+    vec3 accumulated = vec3(0.0);
+
+    for (int i = 0; i < CAT_STEPS; i++) {
+        float t = tNear + (float(i) + dither) * stepSize;
+        vec3 p = ro + rd * t;
+        vec3 worldDelta = p - center;
+        vec3 local = vec3(
+            dot(worldDelta, right) / radius,
+            dot(worldDelta, up) / max(radius * 1.05, 0.001),
+            dot(worldDelta, forward) / radius
+        );
+
+        float shape = catHeadField(local);
+        float density = 1.0 - smoothstep(-0.13, 0.10, shape);
+        float boxFade = 1.0 - smoothstep(0.82, 1.08, max(max(abs(local.x), abs(local.y)), abs(local.z)));
+        density *= boxFade;
+        if (density <= 0.001) {
+            continue;
+        }
+
+        float flow = clamp(catFbm3(local * 2.35 + vec3(Time * 0.09, -Time * 0.19, Time * 0.12)), 0.0, 1.0);
+        float detail = clamp(catFbm3(local * 5.10 + vec3(-Time * 0.13, Time * 0.28, Time * 0.17)), 0.0, 1.0);
+        density *= mix(0.42, 1.05, flow) * (0.82 + 0.22 * detail);
+
+        float opticalDepth = density * stepSize * 1.55 / max(radius, 0.001);
+        float sampleAlpha = 1.0 - exp(-opticalDepth);
+        float smokeTone = flow * 0.75 + detail * 0.25;
+        vec3 sampleColor = mix(tint, tint * 2.8 + mouthColor * 0.025, smokeTone * 0.42);
+
+        float eye = catEyeMask(local) * (0.78 + 0.22 * sin(Time * 4.5));
+        float nose = catNoseMask(local);
+        float mouth = catMouthMask(local);
+        float feature = clamp(eye + nose * 0.85 + mouth * 0.72, 0.0, 1.55);
+        vec3 featureColor = eyeColor * (eye * 1.65)
+                + noseColor * (nose * 1.12)
+                + mouthColor * (mouth * 0.96);
+        sampleAlpha = max(sampleAlpha, feature * 0.035);
+
+        accumulated += transmittance * (sampleColor * sampleAlpha + featureColor * (0.045 + sampleAlpha * 0.82));
+        transmittance *= 1.0 - clamp(sampleAlpha, 0.0, 0.84);
+
+        if (transmittance < 0.03) {
+            break;
+        }
+    }
+
+    float fogAmount = 1.0 - transmittance;
+    vec3 integrated = accumulated / max(fogAmount, 0.001);
+    return mix(color, integrated, clamp(fogAmount * intensity, 0.0, 0.95));
+}
 void main() {
     vec2 uv = texCoord;
     vec4 base = texture(DiffuseSampler, uv);
@@ -1088,6 +1312,8 @@ void main() {
                 color = applyMalevolentShrineBlackDomain(color, scenePos, uv, center, data, tint, edge);
             } else if (mode == 15) {
                 color = applyMalevolentShrineBlackMist(color, scenePos, uv, center, data, tint, edge);
+            } else if (mode == 16) {
+                color = applyBlackCatHeadFog(color, scenePos, uv, center, data, tint, 320.0);
             } else if (mode == 11) {
                 color = applyMalevolentShrineVoid(color, scenePos, uv, center, data, tint, edge);
             } else if (mode == 12) {
@@ -1124,6 +1350,8 @@ void main() {
             color = applyMalevolentShrineBlackDomain(color, scenePos, uv, center, data, tint, edge);
         } else if (mode == 15) {
             color = applyMalevolentShrineBlackMist(color, scenePos, uv, center, data, tint, edge);
+        } else if (mode == 16) {
+            color = applyBlackCatHeadFog(color, scenePos, uv, center, data, tint, length(scenePos));
         } else if (mode == 11) {
             color = applyMalevolentShrineVoid(color, scenePos, uv, center, data, tint, edge);
         } else if (mode == 12) {

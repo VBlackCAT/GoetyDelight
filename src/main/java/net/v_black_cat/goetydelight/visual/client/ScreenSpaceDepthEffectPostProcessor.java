@@ -14,6 +14,10 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.EffectInstance;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NumericTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -273,6 +277,10 @@ public final class ScreenSpaceDepthEffectPostProcessor {
             return 12;
         }
 
+        if (effect.id().equals(GDVisualEffects.BLACK_CAT_HEAD_FOG_FIELD.getId())) {
+            return 16;
+        }
+
         return -1;
     }
 
@@ -337,6 +345,10 @@ public final class ScreenSpaceDepthEffectPostProcessor {
 
         if (effect.id().equals(GDVisualEffects.MALEVOLENT_SHRINE_STARFIELD.getId())) {
             return GDVisualEffects.MALEVOLENT_SHRINE_STARFIELD.get().renderDistance();
+        }
+
+        if (effect.id().equals(GDVisualEffects.BLACK_CAT_HEAD_FOG_FIELD.getId())) {
+            return GDVisualEffects.BLACK_CAT_HEAD_FOG_FIELD.get().renderDistance();
         }
 
         return 0.0D;
@@ -493,6 +505,8 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                 colors[offset3] = 0.12F;
                 colors[offset3 + 1] = 0.006F;
                 colors[offset3 + 2] = 0.02F;
+            } else if (mode == 16) {
+                readColor(effect.data(), "FogColor", colors, offset3, 0.03F, 0.01F, 0.06F);
             } else {
                 colors[offset3] = 0.55F + 0.45F * Mth.sin(phase);
                 colors[offset3 + 1] = 0.55F + 0.45F * Mth.sin(phase + 2.0943952F);
@@ -502,7 +516,11 @@ public final class ScreenSpaceDepthEffectPostProcessor {
         }
 
         private static Vec3 center(Entity entity, float partialTick, int mode, ActiveEntityVisualEffect effect) {
-            if ((mode == 10 || mode == 13 || mode == 14 || mode == 15)
+            double yOffset = effect.data().contains("YOffset")
+                    ? Mth.clamp(effect.data().getDouble("YOffset"), -4.0D, 4.0D)
+                    : -0.04D;
+
+            if ((mode == 10 || mode == 13 || mode == 14 || mode == 15 || mode == 16)
                     && effect.data().contains("AnchorX")
                     && effect.data().contains("AnchorY")
                     && effect.data().contains("AnchorZ")) {
@@ -510,7 +528,11 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                         effect.data().getDouble("AnchorX"),
                         effect.data().getDouble("AnchorY"),
                         effect.data().getDouble("AnchorZ")
-                );
+                ).add(0.0D, mode == 16 ? yOffset : 0.0D, 0.0D);
+            }
+
+            if (mode == 16) {
+                return entity.getEyePosition(partialTick).add(0.0D, yOffset, 0.0D);
             }
 
             double heightScale = switch (mode) {
@@ -547,6 +569,12 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                 case 7, 8 -> DEFAULT_RADIUS;
                 case 9 -> Math.max(0.9F, entity.getBbWidth() * 1.6F);
                 case 10, 11, 12, 13, 14, 15 -> DEFAULT_RADIUS;
+                case 16 -> {
+                    float sizeScale = effect.data().contains("Scale")
+                            ? Mth.clamp(effect.data().getFloat("Scale"), 0.2F, 4.0F)
+                            : 1.0F;
+                    yield Math.max(1.15F, entity.getBbWidth() * 1.25F) * sizeScale;
+                }
                 default -> DEFAULT_RADIUS;
             };
         }
@@ -562,6 +590,13 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                 return Math.max(1.1F, entity.getBbHeight());
             }
 
+            if (mode == 16) {
+                float yawDegrees = effect.data().contains("Yaw")
+                        ? effect.data().getFloat("Yaw")
+                        : entity.getViewYRot(1.0F);
+                return yawDegrees * ((float) Math.PI / 180.0F);
+            }
+
             if (mode == 10 || mode == 11 || mode == 12 || mode == 13 || mode == 14 || mode == 15) {
                 return progress;
             }
@@ -573,6 +608,51 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                 case 6 -> Math.max(0.9F, entity.getBbHeight());
                 default -> progress;
             };
+        }
+
+        private static void readColor(
+                CompoundTag data,
+                String key,
+                float[] output,
+                int offset,
+                float defaultRed,
+                float defaultGreen,
+                float defaultBlue
+        ) {
+            if (!data.contains(key)) {
+                output[offset] = defaultRed;
+                output[offset + 1] = defaultGreen;
+                output[offset + 2] = defaultBlue;
+                return;
+            }
+
+            Tag tag = data.get(key);
+            if (tag instanceof NumericTag) {
+                int rgb = data.getInt(key);
+                output[offset] = ((rgb >> 16) & 255) / 255.0F;
+                output[offset + 1] = ((rgb >> 8) & 255) / 255.0F;
+                output[offset + 2] = (rgb & 255) / 255.0F;
+                return;
+            }
+
+            if (tag instanceof ListTag list && list.size() >= 3) {
+                output[offset] = channel(list.get(0));
+                output[offset + 1] = channel(list.get(1));
+                output[offset + 2] = channel(list.get(2));
+                return;
+            }
+
+            output[offset] = defaultRed;
+            output[offset + 1] = defaultGreen;
+            output[offset + 2] = defaultBlue;
+        }
+
+        private static float channel(Tag tag) {
+            if (tag instanceof NumericTag numericTag) {
+                float value = numericTag.getAsFloat();
+                return Mth.clamp(value > 1.0F ? value / 255.0F : value, 0.0F, 1.0F);
+            }
+            return 1.0F;
         }
 
         private static float intensity(ActiveEntityVisualEffect effect, int mode, float progress) {
@@ -597,7 +677,7 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                 case 5 -> 0.78F;
                 case 6 -> 0.92F;
                 case 9 -> 0.9F;
-                case 10, 11, 12, 13, 14, 15 -> 1.0F;
+                case 10, 11, 12, 13, 14, 15, 16 -> 1.0F;
                 default -> base;
             };
         }

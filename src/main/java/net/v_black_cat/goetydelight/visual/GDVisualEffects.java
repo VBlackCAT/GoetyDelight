@@ -47,6 +47,7 @@ public final class GDVisualEffects {
     public static final ResourceKey<EntityVisualEffectType> VOLUMETRIC_FLAME_KEY = key("volumetric_flame");
     public static final ResourceKey<EntityVisualEffectType> PHANTOM_RIFT_SHARDS_KEY = key("phantom_rift_shards");
     public static final ResourceKey<EntityVisualEffectType> SUPREME_CHAOS_COSMOS_KEY = key("supreme_chaos_cosmos");
+    public static final ResourceKey<EntityVisualEffectType> BLACK_CAT_HEAD_FOG_FIELD_KEY = key("black_cat_head_fog_field");
     public static final ResourceKey<EntityVisualEffectType> MALEVOLENT_SHRINE_DOMAIN_KEY = key("malevolent_shrine_domain");
     public static final ResourceKey<EntityVisualEffectType> MALEVOLENT_SHRINE_TARGET_GLOW_KEY = key("malevolent_shrine_target_glow");
     public static final ResourceKey<EntityVisualEffectType> MALEVOLENT_SHRINE_SLASH_KEY = key("malevolent_shrine_slash");
@@ -199,6 +200,14 @@ public final class GDVisualEffects {
             EntityVisualEffectType.properties()
                     .infiniteDuration()
                     .renderDistance(96.0D).persistent()
+    );
+    public static final RegistryObject<EntityVisualEffectType> BLACK_CAT_HEAD_FOG_FIELD = register(
+            BLACK_CAT_HEAD_FOG_FIELD_KEY,
+            EntityVisualEffectType.properties()
+                    .infiniteDuration()
+                    .renderDistance(96.0D)
+                    .renderWhenInvisible()
+                    .persistent()
     );
     public static final RegistryObject<EntityVisualEffectType> MALEVOLENT_SHRINE_DOMAIN = register(
             MALEVOLENT_SHRINE_DOMAIN_KEY,

@@ -27,7 +27,7 @@ public final class ClientEntityVisualEffectPackets {
     public static void sync(int entityId, CompoundTag effectsTag) {
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.level == null) {
-            PENDING_SYNCS.clear();
+            PENDING_SYNCS.put(entityId, effectsTag.copy());
             return;
         }
 
@@ -48,7 +48,6 @@ public final class ClientEntityVisualEffectPackets {
 
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.level == null) {
-            PENDING_SYNCS.clear();
             return;
         }
 
@@ -64,11 +63,17 @@ public final class ClientEntityVisualEffectPackets {
     }
 
     private static void apply(Entity entity, CompoundTag effectsTag) {
+        EntityVisualEffects effects = null;
         if (entity instanceof IVisualEffectHolder holder) {
-            EntityVisualEffects effects = holder.goetydelight$getVisualEffects();
-            if (effects != null) {
-                effects.deserializeNBT(effectsTag, entity.level().getGameTime());
-            }
+            effects = holder.goetydelight$getVisualEffects();
+        }
+        if (effects == null) {
+            effects = entity.getCapability(EntityVisualEffectSystem.ENTITY_VISUAL_EFFECTS)
+                    .resolve()
+                    .orElse(null);
+        }
+        if (effects != null) {
+            effects.deserializeNBT(effectsTag, entity.level().getGameTime());
         }
     }
 }
