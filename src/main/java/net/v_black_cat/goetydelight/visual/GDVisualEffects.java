@@ -51,6 +51,11 @@ public final class GDVisualEffects {
     public static final ResourceKey<EntityVisualEffectType> MALEVOLENT_SHRINE_TARGET_GLOW_KEY = key("malevolent_shrine_target_glow");
     public static final ResourceKey<EntityVisualEffectType> MALEVOLENT_SHRINE_SLASH_KEY = key("malevolent_shrine_slash");
     public static final ResourceKey<EntityVisualEffectType> MALEVOLENT_SHRINE_FIRE_KEY = key("malevolent_shrine_fire");
+    public static final ResourceKey<EntityVisualEffectType> MALEVOLENT_SHRINE_FIRE_LEGACY_KEY = key("malevolent_shrine_fire_legacy");
+    public static final ResourceKey<EntityVisualEffectType> MALEVOLENT_SHRINE_BLACK_DOMAIN_KEY = key("malevolent_shrine_black_domain");
+    public static final ResourceKey<EntityVisualEffectType> MALEVOLENT_SHRINE_BLACK_MIST_KEY = key("malevolent_shrine_black_mist");
+    public static final ResourceKey<EntityVisualEffectType> MALEVOLENT_SHRINE_VOID_KEY = key("malevolent_shrine_void");
+    public static final ResourceKey<EntityVisualEffectType> MALEVOLENT_SHRINE_STARFIELD_KEY = key("malevolent_shrine_starfield");
 
     public static final RegistryObject<EntityVisualEffectType> ORBIT_SPHERE = register(
             ORBIT_SPHERE_KEY,
@@ -222,6 +227,45 @@ public final class GDVisualEffects {
             MALEVOLENT_SHRINE_FIRE_KEY,
             EntityVisualEffectType.properties()
                     .defaultDuration(40)
+                    .renderDistance(128.0D)
+                    .persistent()
+    );
+    public static final RegistryObject<EntityVisualEffectType> MALEVOLENT_SHRINE_FIRE_LEGACY = register(
+            MALEVOLENT_SHRINE_FIRE_LEGACY_KEY,
+            EntityVisualEffectType.properties()
+                    .defaultDuration(40)
+                    .renderDistance(128.0D)
+                    .persistent()
+    );
+    public static final RegistryObject<EntityVisualEffectType> MALEVOLENT_SHRINE_BLACK_DOMAIN = register(
+            MALEVOLENT_SHRINE_BLACK_DOMAIN_KEY,
+            EntityVisualEffectType.properties()
+                    .defaultDuration(200)
+                    .renderDistance(256.0D)
+                    .renderWhenInvisible()
+                    .renderInFirstPerson()
+                    .persistent()
+    );
+    public static final RegistryObject<EntityVisualEffectType> MALEVOLENT_SHRINE_BLACK_MIST = register(
+            MALEVOLENT_SHRINE_BLACK_MIST_KEY,
+            EntityVisualEffectType.properties()
+                    .defaultDuration(160)
+                    .renderDistance(192.0D)
+                    .renderWhenInvisible()
+                    .renderInFirstPerson()
+                    .persistent()
+    );
+    public static final RegistryObject<EntityVisualEffectType> MALEVOLENT_SHRINE_VOID = register(
+            MALEVOLENT_SHRINE_VOID_KEY,
+            EntityVisualEffectType.properties()
+                    .defaultDuration(60)
+                    .renderDistance(128.0D)
+                    .persistent()
+    );
+    public static final RegistryObject<EntityVisualEffectType> MALEVOLENT_SHRINE_STARFIELD = register(
+            MALEVOLENT_SHRINE_STARFIELD_KEY,
+            EntityVisualEffectType.properties()
+                    .defaultDuration(80)
                     .renderDistance(128.0D)
                     .persistent()
     );

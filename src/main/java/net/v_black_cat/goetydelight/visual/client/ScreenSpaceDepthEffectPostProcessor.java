@@ -198,11 +198,12 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                 }
 
                 double renderDistance = renderDistance(activeEffect);
-                if (renderDistance > 0.0D && entity.distanceToSqr(cameraPosition) > renderDistance * renderDistance) {
+                Vec3 effectCenter = EffectPacket.center(entity, event.getPartialTick(), mode, activeEffect);
+                if (renderDistance > 0.0D && effectCenter.distanceToSqr(cameraPosition) > renderDistance * renderDistance) {
                     continue;
                 }
 
-                packet.add(entity, activeEffect, event, mode);
+                packet.add(entity, activeEffect, event, mode, effectCenter);
             }
         }
 
@@ -254,6 +255,24 @@ public final class ScreenSpaceDepthEffectPostProcessor {
             return 10;
         }
 
+        if (effect.id().equals(GDVisualEffects.MALEVOLENT_SHRINE_FIRE_LEGACY.getId())) {
+            return 13;
+        }
+        if (effect.id().equals(GDVisualEffects.MALEVOLENT_SHRINE_BLACK_DOMAIN.getId())) {
+            return 14;
+        }
+        if (effect.id().equals(GDVisualEffects.MALEVOLENT_SHRINE_BLACK_MIST.getId())) {
+            return 15;
+        }
+
+        if (effect.id().equals(GDVisualEffects.MALEVOLENT_SHRINE_VOID.getId())) {
+            return 11;
+        }
+
+        if (effect.id().equals(GDVisualEffects.MALEVOLENT_SHRINE_STARFIELD.getId())) {
+            return 12;
+        }
+
         return -1;
     }
 
@@ -300,6 +319,24 @@ public final class ScreenSpaceDepthEffectPostProcessor {
 
         if (effect.id().equals(GDVisualEffects.MALEVOLENT_SHRINE_FIRE.getId())) {
             return GDVisualEffects.MALEVOLENT_SHRINE_FIRE.get().renderDistance();
+        }
+
+        if (effect.id().equals(GDVisualEffects.MALEVOLENT_SHRINE_FIRE_LEGACY.getId())) {
+            return GDVisualEffects.MALEVOLENT_SHRINE_FIRE_LEGACY.get().renderDistance();
+        }
+        if (effect.id().equals(GDVisualEffects.MALEVOLENT_SHRINE_BLACK_DOMAIN.getId())) {
+            return GDVisualEffects.MALEVOLENT_SHRINE_BLACK_DOMAIN.get().renderDistance();
+        }
+        if (effect.id().equals(GDVisualEffects.MALEVOLENT_SHRINE_BLACK_MIST.getId())) {
+            return GDVisualEffects.MALEVOLENT_SHRINE_BLACK_MIST.get().renderDistance();
+        }
+
+        if (effect.id().equals(GDVisualEffects.MALEVOLENT_SHRINE_VOID.getId())) {
+            return GDVisualEffects.MALEVOLENT_SHRINE_VOID.get().renderDistance();
+        }
+
+        if (effect.id().equals(GDVisualEffects.MALEVOLENT_SHRINE_STARFIELD.getId())) {
+            return GDVisualEffects.MALEVOLENT_SHRINE_STARFIELD.get().renderDistance();
         }
 
         return 0.0D;
@@ -402,8 +439,7 @@ public final class ScreenSpaceDepthEffectPostProcessor {
         private final float[] colors = new float[MAX_EFFECTS * 3];
         private int count;
 
-        private void add(Entity entity, ActiveEntityVisualEffect effect, RenderLevelStageEvent event, int mode) {
-            Vec3 center = center(entity, event.getPartialTick(), mode);
+        private void add(Entity entity, ActiveEntityVisualEffect effect, RenderLevelStageEvent event, int mode, Vec3 center) {
             Vec3 cameraRelative = center.subtract(event.getCamera().getPosition());
             float progress = progress(entity, effect, event);
             float radius = radius(entity, effect, mode, progress);
@@ -437,6 +473,26 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                 colors[offset3] = 1.0F;
                 colors[offset3 + 1] = 0.55F;
                 colors[offset3 + 2] = 0.08F;
+            } else if (mode == 11) {
+                colors[offset3] = 0.25F;
+                colors[offset3 + 1] = 0.08F;
+                colors[offset3 + 2] = 0.55F;
+            } else if (mode == 12) {
+                colors[offset3] = 0.85F;
+                colors[offset3 + 1] = 0.85F;
+                colors[offset3 + 2] = 1.0F;
+            } else if (mode == 13) {
+                colors[offset3] = 1.0F;
+                colors[offset3 + 1] = 0.45F;
+                colors[offset3 + 2] = 0.08F;
+            } else if (mode == 14) {
+                colors[offset3] = 0.24F;
+                colors[offset3 + 1] = 0.025F;
+                colors[offset3 + 2] = 0.34F;
+            } else if (mode == 15) {
+                colors[offset3] = 0.12F;
+                colors[offset3 + 1] = 0.006F;
+                colors[offset3 + 2] = 0.02F;
             } else {
                 colors[offset3] = 0.55F + 0.45F * Mth.sin(phase);
                 colors[offset3 + 1] = 0.55F + 0.45F * Mth.sin(phase + 2.0943952F);
@@ -445,10 +501,21 @@ public final class ScreenSpaceDepthEffectPostProcessor {
             count++;
         }
 
-        private static Vec3 center(Entity entity, float partialTick, int mode) {
+        private static Vec3 center(Entity entity, float partialTick, int mode, ActiveEntityVisualEffect effect) {
+            if ((mode == 10 || mode == 13 || mode == 14 || mode == 15)
+                    && effect.data().contains("AnchorX")
+                    && effect.data().contains("AnchorY")
+                    && effect.data().contains("AnchorZ")) {
+                return new Vec3(
+                        effect.data().getDouble("AnchorX"),
+                        effect.data().getDouble("AnchorY"),
+                        effect.data().getDouble("AnchorZ")
+                );
+            }
+
             double heightScale = switch (mode) {
                 case 4, 5, 7, 8 -> 0.04D;
-                case 10 -> 0.52D;
+                case 10, 11, 13 -> 0.52D;
                 default -> 0.52D;
             };
             return entity.getPosition(partialTick).add(0.0D, entity.getBbHeight() * heightScale, 0.0D);
@@ -479,7 +546,7 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                 case 6 -> Math.max(2.1F, Math.max(entity.getBbHeight() * 1.05F, entity.getBbWidth() * 2.35F));
                 case 7, 8 -> DEFAULT_RADIUS;
                 case 9 -> Math.max(0.9F, entity.getBbWidth() * 1.6F);
-                case 10 -> DEFAULT_RADIUS;
+                case 10, 11, 12, 13, 14, 15 -> DEFAULT_RADIUS;
                 default -> DEFAULT_RADIUS;
             };
         }
@@ -495,7 +562,7 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                 return Math.max(1.1F, entity.getBbHeight());
             }
 
-            if (mode == 10) {
+            if (mode == 10 || mode == 11 || mode == 12 || mode == 13 || mode == 14 || mode == 15) {
                 return progress;
             }
 
@@ -530,7 +597,7 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                 case 5 -> 0.78F;
                 case 6 -> 0.92F;
                 case 9 -> 0.9F;
-                case 10 -> 1.0F;
+                case 10, 11, 12, 13, 14, 15 -> 1.0F;
                 default -> base;
             };
         }

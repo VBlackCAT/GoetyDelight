@@ -147,6 +147,17 @@ public final class EntityVisualEffectSystem {
             );
         }
 
+        // 地狱火焰在施加时锁定世界位置：黑烟外圈不会跟着玩家移动。
+        if (usesWorldAnchor(effectId)
+                && !(effectData.contains("AnchorX")
+                && effectData.contains("AnchorY")
+                && effectData.contains("AnchorZ"))) {
+            effectData.putDouble("AnchorX", entity.getX());
+            effectData.putDouble("AnchorY", entity.getY() + entity.getBbHeight() * 0.52D);
+            effectData.putDouble("AnchorZ", entity.getZ());
+        }
+
+
 
 
         effects.add(
@@ -164,6 +175,14 @@ public final class EntityVisualEffectSystem {
 
         return true;
     }
+
+    private static boolean usesWorldAnchor(ResourceLocation effectId) {
+        return effectId.equals(GDVisualEffects.MALEVOLENT_SHRINE_FIRE.getId())
+                || effectId.equals(GDVisualEffects.MALEVOLENT_SHRINE_FIRE_LEGACY.getId())
+                || effectId.equals(GDVisualEffects.MALEVOLENT_SHRINE_BLACK_DOMAIN.getId())
+                || effectId.equals(GDVisualEffects.MALEVOLENT_SHRINE_BLACK_MIST.getId());
+    }
+
 
 
 
@@ -207,6 +226,7 @@ public final class EntityVisualEffectSystem {
 
         return removed;
     }
+
 
 
 

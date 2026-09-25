@@ -396,828 +396,633 @@ vec3 applyMalevolentShrineSlash(vec3 color, vec3 scenePos, vec2 uv, vec3 center,
     return fractured;
 }
 
-vec3 applyMalevolentShrineFire(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data, vec3 tint, float edge) {
+float fireBayerDither(vec2 uv) {
+    return fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453);
+}
 
+vec3 applyMalevolentShrineFire(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data, vec3 tint, float edge) {
     float radius = max(data.y, 0.001);
     float progress = clamp(data.z, 0.0, 1.0);
     float intensity = max(data.w, 0.0);
 
-
-    /*
-        相机射线
-
-        scenePos 是当前像素世界位置（相机相对）
-        对天空像素由 viewRay * 320 提供
-    */
     vec3 ro = vec3(0.0);
-    vec3 rd = normalize(scenePos);
+    vec3 rd = normalize(viewRay(uv));
 
-
-    /*
-        火焰形态参数
-
-        前期快速膨胀：
-        progress < 0.35
-
-        后期保持并衰减
-    */
-    float expand =
-        mix(
-            0.18,
-            1.0,
-            smoothstep(0.0, 0.35, progress)
-        );
-
-    float decay =
-        1.0 -
-        smoothstep(0.62, 1.0, progress);
-
-
-    /*
-        上尖下宽液滴包围盒
-
-        yScale 控制火焰高度
-    */
-    float height = radius * mix(1.35, 2.15, expand);
-
-
-    vec3 boxRadius = vec3(
-        radius,
-        height,
-        radius
-    );
-
-
-    /*
-        ray-box 粗裁剪
-
-        避免无意义采样
-    */
-    vec3 invRd = 1.0 / max(abs(rd), vec3(0.0001));
-
-    vec3 t0 = (-boxRadius - (ro - center)) * invRd;
-    vec3 t1 = ( boxRadius - (ro - center)) * invRd;
-
-
-    vec3 tMin3 = min(t0, t1);
-    vec3 tMax3 = max(t0, t1);
-
-
-    float tNear = max(
-        max(tMin3.x, tMin3.y),
-        tMin3.z
-    );
-
-    float tFar = min(
-        min(tMax3.x, tMax3.y),
-        tMax3.z
-    );
-
+    float expand = mix(0.18, 1.0, smoothstep(0.0, 0.35, progress));
+    float decay = 1.0 - smoothstep(0.62, 1.0, progress);
+    float height = radius * mix(1.35, 2.5, expand);
 
     float maxDistance = length(scenePos);
 
-    tNear = max(tNear, 0.0);
-    tFar = min(tFar, maxDistance);
+    // 标准 ray-sphere 求交，避免未命中包围球时仍然执行体积积分。
+    vec3 boundCenter = center + vec3(0.0, radius, 0.0);
+    float boundRadius = radius * 3.0;
+    vec3 oc = ro - boundCenter;
+    float b = dot(oc, rd);
+    float c = dot(oc, oc) - boundRadius * boundRadius;
+    float h = b * b - c;
 
+    if (h < 0.0) {
+        return color;
+    }
+
+    h = sqrt(h);
+    float tNear = max(-b - h, 0.0);
+    float tFar = min(-b + h, maxDistance);
 
     if (tNear >= tFar) {
         return color;
     }
 
-
-
-    /*
-        64步体积积分
-    */
     const int STEPS = 64;
-
-    float span = max(
-        tFar - tNear,
-        0.001
-    );
-
+    float span = max(tFar - tNear, 0.001);
     float stepSize = span / float(STEPS);
-
-
+    float dither = fireBayerDither(uv);
 
     float transmittance = 1.0;
-
     vec3 accumulated = vec3(0.0);
 
-
-
-    /*
-        低频大尺度翻滚速度
-
-        火焰向上运动
-    */
-    vec3 flow3 =
-        vec3(
-            Time * 0.18,
-            Time * 0.42,
-            -Time * 0.13
-        );
-
-
-
     for (int i = 0; i < STEPS; i++) {
-
-
-        float t =
-            tNear +
-            (float(i) + 0.5)
-            * stepSize;
-
-
-        vec3 p =
-            ro + rd * t;
-
-
-        vec3 q =
-            p - center;
-
-
-
-        /*
-            火焰坐标
-
-            y 方向拉长
-            底部宽
-            顶部尖
-        */
-        float y01 =
-            clamp(
-                (q.y + radius * 0.45)
-                /
-                max(height,0.001),
-                0.0,
-                1.0
-            );
-
-
-        float width =
-            mix(
-                1.25,
-                0.25,
-                pow(y01,1.35)
-            );
-
-
-        vec2 horizontal =
-            q.xz /
-            max(radius * width,0.001);
-
-
-
-        float radial =
-            length(horizontal);
-
-
-
-        /*
-            液滴形主体
-        */
-        float body =
-            1.0 -
-            smoothstep(
-                0.35,
-                1.05,
-                radial
-            );
-
-
-        float vertical =
-            smoothstep(
-                -radius*0.35,
-                radius*0.05,
-                q.y
-            )
-            *
-            (
-                1.0 -
-                smoothstep(
-                    height*0.65,
-                    height,
-                    q.y
-                )
-            );
-
-
-
-        /*
-            伪3D noise
-
-            xz采样:
-            大尺度卷动
-
-            y采样:
-            火舌断裂
-        */
-        vec2 baseXZ =
-            q.xz * 0.42
-            +
-            flow3.xz;
-
-
-        float nXZ1 =
-            fbm(baseXZ);
-
-
-        float nXZ2 =
-            fbm(
-                baseXZ * 2.3
-                -
-                flow3.zx
-            );
-
-
-        float nY =
-            fbm(
-                vec2(
-                    q.y * 0.55,
-                    Time * 0.16
-                )
-            );
-
-
-        float noise3D =
-            mix(
-                nXZ1,
-                nXZ2,
-                0.45
-            );
-
-
-        noise3D =
-            mix(
-                noise3D,
-                nY,
-                0.35
-            );
-
-
-
-        /*
-            domain warp
-
-            让火焰不是固定纹理
-        */
-        vec2 warpUV =
-            baseXZ
-            +
-            vec2(
-                noise3D * 1.8,
-                nY * 1.5
-            );
-
-
-        float warped =
-            fbm(warpUV);
-
-
-
-        /*
-            swirl
-
-            内卷火舌
-        */
-        float angle =
-            atan(q.z,q.x)
-            +
-            warped * 5.5
-            +
-            Time*0.45;
-
-
-        float swirl =
-            sin(
-                angle*3.0
-                +
-                q.y*1.7
-            );
-
-
-        swirl =
-            0.5+
-            0.5*swirl;
-
-
-
-        /*
-            边缘撕裂
-
-            制造缺口
-        */
-        float tear =
-            smoothstep(
-                0.25,
-                0.85,
-                warped
-            );
-
-
-        float density =
-            body
-            *
-            vertical
-            *
-            (
-                0.25
-                +
-                noise3D*0.85
-                +
-                swirl*0.55
-            );
-
-
-        density *=
-            mix(
-                0.55,
-                1.35,
-                tear
-            );
-
-
-        density *=
-            intensity
-            *
-            decay;
-
-        /*
-            密度微调
-
-            核心更厚
-            外层更稀
-        */
-        float coreMask =
-            1.0 -
-            smoothstep(
-                0.0,
-                0.42,
-                radial
-            );
-
-
-        float edgeMask =
-            smoothstep(
-                0.55,
-                1.0,
-                radial
-            );
-
-
-        density *=
-            mix(
-                0.65,
-                1.25,
-                coreMask
-            );
-
-
-        density *=
-            mix(
-                1.0,
-                0.45,
-                edgeMask
-            );
-
-
-
-        /*
-            Beer-Lambert
-
-            真正体积吸收
-            不再是透明贴片
-        */
-        float opticalDepth =
-            density *
-            stepSize *
-            3.4;
-
-
-        float alpha =
-            1.0 -
-            exp(
-                -opticalDepth
-            );
-
-
-
-        /*
-            温度场
-
-            由密度 + 核心距离决定
-
-            越靠近核心:
-            温度越高
-        */
-        float temperature =
-            clamp(
-                coreMask * 1.15
-                +
-                density * 0.35
-                +
-                (1.0-radial)*0.35,
-                0.0,
-                1.0
-            );
-
-
-
-        /*
-            黑体近似颜色
-
-            高温:
-            白
-
-            中温:
-            黄橙
-
-            低温:
-            红黑烟
-        */
-
-        vec3 whiteHot =
-            vec3(
-                1.0,
-                1.0,
-                1.0
-            );
-
-
-        vec3 hotYellow =
-            vec3(
-                1.0,
-                0.96,
-                0.84
-            );
-
-
-        vec3 yellow =
-            vec3(
-                1.0,
-                0.78,
-                0.32
-            );
-
-
-        vec3 orange =
-            vec3(
-                1.0,
-                0.38,
-                0.055
-            );
-
-
-        vec3 red =
-            vec3(
-                0.72,
-                0.055,
-                0.01
-            );
-
-
-        vec3 smoke =
-            vec3(
-                0.018,
-                0.004,
-                0.003
-            );
-
-
-
-        vec3 fireColor;
-
-
-        fireColor =
-            mix(
-                smoke,
-                red,
-                smoothstep(
-                    0.05,
-                    0.25,
-                    temperature
-                )
-            );
-
-
-        fireColor =
-            mix(
-                red,
-                orange,
-                smoothstep(
-                    0.25,
-                    0.50,
-                    temperature
-                )
-            );
-
-
-        fireColor =
-            mix(
-                fireColor,
-                yellow,
-                smoothstep(
-                    0.50,
-                    0.72,
-                    temperature
-                )
-            );
-
-
-        fireColor =
-            mix(
-                fireColor,
-                hotYellow,
-                smoothstep(
-                    0.72,
-                    0.90,
-                    temperature
-                )
-            );
-
-
-        fireColor =
-            mix(
-                fireColor,
-                whiteHot,
-                smoothstep(
-                    0.90,
-                    1.0,
-                    temperature
-                )
-            );
-
-
-
-        /*
-            自发光
-
-            核心过曝
-        */
-        float emission =
-            pow(
-                temperature,
-                2.4
-            )
-            *
-            density
-            *
-            5.5;
-
-
-
-        fireColor *=
-            1.0
-            +
-            emission;
-
-
-
-        /*
-            tint 作为额外魔法色调
-        */
-        fireColor =
-            mix(
-                fireColor,
-                fireColor + tint * 0.35,
-                0.18
-            );
-
-
-
-        accumulated +=
-            fireColor
-            *
-            alpha
-            *
-            transmittance;
-
-
-
-        transmittance *=
-            1.0-alpha;
-
-
-
-        if(transmittance < 0.015)
-        {
+        float t = tNear + (float(i) + dither) * stepSize;
+        vec3 p = ro + rd * t;
+        vec3 q = p - center;
+
+        float hNorm = clamp((q.y + radius * 0.4) / max(height, 0.001), 0.0, 1.0);
+        vec3 qNorm = q / max(radius, 0.001);
+
+        vec2 uvBase = vec2(length(qNorm.xz) * 1.8, qNorm.y * 1.5 - Time * 3.5);
+        float nBase = fbm(uvBase);
+
+        vec2 uvTear = qNorm.xz * 1.5;
+        uvTear.x += nBase * 1.5 + Time * 0.8;
+        uvTear.y -= nBase * 1.2 - Time * 1.1;
+        float nTear = fbm(uvTear + qNorm.y * 1.2);
+
+        float noise = mix(nBase, nTear, 0.6);
+
+        float profile = (1.0 - hNorm * hNorm) * smoothstep(-0.25, 0.35, hNorm);
+        float baseRadius = radius * expand * profile;
+        float distXZ = length(q.xz);
+        float baseMask = 1.0 - smoothstep(0.0, max(baseRadius, 0.001), distXZ);
+
+        // 噪声不得在半径之外泄漏出无限密度的黑烟。
+        float shape = baseMask + (noise - 0.5) * 1.4;
+        float core = smoothstep(0.0, 0.4, shape);
+        core *= smoothstep(radius * expand * 1.5, radius * expand * 1.0, distXZ);
+
+        float vertMask = smoothstep(-radius * 0.5, -radius * 0.1, q.y)
+                * (1.0 - smoothstep(height * 0.75, height * 1.1, q.y));
+
+        // 相机进入体积内部时近场淡出，避免被黑烟完整遮住。
+        float camFade = smoothstep(0.0, max(radius * 0.2, 0.5), t);
+        float density = core * vertMask * intensity * decay * camFade;
+
+        if (density <= 0.01) {
+            continue;
+        }
+
+        float temp = clamp(baseMask * 0.9 + 0.1, 0.0, 1.0);
+        temp *= pow(1.0 - hNorm, 1.4);
+        temp *= mix(0.5, 1.2, noise);
+        temp = clamp(temp, 0.0, 1.0);
+
+        vec3 cSmoke = vec3(0.03, 0.025, 0.025);
+        vec3 cDarkRed = vec3(0.65, 0.06, 0.01);
+        vec3 cOrange = vec3(1.0, 0.35, 0.02);
+        vec3 cYellow = vec3(1.0, 0.85, 0.15);
+        vec3 cWhite = vec3(1.0, 0.98, 0.90);
+
+        vec3 col = cSmoke;
+        col = mix(col, cDarkRed, smoothstep(0.05, 0.25, temp));
+        col = mix(col, cOrange, smoothstep(0.25, 0.50, temp));
+        col = mix(col, cYellow, smoothstep(0.50, 0.75, temp));
+        col = mix(col, cWhite, smoothstep(0.75, 1.00, temp));
+
+        float absorption = density * stepSize * mix(14.0, 4.0, temp);
+        float alpha = 1.0 - exp(-absorption);
+
+        float emission = pow(max(temp - 0.15, 0.0), 2.2) * 16.0;
+        vec3 fireColor = col * (1.0 + emission);
+        fireColor += tint * emission * 0.15;
+
+        accumulated += fireColor * alpha * transmittance;
+        transmittance *= 1.0 - alpha;
+
+        if (transmittance < 0.015) {
             break;
         }
     }
 
+    vec3 surface = scenePos - center;
+    float surfaceDist = length(surface);
 
+    vec2 heatUV = vec2(
+        surfaceDist * 3.0 / max(radius, 0.001) - Time * 2.5,
+        atan(surface.z, surface.x) * 2.0 + Time
+    );
+    float heatNoise = fbm(heatUV) * 2.0 - 1.0;
 
-    /*
-        体积积分结果
-    */
-    float fireAmount =
-        1.0 -
-        transmittance;
+    float heat = decay * intensity
+            * smoothstep(radius * 0.2, radius * 1.5, surfaceDist)
+            * (1.0 - smoothstep(radius * 0.8, radius * 2.5, surfaceDist));
 
+    vec3 radialDir = surfaceDist > 0.001 ? surface / surfaceDist : vec3(0.0, 1.0, 0.0);
+    vec3 tangentDir = vec3(-radialDir.z, 0.0, radialDir.x);
 
-    vec3 integrated =
-        accumulated /
-        max(
-            fireAmount,
-            0.001
-        );
+    vec3 worldDistort =
+            (radialDir * heatNoise
+            + tangentDir * (fbm(heatUV + 4.2) * 2.0 - 1.0))
+            * radius * 0.06;
 
-
-    vec3 result =
-        mix(
-            color,
-            integrated,
-            clamp(
-                fireAmount,
-                0.0,
-                0.96
-            )
-        );
-
-
-
-    /*
-        热浪折射
-
-        径向 + 切向 + 上升扰动
-    */
-    vec3 surface =
-        scenePos-center;
-
-
-    float surfaceDist =
-        length(surface);
-
-
-    vec3 radial =
-        surfaceDist > 0.001
-        ?
-        surface/surfaceDist
-        :
-        vec3(1.0,0.0,0.0);
-
-
-    vec3 tangent =
-        vec3(
-            -radial.z,
-            0.0,
-            radial.x
-        );
-
-
-
-    float heat =
-        decay
-        *
-        intensity
-        *
-        smoothstep(
-            radius*0.35,
-            radius*1.25,
-            surfaceDist
-        )
-        *
-        (
-            1.0 -
-            smoothstep(
-                radius*0.8,
-                radius*1.8,
-                surfaceDist
-            )
-        );
-
-
-
-    float heatWave =
-        sin(
-            surfaceDist*9.0
-            -
-            Time*12.0
-        )
-        *
-        0.5
-        +
-        0.5;
-
-
-
-    vec3 worldOffset =
-        radial
-        *
-        (
-            heatWave
-            *
-            radius
-            *
-            0.045
-        )
-        +
-        tangent
-        *
-        (
-            cos(
-                surfaceDist*13.0
-                +
-                Time*8.0
-            )
-            *
-            radius
-            *
-            0.028
-        )
-        +
-        vec3(0.0,1.0,0.0)
-        *
-        (
-            sin(
-                Time*5.0
-                +
-                surfaceDist*4.0
-            )
-            *
-            radius
-            *
-            0.018
-        );
-
-
-    vec2 refractOffset =
-        projectedWorldOffset(
-            scenePos,
-            worldOffset
-        )
-        *
-        heat;
-
-
-    vec3 refracted =
-        texture(
+    vec2 refractOffset = projectedWorldOffset(scenePos, worldDistort) * heat;
+    vec3 refractedBg = texture(
             DiffuseSampler,
-            clamp(
-                uv+refractOffset,
-                vec2(0.0),
-                vec2(1.0)
-            )
-        ).rgb;
+            clamp(uv + refractOffset, vec2(0.0), vec2(1.0))
+    ).rgb;
 
+    vec3 baseBg = mix(color, refractedBg, clamp(heat * 2.0, 0.0, 1.0));
 
-    result =
-        mix(
-            refracted,
-            result,
-            clamp(
-                1.0-heat*0.35,
-                0.0,
-                1.0
-            )
-        );
+    float fireAmount = 1.0 - transmittance;
+    vec3 integrated = accumulated / max(fireAmount, 0.001);
 
+    return mix(baseBg, integrated, clamp(fireAmount, 0.0, 1.0));
+}
+vec3 applyMalevolentShrineFireLegacy(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data, vec3 tint, float edge) {
+    float radius = max(data.y, 0.001);
+    float progress = clamp(data.z, 0.0, 1.0);
+    float intensity = max(data.w, 0.0);
+    vec3 ro = vec3(0.0);
+    vec3 rd = normalize(scenePos);
+    float expand = mix(0.18, 1.0, smoothstep(0.0, 0.35, progress));
+    float decay = 1.0 - smoothstep(0.62, 1.0, progress);
+    float height = radius * mix(1.35, 2.15, expand);
+    float maxDistance = length(scenePos);
+    float boundRadius = radius * 1.35;
+    float centerProj = dot(rd, center - ro);
+    float tNear = max(centerProj - boundRadius, 0.0);
+    float tFar = min(centerProj + boundRadius, maxDistance);
+    if (tNear >= tFar) return color;
 
+    const int STEPS = 64;
+    float span = max(tFar - tNear, 0.001);
+    float stepSize = span / float(STEPS);
+    float transmittance = 1.0;
+    vec3 accumulated = vec3(0.0);
+    vec3 flow3 = vec3(Time * 0.18, Time * 0.42, -Time * 0.13);
 
-    /*
-        冲击波环
+    for (int i = 0; i < STEPS; i++) {
+        float t = tNear + (float(i) + 0.5) * stepSize;
+        vec3 p = ro + rd * t;
+        vec3 q = p - center;
+        float y01 = clamp((q.y + radius * 0.45) / max(height, 0.001), 0.0, 1.0);
+        float width = mix(1.25, 0.25, pow(y01, 1.35));
+        vec2 horizontal = q.xz / max(radius * width, 0.001);
+        float radial = length(horizontal);
+        float body = 1.0 - smoothstep(0.35, 1.05, radial);
+        float vertical = smoothstep(-radius * 0.35, radius * 0.05, q.y)
+                * (1.0 - smoothstep(height * 0.65, height, q.y));
+        vec2 baseXZ = q.xz * 0.42 + flow3.xz;
+        float nXZ1 = fbm(baseXZ);
+        float nXZ2 = fbm(baseXZ * 2.3 - flow3.zx);
+        float nY = fbm(vec2(q.y * 0.55, Time * 0.16));
+        float noise3D = mix(nXZ1, nXZ2, 0.45);
+        noise3D = mix(noise3D, nY, 0.35);
+        vec2 warpUV = baseXZ + vec2(noise3D * 1.8, nY * 1.5);
+        float warped = fbm(warpUV);
+        float angle = atan(q.z, q.x) + warped * 5.5 + Time * 0.45;
+        float swirl = sin(angle * 3.0 + q.y * 1.7);
+        swirl = 0.5 + 0.5 * swirl;
+        float tear = smoothstep(0.25, 0.85, warped);
+        float density = body * vertical * (0.25 + noise3D * 0.85 + swirl * 0.55);
+        density *= mix(0.55, 1.35, tear);
+        density *= intensity * decay;
+        float omnidirectional = 1.0 - smoothstep(radius * 0.25, radius * 1.25, length(q));
+        density = max(density, omnidirectional * 0.12);
+        float coreMask = 1.0 - smoothstep(0.0, 0.42, radial);
+        float edgeMask = smoothstep(0.55, 1.0, radial);
+        density *= mix(0.65, 1.25, coreMask);
+        density *= mix(1.0, 0.45, edgeMask);
+        float opticalDepth = density * stepSize * 3.4;
+        float alpha = 1.0 - exp(-opticalDepth);
+        float temperature = clamp(coreMask * 1.15 + density * 0.35 + (1.0 - radial) * 0.35, 0.0, 1.0);
+        vec3 whiteHot = vec3(1.0);
+        vec3 hotYellow = vec3(1.0, 0.96, 0.84);
+        vec3 yellow = vec3(1.0, 0.78, 0.32);
+        vec3 orange = vec3(1.0, 0.38, 0.055);
+        vec3 red = vec3(0.72, 0.055, 0.01);
+        vec3 smoke = vec3(0.018, 0.004, 0.003);
+        vec3 fireColor = mix(smoke, red, smoothstep(0.05, 0.25, temperature));
+        fireColor = mix(fireColor, orange, smoothstep(0.25, 0.50, temperature));
+        fireColor = mix(fireColor, yellow, smoothstep(0.50, 0.72, temperature));
+        fireColor = mix(fireColor, hotYellow, smoothstep(0.72, 0.90, temperature));
+        fireColor = mix(fireColor, whiteHot, smoothstep(0.90, 1.0, temperature));
+        float emission = pow(temperature, 2.4) * density * 5.5;
+        fireColor *= 1.0 + emission;
+        fireColor = mix(fireColor, fireColor + tint * 0.35, 0.18);
+        accumulated += fireColor * alpha * transmittance;
+        transmittance *= 1.0 - alpha;
+        if (transmittance < 0.015) break;
+    }
 
-        快速扩散
-        透明锐利
-    */
-    float shockRadius =
-        mix(
-            radius*0.45,
-            radius*1.8,
-            progress
-        );
-
-
-    float shock =
-        ring(
-            surfaceDist,
-            shockRadius,
-            radius*0.018
-        );
-
-
-    shock *=
-        (1.0-progress)
-        *
-        intensity;
-
-
-
-    result +=
-        vec3(
-            1.0,
-            0.55,
-            0.18
-        )
-        *
-        shock
-        *
-        0.45;
-
-
-
+    float fireAmount = 1.0 - transmittance;
+    vec3 integrated = accumulated / max(fireAmount, 0.001);
+    vec3 result = mix(color, integrated, clamp(fireAmount, 0.0, 0.96));
+    vec3 surface = scenePos - center;
+    float surfaceDist = length(surface);
+    vec3 radial = surfaceDist > 0.001 ? surface / surfaceDist : vec3(1.0, 0.0, 0.0);
+    vec3 tangent = vec3(-radial.z, 0.0, radial.x);
+    float heat = decay * intensity
+            * smoothstep(radius * 0.35, radius * 1.25, surfaceDist)
+            * (1.0 - smoothstep(radius * 0.8, radius * 1.8, surfaceDist));
+    float heatWave = sin(surfaceDist * 9.0 - Time * 12.0) * 0.5 + 0.5;
+    vec3 worldOffset = radial * (heatWave * radius * 0.045)
+            + tangent * (cos(surfaceDist * 13.0 + Time * 8.0) * radius * 0.028)
+            + vec3(0.0, 1.0, 0.0) * (sin(Time * 5.0 + surfaceDist * 4.0) * radius * 0.018);
+    vec2 refractOffset = projectedWorldOffset(scenePos, worldOffset) * heat;
+    vec3 refracted = texture(DiffuseSampler, clamp(uv + refractOffset, vec2(0.0), vec2(1.0))).rgb;
+    result = mix(refracted, result, clamp(1.0 - heat * 0.35, 0.0, 1.0));
     return result;
+}
+vec3 applyMalevolentShrineBlackDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data, vec3 tint, float edge) {
+    float radius = max(data.y, 0.001);
+    float progress = clamp(data.z, 0.0, 1.0);
+    float intensity = max(data.w, 0.0);
+
+    vec3 ro = vec3(0.0);
+    vec3 rd = normalize(viewRay(uv));
+
+    // 严格限制在领域球体内部，绝不向球外泄漏密度。
+    vec3 oc = ro - center;
+    float b = dot(oc, rd);
+    float c = dot(oc, oc) - radius * radius;
+    float h = b * b - c;
+
+    if (h < 0.0) {
+        return color;
+    }
+
+    h = sqrt(h);
+    float tNear = max(-b - h, 0.0);
+    float tFar = min(-b + h, length(scenePos));
+
+    if (tNear >= tFar) {
+        return color;
+    }
+
+    const int STEPS = 56;
+    float span = max(tFar - tNear, 0.001);
+    float stepSize = span / float(STEPS);
+    float dither = fireBayerDither(uv);
+
+    float trans = 1.0;
+    vec3 accum = vec3(0.0);
+    float decay = 1.0 - smoothstep(0.8, 1.0, progress);
+
+    for (int i = 0; i < STEPS; i++) {
+        float t = tNear + (float(i) + dither) * stepSize;
+        vec3 p = ro + rd * t;
+        vec3 q = p - center;
+
+        float distNorm = length(q) / radius;
+        float boundaryFade = smoothstep(1.0, 0.75, distNorm);
+        if (boundaryFade <= 0.001) {
+            continue;
+        }
+
+        vec2 uvBase = q.xz * (5.0 / radius) - Time * 2.5;
+        float n1 = fbm(uvBase);
+
+        vec2 uvTear = q.xz * (10.0 / radius) + vec2(n1 * 2.0) + Time * 1.5;
+        float n2 = fbm(uvTear + q.y * (3.0 / radius));
+        float noise = mix(n1, n2, 0.65);
+
+        float hNorm = clamp((q.y + radius * 0.4) / (radius * 1.2), 0.0, 1.0);
+        float heightFade = smoothstep(1.0, 0.1, hNorm);
+        float shape = heightFade * 0.85 + (noise - 0.45) * 1.5;
+
+        // 玩家位于领域内部时，贴近相机的浓烟仍然保持一点能见度。
+        float camFade = smoothstep(0.0, max(radius * 0.15, 0.5), t);
+        float density = smoothstep(0.0, 0.6, shape) * boundaryFade * intensity * decay * camFade;
+
+        if (density <= 0.01) {
+            continue;
+        }
+
+        float temp = clamp(heightFade * 0.4 + noise * 0.8, 0.0, 1.0);
+
+        vec3 cSmoke = vec3(0.01, 0.005, 0.012);
+        vec3 cDarkPurple = vec3(0.20, 0.02, 0.30);
+        vec3 cCrimson = vec3(0.70, 0.05, 0.08);
+        vec3 cAshWhite = vec3(0.85, 0.80, 0.95);
+
+        vec3 col = cSmoke;
+        col = mix(col, cDarkPurple, smoothstep(0.10, 0.35, temp));
+        col = mix(col, cCrimson, smoothstep(0.35, 0.65, temp));
+        col = mix(col, cAshWhite, smoothstep(0.65, 0.95, temp));
+
+        float absorption = density * stepSize * mix(12.0, 3.0, temp);
+        float alpha = 1.0 - exp(-absorption);
+        float emission = pow(max(temp - 0.4, 0.0), 2.5) * 12.0;
+
+        vec3 fireColor = col * (1.0 + emission);
+        fireColor += tint * emission * 0.15;
+
+        accum += fireColor * alpha * trans;
+        trans *= 1.0 - alpha;
+
+        if (trans < 0.015) {
+            break;
+        }
+    }
+
+    float fireAmount = 1.0 - trans;
+    vec3 integrated = accum / max(fireAmount, 0.001);
+    return mix(color, integrated, clamp(fireAmount, 0.0, 1.0));
+}
+vec3 applyMalevolentShrineBlackMist(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data, vec3 tint, float edge) {
+    float radius = max(data.y, 0.001);
+    float progress = clamp(data.z, 0.0, 1.0);
+    float intensity = max(data.w, 0.0);
+
+    vec3 ro = vec3(0.0);
+    vec3 rd = normalize(viewRay(uv));
+
+    float expand = mix(0.30, 1.0, smoothstep(0.0, 0.35, progress));
+    float decay = 1.0 - smoothstep(0.72, 1.0, progress);
+    float height = radius * mix(1.35, 2.15, expand);
+
+    // 保留旧版黑烟的稀疏体积感，但用真实球体求交锁死边界。
+    float boundRadius = radius * 1.10;
+    vec3 oc = ro - center;
+    float b = dot(oc, rd);
+    float c = dot(oc, oc) - boundRadius * boundRadius;
+    float h = b * b - c;
+
+    if (h < 0.0) {
+        return color;
+    }
+
+    h = sqrt(h);
+    float tNear = max(-b - h, 0.0);
+    float tFar = min(-b + h, length(scenePos));
+
+    if (tNear >= tFar) {
+        return color;
+    }
+
+    const int STEPS = 52;
+    float span = max(tFar - tNear, 0.001);
+    float stepSize = span / float(STEPS);
+    float dither = fireBayerDither(uv);
+
+    float transmittance = 1.0;
+    vec3 accumulated = vec3(0.0);
+
+    for (int i = 0; i < STEPS; i++) {
+        float t = tNear + (float(i) + dither) * stepSize;
+        vec3 p = ro + rd * t;
+        vec3 q = p - center;
+
+        float distNorm = length(q) / radius;
+        float sphereMask = 1.0 - smoothstep(0.84, 1.0, distNorm);
+        if (sphereMask <= 0.001) {
+            continue;
+        }
+
+        float hNorm = clamp((q.y + radius * 0.40) / max(height, 0.001), 0.0, 1.0);
+        vec3 qNorm = q / max(radius, 0.001);
+
+        vec2 uvBase = vec2(length(qNorm.xz) * 1.55, qNorm.y * 1.15 - Time * 2.8);
+        float nBase = fbm(uvBase);
+
+        vec2 uvTear = qNorm.xz * 1.35;
+        uvTear.x += nBase * 1.65 + Time * 0.65;
+        uvTear.y -= nBase * 1.25 - Time * 0.9;
+        float nTear = fbm(uvTear + qNorm.y * 1.1 + Time * 0.22);
+        float noise = mix(nBase, nTear, 0.58);
+
+        float vertical = smoothstep(-radius * 0.48, -radius * 0.10, q.y)
+                * (1.0 - smoothstep(height * 0.72, height * 1.05, q.y));
+
+        // 去掉旧火柱的 profile/baseMask/core，只保留受球体约束的稀疏烟丝。
+        float wisp = smoothstep(0.44, 0.78, noise);
+        float ribbon = smoothstep(0.50, 0.86, fbm(uvBase * 2.35 + vec2(Time * 0.4, -Time * 0.25)));
+        float sparse = wisp * (0.42 + 0.58 * ribbon);
+        float camFade = smoothstep(0.0, max(radius * 0.16, 0.5), t);
+
+        float density = sparse * vertical * sphereMask * intensity * decay * camFade;
+
+        if (density <= 0.008) {
+            continue;
+        }
+
+        float temp = clamp(noise * 0.38 + (1.0 - hNorm) * 0.12, 0.0, 1.0);
+
+        vec3 cSmoke = vec3(0.008, 0.004, 0.006);
+        vec3 cAsh = vec3(0.12, 0.10, 0.12);
+        vec3 cDarkRed = vec3(0.48, 0.025, 0.012);
+        vec3 cEmber = vec3(0.90, 0.18, 0.025);
+
+        vec3 col = cSmoke;
+        col = mix(col, cAsh, smoothstep(0.12, 0.38, temp));
+        col = mix(col, cDarkRed, smoothstep(0.38, 0.66, temp));
+        col = mix(col, cEmber, smoothstep(0.72, 0.95, temp));
+
+        float absorption = density * stepSize * mix(10.0, 4.0, temp);
+        float alpha = 1.0 - exp(-absorption);
+        float emission = pow(max(temp - 0.68, 0.0), 2.0) * 5.0;
+
+        vec3 smokeColor = col * (1.0 + emission);
+        smokeColor += tint * emission * 0.10;
+
+        accumulated += smokeColor * alpha * transmittance;
+        transmittance *= 1.0 - alpha;
+
+        if (transmittance < 0.015) {
+            break;
+        }
+    }
+
+    float smokeAmount = 1.0 - transmittance;
+    vec3 integrated = accumulated / max(smokeAmount, 0.001);
+    return mix(color, integrated, clamp(smokeAmount, 0.0, 1.0));
+}
+float warpNoise(vec3 p, float a) {
+    return abs(dot(sin(Time + 0.1 * p.z + 0.3 * p / a), vec3(a + a)));
+}
+
+float bayerDither(vec2 uv) {
+    return fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+vec3 applyMalevolentShrineVoid(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data, vec3 tint, float edge) {
+    float radius = max(data.y, 0.001);
+    float progress = clamp(data.z, 0.0, 1.0);
+    float intensity = max(data.w, 0.0);
+
+    vec3 ro = vec3(0.0);
+    vec3 rd = normalize(viewRay(uv));
+    vec3 oc = ro - center;
+
+    float b = dot(oc, rd);
+    float c = dot(oc, oc) - radius * radius;
+    float h = b * b - c;
+    if (h < 0.0) {
+        return color;
+    }
+
+    h = sqrt(h);
+    float tNear = max(-b - h, 0.0);
+    float tFar = min(-b + h, length(scenePos));
+    if (tNear >= tFar) {
+        return color;
+    }
+
+    float span = tFar - tNear;
+    const int STEPS = 48;
+    float stepSize = span / float(STEPS);
+    float dither = bayerDither(uv);
+
+    float trans = 1.0;
+    vec3 accum = vec3(0.0);
+
+    for (int i = 0; i < STEPS; i++) {
+        float t = tNear + (float(i) + dither) * stepSize;
+        vec3 p = ro + rd * t - center;
+
+        float r = length(p) / radius;
+        float sphereMask = smoothstep(1.0, 0.72, r);
+        if (sphereMask <= 0.001) {
+            continue;
+        }
+
+        vec2 flowUV = p.xz * 0.35 + vec2(Time * 0.02, Time * -0.015);
+        float flow = fbm(flowUV);
+        vec2 warpUV = p.yx * 0.5 + flow * 0.6 + Time * 0.03;
+        float cloud = fbm(warpUV);
+
+        float riftX = smoothstep(0.15, 0.0, abs(fbm(p.zy * 0.75 + flow) - 0.5));
+        float riftY = smoothstep(0.15, 0.0, abs(fbm(p.xy * 0.75 - flow) - 0.5));
+        float rift = riftX * riftY * 3.5;
+
+        float core = smoothstep(1.0, 0.0, r);
+        float density = sphereMask * (cloud * 0.85 + rift + 0.15) * (0.35 + core * 0.75);
+
+        vec3 baseColor = mix(vec3(0.02, 0.0, 0.06), vec3(0.35, 0.05, 0.5), cloud);
+        vec3 riftColor = vec3(0.85, 0.15, 1.0) * rift;
+        vec3 cloudColor = baseColor + riftColor + tint * 0.25;
+
+        float alpha = 1.0 - exp(-density * intensity * 0.25 * stepSize);
+
+        accum += cloudColor * alpha * trans;
+        trans *= 1.0 - alpha;
+
+        if (trans < 0.02) {
+            break;
+        }
+    }
+
+    float amount = 1.0 - trans;
+    vec3 volume = accum / max(amount, 0.001);
+
+    return mix(color, volume, clamp(amount, 0.0, 0.9));
+}
+
+float starHash(vec3 p) {
+    p = fract(p * 0.3183099 + vec3(0.1));
+    p *= 17.0;
+    return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+}
+
+vec3 randomDirection(vec3 p) {
+    float a = starHash(p) * 6.28318;
+    float z = starHash(p + 13.7) * 2.0 - 1.0;
+    float r = sqrt(max(0.0, 1.0 - z * z));
+    return vec3(r * cos(a), z, r * sin(a));
+}
+
+vec3 applyMalevolentShrineStarfield(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data, vec3 tint, float edge) {
+    float radius = max(data.y, 0.001);
+    float progress = clamp(data.z, 0.0, 1.0);
+    float intensity = max(data.w, 0.0);
+    float fade = 1.0;
+
+    vec3 ro = vec3(0.0);
+    vec3 rd = normalize(viewRay(uv));
+    vec3 oc = ro - center;
+
+    float b = dot(oc, rd);
+    float c = dot(oc, oc) - radius * radius;
+    float h = b * b - c;
+    if (h < 0.0) {
+        return color;
+    }
+
+    h = sqrt(h);
+    float tNear = max(-b - h, 0.0);
+    float tFar = min(-b + h, length(scenePos));
+    if (tNear >= tFar) {
+        return color;
+    }
+
+    float span = max(tFar - tNear, 0.001);
+    const int STEPS = 40;
+    float stepSize = span / float(STEPS);
+    float dither = bayerDither(uv);
+
+    float transmittance = 1.0;
+    vec3 accumulated = vec3(0.0);
+    float cellSize = radius * 0.08;
+
+    for (int i = 0; i < STEPS; i++) {
+        float t = tNear + (float(i) + dither) * stepSize;
+        vec3 p = ro + rd * t;
+        vec3 local = p - center;
+
+        float normalized = length(local) / radius;
+        float sphereMask = smoothstep(1.0, 0.72, normalized);
+        if (sphereMask <= 0.001) {
+            continue;
+        }
+
+        vec3 cell = floor(local / cellSize);
+        float rnd = starHash(cell);
+        if (rnd <= 0.90) {
+            continue;
+        }
+
+        vec3 starPos = (cell + 0.5) * cellSize + randomDirection(cell) * (cellSize * 0.35);
+        vec3 diff = local - starPos;
+        float starDist = length(diff);
+        float starRadius = cellSize * mix(0.05, 0.15, rnd);
+
+        float core = exp(-starDist * starDist / (starRadius * starRadius));
+        float glow = exp(-starDist / (starRadius * 2.5));
+        vec3 absDiff = abs(diff);
+        float crossMask = exp(-max(absDiff.x, max(absDiff.y, absDiff.z)) * 12.0 / starRadius);
+        crossMask *= exp(-starDist * 1.5 / starRadius);
+
+        float phase = Time * mix(2.0, 4.0, rnd) + starHash(cell + 1.0) * 6.28;
+        float twinkle = smoothstep(-0.5, 1.0, sin(phase));
+
+        vec3 starColor = mix(vec3(0.4, 0.75, 1.0), vec3(1.0, 0.9, 0.6), fract(rnd * 13.0));
+        if (fract(rnd * 17.0) > 0.85) {
+            starColor = vec3(1.0, 0.4, 0.3);
+        }
+        starColor += tint * 0.2;
+
+        float density = (core * 2.5 + glow * 0.6 + crossMask * 1.5) * sphereMask * (0.4 + 0.6 * twinkle);
+        float alpha = 1.0 - exp(-density * intensity * stepSize * 3.5);
+
+        accumulated += starColor * alpha * transmittance;
+        transmittance *= 1.0 - alpha;
+
+        if (transmittance < 0.02) {
+            break;
+        }
+    }
+
+    return color + accumulated * fade;
 }
 
 vec3 applyMalevolentShrineTargetGlow(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data, vec3 tint, float edge) {
@@ -1277,9 +1082,20 @@ void main() {
         if (sky) {
             if (mode == 10) {
                 color = applyMalevolentShrineFire(color, scenePos, uv, center, data, tint, edge);
+            } else if (mode == 13) {
+                color = applyMalevolentShrineFireLegacy(color, scenePos, uv, center, data, tint, edge);
+            } else if (mode == 14) {
+                color = applyMalevolentShrineBlackDomain(color, scenePos, uv, center, data, tint, edge);
+            } else if (mode == 15) {
+                color = applyMalevolentShrineBlackMist(color, scenePos, uv, center, data, tint, edge);
+            } else if (mode == 11) {
+                color = applyMalevolentShrineVoid(color, scenePos, uv, center, data, tint, edge);
+            } else if (mode == 12) {
+                color = applyMalevolentShrineStarfield(color, scenePos, uv, center, data, tint, edge);
             }
             continue;
         }
+
         if (mode == 7) {
             continue;
         }
@@ -1302,10 +1118,19 @@ void main() {
             color = applyMalevolentShrineSlash(color, scenePos, uv, center, data, tint);
         } else if (mode == 10) {
             color = applyMalevolentShrineFire(color, scenePos, uv, center, data, tint, edge);
+        } else if (mode == 13) {
+            color = applyMalevolentShrineFireLegacy(color, scenePos, uv, center, data, tint, edge);
+        } else if (mode == 14) {
+            color = applyMalevolentShrineBlackDomain(color, scenePos, uv, center, data, tint, edge);
+        } else if (mode == 15) {
+            color = applyMalevolentShrineBlackMist(color, scenePos, uv, center, data, tint, edge);
+        } else if (mode == 11) {
+            color = applyMalevolentShrineVoid(color, scenePos, uv, center, data, tint, edge);
+        } else if (mode == 12) {
+            color = applyMalevolentShrineStarfield(color, scenePos, uv, center, data, tint, edge);
         } else {
             color = applyMalevolentShrineTargetGlow(color, scenePos, uv, center, data, tint, edge);
         }
     }
-
     fragColor = vec4(color, base.a);
 }
