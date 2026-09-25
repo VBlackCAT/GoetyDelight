@@ -120,10 +120,9 @@ public final class EntityVisualEffectSystem {
 
 
 
-        EntityVisualEffects effects =
-                entity.getCapability(
-                        ENTITY_VISUAL_EFFECTS
-                ).resolve().orElse(null);
+        // 统一走 getEffects()：以前这里用 entity.getCapability()，而 sync()/到期检查用的是 mixin 里的容器，
+        // 两者一旦不一致（capability 被 invalidateCaps() 置空）add 就会静默失败——指令没反应、特效不显示。
+        EntityVisualEffects effects = getEffects(entity);
 
 
 
@@ -200,10 +199,7 @@ public final class EntityVisualEffectSystem {
 
 
 
-        EntityVisualEffects effects =
-                entity.getCapability(
-                        ENTITY_VISUAL_EFFECTS
-                ).resolve().orElse(null);
+        EntityVisualEffects effects = getEffects(entity);
 
 
 
@@ -331,9 +327,10 @@ public final class EntityVisualEffectSystem {
             }
 
             EntityVisualEffects effects = getEffects(entity);
-            if (effects != scheduled.effects()
-                    || effects == null
-                    || effects.revision() != scheduled.revision()) {
+            // 这里不再比对 revision：容器被刷新/反序列化（revision 自增）而排期条目恰好过期时，
+            // 旧写法会直接 continue 掉，已到期的特效就永远留在容器里（客户端一直画着、服务端也不清理）。
+            // tick() 只会移除真正过期的效果，重复处理是安全的，所以只保留「条目已被更新的排期取代」这一层判断。
+            if (effects == null || effects != scheduled.effects()) {
                 continue;
             }
 
@@ -358,7 +355,6 @@ public final class EntityVisualEffectSystem {
         ScheduledEffects scheduled = new ScheduledEffects(
                 new WeakReference<>(entity),
                 effects,
-                effects.revision(),
                 expiresAt,
                 scheduleSequence++
         );
@@ -383,7 +379,8 @@ public final class EntityVisualEffectSystem {
         scheduleSequence = 0L;
     }
 
-    private static EntityVisualEffects getEffects(Entity entity) {
+    /** 取实体的特效容器：优先 mixin 缓存，其次 capability。增删/同步/到期检查都必须走这里，避免两处状态不一致。 */
+    public static EntityVisualEffects getEffects(Entity entity) {
         if (entity instanceof IVisualEffectHolder holder) {
             EntityVisualEffects effects = holder.goetydelight$getVisualEffects();
             if (effects != null) {
@@ -534,7 +531,6 @@ public final class EntityVisualEffectSystem {
     private record ScheduledEffects(
             WeakReference<Entity> entityReference,
             EntityVisualEffects effects,
-            long revision,
             long expiresAt,
             long sequence
     ) {

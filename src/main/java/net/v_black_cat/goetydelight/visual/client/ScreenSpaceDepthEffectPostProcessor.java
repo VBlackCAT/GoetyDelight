@@ -40,13 +40,17 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.IntSupplier;
 
 @Mod.EventBusSubscriber(modid = GoetyDelight.MODID, value = Dist.CLIENT)
 public final class ScreenSpaceDepthEffectPostProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScreenSpaceDepthEffectPostProcessor.class);
     private static final ResourceLocation SHADER = new ResourceLocation(GoetyDelight.MODID, "entity_depth_reconstruct");
-    private static final int MAX_EFFECTS = 8;
+    /** 屏幕空间特效同屏槽位上限；必须与 entity_depth_reconstruct.fsh/.json 里 EffectCenterN / EffectDataN / EffectColorN 的数量一致。 */
+    private static final int MAX_EFFECTS = 24;
     private static final float DEFAULT_RADIUS = 3.5F;
 
     @Nullable
@@ -59,6 +63,7 @@ public final class ScreenSpaceDepthEffectPostProcessor {
     private static int scratchWidth = -1;
     private static int scratchHeight = -1;
     private static boolean warnedLoadFailure;
+    private static long lastSlotWarningMillis;
 
     // ── 可复用矩阵（渲染线程单线程，静态安全） ──
     private static final Matrix4f TEMP_OLD_PROJECTION = new Matrix4f();
@@ -176,6 +181,11 @@ public final class ScreenSpaceDepthEffectPostProcessor {
         EffectPacket packet = new EffectPacket();
         Vec3 cameraPosition = event.getCamera().getPosition();
 
+        // 先收集候选（带相机距离）再按距离排序填充：槽位不够时保留离相机最近的，
+        // 而不是按「谁先进容器」决定。旧写法满了就直接 break，最后加的特效（比如猫雾）会被静默丢掉，
+        // 表现就是「特效明明加上了却不显示」。
+        List<Candidate> candidates = new ArrayList<>();
+
         for (Entity entity : level.entitiesForRendering()) {
             if (entity.isRemoved()) {
                 continue;
@@ -192,10 +202,6 @@ public final class ScreenSpaceDepthEffectPostProcessor {
             if (effects == null || effects.isEmpty()) continue;
 
             for (ActiveEntityVisualEffect activeEffect : effects.effects()) {
-                if (packet.count >= MAX_EFFECTS) {
-                    break;
-                }
-
                 int mode = mode(activeEffect);
                 if (mode < 0) {
                     continue;
@@ -203,15 +209,56 @@ public final class ScreenSpaceDepthEffectPostProcessor {
 
                 double renderDistance = renderDistance(activeEffect);
                 Vec3 effectCenter = EffectPacket.center(entity, event.getPartialTick(), mode, activeEffect);
-                if (renderDistance > 0.0D && effectCenter.distanceToSqr(cameraPosition) > renderDistance * renderDistance) {
+                double distanceSqr = effectCenter.distanceToSqr(cameraPosition);
+                if (renderDistance > 0.0D && distanceSqr > renderDistance * renderDistance) {
                     continue;
                 }
 
-                packet.add(entity, activeEffect, event, mode, effectCenter);
+                candidates.add(new Candidate(entity, activeEffect, mode, effectCenter, distanceSqr));
             }
         }
 
+        if (candidates.isEmpty()) {
+            return packet;
+        }
+
+        candidates.sort(Comparator.comparingDouble(Candidate::distanceSqr));
+        int used = Math.min(candidates.size(), MAX_EFFECTS);
+        for (int i = 0; i < used; i++) {
+            Candidate candidate = candidates.get(i);
+            packet.add(candidate.entity(), candidate.effect(), event, candidate.mode(), candidate.center());
+        }
+
+        warnIfSlotsExhausted(candidates.size() - used);
         return packet;
+    }
+
+    private record Candidate(
+            Entity entity,
+            ActiveEntityVisualEffect effect,
+            int mode,
+            Vec3 center,
+            double distanceSqr
+    ) {
+    }
+
+    /** 槽位被占满时不再静默丢特效，最多每 5 秒提醒一次。 */
+    private static void warnIfSlotsExhausted(int dropped) {
+        if (dropped <= 0) {
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+        if (now - lastSlotWarningMillis < 5000L) {
+            return;
+        }
+
+        lastSlotWarningMillis = now;
+        LOGGER.warn(
+                "屏幕空间特效槽位已满：本帧丢弃 {} 个（上限 {} 个）。用 /goetydelightvisual clear 清理后逐个测试，"
+                        + "或提高 MAX_EFFECTS / entity_depth_reconstruct 的槽位数。",
+                dropped, MAX_EFFECTS
+        );
     }
 
     private static int mode(ActiveEntityVisualEffect effect) {
@@ -544,12 +591,16 @@ public final class ScreenSpaceDepthEffectPostProcessor {
         }
 
         private static float progress(Entity entity, ActiveEntityVisualEffect effect, RenderLevelStageEvent event) {
+            float partialTick = event.getPartialTick();
             if (effect.initialDuration() > 0) {
-                return Mth.clamp(1.0F - (effect.remainingTicks() - event.getPartialTick()) / (float) effect.initialDuration(), 0.0F, 1.0F);
+                // 【修复】原实现按 remainingTicks 反向推算进度，但客户端从不递减该值（服务端也只在增删/到期时同步），
+                // 于是有限时长的特效进度恒为 0：领域雾/斩击的 intensity = base * clamp(progress * 1.6) 被锁死在 0，
+                // 表现就是「时间到了以后再 add 不显示」。改为按 StartGameTime + 当前游戏时间计算，进度由客户端自走。
+                return effect.progress(entity.level().getGameTime(), partialTick);
             }
 
-            long start = effect.data().contains("StartGameTime") ? effect.data().getLong("StartGameTime") : entity.level().getGameTime();
-            return Mth.clamp((entity.level().getGameTime() + event.getPartialTick() - start) / 80.0F, 0.0F, 1.0F);
+            long start = effect.startGameTime() >= 0 ? effect.startGameTime() : entity.level().getGameTime();
+            return Mth.clamp((entity.level().getGameTime() + partialTick - start) / 80.0F, 0.0F, 1.0F);
         }
 
         private static float radius(Entity entity, ActiveEntityVisualEffect effect, int mode, float progress) {

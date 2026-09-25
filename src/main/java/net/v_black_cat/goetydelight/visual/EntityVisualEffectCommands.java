@@ -28,6 +28,9 @@ public final class EntityVisualEffectCommands {
             (context, builder) -> SharedSuggestionProvider.suggestResource(GDVisualEffects.registeredIds(), builder);
     private static final DynamicCommandExceptionType UNKNOWN_EFFECT =
             new DynamicCommandExceptionType(id -> Component.literal("未知视觉效果 ID: " + id));
+    private static final DynamicCommandExceptionType NO_EFFECT_CONTAINER =
+            new DynamicCommandExceptionType(count -> Component.literal(
+                    "目标实体没有视觉特效容器（capability 未注册或已失效），已跳过 " + count + " 个实体"));
 
     private EntityVisualEffectCommands() {
     }
@@ -96,10 +99,19 @@ public final class EntityVisualEffectCommands {
     private static int addEffect(Collection<? extends Entity> entities, ResourceLocation effectId, int duration, CompoundTag data) throws CommandSyntaxException {
         checkRegistered(effectId);
         int changed = 0;
+        int missing = 0;
         for (Entity entity : entities) {
+            if (EntityVisualEffectSystem.getEffects(entity) == null) {
+                missing++;
+                continue;
+            }
             if (EntityVisualEffectSystem.addEffect(entity, effectId, duration, data)) {
                 changed++;
             }
+        }
+        if (changed == 0 && missing > 0) {
+            // 以前这种情况是静默返回 0（指令没反应、特效不显示），现在明确报错方便排查。
+            throw NO_EFFECT_CONTAINER.create(missing);
         }
         return changed;
     }
@@ -122,14 +134,10 @@ public final class EntityVisualEffectCommands {
     private static int clearEffects(Collection<? extends Entity> entities) {
         int changed = 0;
         for (Entity entity : entities) {
-            boolean hadEffects = entity.getCapability(EntityVisualEffectSystem.ENTITY_VISUAL_EFFECTS)
-                    .map(effects -> !effects.isEmpty())
-                    .orElse(false);
-            if (hadEffects) {
-                entity.getCapability(EntityVisualEffectSystem.ENTITY_VISUAL_EFFECTS).ifPresent(effects -> {
-                    effects.clear();
-                    EntityVisualEffectSystem.sync(entity);
-                });
+            EntityVisualEffects effects = EntityVisualEffectSystem.getEffects(entity);
+            if (effects != null && !effects.isEmpty()) {
+                effects.clear();
+                EntityVisualEffectSystem.sync(entity);
                 changed++;
             }
         }

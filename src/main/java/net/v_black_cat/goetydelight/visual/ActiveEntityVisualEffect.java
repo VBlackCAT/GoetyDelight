@@ -2,9 +2,12 @@ package net.v_black_cat.goetydelight.visual;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 
 public class ActiveEntityVisualEffect {
     static final long NO_GAME_TIME = Long.MIN_VALUE;
+    /** 效果开始时的游戏时间，由 {@code EntityVisualEffectSystem#addEffect} 写入 data。 */
+    public static final String START_GAME_TIME = "StartGameTime";
     private static final String EXPIRES_AT_GAME_TIME = "ExpiresAtGameTime";
     private static final String REMAINING_TICKS = "RemainingTicks";
 
@@ -68,6 +71,34 @@ public class ActiveEntityVisualEffect {
 
     public void setData(CompoundTag data) {
         this.data = data.copy();
+    }
+
+    /** 效果开始时的游戏时间；未记录时返回 -1。 */
+    public long startGameTime() {
+        return data.contains(START_GAME_TIME) ? data.getLong(START_GAME_TIME) : -1L;
+    }
+
+    /**
+     * 播放进度（0 = 刚开始，1 = 结束）。
+     *
+     * <p>用「开始时间 + 当前游戏时间」推算：服务端只在增删/到期时同步，进度完全由客户端自行计算，
+     * 因此不需要任何一侧每 tick 递减计数。
+     *
+     * <p>修复：原实现按 {@code remainingTicks} 反向推算进度，但客户端从不递减该值
+     * （服务端也只在同步时刷新它），于是有限时长的特效进度恒为 0 —— 领域雾/斩击的
+     * {@code intensity = base * clamp(progress * 1.6)} 被锁死在 0，表现就是「时间到了以后再 add 不显示」。
+     * 没有记录开始时间时（旧存档）回退到旧的剩余 tick 计数。
+     */
+    public float progress(long gameTime, float partialTick) {
+        if (initialDuration <= 0) {
+            return 0.0F;
+        }
+
+        long start = startGameTime();
+        float elapsed = start >= 0
+                ? (float) (gameTime - start) + partialTick
+                : (float) (initialDuration - remainingTicks) + partialTick;
+        return Mth.clamp(elapsed / (float) initialDuration, 0.0F, 1.0F);
     }
 
     private void refreshRemainingTicks(long gameTime) {

@@ -15,6 +15,22 @@ uniform vec3 EffectCenter4;
 uniform vec3 EffectCenter5;
 uniform vec3 EffectCenter6;
 uniform vec3 EffectCenter7;
+uniform vec3 EffectCenter8;
+uniform vec3 EffectCenter9;
+uniform vec3 EffectCenter10;
+uniform vec3 EffectCenter11;
+uniform vec3 EffectCenter12;
+uniform vec3 EffectCenter13;
+uniform vec3 EffectCenter14;
+uniform vec3 EffectCenter15;
+uniform vec3 EffectCenter16;
+uniform vec3 EffectCenter17;
+uniform vec3 EffectCenter18;
+uniform vec3 EffectCenter19;
+uniform vec3 EffectCenter20;
+uniform vec3 EffectCenter21;
+uniform vec3 EffectCenter22;
+uniform vec3 EffectCenter23;
 uniform vec4 EffectData0;
 uniform vec4 EffectData1;
 uniform vec4 EffectData2;
@@ -23,6 +39,22 @@ uniform vec4 EffectData4;
 uniform vec4 EffectData5;
 uniform vec4 EffectData6;
 uniform vec4 EffectData7;
+uniform vec4 EffectData8;
+uniform vec4 EffectData9;
+uniform vec4 EffectData10;
+uniform vec4 EffectData11;
+uniform vec4 EffectData12;
+uniform vec4 EffectData13;
+uniform vec4 EffectData14;
+uniform vec4 EffectData15;
+uniform vec4 EffectData16;
+uniform vec4 EffectData17;
+uniform vec4 EffectData18;
+uniform vec4 EffectData19;
+uniform vec4 EffectData20;
+uniform vec4 EffectData21;
+uniform vec4 EffectData22;
+uniform vec4 EffectData23;
 uniform vec3 EffectColor0;
 uniform vec3 EffectColor1;
 uniform vec3 EffectColor2;
@@ -31,6 +63,22 @@ uniform vec3 EffectColor4;
 uniform vec3 EffectColor5;
 uniform vec3 EffectColor6;
 uniform vec3 EffectColor7;
+uniform vec3 EffectColor8;
+uniform vec3 EffectColor9;
+uniform vec3 EffectColor10;
+uniform vec3 EffectColor11;
+uniform vec3 EffectColor12;
+uniform vec3 EffectColor13;
+uniform vec3 EffectColor14;
+uniform vec3 EffectColor15;
+uniform vec3 EffectColor16;
+uniform vec3 EffectColor17;
+uniform vec3 EffectColor18;
+uniform vec3 EffectColor19;
+uniform vec3 EffectColor20;
+uniform vec3 EffectColor21;
+uniform vec3 EffectColor22;
+uniform vec3 EffectColor23;
 
 in vec2 texCoord;
 
@@ -78,7 +126,23 @@ vec3 effectCenter(int index) {
     if (index == 4) return EffectCenter4;
     if (index == 5) return EffectCenter5;
     if (index == 6) return EffectCenter6;
-    return EffectCenter7;
+    if (index == 7) return EffectCenter7;
+    if (index == 8) return EffectCenter8;
+    if (index == 9) return EffectCenter9;
+    if (index == 10) return EffectCenter10;
+    if (index == 11) return EffectCenter11;
+    if (index == 12) return EffectCenter12;
+    if (index == 13) return EffectCenter13;
+    if (index == 14) return EffectCenter14;
+    if (index == 15) return EffectCenter15;
+    if (index == 16) return EffectCenter16;
+    if (index == 17) return EffectCenter17;
+    if (index == 18) return EffectCenter18;
+    if (index == 19) return EffectCenter19;
+    if (index == 20) return EffectCenter20;
+    if (index == 21) return EffectCenter21;
+    if (index == 22) return EffectCenter22;
+    return EffectCenter23;
 }
 
 vec4 effectData(int index) {
@@ -89,7 +153,23 @@ vec4 effectData(int index) {
     if (index == 4) return EffectData4;
     if (index == 5) return EffectData5;
     if (index == 6) return EffectData6;
-    return EffectData7;
+    if (index == 7) return EffectData7;
+    if (index == 8) return EffectData8;
+    if (index == 9) return EffectData9;
+    if (index == 10) return EffectData10;
+    if (index == 11) return EffectData11;
+    if (index == 12) return EffectData12;
+    if (index == 13) return EffectData13;
+    if (index == 14) return EffectData14;
+    if (index == 15) return EffectData15;
+    if (index == 16) return EffectData16;
+    if (index == 17) return EffectData17;
+    if (index == 18) return EffectData18;
+    if (index == 19) return EffectData19;
+    if (index == 20) return EffectData20;
+    if (index == 21) return EffectData21;
+    if (index == 22) return EffectData22;
+    return EffectData23;
 }
 
 vec3 effectColor(int index) {
@@ -100,7 +180,23 @@ vec3 effectColor(int index) {
     if (index == 4) return EffectColor4;
     if (index == 5) return EffectColor5;
     if (index == 6) return EffectColor6;
-    return EffectColor7;
+    if (index == 7) return EffectColor7;
+    if (index == 8) return EffectColor8;
+    if (index == 9) return EffectColor9;
+    if (index == 10) return EffectColor10;
+    if (index == 11) return EffectColor11;
+    if (index == 12) return EffectColor12;
+    if (index == 13) return EffectColor13;
+    if (index == 14) return EffectColor14;
+    if (index == 15) return EffectColor15;
+    if (index == 16) return EffectColor16;
+    if (index == 17) return EffectColor17;
+    if (index == 18) return EffectColor18;
+    if (index == 19) return EffectColor19;
+    if (index == 20) return EffectColor20;
+    if (index == 21) return EffectColor21;
+    if (index == 22) return EffectColor22;
+    return EffectColor23;
 }
 
 vec3 reconstructWorldPosition(vec2 uv, float depth) {
@@ -1281,7 +1377,7 @@ void main() {
     vec3 color = base.rgb;
 
     // 先应用领域雾场，让其他屏幕空间特效叠在雾上，避免被雾盖住。
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 24; i++) {
         if (i >= EffectCount) {
             break;
         }
@@ -1293,7 +1389,7 @@ void main() {
     }
 
     // 再应用斩击、目标血光和既有的冲击波/热浪/光柱等特效。
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 24; i++) {
         if (i >= EffectCount) {
             break;
         }

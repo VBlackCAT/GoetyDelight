@@ -280,10 +280,11 @@ public final class DepthVisualEffectRenderer {
 
     private static float effectProgress(RenderLevelStageEvent event, Entity entity, ActiveEntityVisualEffect effect) {
         if (effect.initialDuration() > 0) {
-            return Mth.clamp(1.0F - effect.remainingTicks() / (float) effect.initialDuration(), 0.0F, 1.0F);
+            // 【修复】客户端从不递减 remainingTicks → 进度恒为 0；改为按 StartGameTime + 游戏时间自走。
+            return effect.progress(entity.level().getGameTime(), event.getPartialTick());
         }
 
-        long start = effect.data().contains("StartGameTime") ? effect.data().getLong("StartGameTime") : entity.level().getGameTime();
+        long start = effect.startGameTime() >= 0 ? effect.startGameTime() : entity.level().getGameTime();
         return Mth.clamp((entity.level().getGameTime() + event.getPartialTick() - start) / 36.0F, 0.0F, 1.0F);
     }
 
