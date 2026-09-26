@@ -57,6 +57,8 @@ public final class GDVisualEffects {
     public static final ResourceKey<EntityVisualEffectType> MALEVOLENT_SHRINE_BLACK_MIST_KEY = key("malevolent_shrine_black_mist");
     public static final ResourceKey<EntityVisualEffectType> MALEVOLENT_SHRINE_VOID_KEY = key("malevolent_shrine_void");
     public static final ResourceKey<EntityVisualEffectType> MALEVOLENT_SHRINE_STARFIELD_KEY = key("malevolent_shrine_starfield");
+    public static final ResourceKey<EntityVisualEffectType> COSMIC_DOMAIN_KEY = key("cosmic_domain");
+    public static final ResourceKey<EntityVisualEffectType> LUNAR_DOMAIN_KEY = key("lunar_domain");
 
     public static final RegistryObject<EntityVisualEffectType> ORBIT_SPHERE = register(
             ORBIT_SPHERE_KEY,
@@ -276,6 +278,33 @@ public final class GDVisualEffects {
             EntityVisualEffectType.properties()
                     .defaultDuration(80)
                     .renderDistance(128.0D)
+                    .persistent()
+    );
+    /**
+     * 宇宙主题领域展开：领域球内是一颗微缩星系（倾斜旋臂盘 + 星云 + 稠密星点 + 极轴喷流），
+     * 中央是带引力透镜的黑洞。屏幕空间模式 17，见 {@code entity_depth_reconstruct.fsh}。
+     */
+    public static final RegistryObject<EntityVisualEffectType> COSMIC_DOMAIN = register(
+            COSMIC_DOMAIN_KEY,
+            EntityVisualEffectType.properties()
+                    .defaultDuration(240)
+                    .renderDistance(256.0D)
+                    .renderWhenInvisible()
+                    .renderInFirstPerson()
+                    .persistent()
+    );
+    /**
+     * 寂灭之月领域（月球主题）：与宇宙领域的透光流体相反，用 SDF 实体射线步进雕刻一颗
+     * 布满环形山的固态月亮，硬阴影明暗交界线 + 反重力月壤 + 月食级逆光月晕。
+     * 屏幕空间模式 18，见 {@code entity_depth_reconstruct.fsh}；data 可传 {@code Tint}（血月用）。
+     */
+    public static final RegistryObject<EntityVisualEffectType> LUNAR_DOMAIN = register(
+            LUNAR_DOMAIN_KEY,
+            EntityVisualEffectType.properties()
+                    .defaultDuration(240)
+                    .renderDistance(256.0D)
+                    .renderWhenInvisible()
+                    .renderInFirstPerson()
                     .persistent()
     );
 

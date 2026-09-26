@@ -1207,6 +1207,464 @@ vec3 applyBlackCatHeadFog(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 
     vec3 integrated = accumulated / max(fogAmount, 0.001);
     return mix(color, integrated, clamp(fogAmount * intensity, 0.0, 0.95));
 }
+
+// ────────────────────────── 宇宙领域 视觉重制版 (Cosmic Domain, mode 17) ──────────────────────────
+// 领域球里是一颗微缩星系 + 中心黑洞，密度严格锁在球内，球外只余流动日冕。
+//   1. JWST 级 HDR 色板：暗紫罗兰 → 品红 → 青金石 → 核心白（非线性爆发曲线）；
+//   2. Gargantua 级黑洞：反平方引力透镜 + 绝对黑体视界 + 极锐利光子环 + 多普勒增亮吸积盘；
+//   3. 暗物质尘埃带（Dark Dust Lanes）：旋臂中夹杂不透光粉尘，让体积有沟壑与厚度；
+//   4. 变形宽银幕星芒 + 真实恒星光谱（蓝巨星 / 黄矮星 / 红矮星）。
+vec3 cosmicPalette(float t, vec3 tint) {
+    float x = clamp(t, 0.0, 1.0);
+    // 基础深空背景，比原来更深邃，带有一丝深空辐射的幽蓝
+    vec3 abyss = vec3(0.005, 0.002, 0.015) + tint * 0.05;
+    vec3 deepBlue = mix(vec3(0.02, 0.05, 0.25), tint, 0.4);
+    vec3 magenta = mix(vec3(0.65, 0.10, 0.55), tint, 0.3);
+    vec3 cyanGlow = mix(vec3(0.10, 0.85, 0.95), tint, 0.2);
+    vec3 coreWhite = vec3(1.0, 0.95, 0.90);
+
+    // 使用更平滑的非线性插值曲线，增强色彩的爆发感
+    vec3 col = mix(abyss, deepBlue, smoothstep(0.0, 0.25, x));
+    col = mix(col, magenta, smoothstep(0.20, 0.55, x));
+    col = mix(col, cyanGlow, smoothstep(0.45, 0.85, x));
+    col = mix(col, coreWhite, pow(smoothstep(0.75, 1.0, x), 2.0)); // 核心高光爆发
+
+    return col;
+}
+
+vec3 applyCosmicDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data, vec3 tint, float edge) {
+    float sphereR = max(data.y, 0.001);
+    float progress = clamp(data.z, 0.0, 1.0);
+    float intensity = max(data.w, 0.0);
+    float energy = intensity * (1.0 - smoothstep(0.86, 1.0, progress));
+
+    if (energy <= 0.002) return color;
+
+    vec3 ro = vec3(0.0);
+    vec3 rd = normalize(viewRay(uv));
+    float maxDistance = length(scenePos);
+    float invRadius = 1.0 / sphereR;
+    vec3 toCenter = center - ro;
+    float centerProj = dot(rd, toCenter);
+    float impact = sqrt(max(dot(toCenter, toCenter) - centerProj * centerProj, 0.0));
+    float centerDist = length(toCenter);
+
+    // ── 中心黑洞 (Gargantua 风格) ──
+    float horizon = max(sphereR * 0.12, 0.05); // 稍微放大视界以增强压迫感
+    float coreMask = 0.0;
+    vec3 coreGlow = vec3(0.0);
+    vec3 background = color;
+    vec2 coreUv = cameraRelativeWorldToUv(center);
+
+    if (centerProj > 0.05 && impact < horizon * 12.0 && coreUv.x > -100.0) {
+        // 吸积结构本身是有体积的（halo 外缘约 5.6*horizon）。镜头一旦落进这团结构内部
+        // （最常见的"领域挂在自己身上"：球心仅在镜头下方约 0.7 格），impact 会整屏满足条件 ——
+        // 视界 coreMask 把下半屏连地形一起涂黑，halo 再叠一层与距离无关的平光，
+        // 合起来就是那层跟着玩家跑、号称"无限范围"的光幕。
+        // 所以整块黑洞按"镜头确实站到结构之外"淡入；coreAhead 仍然负责"结构不能在墙后被穿出来"。
+        float coreShellRadius = horizon * 5.6;
+        float coreOutside = smoothstep(coreShellRadius * 0.40, coreShellRadius, centerDist);
+        float coreAhead = 1.0 - smoothstep(maxDistance, maxDistance + horizon * 1.2, centerProj);
+        float coreVisible = coreOutside * coreAhead;
+        vec2 axis = uv - coreUv;
+        float axisLen = length(axis);
+        vec2 outDir = axisLen > 0.0001 ? axis / axisLen : vec2(0.0, 1.0);
+
+        // 更真实的引力透镜效应 (遵循反平方衰减)
+        float uvPerMeter = length(projectedWorldOffset(center, vec3(1.0, 0.0, 0.0)));
+        float lensFactor = horizon / max(impact, horizon * 0.5);
+        float bend = uvPerMeter * pow(lensFactor, 2.2) * 1.8 * min(energy, 1.0);
+        background = mix(background,
+                texture(DiffuseSampler, clamp(uv + outDir * bend, vec2(0.0), vec2(1.0))).rgb,
+                coreVisible);
+
+        // 绝对黑体视界：完美吞噬
+        coreMask = (1.0 - smoothstep(horizon * 0.95, horizon * 1.02, impact)) * coreVisible;
+        background *= 1.0 - coreMask * min(energy, 1.0);
+
+        // 多普勒增亮吸积盘 (Doppler Beamed Accretion Disk)
+        vec2 beamAxis = normalize(vec2(-0.85, 0.5));
+        float beamSide = 0.5 + 0.5 * dot(outDir, beamAxis); // 0 为远离(暗红)，1 为靠近(亮蓝/白)
+        float dopplerShift = pow(beamSide, 2.5) * 2.5 + 0.2; // 极端的亮暗对比
+
+        // 光子环 (极度锐利且明亮)
+        float photonRing = exp(-pow(abs(impact - horizon * 1.05) / (horizon * 0.04), 2.0));
+        // 主吸积盘
+        float accretionDisk = exp(-pow(abs(impact - horizon * 1.6) / (horizon * 0.4), 1.5));
+
+        vec3 hotColor = mix(vec3(0.9, 0.3, 0.1), vec3(0.8, 0.95, 1.0), beamSide);
+        float flicker = 1.0 + 0.08 * sin(Time * 5.0 + axisLen * 50.0);
+
+        coreGlow = hotColor * (photonRing * 3.5 + accretionDisk * 1.2)
+                * dopplerShift * min(energy, 1.5) * flicker * coreVisible;
+    }
+
+    // ── 宇宙日冕边界层 ──
+    vec3 rimTint = mix(tint, vec3(0.4, 0.8, 1.0), 0.6);
+    float outside = max(impact - sphereR, 0.0);
+    // 日冕必须紧贴轮廓。原来 exp(-3*outside/R) 的尾巴宽达 ~R/3：
+    // 镜头靠近球壳时，"与领域垂直"的整片方向都落在尾巴里，淡色光会铺满视野周边，
+    // 一转头就像一层淡色影子扫过屏幕（宇宙/月球共有的那层）。
+    float corona = exp(-outside / max(sphereR * 0.11, 0.30));
+    corona *= 1.0 - smoothstep(0.30, 0.60, outside / sphereR);
+
+    // 球壳的真实几何：近端/远端壳交点距离。
+    // 注意 impact 只决定"射线离球心多远"，它跟"壳在不在前面"无关 ——
+    // h = sphereR^2 - impact^2，所以原来 `h < 0` 仅仅等价于 `impact > sphereR`：
+    // 领域跑到镜头背后、或被墙挡住时，朝前的射线垂距照样能超过半径，
+    // 于是日冕和细边会被画到前方任意距离的地板/墙上（光环"无限范围"乱跑）。
+    float shellSpan = sqrt(max(sphereR * sphereR - impact * impact, 0.0));
+    float shellNear = centerProj - shellSpan; // 近端壳交（miss 时退化为球面最近点）
+    float shellFar = centerProj + shellSpan;  // 远端壳交
+    // 壳必须"在镜头前方"且"不晚于首个可见表面"，边界才算真的被看到
+    float shellVisible = (shellFar > 0.0 && shellNear < maxDistance) ? 1.0 : 0.0;
+    // 只有镜头离开领域球之后才存在"球体轮廓"；贴在内壁/外壁时不再出现跟着视角的巨环
+    float silhouette = smoothstep(1.0, 1.30, centerDist / sphereR);
+
+    // 边界噪声改用世界空间方向，避免纹理跟着镜头滑动
+    float tShell = max(shellNear, 0.0);
+    vec3 shellVec = rd * tShell - center;
+    float shellLen = length(shellVec);
+    vec3 shellDir = shellLen > 0.0001 ? shellVec / shellLen : vec3(0.0, 1.0, 0.0);
+    float edgeNoise = valueNoise(shellDir.xz * 4.0 + vec2(Time * 0.06, -Time * 0.045)) * 0.5 + 0.5;
+    float edgeRing = exp(-abs(impact - sphereR) / (sphereR * 0.03)) * edgeNoise
+            * shellVisible * silhouette;
+    vec3 rimGlow = rimTint * edgeRing * 1.2 * energy;
+
+    vec3 oc = ro - center;
+    float b = dot(oc, rd);
+    float c = dot(oc, oc) - sphereR * sphereR;
+    float h = b * b - c;
+
+    if (h < 0.0) {
+        return background + rimGlow + rimTint * corona * 0.4 * energy * shellVisible * silhouette;
+    }
+
+    h = sqrt(h);
+    float tNear = max(-b - h, 0.0);
+    float tFar = min(-b + h, maxDistance);
+    // 领域整个在可见几何之后：返回未被透镜/视界改动过的原色，否则会把黑斑和扭曲画到墙面上
+    if (tNear >= tFar) return color;
+
+    // ── 动态星系盘与体积积分 ──
+    float tilt = 0.45 + 0.15 * sin(Time * 0.08); // 略微增加倾角让盘面更立体
+    float ct = cos(tilt), st = sin(tilt);
+    vec3 discNormal = vec3(0.0, ct, st);
+    vec3 discAxisX = vec3(1.0, 0.0, 0.0);
+    vec3 discAxisY = vec3(0.0, -st, ct);
+
+    const int COSMIC_STEPS = 48; // 提升精度
+    float span = max(tFar - tNear, 0.001);
+    float stepSize = span / float(COSMIC_STEPS);
+    float stepNorm = stepSize * invRadius;
+    float dither = bayerDither(uv);
+    float cellSize = sphereR * 0.05;
+
+    float transmittance = 1.0;
+    vec3 accumulated = vec3(0.0);
+
+    for (int i = 0; i < COSMIC_STEPS; i++) {
+        float t = tNear + (float(i) + dither) * stepSize;
+        vec3 q = (ro + rd * t) - center;
+        float rn = length(q) * invRadius;
+
+        float sphereMask = smoothstep(1.0, 0.85, rn);
+        if (sphereMask <= 0.005) continue;
+
+        float height = dot(q, discNormal);
+        float heightNorm = abs(height) * invRadius;
+        vec2 discPos = vec2(dot(q, discAxisX), dot(q, discAxisY));
+        float discR = length(discPos) * invRadius;
+        float angle = atan(discPos.y, discPos.x);
+
+        float thickness = mix(0.12, 0.35, smoothstep(0.0, 0.6, discR));
+        float discVertical = exp(-heightNorm / max(thickness, 0.02));
+
+        // 流体扭曲与星系旋臂 (加入对数螺旋)
+        vec2 nebUv = discPos * (3.0 * invRadius) + vec2(Time * 0.02, -Time * 0.015);
+        float warp = fbm(nebUv * 1.5 + vec2(-Time * 0.05));
+        float neb = fbm(nebUv * 2.5 + warp * 1.2);
+
+        // 对数螺旋线方程创造宏伟星系臂
+        float logR = log(max(discR, 0.01));
+        float spiral = angle * 2.0 - logR * 5.0 + Time * 0.3 + warp * 2.0;
+        float arms = pow(cos(spiral) * 0.5 + 0.5, 3.5); // 更尖锐的旋臂
+
+        // 【关键升级】暗物质/尘埃带遮蔽：吞噬光线的黑色裂纹
+        float dustNoise = fbm(discPos * 5.0 * invRadius - vec2(Time * 0.03));
+        float darkDust = smoothstep(0.4, 0.8, dustNoise) * arms * 0.8;
+
+        float radialFade = smoothstep(0.02, 0.2, discR) * (1.0 - smoothstep(0.65, 1.0, discR));
+        float armWeight = arms * discVertical * radialFade;
+
+        // 弥散星云底色
+        float haze = sphereMask * (0.1 + 0.9 * neb) * (1.0 - smoothstep(0.5, 1.0, rn)) * 0.25;
+
+        // 极轴喷流 (脉冲星/黑洞喷流)
+        float axialDist = length(q - discNormal * height) * invRadius;
+        float jet = exp(-axialDist * axialDist * 80.0) * exp(-heightNorm * 1.5)
+                  * (0.6 + 0.4 * valueNoise(vec2(height * invRadius * 15.0 - Time * 4.0, 0.0)));
+
+        // ── 电影级稠密星点 (Anamorphic Flares) ──
+        vec3 cell = floor(q / max(cellSize, 0.0001));
+        float rnd = starHash(cell);
+        float starWeight = 0.0;
+        vec3 starColor = vec3(1.0);
+
+        if (rnd > 0.82) { // 更稀疏但更明亮的星空
+            vec3 starPos = (cell + 0.5) * cellSize + randomDirection(cell) * (cellSize * 0.4);
+            vec3 diff = q - starPos;
+            float sd = length(diff);
+            float sr = max(cellSize * mix(0.03, 0.12, fract(rnd * 13.7)), 0.0001);
+
+            float core = exp(-pow(sd / (sr * 0.4), 2.0)); // 锐利核心
+
+            // JJ Abrams 风格的变形宽银幕十字星芒
+            vec3 ad = abs(diff);
+            float flareX = exp(-ad.x * 25.0 / sr) * exp(-ad.y * 3.0 / sr) * exp(-ad.z * 3.0 / sr);
+            float flareY = exp(-ad.y * 25.0 / sr) * exp(-ad.x * 3.0 / sr) * exp(-ad.z * 3.0 / sr);
+            float crossFlare = (flareX + flareY) * 1.2;
+
+            float phase = Time * mix(1.0, 4.0, fract(rnd * 9.3)) + starHash(cell + 5.0) * 6.28;
+            float twinkle = mix(0.4, 1.0, pow(sin(phase) * 0.5 + 0.5, 2.0)); // 平滑闪烁
+
+            // 真实的恒星光谱分布 (蓝巨星 -> 黄矮星 -> 红矮星)
+            float tempHash = fract(rnd * 23.9);
+            starColor = mix(vec3(0.5, 0.8, 1.0), vec3(1.0, 0.9, 0.7), smoothstep(0.0, 0.6, tempHash));
+            starColor = mix(starColor, vec3(1.0, 0.3, 0.2), smoothstep(0.8, 1.0, tempHash)); // 少量红星
+
+            starWeight = (core * 2.5 + crossFlare) * twinkle * sphereMask;
+        }
+
+        // 光学积分
+        float discWeight = discVertical * radialFade * (0.2 + 0.8 * neb) * 0.6;
+        float totalWeight = (discWeight + armWeight * 1.5 + haze * 0.4 + jet * 1.5);
+        float gasDensity = totalWeight * energy;
+
+        if (gasDensity > 0.001) {
+            vec3 gasColor = cosmicPalette(neb * 0.4 + warp * 0.6 + arms * 0.2, tint);
+            // 叠加黑洞喷流的炽热蓝色
+            gasColor = mix(gasColor, vec3(0.4, 0.9, 1.0), (jet * 1.5) / max(totalWeight, 0.001));
+
+            // 应用暗尘带吸收，强化立体感
+            gasColor *= (1.0 - darkDust);
+
+            // 非线性透明度，让云雾边缘更丝滑
+            float gasAlpha = 1.0 - exp(-pow(gasDensity * stepNorm * 4.0, 1.2));
+            accumulated += (gasColor * (1.0 + armWeight) + rimTint * 0.012) * gasAlpha * transmittance;
+            // 尘埃带遮挡背景光（钳制到 [0,1]：Intensity 拉高时 1 - gasAlpha*(1+darkDust*0.5) 可能变负，
+            // 会让紧随其后的星光项反号变成"减光"，这里兜底）
+            transmittance *= clamp(1.0 - gasAlpha * (1.0 + darkDust * 0.5), 0.0, 1.0);
+        }
+
+        if (starWeight > 0.0) {
+            float starAlpha = 1.0 - exp(-starWeight * stepSize * 4.0 * energy);
+            // 星光是自发光，不受尘埃严重削弱，甚至能照亮局部
+            accumulated += starColor * starAlpha * 2.5 * transmittance;
+        }
+
+        if (transmittance < 0.01) break;
+    }
+
+    float amount = clamp(1.0 - transmittance, 0.0, 1.0);
+    vec3 integrated = accumulated / max(amount, 0.001);
+
+    // HDR Bloom 叠加组合
+    vec3 result = mix(background, integrated, amount);
+
+    // 视界绝对遮蔽后，将光子环与吸积盘以高光加成叠上去
+    result *= 1.0 - coreMask * min(energy, 1.0);
+    result += coreGlow;
+    result += rimGlow;
+
+    // 深空底光辐射已经并入体积积分（跟着星云密度走），这里不再做全屏平铺 ——
+    // 那种 `rimTint * amount * 0.03` 的写法是纯屏幕铺色，会跟着玩家一直糊在视野上。
+
+    return result;
+}
+// ────────────────────────── 寂灭之月领域 (Lunar Domain, mode 18) ──────────────────────────
+// 与宇宙领域对立：不做透光体积积分，而是用 SDF 实体步进雕刻一颗固态月亮 ——
+// 环形山/月海/碎石由噪声等值线生成，太空级硬阴影明暗交界线，暗部只留一丝地球反照的冷光，
+// 领域内漂浮反重力月壤，月球边缘有月食级逆光月晕。
+// 注意：本文件既有的 fbm / valueNoise 只接受 vec2，3D 噪声复用 catNoise3 / catFbm3。
+float lunarTerrain(vec3 p) {
+    float terrain = catFbm3(p * 3.5) * 0.30;
+
+    // 环形山：噪声等值线边界拱起成环，等值线内圈下陷成坑底
+    float n1 = catFbm3(p * 8.0 + vec3(1.0));
+    float craters = pow(abs(n1 - 0.5) * 2.0, 2.5);
+    float pits = smoothstep(0.4, 0.0, abs(n1 - 0.5));
+    terrain += craters * 0.25;
+    terrain -= pits * 0.15;
+
+    // 月壤碎石的颗粒感
+    terrain += catFbm3(p * 24.0) * 0.05;
+    return terrain;
+}
+
+float mapMoon(vec3 p, vec3 moonCenter, float radius) {
+    vec3 q = (p - moonCenter) / radius;
+    float baseDist = length(q) - 1.0;
+    // 只有贴近表面才做地形置换，远离时直接返回球面距离
+    if (baseDist < 0.2 && baseDist > -0.1) {
+        return (baseDist - lunarTerrain(q) * 0.12) * radius;
+    }
+    return baseDist * radius;
+}
+
+vec3 getMoonNormal(vec3 p, vec3 moonCenter, float radius) {
+    vec2 e = vec2(0.005 * radius, 0.0);
+    return normalize(vec3(
+            mapMoon(p + e.xyy, moonCenter, radius) - mapMoon(p - e.xyy, moonCenter, radius),
+            mapMoon(p + e.yxy, moonCenter, radius) - mapMoon(p - e.yxy, moonCenter, radius),
+            mapMoon(p + e.yyx, moonCenter, radius) - mapMoon(p - e.yyx, moonCenter, radius)
+    ));
+}
+
+vec3 applyLunarDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data, vec3 tint, float edge) {
+    float sphereR = max(data.y, 0.001);
+    float progress = clamp(data.z, 0.0, 1.0);
+    float intensity = max(data.w, 0.0);
+    float energy = intensity * (1.0 - smoothstep(0.86, 1.0, progress));
+    if (energy <= 0.002) return color;
+
+    vec3 ro = vec3(0.0);
+    vec3 rd = normalize(viewRay(uv));
+    float maxDistance = length(scenePos);
+
+    vec3 toCenter = center - ro;
+    float centerProj = dot(rd, toCenter);
+    float centerDist = length(toCenter);
+    float impact = sqrt(max(centerDist * centerDist - centerProj * centerProj, 0.0));
+
+    // ── 领域外壳：银灰细边 + 冷日冕 ──
+    // 判定与宇宙领域一致：壳必须在镜头前方、不晚于首个可见表面，且镜头离开领域球才有"轮廓"。
+    // 只看 impact 的话，领域跑到背后或被墙挡住时，边会被画到任意距离的地板和墙上。
+    vec3 rimTint = mix(tint, vec3(0.60, 0.65, 0.70), 0.5);
+    float outside = max(impact - sphereR, 0.0);
+    // 与宇宙领域同理：日冕收窄到紧贴轮廓，避免淡银色铺满视野周边
+    float corona = exp(-outside / max(sphereR * 0.11, 0.30));
+    corona *= 1.0 - smoothstep(0.30, 0.60, outside / sphereR);
+
+    float shellSpan = sqrt(max(sphereR * sphereR - impact * impact, 0.0));
+    float shellNear = centerProj - shellSpan;
+    float shellFar = centerProj + shellSpan;
+    float shellVisible = (shellFar > 0.0 && shellNear < maxDistance) ? 1.0 : 0.0;
+    float silhouette = smoothstep(1.0, 1.30, centerDist / sphereR);
+
+    // 边界噪声改用世界空间方向，避免纹理跟着镜头滑动
+    float tShell = max(shellNear, 0.0);
+    vec3 shellVec = rd * tShell - center;
+    float shellLen = length(shellVec);
+    vec3 shellDir = shellLen > 0.0001 ? shellVec / shellLen : vec3(0.0, 1.0, 0.0);
+    float edgeRing = exp(-abs(impact - sphereR) / (sphereR * 0.02))
+            * (0.8 + 0.2 * valueNoise(shellDir.xz * 6.0 + vec2(Time * 0.05, -Time * 0.04)))
+            * shellVisible * silhouette;
+    vec3 domainRimGlow = rimTint * edgeRing * 0.8 * energy;
+
+    vec3 oc = ro - center;
+    float b = dot(oc, rd);
+    float c = dot(oc, oc) - sphereR * sphereR;
+    float h = b * b - c;
+    if (h < 0.0) {
+        return color + domainRimGlow + rimTint * corona * 0.3 * energy * shellVisible * silhouette;
+    }
+
+    h = sqrt(h);
+    float tNear = max(-b - h, 0.0);
+    float tFar = min(-b + h, maxDistance);
+    if (tNear >= tFar) return color;
+
+    // ── SDF 实体月球：挂在领域中心上方，"压在头顶" ──
+    // 与球心同心时，领域挂自己身上会让镜头直接落在月球实体内部（整屏只剩一张灰面），
+    // 所以月球整体上移 0.52R、半径取 0.33R，正好压在领域中心正上方，且整个月亮仍在领域球内。
+    vec3 moonCenter = center + vec3(0.0, sphereR * 0.52, 0.0);
+    float moonRadius = sphereR * 0.33;
+    vec3 lightDir = normalize(vec3(cos(Time * 0.1), 0.3, sin(Time * 0.1)));
+
+    vec3 toMoon = moonCenter - ro;
+    float moonProj = dot(rd, toMoon);
+    float moonDist = sqrt(max(dot(toMoon, toMoon) - moonProj * moonProj, 0.0));
+    float moonSpan = sqrt(max(moonRadius * moonRadius - moonDist * moonDist, 0.0));
+    float cameraOutsideMoon = length(toMoon) > moonRadius ? 1.0 : 0.0;
+    // 实心月球：近端壳交在镜头前方、且不被近处几何挡住
+    float moonVisible = cameraOutsideMoon
+            * ((moonProj + moonSpan > 0.0 && moonProj - moonSpan < maxDistance) ? 1.0 : 0.0);
+    // 月晕：发光位置在月球外缘，要按它自己的三维深度判遮挡，
+    // 否则擦着月亮旁边过去的射线会把辉光印到近处的墙面上（同一类"无限范围"问题）
+    float haloOutside = max(moonDist - moonRadius, 0.0);
+    float haloDepth = sqrt(moonProj * moonProj + haloOutside * haloOutside);
+    float moonHaloVisible = cameraOutsideMoon
+            * ((moonProj + moonSpan > 0.0 && haloDepth < maxDistance) ? 1.0 : 0.0);
+
+    bool hitMoon = false;
+    vec3 hitPos = vec3(0.0);
+    if (moonVisible > 0.5) {
+        float t = tNear;
+        for (int i = 0; i < 54; i++) {
+            vec3 p = ro + rd * t;
+            float d = mapMoon(p, moonCenter, moonRadius);
+            if (d < 0.001 * t) {
+                hitMoon = true;
+                hitPos = p;
+                break;
+            }
+            t += d * 0.65; // 保守步长：地形置换让 SDF 略微低估，防止穿模
+            if (t > tFar) break;
+        }
+    }
+
+    // 领域内部压暗，做出深空死寂的底
+    vec3 domainBg = mix(color * 0.1, vec3(0.01, 0.012, 0.015), min(energy, 1.0));
+    vec3 finalColor = domainBg;
+
+    if (hitMoon) {
+        vec3 norm = getMoonNormal(hitPos, moonCenter, moonRadius);
+        vec3 q = normalize(hitPos - moonCenter);
+
+        float albedoNoise = clamp(lunarTerrain(q), 0.0, 1.0);
+        vec3 albedo = mix(vec3(0.25, 0.26, 0.28), vec3(0.85, 0.88, 0.90), albedoNoise);
+
+        // 太空没有大气散射：明暗交界线几乎是硬边
+        float ndotl = dot(norm, lightDir);
+        float harshLight = smoothstep(0.0, 0.05, ndotl);
+        // 月壤的逆向反射：正对光源观察时泛起高光
+        float backscatter = pow(max(dot(rd, -lightDir), 0.0), 4.0) * 0.5;
+        vec3 litColor = albedo * (harshLight + backscatter) * 1.5;
+        vec3 darkColor = albedo * vec3(0.02, 0.03, 0.05); // 暗部只留一丝地球反照
+
+        // 暗部边缘的菲涅尔轮廓光，强化几何压迫感
+        float rim = pow(1.0 - max(dot(norm, -rd), 0.0), 3.0);
+        vec3 rimColor = rimTint * rim * (1.0 - harshLight) * 0.8;
+
+        finalColor = mix(darkColor, litColor, harshLight) + rimColor;
+        finalColor *= energy;
+    } else {
+        // 月食级逆光月晕：只有月球真的可见时才出现（否则就是一层跟着视角的光幕）
+        // 只留紧贴月缘的逆光辉光：原来 0.6*月半径 的尾巴会在整个上半屏铺一层淡银色，
+        // 而月亮一直悬在玩家头顶，看起来就是"跟着视角移动的淡色影子"。
+        float glowIntensity = exp(-haloOutside / (moonRadius * 0.28))
+                * (1.0 - smoothstep(0.55, 1.00, haloOutside / moonRadius));
+        vec3 moonHalo = rimTint * glowIntensity * pow(max(dot(rd, lightDir), 0.0), 4.0) * 1.5 * moonHaloVisible;
+
+        // 反重力月壤：坐标取领域中心相对量，跟镜头平移无关（不会跟着玩家游动）
+        float ash = 0.0;
+        for (int j = 1; j <= 3; j++) {
+            float fj = float(j);
+            vec3 ashPos = (ro + rd * (tNear + sphereR * 0.3 * fj) - center) * (3.0 / sphereR)
+                    + vec3(Time * 0.05, -Time * 0.15, Time * 0.02) * fj;
+            ash += pow(max(catNoise3(ashPos * 8.0), 0.0), 12.0) * (1.0 / fj);
+        }
+
+        finalColor += moonHalo * energy + vec3(0.9, 0.95, 1.0) * ash * 3.0 * energy;
+    }
+
+    // 与场景融合：贴着领域边缘（弦长很短）时淡出
+    float amount = smoothstep(tNear, tNear + sphereR * 0.1, tFar);
+    vec3 result = mix(color, finalColor, amount * min(energy, 1.0));
+    result += domainRimGlow;
+    return result;
+}
 void main() {
     vec2 uv = gl_FragCoord.xy / InSize;
     vec4 base = texture(DiffuseSampler, uv);
@@ -1248,6 +1706,10 @@ void main() {
             color = applyMalevolentShrineVoid(color, scenePos, uv, center, data, tint, edge);
         } else if (mode == 12) {
             color = applyMalevolentShrineStarfield(color, scenePos, uv, center, data, tint, edge);
+        } else if (mode == 17) {
+            color = applyCosmicDomain(color, scenePos, uv, center, data, tint, edge);
+        } else if (mode == 18) {
+            color = applyLunarDomain(color, scenePos, uv, center, data, tint, edge);
         }
     } else if (mode == 0) {
         color = applyShockwave(color, scenePos, uv, center, data, tint);
@@ -1279,6 +1741,10 @@ void main() {
         color = applyMalevolentShrineVoid(color, scenePos, uv, center, data, tint, edge);
     } else if (mode == 12) {
         color = applyMalevolentShrineStarfield(color, scenePos, uv, center, data, tint, edge);
+    } else if (mode == 17) {
+        color = applyCosmicDomain(color, scenePos, uv, center, data, tint, edge);
+    } else if (mode == 18) {
+        color = applyLunarDomain(color, scenePos, uv, center, data, tint, edge);
     } else {
         color = applyMalevolentShrineTargetGlow(color, scenePos, uv, center, data, tint, edge);
     }

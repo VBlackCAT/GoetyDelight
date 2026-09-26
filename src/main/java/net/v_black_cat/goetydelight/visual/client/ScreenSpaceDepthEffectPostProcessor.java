@@ -443,6 +443,8 @@ public final class ScreenSpaceDepthEffectPostProcessor {
             case 14 -> 1.5D;  // shrine_black_domain: radius * 1.2
             case 15 -> 1.4D;  // shrine_black_mist: radius * 1.1
             case 16 -> 1.9D;  // black_cat_head_fog: 雾球 radius * 1.58
+            case 17 -> 1.7D;  // cosmic_domain: 领域球 radius + 球外日冕（约 0.6r）
+            case 18 -> 1.7D;  // lunar_domain: 月球完全在球内，外扩同样是球外日冕
             default -> 1.3D;  // 0/1/7/11/12 等：视觉边界基本就是 radius 本身
         };
     }
@@ -613,6 +615,14 @@ public final class ScreenSpaceDepthEffectPostProcessor {
             return 16;
         }
 
+        if (effect.id().equals(GDVisualEffects.COSMIC_DOMAIN.getId())) {
+            return 17;
+        }
+
+        if (effect.id().equals(GDVisualEffects.LUNAR_DOMAIN.getId())) {
+            return 18;
+        }
+
         return -1;
     }
 
@@ -683,6 +693,14 @@ public final class ScreenSpaceDepthEffectPostProcessor {
             return GDVisualEffects.BLACK_CAT_HEAD_FOG_FIELD.get().renderDistance();
         }
 
+        if (effect.id().equals(GDVisualEffects.COSMIC_DOMAIN.getId())) {
+            return GDVisualEffects.COSMIC_DOMAIN.get().renderDistance();
+        }
+
+        if (effect.id().equals(GDVisualEffects.LUNAR_DOMAIN.getId())) {
+            return GDVisualEffects.LUNAR_DOMAIN.get().renderDistance();
+        }
+
         return 0.0D;
     }
 
@@ -691,7 +709,7 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                 ? Mth.clamp(effect.data().getDouble("YOffset"), -4.0D, 4.0D)
                 : -0.04D;
 
-        if ((mode == 10 || mode == 13 || mode == 14 || mode == 15 || mode == 16)
+        if ((mode == 10 || mode == 13 || mode == 14 || mode == 15 || mode == 16 || mode == 17 || mode == 18)
                 && effect.data().contains("AnchorX")
                 && effect.data().contains("AnchorY")
                 && effect.data().contains("AnchorZ")) {
@@ -699,7 +717,7 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                     effect.data().getDouble("AnchorX"),
                     effect.data().getDouble("AnchorY"),
                     effect.data().getDouble("AnchorZ")
-            ).add(0.0D, mode == 16 ? yOffset : 0.0D, 0.0D);
+            ).add(0.0D, mode == 16 || mode == 17 || mode == 18 ? yOffset : 0.0D, 0.0D);
         }
 
         if (mode == 16) {
@@ -747,6 +765,10 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                         : 1.0F;
                 yield Math.max(1.15F, entity.getBbWidth() * 1.25F) * sizeScale;
             }
+            // 宇宙领域：默认给一个"领域感"的尺寸，不写 Radius 也不会小得像个球罩。
+            case 17 -> Math.max(6.5F, entity.getBbWidth() * 5.0F);
+            // 寂灭之月：月亮挂在球心上方，球小了月亮就贴脸，默认给得更大些。
+            case 18 -> Math.max(9.0F, entity.getBbWidth() * 6.0F);
             default -> DEFAULT_RADIUS;
         };
     }
@@ -769,7 +791,7 @@ public final class ScreenSpaceDepthEffectPostProcessor {
             return yawDegrees * ((float) Math.PI / 180.0F);
         }
 
-        if (mode == 10 || mode == 11 || mode == 12 || mode == 13 || mode == 14 || mode == 15) {
+        if (mode == 10 || mode == 11 || mode == 12 || mode == 13 || mode == 14 || mode == 15 || mode == 17 || mode == 18) {
             return progress;
         }
 
@@ -793,6 +815,13 @@ public final class ScreenSpaceDepthEffectPostProcessor {
         }
         if (mode == 8) {
             return base * Mth.clamp(progress * 1.3F, 0.0F, 1.0F);
+        }
+        // 宇宙领域：有限时长时才做「展开浮现」，永久领域（progress 恒为 0）直接满强度。
+        if (mode == 17 || mode == 18) {
+            float spawn = effect.initialDuration() == EntityVisualEffects.INFINITE
+                    ? 1.0F
+                    : Mth.clamp(progress * 4.0F, 0.0F, 1.0F);
+            return base * spawn;
         }
 
         return switch (mode) {
@@ -857,6 +886,21 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                 output[2] = 0.02F;
             }
             case 16 -> readColor(effect.data(), "FogColor", output, 0.03F, 0.01F, 0.06F);
+            case 17 -> {
+                // 深空紫靛：星云/旋臂走冷紫，吸积环的暖白在 shader 里独立调色。
+                output[0] = 0.32F;
+                output[1] = 0.13F;
+                output[2] = 0.72F;
+            }
+            case 18 -> {
+                // 月面/月晕色调：默认银灰。data 里给 Tint（或 FogColor）就能换色，
+                // 血月示例：{Tint:[1.0f,0.12f,0.15f]}
+                if (effect.data().contains("Tint")) {
+                    readColor(effect.data(), "Tint", output, 0.60F, 0.63F, 0.70F);
+                } else {
+                    readColor(effect.data(), "FogColor", output, 0.60F, 0.63F, 0.70F);
+                }
+            }
             default -> {
                 // 其它模式用会流动的彩虹色；相位按特效 id 固定，避免特效顺序变化导致颜色跳变
                 float phase = (event.getRenderTick() + event.getPartialTick()) * 0.08F + stablePhase(effect);

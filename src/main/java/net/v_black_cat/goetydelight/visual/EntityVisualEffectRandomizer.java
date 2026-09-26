@@ -59,6 +59,17 @@ public final class EntityVisualEffectRandomizer {
                     data.putFloat("Radius", range(random, 5.0F, 14.0F));
             case "malevolent_shrine_void", "malevolent_shrine_starfield" ->
                     data.putFloat("Radius", range(random, 4.0F, 12.0F));
+            // 宇宙领域：只吃 Radius / Intensity（盘面倾角与自转由 shader 随时间推进）
+            case "cosmic_domain" -> {
+                data.putFloat("Radius", range(random, 7.0F, 18.0F));
+                data.putFloat("Intensity", range(random, 0.7F, 1.8F));
+            }
+            // 寂灭之月：Radius / Intensity + Tint（随机月面色调，银灰 ~ 血月都有可能）
+            case "lunar_domain" -> {
+                data.putFloat("Radius", range(random, 9.0F, 20.0F));
+                data.putFloat("Intensity", range(random, 0.7F, 1.6F));
+                data.put("Tint", randomColor(random, 0.35F, 1.0F));
+            }
 
             // ── 猫雾：Scale 控体积，Yaw 控朝向，FogColor 控颜色 ──
             case "black_cat_head_fog_field" -> {
