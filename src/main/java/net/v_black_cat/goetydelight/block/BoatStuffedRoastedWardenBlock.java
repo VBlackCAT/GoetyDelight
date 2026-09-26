@@ -3,13 +3,8 @@ package net.v_black_cat.goetydelight.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -27,187 +22,107 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import vectorwing.farmersdelight.common.block.FeastBlock;
-import vectorwing.farmersdelight.common.registry.ModSounds;
-import vectorwing.farmersdelight.common.utility.TextUtils;
 
-import org.jetbrains.annotations.Nullable;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Supplier;
 
 public class BoatStuffedRoastedWardenBlock extends FeastBlock {
 
-    public static final IntegerProperty SERVINGS = IntegerProperty.create("servings", 0, 10);
-    public static final EnumProperty<Part> PART = EnumProperty.create("part", Part.class);
-    // 每个方块（中心 + 8 个外围）各自独立的碰撞/轮廓箱，均不越出自身格子 [0,1]：
-    // [part][servings][facing]
-    private static final VoxelShape[][][] PART_SHAPES = new VoxelShape[Part.values().length][11][4];
-    private final List<Supplier<Item>> servingItems;
+     public static final IntegerProperty SERVINGS = IntegerProperty.create("servings", 0, 7);
+     public static final EnumProperty<Part> PART = EnumProperty.create("part", Part.class);
+     // 预先计算所有朝向的碰撞箱
+     private static final VoxelShape[][][] ROTATED_SHAPES = new VoxelShape[8][4][]; // [servings][facing]
+     private final List<Supplier<Item>> servingItems;
 
-    private Part getPartFromOffset(int dx, int dz) {
-        if (dx == -1 && dz == -1) return Part.NORTH_WEST;
-        if (dx == -1 && dz == 0) return Part.NORTH;
-        if (dx == -1 && dz == 1) return Part.NORTH_EAST;
-        if (dx == 0 && dz == -1) return Part.WEST;
-        if (dx == 0 && dz == 1) return Part.EAST;
-        if (dx == 1 && dz == -1) return Part.SOUTH_WEST;
-        if (dx == 1 && dz == 0) return Part.SOUTH;
-        if (dx == 1 && dz == 1) return Part.SOUTH_EAST;
-        return Part.CENTER;
-    }
+     private Part getPartFromOffset(int dx, int dz) {
+          if (dx == -1 && dz == -1) return Part.NORTH_WEST;
+          if (dx == -1 && dz == 0) return Part.NORTH;
+          if (dx == -1 && dz == 1) return Part.NORTH_EAST;
+          if (dx == 0 && dz == -1) return Part.WEST;
+          if (dx == 0 && dz == 1) return Part.EAST;
+          if (dx == 1 && dz == -1) return Part.SOUTH_WEST;
+          if (dx == 1 && dz == 0) return Part.SOUTH;
+          if (dx == 1 && dz == 1) return Part.SOUTH_EAST;
+          return Part.CENTER; 
+     }
+     public enum Part implements StringRepresentable {
+          CENTER("center", 0, 0),
+          NORTH_WEST("north_west", -1, -1),
+          NORTH("north", -1, 0),
+          NORTH_EAST("north_east", -1, 1),
+          WEST("west", 0, -1),
+          EAST("east", 0, 1),
+          SOUTH_WEST("south_west", 1, -1),
+          SOUTH("south", 1, 0),
+          SOUTH_EAST("south_east", 1, 1);
 
-    public enum Part implements StringRepresentable {
-        CENTER("center", 0, 0),
-        NORTH_WEST("north_west", -1, -1),
-        NORTH("north", -1, 0),
-        NORTH_EAST("north_east", -1, 1),
-        WEST("west", 0, -1),
-        EAST("east", 0, 1),
-        SOUTH_WEST("south_west", 1, -1),
-        SOUTH("south", 1, 0),
-        SOUTH_EAST("south_east", 1, 1);
+          private final String name;
+          public final int dx; 
+          public final int dz; 
 
-        private final String name;
-        public final int dx;
-        public final int dz;
+          Part(String name, int dx, int dz) {
+               this.name = name;
+               this.dx = dx;
+               this.dz = dz;
+          }
 
-        Part(String name, int dx, int dz) {
-            this.name = name;
-            this.dx = dx;
-            this.dz = dz;
-        }
+          @Override
+          public String getSerializedName() {
+               return name;
+          }
+     }
+     @Override
+     public ItemStack getServingItem(BlockState state) {
+          int servings = state.getValue(SERVINGS);
+          // 根据剩余份数选择不同的物品
+          int itemIndex = (getMaxServings() - servings) % servingItems.size();
+          return new ItemStack(servingItems.get(itemIndex).get());
+     }
+     @Override
+     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+          super.setPlacedBy(level, pos, state, placer, stack);
 
-        @Override
-        public String getSerializedName() {
-            return name;
-        }
-    }
+          if (!level.isClientSide) {
+               
+               for (int dx = -1; dx <= 1; dx++) {
+                    for (int dz = -1; dz <= 1; dz++) {
+                         if (dx == 0 && dz == 0) continue;
 
-    @Override
-    public ItemStack getServingItem(BlockState state) {
-        int servings = state.getValue(SERVINGS);
-        // 根据剩余份数选择不同的物品
-        int itemIndex = (getMaxServings() - servings) % servingItems.size();
-        return new ItemStack(servingItems.get(itemIndex).get());
-    }
+                         BlockPos partPos = pos.offset(dx, 0, dz);
+                         Part part = getPartFromOffset(dx, dz);
+                         
+                         BlockState partState = this.defaultBlockState()
+                                 .setValue(PART, part)
+                                 .setValue(FACING, state.getValue(FACING))
+                                 .setValue(SERVINGS, state.getValue(SERVINGS));
 
-    @Override
-    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable
-                    LivingEntity placer, ItemStack stack) {
-        super.setPlacedBy(level, pos, state, placer, stack);
+                         level.setBlock(partPos, partState, 3);
+                    }
+               }
+          }
+     }
 
-        if (!level.isClientSide) {
 
-            for (int dx = -1; dx <= 1; dx++) {
-                for (int dz = -1; dz <= 1; dz++) {
-                    if (dx == 0 && dz == 0) continue;
+     private BlockPos getCenterPos(BlockPos pos, Part part) {
+          return pos.offset(-part.dx, 0, -part.dz); 
+     }
 
-                    BlockPos partPos = pos.offset(dx, 0, dz);
-                    Part part = getPartFromOffset(dx, dz);
+     @Override
+     public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
+          if (state.getValue(PART) == Part.CENTER) {
+               super.playerDestroy(level, player, pos, state, blockEntity, tool);
+          }
+          
+     }
 
-                    BlockState partState = this.defaultBlockState()
-                            .setValue(PART, part)
-                            .setValue(FACING, state.getValue(FACING))
-                            .setValue(SERVINGS, state.getValue(SERVINGS));
-
-                    level.setBlock(partPos, partState, 3);
-                }
-            }
-        }
-    }
-
-    private BlockPos getCenterPos(BlockPos pos, Part part) {
-        return pos.offset(-part.dx, 0, -part.dz);
-    }
-
-    @Override
-    public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        // Only the CENTER part serves food. The 8 surrounding parts are invisible marker blocks used
-        // solely for structure integrity; they must never serve independently, otherwise every one of
-        // them behaves as its own full 10-serving feast (the source of the "infinite warden head" bug).
-        // 外围幽灵方块本身不可独立取餐，而是把交互重定向到中心方块；
-        // 这样点盘子边缘也能正确取餐，且不会各自当成独立的一盘盛宴。
-        if (state.getValue(PART) != Part.CENTER) {
-            BlockPos centerPos = getCenterPos(pos, state.getValue(PART));
-            BlockState centerState = level.getBlockState(centerPos);
-            if (centerState.getBlock() == this && centerState.getValue(PART) == Part.CENTER) {
-                return this.useItemOn(stack, centerState, level, centerPos, player, hand, hit);
-            }
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-        }
-
-        // Follow Farmer's Delight FeastBlock gating: predict on the client, execute on the server.
-        if (level.isClientSide) {
-            if (this.takeServing(level, pos, state, player, hand).consumesAction()) {
-                return ItemInteractionResult.SUCCESS;
-            }
-        }
-        return this.takeServing(level, pos, state, player, hand);
-    }
-
-    @Override
-    protected ItemInteractionResult takeServing(LevelAccessor level, BlockPos pos, BlockState state, Player player, InteractionHand hand) {
-        int servings = state.getValue(SERVINGS);
-
-        if (servings == 0) {
-            level.playSound(null, pos, SoundEvents.WOOD_BREAK, SoundSource.PLAYERS, 0.8F, 0.8F);
-            breakEntireStructure(level, pos, state, null);
-            return ItemInteractionResult.SUCCESS;
-        }
-
-        ItemStack serving = this.getServingItem(state);
-        ItemStack heldStack = player.getItemInHand(hand);
-
-        if (servings > 0) {
-            if (!serving.hasCraftingRemainingItem() || ItemStack.isSameItem(heldStack, serving.getCraftingRemainingItem())) {
-                setServingsAcrossStructure(level, pos, servings - 1);
-                player.awardStat(Stats.ITEM_USED.get(heldStack.getItem()));
-                if (!player.getAbilities().instabuild && serving.hasCraftingRemainingItem()) {
-                    heldStack.shrink(1);
-                }
-                if (!player.getInventory().add(serving)) {
-                    player.drop(serving, false);
-                }
-                if (servings - 1 == 0 && !this.hasLeftovers) {
-                    breakEntireStructure(level, pos, state, null);
-                }
-                level.playSound(null, pos, ModSounds.BLOCK_FOOD_TAKE_PORTION.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-                return ItemInteractionResult.SUCCESS;
-            } else {
-                player.displayClientMessage(TextUtils.block("feast.use_container", serving.getCraftingRemainingItem().getHoverName()), true);
-            }
-        }
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-    }
-
-    private void setServingsAcrossStructure(LevelAccessor level, BlockPos pos, int servings) {
-        Part part = level.getBlockState(pos).getValue(PART);
-        BlockPos centerPos = getCenterPos(pos, part);
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                BlockPos partPos = centerPos.offset(dx, 0, dz);
-                BlockState partState = level.getBlockState(partPos);
-                if (partState.getBlock() instanceof BoatStuffedRoastedWardenBlock) {
-                    level.setBlock(partPos, partState.setValue(SERVINGS, servings), 3);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, @Nullable
-                    BlockEntity blockEntity, ItemStack tool) {
-        if (state.getValue(PART) == Part.CENTER) {
-            super.playerDestroy(level, player, pos, state, blockEntity, tool);
-        }
-    }
-
-    private static final VoxelShape[] SHAPES = new VoxelShape[]{
+     
+    private static final VoxelShape[] SHAPES = new VoxelShape[] {
             makeShape0(),
             makeShape1(),
             makeShape2(),
@@ -215,493 +130,410 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
             makeShape4(),
             makeShape5(),
             makeShape6(),
-            makeShape7(),
-            makeShape8(),
-            makeShape9(),
-            makeShape10()
+            makeShape7()
     };
 
-    // 静态初始化块：把整盘（中心局部坐标系下的完整形状）按朝向旋转后，
-    // 逐个裁剪到每个方块自己的格子，并平移到该方块的局部坐标。
-    static {
-        Direction[] facings = {Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
+     // 静态初始化块，在类加载时预计算所有旋转
+     static {
+          // 定义四个基本朝向
+          Direction[] facings = {Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
 
-        for (int servings = 0; servings < 11; servings++) {
-            for (int i = 0; i < facings.length; i++) {
-                Direction facing = facings[i];
-                VoxelShape rotated = rotateVoxelShapeStatic(SHAPES[servings], facing);
-                for (Part part : Part.values()) {
-                    PART_SHAPES[part.ordinal()][servings][i] = clipToCell(rotated, part.dx, part.dz);
-                }
-            }
-        }
-    }
+          for (int servings = 0; servings < 8; servings++) {
+               for (int i = 0; i < facings.length; i++) {
+                    Direction facing = facings[i];
+                    VoxelShape originalShape = SHAPES[servings];
+                    ROTATED_SHAPES[servings][i] = new VoxelShape[]{rotateVoxelShapeStatic(originalShape, facing)};
+               }
+          }
+     }
 
-    // 把（中心局部坐标系下的）完整形状裁剪到 [dx,dx+1]×[dz,dz+1] 的格子，并平移到该格子的局部坐标。
-    private static VoxelShape clipToCell(VoxelShape shape, int dx, int dz) {
-        VoxelShape cell = Shapes.box(dx, -1.0, dz, dx + 1, 2.0, dz + 1);
-        return Shapes.join(shape, cell, BooleanOp.AND).move(-dx, 0, -dz);
-    }
+     static VoxelShape makeShape0(){
+          VoxelShape shape = Shapes.empty();
+          shape = Shapes.join(shape, Shapes.box(-0.5, 0, -0.5, 1.5, 0.0625, 1.5), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.75, 0.125, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.625, 0.125, -0.75, 1.625, 0.1875, -0.625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.75, 0.125, -0.75, -0.625, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.625, 0.125, 1.625, 1.625, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.625, 0.125, -0.75, 1.75, 0.1875, 1.75), BooleanOp.OR);
+          return shape;
+     }
 
-    public BoatStuffedRoastedWardenBlock(Properties properties, List<
-                    Supplier<Item>> servingItems, boolean hasLeftovers) {
-        super(properties, () -> servingItems.get(0).get(), hasLeftovers);
-        this.servingItems = servingItems;
-        this.registerDefaultState(this.stateDefinition.any()
-                .setValue(FACING, Direction.NORTH)
-                .setValue(SERVINGS, getMaxServings())
-                .setValue(PART, Part.CENTER));
-    }
+     static VoxelShape makeShape1(){
+          VoxelShape shape = Shapes.empty();
+          shape = Shapes.join(shape, Shapes.box(-0.5, 0, -0.5, 1.5, 0.0625, 1.5), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.75, 0.125, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.625, 0.125, -0.75, 1.625, 0.1875, -0.625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.75, 0.125, -0.75, -0.625, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.625, 0.125, 1.625, 1.625, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.625, 0.125, -0.75, 1.75, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.8125, 0.125, 0.125, 1.375, 0.8125, 1.4375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.1875, 0.8125, 0.375, 1.25, 1, 0.5), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.25, 0.8125, 0.5625, 1.3125, 1, 0.6875), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.25, 0.8125, 0.8125, 1.3125, 1, 0.9375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.1875, 0.8125, 1, 1.25, 1, 1.125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.5, 0.125, 0.4375, 1.0625, 0.625, 1.0625), BooleanOp.OR);
+          return shape;
+     }
 
-    @Override
-    public IntegerProperty getServingsProperty() {
-        return SERVINGS;
-    }
+     static VoxelShape makeShape2(){
+          VoxelShape shape = Shapes.empty();
+          shape = Shapes.join(shape, Shapes.box(-0.5, 0, -0.5, 1.5, 0.0625, 1.5), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.75, 0.125, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.625, 0.125, -0.75, 1.625, 0.1875, -0.625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.75, 0.125, -0.75, -0.625, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.625, 0.125, 1.625, 1.625, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.625, 0.125, -0.75, 1.75, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.0625, 0.125, 0.125, 1.0625, 0.8125, 1.4375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.8125, 0.8125, 0.375, 0.875, 1, 0.5), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.9375, 0.8125, 0.5625, 1, 1, 0.6875), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.9375, 0.8125, 0.8125, 1, 1, 0.9375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.8125, 0.8125, 1, 0.875, 1, 1.125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.125, 0.8125, 0.375, 0.1875, 1, 0.5), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0, 0.8125, 0.5625, 0.0625, 1, 0.6875), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0, 0.8125, 0.8125, 0.0625, 1, 0.9375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.125, 0.8125, 1, 0.1875, 1, 1.125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.1875, 0.8125, 0.4375, 0.8125, 1.3125, 1.0625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.625, 0.125, -0.625, 0, 0.1875, -0.3125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1, 0.125, -0.625, 1.625, 0.1875, -0.3125), BooleanOp.OR);
+          return shape;
+     }
+
+     static VoxelShape makeShape3(){
+          VoxelShape shape = Shapes.empty();
+          shape = Shapes.join(shape, Shapes.box(-0.5, 0, -0.5, 1.5, 0.0625, 1.5), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.75, 0.125, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.625, 0.125, -0.75, 1.625, 0.1875, -0.625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.75, 0.125, -0.75, -0.625, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.625, 0.125, 1.625, 1.625, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.625, 0.125, -0.75, 1.75, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.0625, 0.125, -0.1875, 1.5625, 0.625, 1.5625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.0625, 0.125, 0.125, 1.0625, 0.8125, 1.4375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.8125, 0.8125, 0.375, 0.875, 1, 0.5), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.9375, 0.8125, 0.5625, 1, 1, 0.6875), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.9375, 0.8125, 0.8125, 1, 1, 0.9375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.8125, 0.8125, 1, 0.875, 1, 1.125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.125, 0.8125, 0.375, 0.1875, 1, 0.5), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0, 0.8125, 0.5625, 0.0625, 1, 0.6875), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0, 0.8125, 0.8125, 0.0625, 1, 0.9375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.125, 0.8125, 1, 0.1875, 1, 1.125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.1875, 0.8125, 0.4375, 0.8125, 1.3125, 1.0625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.625, 0.125, -0.625, 0, 0.1875, -0.3125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1, 0.125, -0.625, 1.625, 0.1875, -0.3125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.0625, 0.125, -0.625, 1.4375, 0.5, -0.25), BooleanOp.OR);
+          return shape;
+     }
+
+     static VoxelShape makeShape4(){
+          VoxelShape shape = Shapes.empty();
+          shape = Shapes.join(shape, Shapes.box(-0.5, 0, -0.5, 1.5, 0.0625, 1.5), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.75, 0.125, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.625, 0.125, -0.75, 1.625, 0.1875, -0.625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.75, 0.125, -0.75, -0.625, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.625, 0.125, 1.625, 1.625, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.625, 0.125, -0.75, 1.75, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.5625, 0.125, -0.1875, -0.0625, 0.625, 1.5625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.0625, 0.125, -0.1875, 1.5625, 0.625, 1.5625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.0625, 0.125, 0.125, 1.0625, 0.8125, 1.4375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.8125, 0.8125, 0.375, 0.875, 1, 0.5), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.9375, 0.8125, 0.5625, 1, 1, 0.6875), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.9375, 0.8125, 0.8125, 1, 1, 0.9375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.8125, 0.8125, 1, 0.875, 1, 1.125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.125, 0.8125, 0.375, 0.1875, 1, 0.5), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0, 0.8125, 0.5625, 0.0625, 1, 0.6875), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0, 0.8125, 0.8125, 0.0625, 1, 0.9375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.125, 0.8125, 1, 0.1875, 1, 1.125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.1875, 0.8125, 0.4375, 0.8125, 1.3125, 1.0625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.625, 0.125, -0.625, 0, 0.1875, -0.3125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1, 0.125, -0.625, 1.625, 0.1875, -0.3125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.4375, 0.125, -0.625, -0.0625, 0.5, -0.25), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.0625, 0.125, -0.625, 1.4375, 0.5, -0.25), BooleanOp.OR);
+          return shape;
+     }
+
+     static VoxelShape makeShape5(){
+          VoxelShape shape = Shapes.empty();
+          shape = Shapes.join(shape, Shapes.box(-0.5, 0, -0.5, 1.5, 0.0625, 1.5), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.75, 0.125, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.625, 0.125, -0.75, 1.625, 0.1875, -0.625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.75, 0.125, -0.75, -0.625, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.625, 0.125, 1.625, 1.625, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.625, 0.125, -0.75, 1.75, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.5625, 0.125, -0.1875, -0.0625, 0.625, 1.5625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.0625, 0.125, -0.1875, 1.5625, 0.625, 1.5625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.0625, 0.125, 0.125, 1.0625, 0.8125, 1.4375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.8125, 0.8125, 0.375, 0.875, 1, 0.5), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.9375, 0.8125, 0.5625, 1, 1, 0.6875), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.9375, 0.8125, 0.8125, 1, 1, 0.9375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.8125, 0.8125, 1, 0.875, 1, 1.125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.125, 0.8125, 0.375, 0.1875, 1, 0.5), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0, 0.8125, 0.5625, 0.0625, 1, 0.6875), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0, 0.8125, 0.8125, 0.0625, 1, 0.9375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.125, 0.8125, 1, 0.1875, 1, 1.125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.1875, 0.8125, 0.4375, 0.8125, 1.3125, 1.0625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.0625, 0.625, 0.125, 1.4375, 1, 0.9375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.625, 0.125, -0.625, 0, 0.1875, -0.3125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1, 0.125, -0.625, 1.625, 0.1875, -0.3125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.4375, 0.125, -0.625, -0.0625, 0.5, -0.25), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.0625, 0.125, -0.625, 1.4375, 0.5, -0.25), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.125, 0.6875, 1.0625, 1.5, 1.0625, 1.4375), BooleanOp.OR);
+
+          return shape;
+     }
+
+     static VoxelShape makeShape6(){
+          VoxelShape shape = Shapes.empty();
+          shape = Shapes.join(shape, Shapes.box(-0.5, 0, -0.5, 1.5, 0.0625, 1.5), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.75, 0.125, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.625, 0.125, -0.75, 1.625, 0.1875, -0.625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.75, 0.125, -0.75, -0.625, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.625, 0.125, 1.625, 1.625, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.625, 0.125, -0.75, 1.75, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.5625, 0.125, -0.1875, -0.0625, 0.625, 1.5625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.0625, 0.125, -0.1875, 1.5625, 0.625, 1.5625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.0625, 0.125, 0.125, 1.0625, 0.8125, 1.4375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.8125, 0.8125, 0.375, 0.875, 1, 0.5), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.9375, 0.8125, 0.5625, 1, 1, 0.6875), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.9375, 0.8125, 0.8125, 1, 1, 0.9375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.8125, 0.8125, 1, 0.875, 1, 1.125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.125, 0.8125, 0.375, 0.1875, 1, 0.5), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0, 0.8125, 0.5625, 0.0625, 1, 0.6875), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0, 0.8125, 0.8125, 0.0625, 1, 0.9375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.125, 0.8125, 1, 0.1875, 1, 1.125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.1875, 0.8125, 0.4375, 0.8125, 1.3125, 1.0625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.0625, 0.625, 0.125, 1.4375, 1, 0.9375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.4375, 0.625, 0.0625, -0.0625, 1, 0.875), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.625, 0.125, -0.625, 0, 0.1875, -0.3125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1, 0.125, -0.625, 1.625, 0.1875, -0.3125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.4375, 0.125, -0.625, -0.0625, 0.5, -0.25), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.5, 0.6875, 1, -0.125, 1.0625, 1.375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.0625, 0.125, -0.625, 1.4375, 0.5, -0.25), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.125, 0.6875, 1.0625, 1.5, 1.0625, 1.4375), BooleanOp.OR);
+
+          return shape;
+     }
+
+     static VoxelShape makeShape7(){
+          VoxelShape shape = Shapes.empty();
+          shape = Shapes.join(shape, Shapes.box(-0.5, 0, -0.5, 1.5, 0.0625, 1.5), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.75, 0.125, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.625, 0.125, -0.75, 1.625, 0.1875, -0.625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.75, 0.125, -0.75, -0.625, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.625, 0.125, 1.625, 1.625, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.625, 0.125, -0.75, 1.75, 0.1875, 1.75), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.5625, 0.125, -0.1875, -0.0625, 0.625, 1.5625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.0625, 0.125, -0.1875, 1.5625, 0.625, 1.5625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.0625, 0.125, 0.125, 1.0625, 0.8125, 1.4375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.8125, 0.8125, 0.375, 0.875, 1, 0.5), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.9375, 0.8125, 0.5625, 1, 1, 0.6875), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.9375, 0.8125, 0.8125, 1, 1, 0.9375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.8125, 0.8125, 1, 0.875, 1, 1.125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.125, 0.8125, 0.375, 0.1875, 1, 0.5), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0, 0.8125, 0.5625, 0.0625, 1, 0.6875), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0, 0.8125, 0.8125, 0.0625, 1, 0.9375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.125, 0.8125, 1, 0.1875, 1, 1.125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0.1875, 0.8125, 0.4375, 0.8125, 1.3125, 1.0625), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(0, 0.125, -0.5, 1, 1.125, 0.125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.0625, 0.625, 0.125, 1.4375, 1, 0.9375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.4375, 0.625, 0.0625, -0.0625, 1, 0.875), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.625, 0.125, -0.625, 0, 0.1875, -0.3125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1, 0.125, -0.625, 1.625, 0.1875, -0.3125), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.4375, 0.125, -0.625, -0.0625, 0.5, -0.25), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(-0.5, 0.6875, 1, -0.125, 1.0625, 1.375), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.0625, 0.125, -0.625, 1.4375, 0.5, -0.25), BooleanOp.OR);
+          shape = Shapes.join(shape, Shapes.box(1.125, 0.6875, 1.0625, 1.5, 1.0625, 1.4375), BooleanOp.OR);
+
+          return shape;
+     }
+     public BoatStuffedRoastedWardenBlock(Properties properties, List<Supplier<Item>> servingItems, boolean hasLeftovers) {
+          super(properties, () -> servingItems.get(0).get(), hasLeftovers);
+          this.servingItems = servingItems;
+         this.registerDefaultState(this.stateDefinition.any()
+                  .setValue(FACING, Direction.NORTH)
+                  .setValue(SERVINGS, getMaxServings())
+                  .setValue(PART, Part.CENTER)); 
+     }
+
+     @Override
+     public IntegerProperty getServingsProperty() {
+          return SERVINGS;
+     }
 
     @Override
     public int getMaxServings() {
-        return 10;
+        return 7;
     }
 
-    @Nullable
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        BlockPos pos = context.getClickedPos();
-        Level level = context.getLevel();
+     @Nullable
+     @Override
+     public BlockState getStateForPlacement(BlockPlaceContext context) {
+          BlockPos pos = context.getClickedPos();
+          Level level = context.getLevel();
 
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                if (dx == 0 && dz == 0) continue;
+          
+          for (int dx = -1; dx <= 1; dx++) {
+               for (int dz = -1; dz <= 1; dz++) {
+                    if (dx == 0 && dz == 0) continue;
 
-                BlockPos partPos = pos.offset(dx, 0, dz);
-                if (!level.getBlockState(partPos).canBeReplaced(context)) {
-                    return null;
-                }
-            }
-        }
-
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection());
-    }
-
-    @Override
-    public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
-        if (!level.isClientSide() && shouldBreakStructure(level, currentPos, state)) {
-            level.scheduleTick(currentPos, this, 1);
-        }
-        return state;
-    }
-
-    @Override
-    public VoxelShape getInteractionShape(BlockState state, BlockGetter level, BlockPos pos) {
-        return getShape(state, level, pos, CollisionContext.empty());
-    }
-
-    @Override
-    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-        if (!level.isClientSide) {
-
-            if (player.isCreative()) {
-                breakEntireStructure(level, pos, state, player);
-            }
-        }
-        return state;
-    }
-
-    @Override
-    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        if (shouldBreakStructure(level, pos, state)) {
-            breakEntireStructure(level, pos, state, null);
-        }
-    }
-
-    private boolean shouldBreakStructure(LevelAccessor level, BlockPos pos, BlockState state) {
-        Part part = state.getValue(PART);
-        BlockPos centerPos = getCenterPos(pos, part);
-
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                BlockPos checkPos = centerPos.offset(dx, 0, dz);
-                BlockState checkState = level.getBlockState(checkPos);
-
-                if (!(checkState.getBlock() instanceof BoatStuffedRoastedWardenBlock)) {
-                    return true;
-                }
-
-                Part expectedPart = getPartFromOffset(dx, dz);
-                if (checkState.getValue(PART) != expectedPart) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private void breakEntireStructure(LevelAccessor level, BlockPos pos, BlockState state, @Nullable
-                    Player player) {
-        Part part = state.getValue(PART);
-        BlockPos centerPos = getCenterPos(pos, part);
-
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                BlockPos partPos = centerPos.offset(dx, 0, dz);
-                BlockState partState = level.getBlockState(partPos);
-
-                if (partState.getBlock() instanceof BoatStuffedRoastedWardenBlock) {
-                    level.setBlock(partPos, Blocks.AIR.defaultBlockState(), 3);
-                    if (player != null) {
-                        level.levelEvent(player, 2001, partPos, Block.getId(partState));
+                    BlockPos partPos = pos.offset(dx, 0, dz);
+                    if (!level.getBlockState(partPos).canBeReplaced(context)) {
+                         return null;
                     }
-                }
-            }
-        }
-    }
+               }
+          }
 
-    @Override
-    public RenderShape getRenderShape(BlockState state) {
-        return state.getValue(PART) == Part.CENTER ? RenderShape.MODEL : RenderShape.INVISIBLE;
-    }
+          return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection());
+     }
 
-    @Override
-    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        Part part = state.getValue(PART);
+     @Override
+     public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
+          if (!level.isClientSide() && shouldBreakStructure(level, currentPos, state)) {
+               level.scheduleTick(currentPos, this, 1);
+          }
+          return state;
+     }
+     @Override
+     public VoxelShape getInteractionShape(BlockState state, BlockGetter level, BlockPos pos) {
+          return state.getValue(PART) == Part.CENTER ? getShape(state, level, pos, CollisionContext.empty()) : Shapes.empty();
+     }
 
-        int servings = state.getValue(SERVINGS);
-        if (servings < 0 || servings >= SHAPES.length) {
-            servings = 0;
-        }
 
-        int facingIndex = getFacingIndex(state.getValue(FACING));
-        return PART_SHAPES[part.ordinal()][servings][facingIndex];
-    }
+     @Override
+     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+          if (!level.isClientSide) {
 
-    @Override
-    public VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
-        return state.getValue(PART) == Part.CENTER ? super.getOcclusionShape(state, level, pos) : Shapes.empty();
-    }
+               if (player.isCreative()) {
+                    breakEntireStructure(level, pos, state, player);
+               }
+          }
+          return super.playerWillDestroy(level, pos, state, player);
 
-    /** 静态方法用于预计算旋转 */
-    private static VoxelShape rotateVoxelShapeStatic(VoxelShape shape, Direction facing) {
-        if (facing == Direction.NORTH) {
-            return shape;
-        }
+     }
 
-        return shape.toAabbs().stream()
-                .map(aabb -> rotateAABBStatic(aabb, facing))
-                .map(Shapes::create)
-                .reduce(Shapes.empty(), Shapes::or);
-    }
+     @Override
+     public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+          if (shouldBreakStructure(level, pos, state)) {
+               breakEntireStructure(level, pos, state, null);
+          }
+     }
+     private boolean shouldBreakStructure(LevelAccessor level, BlockPos pos, BlockState state) {
+          Part part = state.getValue(PART);
+          BlockPos centerPos = getCenterPos(pos, part);
 
-    /** 静态方法用于预计算AABB旋转 */
-    private static AABB rotateAABBStatic(AABB aabb, Direction facing) {
-        double minX = aabb.minX;
-        double minY = aabb.minY;
-        double minZ = aabb.minZ;
-        double maxX = aabb.maxX;
-        double maxY = aabb.maxY;
-        double maxZ = aabb.maxZ;
+          
+          for (int dx = -1; dx <= 1; dx++) {
+               for (int dz = -1; dz <= 1; dz++) {
+                    BlockPos checkPos = centerPos.offset(dx, 0, dz);
+                    BlockState checkState = level.getBlockState(checkPos);
 
-        switch (facing) {
-            case EAST:
-                return new AABB(1 - maxZ, minY, minX, 1 - minZ, maxY, maxX);
-            case SOUTH:
-                return new AABB(1 - maxX, minY, 1 - maxZ, 1 - minX, maxY, 1 - minZ);
-            case WEST:
-                return new AABB(minZ, minY, 1 - maxX, maxZ, maxY, 1 - minX);
-            default:
-                return aabb;
-        }
-    }
+                    if (!(checkState.getBlock() instanceof BoatStuffedRoastedWardenBlock)) {
+                         return true; 
+                    }
 
-    /** 将Direction转换为索引 */
-    public int getFacingIndex(Direction facing) {
-        switch (facing) {
-            case NORTH:
-                return 0;
-            case EAST:
-                return 1;
-            case SOUTH:
-                return 2;
-            case WEST:
-                return 3;
-            default:
-                return 0;
-        }
-    }
+                    
+                    Part expectedPart = getPartFromOffset(dx, dz);
+                    if (checkState.getValue(PART) != expectedPart) {
+                         return true;
+                    }
+               }
+          }
+          return false;
+     }
+     private void breakEntireStructure(Level level, BlockPos pos, BlockState state, @Nullable Player player) {
+          Part part = state.getValue(PART);
+          BlockPos centerPos = getCenterPos(pos, part);
 
-    @Override
+          for (int dx = -1; dx <= 1; dx++) {
+               for (int dz = -1; dz <= 1; dz++) {
+                    BlockPos partPos = centerPos.offset(dx, 0, dz);
+                    BlockState partState = level.getBlockState(partPos);
+
+                    if (partState.getBlock() instanceof BoatStuffedRoastedWardenBlock) {
+                         level.setBlock(partPos, Blocks.AIR.defaultBlockState(), 3);
+                         if (player != null) {
+                              level.levelEvent(player, 2001, partPos, Block.getId(partState));
+                         }
+                    }
+               }
+          }
+     }
+     @Override
+     public RenderShape getRenderShape(BlockState state) {
+          return state.getValue(PART) == Part.CENTER ? RenderShape.MODEL : RenderShape.INVISIBLE;
+     }
+     @Override
+     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+          if (state.getValue(PART) != Part.CENTER) {
+               return Shapes.empty();
+          }
+
+          int servings = state.getValue(SERVINGS);
+          if (servings < 0 || servings >= SHAPES.length) {
+               servings = 0;
+          }
+
+          Direction facing = state.getValue(FACING);
+          int facingIndex = getFacingIndex(facing);
+
+          // 直接从预计算数组中获取
+          return ROTATED_SHAPES[servings][facingIndex][0];
+     }
+     @Override
+     public VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
+          return state.getValue(PART) == Part.CENTER ? super.getOcclusionShape(state, level, pos) : Shapes.empty();
+     }
+
+     /**
+      * 静态方法用于预计算旋转
+      */
+     private static VoxelShape rotateVoxelShapeStatic(VoxelShape shape, Direction facing) {
+          if (facing == Direction.NORTH) {
+               return shape;
+          }
+
+          return shape.toAabbs().stream()
+                  .map(aabb -> rotateAABBStatic(aabb, facing))
+                  .map(Shapes::create)
+                  .reduce(Shapes.empty(), Shapes::or);
+     }
+
+     /**
+      * 静态方法用于预计算AABB旋转
+      */
+     private static AABB rotateAABBStatic(AABB aabb, Direction facing) {
+          double minX = aabb.minX;
+          double minY = aabb.minY;
+          double minZ = aabb.minZ;
+          double maxX = aabb.maxX;
+          double maxY = aabb.maxY;
+          double maxZ = aabb.maxZ;
+
+          switch (facing) {
+               case EAST:
+                    return new AABB(1 - maxZ, minY, minX, 1 - minZ, maxY, maxX);
+               case SOUTH:
+                    return new AABB(1 - maxX, minY, 1 - maxZ, 1 - minX, maxY, 1 - minZ);
+               case WEST:
+                    return new AABB(minZ, minY, 1 - maxX, maxZ, maxY, 1 - minX);
+               default:
+                    return aabb;
+          }
+     }
+
+     /**
+      * 将Direction转换为索引
+      */
+     private int getFacingIndex(Direction facing) {
+          switch (facing) {
+               case NORTH: return 0;
+               case EAST: return 1;
+               case SOUTH: return 2;
+               case WEST: return 3;
+               default: return 0;
+          }
+     }
+
+     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, SERVINGS, PART);
-    }
-
-    static VoxelShape makeShape0() {
-        VoxelShape shape = Shapes.empty();
-        shape = Shapes.join(shape, Shapes.box(-0.5, 0, -0.5, 1.5, 0.0625, 1.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.625, 0.0625, -0.625, 1.625, 0.125, 1.625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.625, 0.375, -0.625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.625, -0.625, 0.375, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.625, 0.0625, 1.625, 1.75, 0.375, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.625, 0.0625, -0.75, 1.75, 0.375, 1.625), BooleanOp.OR);
-        return shape;
-    }
-
-    static VoxelShape makeShape1() {
-        VoxelShape shape = Shapes.empty();
-        shape = Shapes.join(shape, Shapes.box(-0.5, 0.0, -0.5, 1.5, 0.0625, 1.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.75, 0.125, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.625, 0.375, -0.625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.625, -0.625, 0.375, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.625, 0.0625, 1.625, 1.75, 0.375, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.625, 0.0625, -0.75, 1.75, 0.375, 1.625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.75, 0.1875, -0.125, 1.0625, 0.875, 1.1875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.0625, 0.1875, -0.125, 0.25, 0.875, 1.1875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.25, 0.1875, -0.125, 0.75, 0.875, 0.1875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.25, 0.1875, 0.875, 0.75, 0.875, 1.1875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.25, 0.1875, 0.1875, 0.75, 0.25, 0.875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.8125, 0.875, 0.125, 0.875, 1.0625, 0.25), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.9375, 0.875, 0.3125, 1.0, 1.0625, 0.4375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.9375, 0.875, 0.5625, 1.0, 1.0625, 0.6875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.8125, 0.875, 0.75, 0.875, 1.0625, 0.875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.125, 0.875, 0.125, 0.1875, 1.0625, 0.25), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0, 0.875, 0.3125, 0.0625, 1.0625, 0.4375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0, 0.875, 0.5625, 0.0625, 1.0625, 0.6875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.125, 0.875, 0.75, 0.1875, 1.0625, 0.875), BooleanOp.OR);
-        return shape;
-    }
-
-    static VoxelShape makeShape2() {
-        VoxelShape shape = Shapes.empty();
-        shape = Shapes.join(shape, Shapes.box(-0.5, 0.0, -0.5, 1.5, 0.0625, 1.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.75, 0.125, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.625, 0.375, -0.625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.625, -0.625, 0.375, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.625, 0.0625, 1.625, 1.75, 0.375, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.625, 0.0625, -0.75, 1.75, 0.375, 1.625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.75, 0.1875, -0.125, 1.0625, 0.875, 1.1875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.0625, 0.1875, -0.125, 0.25, 0.875, 1.1875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.25, 0.1875, -0.125, 0.75, 0.875, 0.1875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.25, 0.1875, 0.875, 0.75, 0.875, 1.1875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.25, 0.25, 0.1875, 0.75, 0.4375, 0.875), BooleanOp.OR); // Block.box(4, 4, 3, 12, 7, 14)
-        shape = Shapes.join(shape, Shapes.box(0.25, 0.1875, 0.1875, 0.75, 0.25, 0.875), BooleanOp.OR); // Block.box(4, 3, 3, 12, 4, 14)
-        shape = Shapes.join(shape, Shapes.box(0.8125, 0.875, 0.125, 0.875, 1.0625, 0.25), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.9375, 0.875, 0.3125, 1.0, 1.0625, 0.4375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.9375, 0.875, 0.5625, 1.0, 1.0625, 0.6875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.8125, 0.875, 0.75, 0.875, 1.0625, 0.875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.125, 0.875, 0.125, 0.1875, 1.0625, 0.25), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0, 0.875, 0.3125, 0.0625, 1.0625, 0.4375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0, 0.875, 0.5625, 0.0625, 1.0625, 0.6875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.125, 0.875, 0.75, 0.1875, 1.0625, 0.875), BooleanOp.OR);
-        return shape;
-    }
-
-    static VoxelShape makeShape3() {
-        VoxelShape shape = Shapes.empty();
-        shape = Shapes.join(shape, Shapes.box(-0.5, 0.0, -0.5, 1.5, 0.0625, 1.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.75, 0.125, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.625, 0.375, -0.625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.625, -0.625, 0.375, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.625, 0.0625, 1.625, 1.75, 0.375, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.625, 0.0625, -0.75, 1.75, 0.375, 1.625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.75, 0.1875, -0.125, 1.0625, 0.875, 1.1875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.0625, 0.1875, -0.125, 0.25, 0.875, 1.1875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.25, 0.1875, -0.125, 0.75, 0.875, 0.1875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.25, 0.1875, 0.875, 0.75, 0.875, 1.1875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.25, 0.4375, 0.1875, 0.75, 0.625, 0.875), BooleanOp.OR); // Block.box(4, 7, 3, 12, 10, 14)
-        shape = Shapes.join(shape, Shapes.box(0.25, 0.25, 0.1875, 0.75, 0.4375, 0.875), BooleanOp.OR); // Block.box(4, 4, 3, 12, 7, 14)
-        shape = Shapes.join(shape, Shapes.box(0.25, 0.1875, 0.1875, 0.75, 0.25, 0.875), BooleanOp.OR); // Block.box(4, 3, 3, 12, 4, 14)
-        shape = Shapes.join(shape, Shapes.box(0.8125, 0.875, 0.125, 0.875, 1.0625, 0.25), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.9375, 0.875, 0.3125, 1.0, 1.0625, 0.4375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.9375, 0.875, 0.5625, 1.0, 1.0625, 0.6875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.8125, 0.875, 0.75, 0.875, 1.0625, 0.875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.125, 0.875, 0.125, 0.1875, 1.0625, 0.25), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0, 0.875, 0.3125, 0.0625, 1.0625, 0.4375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0, 0.875, 0.5625, 0.0625, 1.0625, 0.6875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.125, 0.875, 0.75, 0.1875, 1.0625, 0.875), BooleanOp.OR);
-        return shape;
-    }
-
-    static VoxelShape makeShape4() {
-        VoxelShape shape = Shapes.empty();
-        shape = Shapes.join(shape, Shapes.box(-0.5, 0.0, -0.5, 1.5, 0.0625, 1.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.75, 0.125, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.625, 0.375, -0.625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.625, -0.625, 0.375, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.625, 0.0625, 1.625, 1.75, 0.375, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.625, 0.0625, -0.75, 1.75, 0.375, 1.625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.75, 0.1875, -0.125, 1.0625, 0.875, 1.1875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.0625, 0.1875, -0.125, 0.25, 0.875, 1.1875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.25, 0.1875, -0.125, 0.75, 0.875, 0.1875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.25, 0.1875, 0.875, 0.75, 0.875, 1.1875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.25, 0.625, 0.1875, 0.75, 0.8125, 0.875), BooleanOp.OR); // Block.box(4, 10, 3, 12, 13, 14)
-        shape = Shapes.join(shape, Shapes.box(0.25, 0.4375, 0.1875, 0.75, 0.625, 0.875), BooleanOp.OR); // Block.box(4, 7, 3, 12, 10, 14)
-        shape = Shapes.join(shape, Shapes.box(0.25, 0.25, 0.1875, 0.75, 0.4375, 0.875), BooleanOp.OR); // Block.box(4, 4, 3, 12, 7, 14)
-        shape = Shapes.join(shape, Shapes.box(0.25, 0.1875, 0.1875, 0.75, 0.25, 0.875), BooleanOp.OR); // Block.box(4, 3, 3, 12, 4, 14)
-        shape = Shapes.join(shape, Shapes.box(0.8125, 0.875, 0.125, 0.875, 1.0625, 0.25), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.9375, 0.875, 0.3125, 1.0, 1.0625, 0.4375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.9375, 0.875, 0.5625, 1.0, 1.0625, 0.6875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.8125, 0.875, 0.75, 0.875, 1.0625, 0.875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.125, 0.875, 0.125, 0.1875, 1.0625, 0.25), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0, 0.875, 0.3125, 0.0625, 1.0625, 0.4375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0, 0.875, 0.5625, 0.0625, 1.0625, 0.6875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.125, 0.875, 0.75, 0.1875, 1.0625, 0.875), BooleanOp.OR);
-        return shape;
-    }
-
-    static VoxelShape makeShape5() {
-        VoxelShape shape = Shapes.empty();
-        shape = Shapes.join(shape, Shapes.box(-0.5, 0.0, -0.5, 1.5, 0.0625, 1.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.75, 0.125, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.625, 0.375, -0.625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.625, -0.625, 0.375, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.625, 0.0625, 1.625, 1.75, 0.375, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.625, 0.0625, -0.75, 1.75, 0.375, 1.625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.125, 0.1875, -0.59375, 1.5, 0.5625, -0.21875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.0625, 0.1875, -0.1875, 1.5625, 0.6875, 1.5625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.0625, 0.1875, 0.125, 1.0625, 0.875, 1.4375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.8125, 0.875, 0.375, 0.875, 1.0625, 0.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.9375, 0.875, 0.5625, 1.0, 1.0625, 0.6875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.9375, 0.875, 0.8125, 1.0, 1.0625, 0.9375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.8125, 0.875, 1.0, 0.875, 1.0625, 1.125), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.125, 0.875, 0.375, 0.1875, 1.0625, 0.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0, 0.875, 0.5625, 0.0625, 1.0625, 0.6875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0, 0.875, 0.8125, 0.0625, 1.0625, 0.9375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.125, 0.875, 1.0, 0.1875, 1.0625, 1.125), BooleanOp.OR);
-        return shape;
-    }
-
-    static VoxelShape makeShape6() {
-        VoxelShape shape = Shapes.empty();
-        shape = Shapes.join(shape, Shapes.box(-0.5, 0.0, -0.5, 1.5, 0.0625, 1.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.75, 0.125, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.625, 0.375, -0.625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.625, -0.625, 0.375, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.625, 0.0625, 1.625, 1.75, 0.375, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.625, 0.0625, -0.75, 1.75, 0.375, 1.625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.125, 0.1875, -0.59375, 1.5, 0.5625, -0.21875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.125, 0.6875, 1.0625, 1.5, 1.0625, 1.4375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.0625, 0.1875, -0.1875, 1.5625, 0.6875, 1.5625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.0625, 0.1875, 0.125, 1.0625, 0.875, 1.4375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.8125, 0.875, 0.375, 0.875, 1.0625, 0.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.9375, 0.875, 0.5625, 1.0, 1.0625, 0.6875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.9375, 0.875, 0.8125, 1.0, 1.0625, 0.9375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.8125, 0.875, 1.0, 0.875, 1.0625, 1.125), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.125, 0.875, 0.375, 0.1875, 1.0625, 0.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0, 0.875, 0.5625, 0.0625, 1.0625, 0.6875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0, 0.875, 0.8125, 0.0625, 1.0625, 0.9375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.125, 0.875, 1.0, 0.1875, 1.0625, 1.125), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.0625, 0.6875, 0.125, 1.4375, 1.0625, 0.9375), BooleanOp.OR);
-        return shape;
-    }
-
-    static VoxelShape makeShape7() {
-        VoxelShape shape = Shapes.empty();
-        shape = Shapes.join(shape, Shapes.box(-0.5, 0.0, -0.5, 1.5, 0.0625, 1.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.75, 0.125, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.625, 0.375, -0.625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.625, -0.625, 0.375, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.625, 0.0625, 1.625, 1.75, 0.375, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.625, 0.0625, -0.75, 1.75, 0.375, 1.625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.5, 0.1875, -0.59375, -0.125, 0.5625, -0.21875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.125, 0.1875, -0.59375, 1.5, 0.5625, -0.21875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.125, 0.6875, 1.0625, 1.5, 1.0625, 1.4375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.5625, 0.1875, -0.1875, -0.0625, 0.6875, 1.5625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.0625, 0.1875, -0.1875, 1.5625, 0.6875, 1.5625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.0625, 0.1875, 0.125, 1.0625, 0.875, 1.4375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.8125, 0.875, 0.375, 0.875, 1.0625, 0.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.9375, 0.875, 0.5625, 1.0, 1.0625, 0.6875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.9375, 0.875, 0.8125, 1.0, 1.0625, 0.9375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.8125, 0.875, 1.0, 0.875, 1.0625, 1.125), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.125, 0.875, 0.375, 0.1875, 1.0625, 0.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0, 0.875, 0.5625, 0.0625, 1.0625, 0.6875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0, 0.875, 0.8125, 0.0625, 1.0625, 0.9375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.125, 0.875, 1.0, 0.1875, 1.0625, 1.125), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.0625, 0.6875, 0.125, 1.4375, 1.0625, 0.9375), BooleanOp.OR);
-        return shape;
-    }
-
-    static VoxelShape makeShape8() {
-        VoxelShape shape = Shapes.empty();
-        shape = Shapes.join(shape, Shapes.box(-0.5, 0.0, -0.5, 1.5, 0.0625, 1.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.75, 0.125, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.625, 0.375, -0.625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.625, -0.625, 0.375, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.625, 0.0625, 1.625, 1.75, 0.375, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.625, 0.0625, -0.75, 1.75, 0.375, 1.625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.5, 0.1875, -0.59375, -0.125, 0.5625, -0.21875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.5, 0.6875, 1.0, -0.125, 1.0625, 1.375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.125, 0.1875, -0.59375, 1.5, 0.5625, -0.21875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.125, 0.6875, 1.0625, 1.5, 1.0625, 1.4375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.5625, 0.1875, -0.1875, -0.0625, 0.6875, 1.5625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.0625, 0.1875, -0.1875, 1.5625, 0.6875, 1.5625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.0625, 0.1875, 0.125, 1.0625, 0.875, 1.4375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.8125, 0.875, 0.375, 0.875, 1.0625, 0.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.9375, 0.875, 0.5625, 1.0, 1.0625, 0.6875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.9375, 0.875, 0.8125, 1.0, 1.0625, 0.9375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.8125, 0.875, 1.0, 0.875, 1.0625, 1.125), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.125, 0.875, 0.375, 0.1875, 1.0625, 0.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0, 0.875, 0.5625, 0.0625, 1.0625, 0.6875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0, 0.875, 0.8125, 0.0625, 1.0625, 0.9375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.125, 0.875, 1.0, 0.1875, 1.0625, 1.125), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.0625, 0.6875, 0.125, 1.4375, 1.0625, 0.9375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.4375, 0.6875, 0.0625, -0.0625, 1.0625, 0.875), BooleanOp.OR);
-        return shape;
-    }
-
-    static VoxelShape makeShape9() {
-        VoxelShape shape = Shapes.empty();
-        shape = Shapes.join(shape, Shapes.box(-0.5, 0.0, -0.5, 1.5, 0.0625, 1.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.75, 0.125, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.625, 0.375, -0.625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.625, -0.625, 0.375, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.625, 0.0625, 1.625, 1.75, 0.375, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.625, 0.0625, -0.75, 1.75, 0.375, 1.625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.5, 0.1875, -0.59375, -0.125, 0.5625, -0.21875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.5, 0.6875, 1.0, -0.125, 1.0625, 1.375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.125, 0.1875, -0.59375, 1.5, 0.5625, -0.21875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.125, 0.6875, 1.0625, 1.5, 1.0625, 1.4375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.5625, 0.1875, -0.1875, -0.0625, 0.6875, 1.5625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.0625, 0.1875, -0.1875, 1.5625, 0.6875, 1.5625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.0625, 0.1875, 0.125, 1.0625, 0.875, 1.4375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.8125, 0.875, 0.375, 0.875, 1.0625, 0.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.9375, 0.875, 0.5625, 1.0, 1.0625, 0.6875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.9375, 0.875, 0.8125, 1.0, 1.0625, 0.9375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.8125, 0.875, 1.0, 0.875, 1.0625, 1.125), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.125, 0.875, 0.375, 0.1875, 1.0625, 0.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0, 0.875, 0.5625, 0.0625, 1.0625, 0.6875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0, 0.875, 0.8125, 0.0625, 1.0625, 0.9375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.125, 0.875, 1.0, 0.1875, 1.0625, 1.125), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0, 0.1875, -0.5, 1.0, 1.1875, 0.125), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.0625, 0.6875, 0.125, 1.4375, 1.0625, 0.9375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.4375, 0.6875, 0.0625, -0.0625, 1.0625, 0.875), BooleanOp.OR);
-        return shape;
-    }
-
-    static VoxelShape makeShape10() {
-        VoxelShape shape = Shapes.empty();
-        shape = Shapes.join(shape, Shapes.box(-0.5, 0.0, -0.5, 1.5, 0.0625, 1.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.75, 0.125, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.75, 1.625, 0.375, -0.625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.75, 0.0625, -0.625, -0.625, 0.375, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.625, 0.0625, 1.625, 1.75, 0.375, 1.75), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.625, 0.0625, -0.75, 1.75, 0.375, 1.625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.5, 0.1875, -0.59375, -0.125, 0.5625, -0.21875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.5, 0.6875, 1.0, -0.125, 1.0625, 1.375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.125, 0.1875, -0.59375, 1.5, 0.5625, -0.21875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.125, 0.6875, 1.0625, 1.5, 1.0625, 1.4375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.5625, 0.1875, -0.1875, -0.0625, 0.6875, 1.5625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.0625, 0.1875, -0.1875, 1.5625, 0.6875, 1.5625), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.0625, 0.1875, 0.125, 1.0625, 0.875, 1.4375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.8125, 0.875, 0.375, 0.875, 1.0625, 0.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.9375, 0.875, 0.5625, 1.0, 1.0625, 0.6875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.9375, 0.875, 0.8125, 1.0, 1.0625, 0.9375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.8125, 0.875, 1.0, 0.875, 1.0625, 1.125), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.125, 0.875, 0.375, 0.1875, 1.0625, 0.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0, 0.875, 0.5625, 0.0625, 1.0625, 0.6875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0, 0.875, 0.8125, 0.0625, 1.0625, 0.9375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.125, 0.875, 1.0, 0.1875, 1.0625, 1.125), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.1875, 0.875, 0.46875, 0.8125, 1.375, 1.09375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0, 0.1875, -0.5, 1.0, 1.1875, 0.125), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(1.0625, 0.6875, 0.125, 1.4375, 1.0625, 0.9375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(-0.4375, 0.6875, 0.0625, -0.0625, 1.0625, 0.875), BooleanOp.OR);
-        return shape;
+         builder.add(FACING, SERVINGS, PART); 
     }
 }

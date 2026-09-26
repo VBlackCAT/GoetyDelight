@@ -81,11 +81,8 @@ public class CakeItem extends Item {
                 entityId.equals(ResourceLocation.parse("alexsmobs:skreecher")) ||
                 entityId.equals(ResourceLocation.parse("alexsmobs:murmur_head")) ||
                 entityId.equals(ResourceLocation.parse("alexsmobs:centipede_head")) ||
-                entityId.equals(ResourceLocation.parse("spectrum:eraser")) ||
-                entityId.equals(ResourceLocation.parse("pastel:eraser")) ||
                 entityId.equals(ResourceLocation.parse("alexsmobs:straddler")) ||
                 entityId.equals(ResourceLocation.parse("alexsmobs:seagull"));
-                
     }
 
     private void addDeathEffects(Level level, Mob target) {
