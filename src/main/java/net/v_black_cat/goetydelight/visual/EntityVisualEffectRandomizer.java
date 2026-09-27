@@ -70,6 +70,42 @@ public final class EntityVisualEffectRandomizer {
                 data.putFloat("Intensity", range(random, 0.7F, 1.6F));
                 data.put("Tint", randomColor(random, 0.35F, 1.0F));
             }
+            // 勘界蓝图：Radius / Intensity + Tint（线稿色）
+            case "blueprint_domain" -> {
+                data.putFloat("Radius", range(random, 9.0F, 22.0F));
+                data.putFloat("Intensity", range(random, 0.7F, 1.7F));
+                data.put("Tint", randomColor(random, 0.35F, 1.0F));
+            }
+            // 雷狱：Radius / Intensity + Tint（放电色）
+            case "thunder_domain" -> {
+                data.putFloat("Radius", range(random, 9.0F, 18.0F));
+                data.putFloat("Intensity", range(random, 0.8F, 1.8F));
+                data.put("Tint", randomColor(random, 0.40F, 1.0F));
+            }
+            // 镜渊：Radius / Intensity + Tint（水银色）
+            case "mirror_domain" -> {
+                data.putFloat("Radius", range(random, 10.0F, 22.0F));
+                data.putFloat("Intensity", range(random, 0.7F, 1.6F));
+                data.put("Tint", randomColor(random, 0.45F, 1.0F));
+            }
+            // 静止时之匣：Radius / Intensity + Tint（黄铜色）
+            case "clockwork_domain" -> {
+                data.putFloat("Radius", range(random, 9.0F, 20.0F));
+                data.putFloat("Intensity", range(random, 0.7F, 1.6F));
+                data.put("Tint", randomColor(random, 0.45F, 1.0F));
+            }
+            // 流沙葬丘：Radius / Intensity + Tint（沙色）
+            case "sand_domain" -> {
+                data.putFloat("Radius", range(random, 9.0F, 20.0F));
+                data.putFloat("Intensity", range(random, 0.7F, 1.6F));
+                data.put("Tint", randomColor(random, 0.45F, 1.0F));
+            }
+            // 华胥花海：Radius / Intensity + Tint（花海主色）
+            case "flora_domain" -> {
+                data.putFloat("Radius", range(random, 9.0F, 20.0F));
+                data.putFloat("Intensity", range(random, 0.7F, 1.6F));
+                data.put("Tint", randomColor(random, 0.45F, 1.0F));
+            }
 
             // ── 猫雾：Scale 控体积，Yaw 控朝向，FogColor 控颜色 ──
             case "black_cat_head_fog_field" -> {

@@ -22,8 +22,14 @@ float ring(float value, float target, float width) {
     return 1.0 - smoothstep(width * 0.45, width, abs(value - target));
 }
 
+// 免 sin 的 hash：sin 走 SFU，吞吐只有普通浮点的 1/8~1/32，而这个文件里每个噪声采样
+// 都要过一次 hash。所有体积模式（火焰/黑白领域/猫雾…）每一步 2~4 次 fbm = 8~16 个 hash，
+// 乘上 40~64 步体积累积，就是每像素上千次 sin。换成纯 ALU 的 fract/dot 版本后
+// 噪声的连续性与统计特性完全一致，只是随机图案换成另一套。
 float hash(vec2 p) {
-    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+    vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+    p3 += dot(p3, p3.yzx + 33.33);
+    return fract((p3.x + p3.y) * p3.z);
 }
 
 float valueNoise(vec2 p) {
@@ -40,7 +46,9 @@ float valueNoise(vec2 p) {
 float fbm(vec2 p) {
     float value = 0.0;
     float amplitude = 0.5;
-    for (int i = 0; i < 4; i++) {
+    // 3 个八度：第 4 个八度权重只有 14%，在 40~64 步的体积累积里看不出差别，
+    // 但所有体积模式（火焰/领域雾/黑雾/虚空…）每步都要调它 2~4 次，省下的是实打实的。
+    for (int i = 0; i < 3; i++) {
         value += amplitude * valueNoise(p);
         p *= 2.17;
         amplitude *= 0.52;
@@ -278,7 +286,7 @@ vec3 applyMalevolentShrineDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center
         float warp = fbm(q + vec2(n * 1.7 - n2 * 1.2, n2 * 1.5 + n * 0.8));
         float angle = atan(delta.z, delta.x) * 5.0 + warp * 6.5 + Time * 0.18;
         float strand = pow(1.0 - abs(sin(angle + n * 2.6)), 11.0);
-        float verticalWisp = pow(1.0 - abs(sin(delta.y * 1.7 + fbm(q) * 3.6 - Time * 0.2)), 5.0);
+        float verticalWisp = pow(1.0 - abs(sin(delta.y * 1.7 + n * 3.6 - Time * 0.2)), 5.0);
         float density = body * (0.05 + 1.9 * strand * (0.22 + 0.78 * n) * (0.40 + 0.60 * verticalWisp));
         density *= distanceFactor;
 
@@ -984,7 +992,10 @@ vec3 applyMalevolentShrineTargetGlow(vec3 color, vec3 scenePos, vec2 uv, vec3 ce
     return color * (1.0 - glow * 0.28) + blood * glow;
 }
 float catHash3(vec3 p) {
-    return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453);
+    // 同上：换掉 sin，只留 ALU
+    vec3 q = fract(p * 0.1031);
+    q += dot(q, q.zyx + 31.32);
+    return fract((q.x + q.y) * q.z);
 }
 
 float catNoise3(vec3 p) {
@@ -1208,6 +1219,19 @@ vec3 applyBlackCatHeadFog(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 
     return mix(color, integrated, clamp(fogAmount * intensity, 0.0, 0.95));
 }
 
+// ── 体积/地形专用的低开销噪声 ────────────────────────────────────────────────
+float galaxyFbm(vec2 p) {
+    return valueNoise(p) * 0.62 + valueNoise(p * 2.17 + 11.3) * 0.38;
+}
+
+// 月面地形保持 3 个八度（环形山的层次靠它），复用黑猫雾那套 3D 噪声。
+float moonFbm(vec3 p) {
+    float v = catNoise3(p) * 0.55;
+    v += catNoise3(p * 2.07 + vec3(11.3, 7.1, 5.7)) * 0.29;
+    v += catNoise3(p * 4.30 + vec3(3.7, 19.1, 8.3)) * 0.16;
+    return v;
+}
+
 // ────────────────────────── 宇宙领域 视觉重制版 (Cosmic Domain, mode 17) ──────────────────────────
 // 领域球里是一颗微缩星系 + 中心黑洞，密度严格锁在球内，球外只余流动日冕。
 //   1. JWST 级 HDR 色板：暗紫罗兰 → 品红 → 青金石 → 核心白（非线性爆发曲线）；
@@ -1353,9 +1377,12 @@ vec3 applyCosmicDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 dat
     vec3 discAxisX = vec3(1.0, 0.0, 0.0);
     vec3 discAxisY = vec3(0.0, -st, ct);
 
-    const int COSMIC_STEPS = 48; // 提升精度
+    const int COSMIC_STEPS = 32; // 步数上限（实际步数按弦长自适应，见下）
     float span = max(tFar - tNear, 0.001);
-    float stepSize = span / float(COSMIC_STEPS);
+    // 步数随实际弦长自适应：贴着墙/地面时弦长只有零点几 R，原来仍然死跑满 48 步，
+    // 大部分采样落在球外被 sphereMask 丢掉。室内场景这一步就是数倍收益。
+    int cosmicSteps = int(clamp(span / max(sphereR * 0.062, 0.05), 6.0, float(COSMIC_STEPS)));
+    float stepSize = span / float(cosmicSteps);
     float stepNorm = stepSize * invRadius;
     float dither = bayerDither(uv);
     float cellSize = sphereR * 0.05;
@@ -1363,7 +1390,15 @@ vec3 applyCosmicDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 dat
     float transmittance = 1.0;
     vec3 accumulated = vec3(0.0);
 
+    // 噪声隔步更新用的缓存：步长只有 ~0.06R，而星云尺度是 0.4R 量级，
+    // 相邻两步的噪声几乎相同，隔步沿用肉眼看不出差别（还有 dither 把台阶打散）。
+    float warp = 0.5;
+    float neb = 0.5;
+    float dustNoise = 0.5;
+    float jetPulse = 0.5;
+
     for (int i = 0; i < COSMIC_STEPS; i++) {
+        if (i >= cosmicSteps) break;
         float t = tNear + (float(i) + dither) * stepSize;
         vec3 q = (ro + rd * t) - center;
         float rn = length(q) * invRadius;
@@ -1380,10 +1415,14 @@ vec3 applyCosmicDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 dat
         float thickness = mix(0.12, 0.35, smoothstep(0.0, 0.6, discR));
         float discVertical = exp(-heightNorm / max(thickness, 0.02));
 
-        // 流体扭曲与星系旋臂 (加入对数螺旋)
+        // 流体扭曲与星系旋臂 (加入对数螺旋)：噪声隔步算一次（uniform 分支，不产生线程发散）
         vec2 nebUv = discPos * (3.0 * invRadius) + vec2(Time * 0.02, -Time * 0.015);
-        float warp = fbm(nebUv * 1.5 + vec2(-Time * 0.05));
-        float neb = fbm(nebUv * 2.5 + warp * 1.2);
+        if (i % 2 == 0) {
+            warp = galaxyFbm(nebUv * 1.5 + vec2(-Time * 0.05));
+            neb = galaxyFbm(nebUv * 2.5 + warp * 1.2);
+            dustNoise = valueNoise(discPos * 5.0 * invRadius - vec2(Time * 0.03));
+            jetPulse = valueNoise(vec2(height * invRadius * 15.0 - Time * 4.0, 0.0));
+        }
 
         // 对数螺旋线方程创造宏伟星系臂
         float logR = log(max(discR, 0.01));
@@ -1391,7 +1430,6 @@ vec3 applyCosmicDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 dat
         float arms = pow(cos(spiral) * 0.5 + 0.5, 3.5); // 更尖锐的旋臂
 
         // 【关键升级】暗物质/尘埃带遮蔽：吞噬光线的黑色裂纹
-        float dustNoise = fbm(discPos * 5.0 * invRadius - vec2(Time * 0.03));
         float darkDust = smoothstep(0.4, 0.8, dustNoise) * arms * 0.8;
 
         float radialFade = smoothstep(0.02, 0.2, discR) * (1.0 - smoothstep(0.65, 1.0, discR));
@@ -1402,8 +1440,9 @@ vec3 applyCosmicDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 dat
 
         // 极轴喷流 (脉冲星/黑洞喷流)
         float axialDist = length(q - discNormal * height) * invRadius;
-        float jet = exp(-axialDist * axialDist * 80.0) * exp(-heightNorm * 1.5)
-                  * (0.6 + 0.4 * valueNoise(vec2(height * invRadius * 15.0 - Time * 4.0, 0.0)));
+        // 两个 exp 合成一个（exp(a)·exp(b) = exp(a+b)），每步省一次 SFU
+        float jet = exp(-axialDist * axialDist * 80.0 - heightNorm * 1.5)
+                  * (0.6 + 0.4 * jetPulse);
 
         // ── 电影级稠密星点 (Anamorphic Flares) ──
         vec3 cell = floor(q / max(cellSize, 0.0001));
@@ -1488,17 +1527,17 @@ vec3 applyCosmicDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 dat
 // 领域内漂浮反重力月壤，月球边缘有月食级逆光月晕。
 // 注意：本文件既有的 fbm / valueNoise 只接受 vec2，3D 噪声复用 catNoise3 / catFbm3。
 float lunarTerrain(vec3 p) {
-    float terrain = catFbm3(p * 3.5) * 0.30;
+    float terrain = moonFbm(p * 3.5) * 0.30;
 
     // 环形山：噪声等值线边界拱起成环，等值线内圈下陷成坑底
-    float n1 = catFbm3(p * 8.0 + vec3(1.0));
+    float n1 = moonFbm(p * 8.0 + vec3(1.0));
     float craters = pow(abs(n1 - 0.5) * 2.0, 2.5);
     float pits = smoothstep(0.4, 0.0, abs(n1 - 0.5));
     terrain += craters * 0.25;
     terrain -= pits * 0.15;
 
     // 月壤碎石的颗粒感
-    terrain += catFbm3(p * 24.0) * 0.05;
+    terrain += catNoise3(p * 24.0) * 0.05;
     return terrain;
 }
 
@@ -1513,12 +1552,15 @@ float mapMoon(vec3 p, vec3 moonCenter, float radius) {
 }
 
 vec3 getMoonNormal(vec3 p, vec3 moonCenter, float radius) {
-    vec2 e = vec2(0.005 * radius, 0.0);
-    return normalize(vec3(
-            mapMoon(p + e.xyy, moonCenter, radius) - mapMoon(p - e.xyy, moonCenter, radius),
-            mapMoon(p + e.yxy, moonCenter, radius) - mapMoon(p - e.yxy, moonCenter, radius),
-            mapMoon(p + e.yyx, moonCenter, radius) - mapMoon(p - e.yyx, moonCenter, radius)
-    ));
+    // 四面体 4 采样求梯度：比原来的 6 次中心差分省 1/3，
+    // 而 mapMoon 在表面带内每次要做 3 组 3 维噪声，是全屏月亮里最贵的一块。
+    float h = 0.005 * radius * 0.5773;
+    vec2 e = vec2(h, -h);
+    float d0 = mapMoon(p + e.xyy, moonCenter, radius);
+    float d1 = mapMoon(p + e.yyx, moonCenter, radius);
+    float d2 = mapMoon(p + e.yxy, moonCenter, radius);
+    float d3 = mapMoon(p + e.xxx, moonCenter, radius);
+    return normalize(e.xyy * d0 + e.yyx * d1 + e.yxy * d2 + e.xxx * d3);
 }
 
 vec3 applyLunarDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data, vec3 tint, float edge) {
@@ -1665,25 +1707,669 @@ vec3 applyLunarDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data
     result += domainRimGlow;
     return result;
 }
+// ────────────────────────── 勘界・蓝图领域 (Blueprint Domain, mode 19) ──────────────────────────
+// 与已有六种语言都不重叠：这里没有体积、没有实体、没有步进循环 —— 只有"线"。
+// 按世界高度画等高线、绕领域轴画测绘图环与辐条、沿深度突变描边，场景整体压成青蓝蓝图。
+// 保亮度映射，所以近处地形、生物、掉落物依然一眼可辨（不做压暗、不做全屏平铺色块）。
+float surveyLine(float v, float spacing, float width) {
+    float d = abs(fract(v / spacing + 0.5) - 0.5) * spacing;
+    return 1.0 - smoothstep(width * 0.45, width, d);
+}
+
+vec3 applyBlueprintDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data, vec3 tint, float edge) {
+    float sphereR = max(data.y, 0.001);
+    float progress = clamp(data.z, 0.0, 1.0);
+    float intensity = max(data.w, 0.0);
+    float energy = intensity * (1.0 - smoothstep(0.86, 1.0, progress));
+    if (energy <= 0.002) return color;
+
+    vec3 rd = normalize(viewRay(uv));
+    float maxDistance = length(scenePos);
+    vec3 toCenter = center;
+    float centerProj = dot(rd, toCenter);
+    float centerDist = length(toCenter);
+    float impact = sqrt(max(centerDist * centerDist - centerProj * centerProj, 0.0));
+    vec3 ink = mix(tint, vec3(0.55, 0.95, 1.0), 0.35);
+
+    // ── 领域外壳：与宇宙/月球同一套可见性判定（壳在镜头前方 + 不晚于首个可见表面 + 镜头在球外才有轮廓）──
+    float shellSpan = sqrt(max(sphereR * sphereR - impact * impact, 0.0));
+    float shellNear = centerProj - shellSpan;
+    float shellFar = centerProj + shellSpan;
+    float shellVisible = (shellFar > 0.0 && shellNear < maxDistance) ? 1.0 : 0.0;
+    float silhouette = smoothstep(1.0, 1.30, centerDist / sphereR);
+    float tShell = max(shellNear, 0.0);
+    vec3 shellVec = rd * tShell - center;
+    float shellLen = length(shellVec);
+    vec3 shellDir = shellLen > 0.0001 ? shellVec / shellLen : vec3(0.0, 1.0, 0.0);
+    float edgeRing = exp(-abs(impact - sphereR) / (sphereR * 0.02))
+            * (0.8 + 0.2 * valueNoise(shellDir.xz * 6.0 + vec2(Time * 0.05, -Time * 0.04)))
+            * shellVisible * silhouette;
+    float shellOutside = max(impact - sphereR, 0.0);
+    float corona = exp(-shellOutside / max(sphereR * 0.11, 0.30))
+            * (1.0 - smoothstep(0.30, 0.60, shellOutside / sphereR));
+    vec3 domainRimGlow = ink * edgeRing * 0.8 * energy;
+
+    vec3 oc = -center;
+    float b = dot(oc, rd);
+    float c = dot(oc, oc) - sphereR * sphereR;
+    float h = b * b - c;
+    if (h < 0.0) {
+        return color + domainRimGlow + ink * corona * 0.3 * energy * shellVisible * silhouette;
+    }
+    h = sqrt(h);
+    float tNear = max(-b - h, 0.0);
+    float tFar = min(-b + h, maxDistance);
+    if (tNear >= tFar) return color;
+
+    // ── 蓝图分级：保留亮度的去色重映射（近处依旧看得清；只用 22% 原色做提示）──
+    float lum = dot(color, vec3(0.299, 0.587, 0.114));
+    vec3 blueprint = mix(vec3(lum) * ink * 0.90 + ink * 0.035, color, 0.22);
+
+    // ── 线稿：世界表面上的等高线 / 图环 / 辐条（随地形起伏，不是屏幕贴图）──
+    // 天空按 320 远平面处理，单独铺经纬网，避免等高线在天上密到起摩尔纹。
+    float sky = step(319.0, maxDistance);
+    float ground = 1.0 - sky;
+    float width = max(maxDistance * 0.0022, sphereR * 0.0035) * ground + 0.0022 * sky;
+    float radial = length(scenePos.xz - center.xz);
+    float azimuth = atan(scenePos.z - center.z, scenePos.x - center.x);
+    float contours = surveyLine(scenePos.y, sphereR * 0.060, width);
+    contours += surveyLine(scenePos.y, sphereR * 0.300, width) * 0.8;   // 每 5 条一根粗线
+    float rings = surveyLine(radial, sphereR * 0.12, width);
+    float spokes = surveyLine(azimuth, 0.3927, width / max(radial / sphereR, 0.15));
+    float skyGrid = surveyLine(rd.y, 0.18, 0.0022) * 0.5
+            + surveyLine(atan(rd.z, rd.x), 0.3927, 0.0022) * 0.3;
+    float lines = clamp((contours * 0.5 + rings * 0.5 + spokes * 0.3) * ground
+            + edge * 0.45 + skyGrid * sky, 0.0, 1.4);
+
+    // ── 测绘扫描带：沿高度缓慢往返的一道光，扫过地形时把轮廓照亮 ──
+    float scanY = center.y + sin(Time * 0.32) * sphereR * 0.75;
+    float scan = exp(-abs(scenePos.y - scanY) / max(sphereR * 0.06, 0.05)) * ground;
+
+    float amount = smoothstep(tNear, tNear + sphereR * 0.1, tFar);
+    float k = amount * min(energy, 1.0);
+    vec3 result = mix(color, blueprint, k);
+    result += ink * lines * k * 0.75;
+    result += ink * scan * k * 0.22;
+    result += domainRimGlow;
+    return result;
+}
+
+// ────────────────────────── 雷狱・万钧领域 (Thunder Domain, mode 20) ──────────────────────────
+// 语言：世界空间折线 + 逐像素深度遮挡。闪电的落点是世界坐标（hash 定，不随视角漂移），
+// 每像素只比对自己那条射线的场景距离来判遮挡，所以山体/墙会自动把闪电切断。
+float boltSegmentDist(vec2 p, vec2 a, vec2 b) {
+    vec2 ab = b - a;
+    float t = clamp(dot(p - a, ab) / max(dot(ab, ab), 1.0e-6), 0.0, 1.0);
+    return length(p - a - ab * t);
+}
+
+vec3 applyThunderDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data, vec3 tint, float edge) {
+    float sphereR = max(data.y, 0.001);
+    float progress = clamp(data.z, 0.0, 1.0);
+    float intensity = max(data.w, 0.0);
+    float energy = intensity * (1.0 - smoothstep(0.86, 1.0, progress));
+    if (energy <= 0.002) return color;
+
+    vec3 rd = normalize(viewRay(uv));
+    float maxDistance = length(scenePos);
+    vec3 toCenter = center;
+    float centerProj = dot(rd, toCenter);
+    float centerDist = length(toCenter);
+    float impact = sqrt(max(centerDist * centerDist - centerProj * centerProj, 0.0));
+    vec3 boltColor = mix(tint, vec3(0.82, 0.92, 1.0), 0.45);
+
+    // ── 落雷分段：每 1.8 秒一轮、每轮两道，落点由轮次 hash 决定（世界锚定）──
+    float cyc = Time * 0.55;
+    float strikeIdx = floor(cyc);
+    float strikePhase = fract(cyc);
+    float currentBolt = exp(-strikePhase * 7.0); // 刚劈下那一下的包络，~0.15s
+
+    vec2 auv = vec2(uv.x * (InSize.x / InSize.y), uv.y);
+    vec3 bolts = vec3(0.0);
+    float blotch = 0.0;
+    for (int k = 0; k < 2; k++) {
+        float si = strikeIdx - float(k);
+        float boltPhase = fract(strikePhase + float(k));
+        float boltEnergy = exp(-boltPhase * 7.0);
+        vec2 cell = vec2(si * 13.71, si * 5.33);
+        float rx = (hash(cell) - 0.5) * 1.5;
+        float rz = (hash(cell + 7.77) - 0.5) * 1.5;
+        vec3 base = center + vec3(rx * sphereR, -sphereR * 0.58, rz * sphereR);
+        vec3 mid = center + vec3(rx * sphereR * 1.18 + (hash(cell + 3.31) - 0.5) * sphereR * 0.55,
+                sphereR * 0.12,
+                rz * sphereR * 1.18 + (hash(cell + 5.13) - 0.5) * sphereR * 0.55);
+        vec3 top = center + vec3(rx * sphereR * 0.55, sphereR * 0.92, rz * sphereR * 0.55);
+        vec2 ubase = cameraRelativeWorldToUv(base);
+        vec2 umid = cameraRelativeWorldToUv(mid);
+        vec2 utop = cameraRelativeWorldToUv(top);
+        if (ubase.x < -100.0 || umid.x < -100.0 || utop.x < -100.0) continue;
+
+        vec2 ab = vec2(ubase.x * (InSize.x / InSize.y), ubase.y);
+        vec2 am = vec2(umid.x * (InSize.x / InSize.y), umid.y);
+        vec2 at = vec2(utop.x * (InSize.x / InSize.y), utop.y);
+        float d1 = boltSegmentDist(auv, ab, am);
+        float d2 = boltSegmentDist(auv, am, at);
+        float d = min(d1, d2);
+        if (d > 0.010) continue; // 绝大多数像素在这里就退出，不做后面的深度比较
+        vec2 sa = d1 < d2 ? ab : am;
+        vec2 sb = d1 < d2 ? am : at;
+        float tt = clamp(dot(auv - sa, sb - sa) / max(dot(sb - sa, sb - sa), 1.0e-6), 0.0, 1.0);
+        vec3 boltPos = d1 < d2 ? mix(base, mid, tt) : mix(mid, top, tt);
+        float unoccluded = step(length(boltPos), maxDistance + 0.4);
+        float line = (1.0 - smoothstep(0.0016, 0.0050, d)) * unoccluded * boltEnergy;
+        bolts += boltColor * line;
+        // 落点灼痕：画在地表上（世界锚定），随该道闪电一起闪
+        blotch = max(blotch, (1.0 - smoothstep(0.0, sphereR * 0.18, length(scenePos.xz - base.xz)))
+                * (1.0 - smoothstep(0.0, sphereR * 0.12, abs(scenePos.y - base.y))) * boltEnergy);
+    }
+
+    // ── 铁灰风暴底：只降亮度改冷色，不做全屏平铺色块 ──
+    vec3 storm = mix(color, color * vec3(0.55, 0.62, 0.80) + vec3(0.010, 0.020, 0.040), 0.65);
+
+    // ── 电离薄雾：贴地一层带电雾，世界锚定（随地形起伏，不跟视角滑动）──
+    float groundY = center.y - sphereR * 0.5;
+    float ion = exp(-abs(scenePos.y - groundY) / max(sphereR * 0.10, 0.05))
+            * (0.35 + 0.65 * valueNoise(vec2(scenePos.x, scenePos.z) * 0.35 + vec2(Time * 0.15, -Time * 0.11)));
+
+    // ── 外壳：平时冷青细边，落雷瞬间整体"充能"发亮 ──
+    float shellSpan = sqrt(max(sphereR * sphereR - impact * impact, 0.0));
+    float shellNear = centerProj - shellSpan;
+    float shellFar = centerProj + shellSpan;
+    float shellVisible = (shellFar > 0.0 && shellNear < maxDistance) ? 1.0 : 0.0;
+    float silhouette = smoothstep(1.0, 1.30, centerDist / sphereR);
+    float tShell = max(shellNear, 0.0);
+    vec3 shellVec = rd * tShell - center;
+    float shellLen = length(shellVec);
+    vec3 shellDir = shellLen > 0.0001 ? shellVec / shellLen : vec3(0.0, 1.0, 0.0);
+    float edgeRing = exp(-abs(impact - sphereR) / (sphereR * 0.02))
+            * (0.75 + 0.25 * valueNoise(shellDir.xz * 5.0 + vec2(-Time * 0.04, Time * 0.03)))
+            * shellVisible * silhouette;
+    float shellOutside = max(impact - sphereR, 0.0);
+    float corona = exp(-shellOutside / max(sphereR * 0.11, 0.30))
+            * (1.0 - smoothstep(0.30, 0.60, shellOutside / sphereR));
+    vec3 domainRimGlow = boltColor * edgeRing * (0.55 + 0.85 * currentBolt) * energy;
+
+    vec3 oc = -center;
+    float b = dot(oc, rd);
+    float c = dot(oc, oc) - sphereR * sphereR;
+    float h = b * b - c;
+    if (h < 0.0) {
+        return color + domainRimGlow
+                + boltColor * corona * 0.3 * energy * shellVisible * silhouette * (0.7 + 0.6 * currentBolt);
+    }
+    h = sqrt(h);
+    float tNear = max(-b - h, 0.0);
+    float tFar = min(-b + h, maxDistance);
+    if (tNear >= tFar) return color;
+
+    float amount = smoothstep(tNear, tNear + sphereR * 0.1, tFar);
+    float k = amount * min(energy, 1.0);
+    vec3 result = mix(color, storm, k);
+    result += bolts * k;
+    result += boltColor * blotch * 0.55 * k;
+    result += boltColor * ion * 0.10 * k;
+    // 劈下瞬间的整片感光：包络只有 ~0.15s，不是常驻铺色
+    result += boltColor * currentBolt * 0.06 * k;
+    result += domainRimGlow;
+    return result;
+}
+// ────────────────────────── 镜渊・倒影领域 (Mirror Abyss, mode 21) ──────────────────────────
+// 机制：用深度缓冲在**本像素处**重建地表法线，把朝上的地表当成一面水银镜，
+// 再沿镜像射线在深度缓冲里做屏幕空间反射（SSR）。
+// 因此它不依赖"地面高度"这类假设：平地、缓坡、坑底都会各自成镜；
+// 镜面只落在朝上且非深度突变的表面上，墙面/生物不会被糊上反射，近处视野始终通透。
+vec3 depthSurfaceNormal(vec2 sampleUv) {
+    vec2 texel = 1.0 / InSize;
+    vec2 ux = sampleUv + vec2(texel.x, 0.0);
+    vec2 uy = sampleUv + vec2(0.0, texel.y);
+    vec3 p = reconstructWorldPosition(sampleUv, depthAt(sampleUv));
+    vec3 px = reconstructWorldPosition(ux, depthAt(ux));
+    vec3 py = reconstructWorldPosition(uy, depthAt(uy));
+    return cross(px - p, py - p);
+}
+
+// 屏幕空间反射：从反射起点沿镜像射线步进，命中判据是"步进点的相机距离超过该像素的场景距离"。
+vec2 mirrorHitUv(vec3 origin, vec3 dir, float maxRayDist) {
+    vec3 p = origin;
+    float stepLen = 0.16;
+    for (int i = 0; i < 8; i++) {
+        p += dir * stepLen;
+        float dist = length(p);
+        if (dist > maxRayDist) break;
+        vec2 suv = cameraRelativeWorldToUv(p);
+        if (suv.x < 0.0 || suv.x > 1.0 || suv.y < 0.0 || suv.y > 1.0) break;
+        float sd = depthAt(suv);
+        if (sd < 0.999999) {
+            float sceneDist = length(reconstructWorldPosition(suv, sd));
+            if (dist > sceneDist) {
+                if (dist - sceneDist < max(stepLen * 1.6, 0.4)) {
+                    return suv;
+                }
+                break; // 已经穿到几何后面却没命中 → 放弃，避免拉出长条
+            }
+        }
+        stepLen *= 1.5;
+    }
+    return vec2(-1000.0);
+}
+
+vec3 applyMirrorDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data, vec3 tint, float edge) {
+    float sphereR = max(data.y, 0.001);
+    float progress = clamp(data.z, 0.0, 1.0);
+    float intensity = max(data.w, 0.0);
+    float energy = intensity * (1.0 - smoothstep(0.86, 1.0, progress));
+    if (energy <= 0.002) return color;
+
+    vec3 rd = normalize(viewRay(uv));
+    float maxDistance = length(scenePos);
+    vec3 toCenter = center;
+    float centerProj = dot(rd, toCenter);
+    float centerDist = length(toCenter);
+    float impact = sqrt(max(centerDist * centerDist - centerProj * centerProj, 0.0));
+    vec3 mercury = mix(tint, vec3(0.72, 0.86, 0.95), 0.35);
+
+    // ── 领域外壳：标准门控 + 水银波纹细边 ──
+    float shellSpan = sqrt(max(sphereR * sphereR - impact * impact, 0.0));
+    float shellNear = centerProj - shellSpan;
+    float shellFar = centerProj + shellSpan;
+    float shellVisible = (shellFar > 0.0 && shellNear < maxDistance) ? 1.0 : 0.0;
+    float silhouette = smoothstep(1.0, 1.30, centerDist / sphereR);
+    float tShell = max(shellNear, 0.0);
+    vec3 shellVec = rd * tShell - center;
+    float shellLen = length(shellVec);
+    vec3 shellDir = shellLen > 0.0001 ? shellVec / shellLen : vec3(0.0, 1.0, 0.0);
+    float edgeRing = exp(-abs(impact - sphereR) / (sphereR * 0.02))
+            * (0.75 + 0.25 * sin(shellDir.x * 18.0 + shellDir.z * 14.0 - Time * 1.7))
+            * shellVisible * silhouette;
+    float shellOutside = max(impact - sphereR, 0.0);
+    float corona = exp(-shellOutside / max(sphereR * 0.11, 0.30))
+            * (1.0 - smoothstep(0.30, 0.60, shellOutside / sphereR));
+    vec3 domainRimGlow = mercury * edgeRing * 0.85 * energy;
+
+    vec3 oc = -center;
+    float b = dot(oc, rd);
+    float c = dot(oc, oc) - sphereR * sphereR;
+    float h = b * b - c;
+    if (h < 0.0) {
+        return color + domainRimGlow + mercury * corona * 0.3 * energy * shellVisible * silhouette;
+    }
+    h = sqrt(h);
+    float tNear = max(-b - h, 0.0);
+    float tFar = min(-b + h, maxDistance);
+    if (tNear >= tFar) return color;
+
+    // ── 镜面：仅在领域内、朝上、且非深度突变的地表像素上计算（墙面/生物完全跳过）──
+    vec3 base = color;
+    vec3 mirrorCol = base;
+    float mirrorMask = 0.0;
+    float inPool = 1.0 - step(sphereR, length(scenePos - center));
+    if (inPool > 0.5 && edge < 0.6) {
+        vec3 nraw = depthSurfaceNormal(uv);
+        float nlen = length(nraw);
+        float upness = nlen > 1.0e-6 ? abs(nraw.y) / nlen : 0.0;
+        mirrorMask = upness * upness * (1.0 - edge);
+        if (mirrorMask > 0.06) {
+            // 世界锚定的行波：镜面起伏不随视角滑动
+            float ripple = sin(scenePos.x * 0.85 + Time * 1.25) * cos(scenePos.z * 1.05 - Time * 1.05);
+            vec3 reflectDir = normalize(reflect(rd, vec3(0.0, 1.0, 0.0))
+                    + vec3(ripple * 0.030, 0.0, ripple * 0.024));
+            vec2 hitUv = mirrorHitUv(scenePos + vec3(0.0, 0.03, 0.0), reflectDir, sphereR * 1.5);
+            float fres = pow(1.0 - abs(rd.y), 4.0);
+            vec3 poolCol = mix(vec3(0.012, 0.030, 0.052), mercury * 0.28, 0.45);
+            vec3 reflCol = hitUv.x > -100.0
+                    ? texture(DiffuseSampler, clamp(hitUv, vec2(0.0), vec2(1.0))).rgb * (0.70 + 0.40 * mercury)
+                    : mix(vec3(0.008, 0.020, 0.040), mercury * 0.20, 0.5);
+            mirrorCol = mix(poolCol, reflCol, 0.30 + 0.60 * fres);
+        }
+    }
+
+    float amount = smoothstep(tNear, tNear + sphereR * 0.1, tFar);
+    float k = amount * min(energy, 1.0);
+    vec3 result = mix(base, mirrorCol, mirrorMask * k);
+    result += mercury * mirrorMask * k * 0.05;
+    result += domainRimGlow;
+    return result;
+}
+// ────────────────────────── 静止・时之匣领域 (Clockwork Domain, mode 22) ──────────────────────────
+// 机制：解析求交的三层"发条环"。既不是体积积分、不是 SDF 步进、不是屏幕贴图案、也不是 SSR ——
+// 而是把三条不同倾角/不同转速的黄铜环直接和视线求交，环上切出方波齿，另有一只沿高度往返的秒针盘。
+// 领域内整体压成岁月的黄铜色，但保留亮度（近处地形、生物、掉落物依旧一眼可辨）。
+vec3 clockRingGlow(vec3 centerWorld, vec3 axis, float ringR, float tubeR, float teeth, float phase,
+                   vec3 rd, float maxDistance, vec3 tint) {
+    float denom = dot(rd, axis);
+    if (abs(denom) < 1.0e-4) return vec3(0.0);
+    float tPlane = dot(centerWorld, axis) / denom;
+    if (tPlane <= 0.0 || tPlane > maxDistance) return vec3(0.0);
+    vec3 p = rd * tPlane;
+    vec3 v = p - centerWorld;
+    vec3 q = v - axis * dot(v, axis);
+    float qlen = length(q);
+    if (qlen < 1.0e-4) return vec3(0.0);
+    vec3 dir = q / qlen;
+    vec3 ringPoint = centerWorld + dir * ringR;
+    float d = length(p - ringPoint);
+    // 齿：沿环的角向切方波，让"管径"周期性变粗
+    vec3 helperAxis = abs(axis.y) > 0.9 ? vec3(1.0, 0.0, 0.0) : vec3(0.0, 1.0, 0.0);
+    vec3 e1 = normalize(cross(axis, helperAxis));
+    vec3 e2 = cross(axis, e1);
+    float ang = atan(dot(dir, e2), dot(dir, e1));
+    float toothWave = abs(sin(ang * teeth + phase));
+    float tube = tubeR * (0.55 + 0.95 * toothWave);
+    float glow = 1.0 - smoothstep(tube, tube * 2.4, d);
+    return tint * glow;
+}
+
+vec3 applyClockworkDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data, vec3 tint, float edge) {
+    float sphereR = max(data.y, 0.001);
+    float progress = clamp(data.z, 0.0, 1.0);
+    float intensity = max(data.w, 0.0);
+    float energy = intensity * (1.0 - smoothstep(0.86, 1.0, progress));
+    if (energy <= 0.002) return color;
+
+    vec3 rd = normalize(viewRay(uv));
+    float maxDistance = length(scenePos);
+    vec3 toCenter = center;
+    float centerProj = dot(rd, toCenter);
+    float centerDist = length(toCenter);
+    float impact = sqrt(max(centerDist * centerDist - centerProj * centerProj, 0.0));
+    vec3 brass = mix(tint, vec3(0.88, 0.68, 0.34), 0.4);
+
+    // ── 领域外壳：黄铜细边 + 边缘齿刻 ──
+    float shellSpan = sqrt(max(sphereR * sphereR - impact * impact, 0.0));
+    float shellNear = centerProj - shellSpan;
+    float shellFar = centerProj + shellSpan;
+    float shellVisible = (shellFar > 0.0 && shellNear < maxDistance) ? 1.0 : 0.0;
+    float silhouette = smoothstep(1.0, 1.30, centerDist / sphereR);
+    float tShell = max(shellNear, 0.0);
+    vec3 shellVec = rd * tShell - center;
+    float shellLen = length(shellVec);
+    vec3 shellDir = shellLen > 0.0001 ? shellVec / shellLen : vec3(0.0, 1.0, 0.0);
+    float shellAng = atan(shellDir.z, shellDir.x);
+    float edgeRing = exp(-abs(impact - sphereR) / (sphereR * 0.02))
+            * (0.62 + 0.38 * abs(sin(shellAng * 48.0 - Time * 1.4)))
+            * shellVisible * silhouette;
+    float shellOutside = max(impact - sphereR, 0.0);
+    float corona = exp(-shellOutside / max(sphereR * 0.11, 0.30))
+            * (1.0 - smoothstep(0.30, 0.60, shellOutside / sphereR));
+    vec3 domainRimGlow = brass * edgeRing * 0.8 * energy;
+
+    vec3 oc = -center;
+    float b = dot(oc, rd);
+    float c = dot(oc, oc) - sphereR * sphereR;
+    float h = b * b - c;
+    if (h < 0.0) {
+        return color + domainRimGlow + brass * corona * 0.3 * energy * shellVisible * silhouette;
+    }
+    h = sqrt(h);
+    float tNear = max(-b - h, 0.0);
+    float tFar = min(-b + h, maxDistance);
+    if (tNear >= tFar) return color;
+
+    // ── 三层发条环（各自倾角/转速/齿数，深浅由本像素场景距离自动遮挡）──
+    vec3 axis0 = normalize(vec3(sin(Time * 0.21) * 0.55, 1.0, cos(Time * 0.21) * 0.25));
+    vec3 axis1 = normalize(vec3(1.0, sin(Time * -0.15) * 0.45, cos(Time * -0.15) * 0.20));
+    vec3 axis2 = normalize(vec3(cos(Time * 0.09) * 0.30, sin(Time * 0.09) * 0.35, 1.0));
+    vec3 rings = clockRingGlow(center, axis0, sphereR * 0.58, sphereR * 0.022, 26.0, Time * 1.10, rd, maxDistance, brass)
+            + clockRingGlow(center, axis1, sphereR * 0.76, sphereR * 0.020, 34.0, -Time * 0.90, rd, maxDistance, brass)
+            + clockRingGlow(center, axis2, sphereR * 0.93, sphereR * 0.018, 44.0, Time * 0.70, rd, maxDistance, brass);
+
+    // ── 秒针盘：沿高度往返的一层薄盘（盘缘亮环 + 极淡盘面）──
+    float tickY = center.y + sin(Time * 0.42) * sphereR * 0.80;
+    float sweep = 0.0;
+    if (abs(rd.y) > 1.0e-4) {
+        float tS = tickY / rd.y;
+        if (tS > 0.0 && tS < maxDistance) {
+            vec3 ps = rd * tS;
+            float r = length(ps.xz - center.xz);
+            sweep = (1.0 - smoothstep(sphereR * 0.86, sphereR * 0.93, r)) * step(r, sphereR * 0.93);
+            sweep += (1.0 - smoothstep(0.0, sphereR * 0.90, r)) * 0.10;
+        }
+    }
+
+    // ── 岁月黄铜分级：保亮度重映射，近处细节不丢 ──
+    vec3 base = color;
+    float lum = dot(base, vec3(0.299, 0.587, 0.114));
+    vec3 brassed = vec3(lum * 1.10, lum * 0.90, lum * 0.60) + vec3(0.035, 0.028, 0.012);
+    brassed = mix(brassed, base, 0.20);
+
+    float amount = smoothstep(tNear, tNear + sphereR * 0.1, tFar);
+    float k = amount * min(energy, 1.0);
+    vec3 result = mix(base, brassed, k);
+    result += (rings + brass * sweep * 0.30) * k;
+    result += domainRimGlow;
+    return result;
+}
+// ────────────────────────── 流沙・葬丘领域 (Sand Tomb, mode 23) ──────────────────────────
+// 机制：高度场求交。沙面高度 = 基准面 + 世界坐标噪声沙丘 + 随展开进度上涨的"潮位"，
+// 视线与沙面用固定点迭代求交（沙丘平缓，3 步足够），再和本像素场景距离比较做遮挡。
+// 因此沙面只画在真正挡在场景前面的像素上：沙线以上的地形、生物、掉落物一览无余。
+float duneField(vec2 xz, float scale, float t) {
+    return valueNoise(xz * scale + vec2(t * 0.030, -t * 0.020)) * 0.70
+         + valueNoise(xz * scale * 2.35 - vec2(t * 0.017, t * 0.011)) * 0.30;
+}
+
+vec3 applySandDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data, vec3 tint, float edge) {
+    float sphereR = max(data.y, 0.001);
+    float progress = clamp(data.z, 0.0, 1.0);
+    float intensity = max(data.w, 0.0);
+    float energy = intensity * (1.0 - smoothstep(0.86, 1.0, progress));
+    if (energy <= 0.002) return color;
+
+    vec3 rd = normalize(viewRay(uv));
+    float maxDistance = length(scenePos);
+    vec3 toCenter = center;
+    float centerProj = dot(rd, toCenter);
+    float centerDist = length(toCenter);
+    float impact = sqrt(max(centerDist * centerDist - centerProj * centerProj, 0.0));
+    vec3 sand = mix(tint, vec3(0.80, 0.62, 0.33), 0.4);
+
+    // ── 领域外壳：干沙色细边 + 外侧沙尘日冕 ──
+    float shellSpan = sqrt(max(sphereR * sphereR - impact * impact, 0.0));
+    float shellNear = centerProj - shellSpan;
+    float shellFar = centerProj + shellSpan;
+    float shellVisible = (shellFar > 0.0 && shellNear < maxDistance) ? 1.0 : 0.0;
+    float silhouette = smoothstep(1.0, 1.30, centerDist / sphereR);
+    float tShell = max(shellNear, 0.0);
+    vec3 shellVec = rd * tShell - center;
+    float shellLen = length(shellVec);
+    vec3 shellDir = shellLen > 0.0001 ? shellVec / shellLen : vec3(0.0, 1.0, 0.0);
+    float edgeRing = exp(-abs(impact - sphereR) / (sphereR * 0.02))
+            * (0.75 + 0.25 * valueNoise(shellDir.xz * 5.0 + vec2(Time * 0.06, -Time * 0.05)))
+            * shellVisible * silhouette;
+    float shellOutside = max(impact - sphereR, 0.0);
+    float corona = exp(-shellOutside / max(sphereR * 0.11, 0.30))
+            * (1.0 - smoothstep(0.30, 0.60, shellOutside / sphereR));
+    vec3 domainRimGlow = sand * edgeRing * 0.8 * energy;
+
+    vec3 oc = -center;
+    float b = dot(oc, rd);
+    float c = dot(oc, oc) - sphereR * sphereR;
+    float h = b * b - c;
+    if (h < 0.0) {
+        return color + domainRimGlow + sand * corona * 0.3 * energy * shellVisible * silhouette;
+    }
+    h = sqrt(h);
+    float tNear = max(-b - h, 0.0);
+    float tFar = min(-b + h, maxDistance);
+    if (tNear >= tFar) return color;
+
+    // ── 沙面求交：基准面随展开上涨（progress 0→1 时约从 -0.55R 涨到脚下）──
+    float duneScale = 2.6 / sphereR;
+    float baseY = center.y - sphereR * 0.55 + sphereR * 0.55 * smoothstep(0.0, 0.35, progress);
+    float sandMask = 0.0;
+    vec3 sandCol = color;
+    if (rd.y < -0.05) {
+        float invY = 1.0 / rd.y;
+        float tSand = baseY * invY;
+        // 固定点迭代的收敛因子 g' = 0.572·|水平分量/垂直分量|：可见沙池区间内 g'≲1.04（收敛），
+        // 更掠射的方向会发散 —— 但那些方向算出来的点必然落在 inPool 圆域之外被丢掉，
+        // 所以这里只加一道上界钳制兜底（防止无穷大参与比较），并把阈值抬到 -0.05 省掉无效迭代。
+        for (int i = 0; i < 3; i++) {
+            vec3 pIter = rd * tSand;
+            float coarse = valueNoise(pIter.xz * duneScale + vec2(Time * 0.030, -Time * 0.020)) - 0.5;
+            tSand = (baseY + coarse * sphereR * 0.22) * invY;
+        }
+        tSand = min(tSand, sphereR * 2.0);
+        if (tSand > 0.05 && tSand < maxDistance) {
+            vec3 ps = rd * tSand;
+            float rr = length(ps.xz - center.xz);
+            float inPool = 1.0 - smoothstep(sphereR * 0.82, sphereR, rr);
+            if (inPool > 0.01) {
+                // 命中后才补细节：双八度沙丘 + 固定世界波长的风纹
+                float dune = duneField(ps.xz, duneScale, Time);
+                float ripple = 0.5 + 0.5 * sin((ps.x * 0.72 + ps.z * 0.94) * 12.0 + Time * 0.9 + dune * 7.0);
+                float crest = smoothstep(0.35, 0.75, dune);
+                float lee = smoothstep(0.60, 1.00, dune);
+                vec3 body = sand * (0.52 + 0.48 * crest) * (1.0 - 0.25 * lee);
+                body += vec3(0.060, 0.045, 0.020) * ripple * 0.65;
+                sandCol = body;
+                sandMask = inPool;
+            }
+        }
+    }
+
+    // ── 贴地沙尘：世界锚定，随地形起伏（不跟视角滑动）──
+    float dust = exp(-abs(scenePos.y - baseY) / max(sphereR * 0.20, 0.05))
+            * (0.35 + 0.65 * valueNoise(scenePos.xz * 0.22 + vec2(Time * 0.03, -Time * 0.02)));
+
+    float amount = smoothstep(tNear, tNear + sphereR * 0.1, tFar);
+    float k = amount * min(energy, 1.0);
+    vec3 result = mix(color, sandCol, sandMask * k);
+    result += sand * dust * 0.10 * k;
+    result += domainRimGlow;
+    return result;
+}
+// ────────────────────────── 华胥・花海领域 (Flourishing Domain, mode 24) ──────────────────────────
+// 机制：**表面生长投射**。用深度缓冲重建法线，只在朝上的地表上生长藤蔓与花簇
+// （世界坐标极角脉络 + 噪声散布决定叶与花），再补给几片世界锚定的浮空花瓣（投影成小面片）。
+// 图案长在地表上而不是铺在屏幕上，近处视野完全通透，没有任何全屏铺色。
+vec3 applyFloraDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data, vec3 tint, float edge) {
+    float sphereR = max(data.y, 0.001);
+    float progress = clamp(data.z, 0.0, 1.0);
+    float intensity = max(data.w, 0.0);
+    float energy = intensity * (1.0 - smoothstep(0.86, 1.0, progress));
+    if (energy <= 0.002) return color;
+
+    vec3 rd = normalize(viewRay(uv));
+    float maxDistance = length(scenePos);
+    vec3 toCenter = center;
+    float centerProj = dot(rd, toCenter);
+    float centerDist = length(toCenter);
+    float impact = sqrt(max(centerDist * centerDist - centerProj * centerProj, 0.0));
+    vec3 leafTint = mix(tint, vec3(0.30, 0.72, 0.34), 0.45);
+    vec3 petalTint = mix(tint, vec3(0.97, 0.64, 0.79), 0.60);
+
+    // ── 领域外壳：藤绿细边 + 花雾日冕 ──
+    float shellSpan = sqrt(max(sphereR * sphereR - impact * impact, 0.0));
+    float shellNear = centerProj - shellSpan;
+    float shellFar = centerProj + shellSpan;
+    float shellVisible = (shellFar > 0.0 && shellNear < maxDistance) ? 1.0 : 0.0;
+    float silhouette = smoothstep(1.0, 1.30, centerDist / sphereR);
+    float tShell = max(shellNear, 0.0);
+    vec3 shellVec = rd * tShell - center;
+    float shellLen = length(shellVec);
+    vec3 shellDir = shellLen > 0.0001 ? shellVec / shellLen : vec3(0.0, 1.0, 0.0);
+    float shellAng = atan(shellDir.z, shellDir.x);
+    float edgeRing = exp(-abs(impact - sphereR) / (sphereR * 0.02))
+            * (0.70 + 0.30 * (0.5 + 0.5 * sin(shellAng * 34.0 + Time * 0.9)))
+            * shellVisible * silhouette;
+    float shellOutside = max(impact - sphereR, 0.0);
+    float corona = exp(-shellOutside / max(sphereR * 0.11, 0.30))
+            * (1.0 - smoothstep(0.30, 0.60, shellOutside / sphereR));
+    vec3 domainRimGlow = petalTint * edgeRing * 0.8 * energy;
+
+    vec3 oc = -center;
+    float b = dot(oc, rd);
+    float c = dot(oc, oc) - sphereR * sphereR;
+    float h = b * b - c;
+    if (h < 0.0) {
+        return color + domainRimGlow + petalTint * corona * 0.3 * energy * shellVisible * silhouette;
+    }
+    h = sqrt(h);
+    float tNear = max(-b - h, 0.0);
+    float tFar = min(-b + h, maxDistance);
+    if (tNear >= tFar) return color;
+
+    // ── 地表生长：只在朝上、非深度突变、且在领域内的地表像素上计算 ──
+    vec3 base = color;
+    vec3 grown = base;
+    float growMask = 0.0;
+    vec2 relXZ = scenePos.xz - center.xz;
+    float fieldR = length(relXZ);
+    if (fieldR < sphereR && edge < 0.6) {
+        vec3 nraw = depthSurfaceNormal(uv);
+        float nlen = length(nraw);
+        float upness = nlen > 1.0e-6 ? abs(nraw.y) / nlen : 0.0;
+        // 边缘一圈不长（留出领域壁），朝上程度平方化，突出"只长在地面上"
+        growMask = upness * upness * (1.0 - edge) * (1.0 - smoothstep(sphereR * 0.84, sphereR, fieldR));
+        if (growMask > 0.06) {
+            float ang = atan(relXZ.y, relXZ.x);
+            float warp = valueNoise(vec2(ang * 1.7, fieldR * (2.0 / sphereR)) + vec2(Time * 0.05, 0.0));
+            // 藤蔓：极角随半径扭转后的等值线，取高次幂得到细线
+            float swirl = ang + fieldR * (2.4 / sphereR) + warp * 1.1;
+            float vine = pow(max(1.0 - abs(sin(swirl * 5.0 + warp * 3.0)), 0.0), 14.0);
+            // 叶与花：世界坐标散布噪声（世界锚定，不随视角滑动）
+            float scatter = valueNoise(scenePos.xz * (2.6 / sphereR) + vec2(Time * 0.02, -Time * 0.03));
+            float detail = valueNoise(scenePos.xz * (6.1 / sphereR) - vec2(Time * 0.015, Time * 0.012));
+            float bloom = smoothstep(0.74, 0.88, scatter * 0.7 + detail * 0.3);
+            float leaf = clamp(smoothstep(0.52, 0.66, scatter) - bloom, 0.0, 1.0);
+            vec3 surface = base;
+            surface = mix(surface, leafTint * (0.50 + 0.50 * detail), leaf * 0.85);
+            surface = mix(surface, petalTint * (0.85 + 0.45 * detail), bloom * 0.95);
+            surface += leafTint * vine * 0.50;
+            grown = surface;
+        }
+    }
+
+    // ── 浮空花瓣：4 片，位置完全由领域中心 + 时间决定（世界锚定）──
+    float petals = 0.0;
+    float aspect = InSize.x / InSize.y;
+    vec2 auv = vec2(uv.x * aspect, uv.y);
+    for (int i = 0; i < 4; i++) {
+        float fi = float(i);
+        float pAng = Time * (0.24 + 0.07 * fi) + fi * 1.73;
+        float pRise = fract(Time * (0.055 + 0.020 * fi) + fi * 0.37);
+        vec3 pp = center + vec3(cos(pAng) * sphereR * 0.55,
+                sphereR * (-0.45 + 0.95 * pRise),
+                sin(pAng) * sphereR * 0.55);
+        vec2 puv = cameraRelativeWorldToUv(pp);
+        if (puv.x < -100.0) continue;
+        vec2 ap = vec2(puv.x * aspect, puv.y);
+        float d = length(auv - ap);
+        float visible = step(length(pp), maxDistance + 0.3);
+        petals = max(petals, (1.0 - smoothstep(0.0020, 0.0060, d)) * visible);
+    }
+
+    float amount = smoothstep(tNear, tNear + sphereR * 0.1, tFar);
+    float k = amount * min(energy, 1.0);
+    vec3 result = mix(base, grown, growMask * k);
+    result += petalTint * petals * 0.45 * k;
+    result += domainRimGlow;
+    return result;
+}
 void main() {
     vec2 uv = gl_FragCoord.xy / InSize;
     vec4 base = texture(DiffuseSampler, uv);
     float depth = depthAt(uv);
     bool sky = depth >= 0.999999;
 
+    vec4 data = EffectData0;
+    int mode = int(data.x + 0.5);
+
     vec3 scenePos;
-    float edge;
+    float edge = 0.0;
     if (sky) {
         scenePos = viewRay(uv) * 320.0;
-        edge = 0.0;
     } else {
         scenePos = reconstructWorldPosition(uv, depth);
-        edge = depthEdge(uv, depth);
+        // 只有真正用 edge 的模式才算 depthEdge（每个像素 4 次额外深度采样）。
+        // 宇宙领域/寂灭之月/雷狱完全不读 edge，站在领域里时这一条能省掉全屏 4 次深度 fetch。
+        if (mode != 17 && mode != 18 && mode != 20) {
+            edge = depthEdge(uv, depth);
+        }
     }
 
     vec3 color = base.rgb;
-    vec4 data = EffectData0;
-    int mode = int(data.x + 0.5);
     vec3 center = EffectCenter0;
     vec3 tint = EffectColor0;
 
@@ -1710,6 +2396,18 @@ void main() {
             color = applyCosmicDomain(color, scenePos, uv, center, data, tint, edge);
         } else if (mode == 18) {
             color = applyLunarDomain(color, scenePos, uv, center, data, tint, edge);
+        } else if (mode == 19) {
+            color = applyBlueprintDomain(color, scenePos, uv, center, data, tint, edge);
+        } else if (mode == 20) {
+            color = applyThunderDomain(color, scenePos, uv, center, data, tint, edge);
+        } else if (mode == 21) {
+            color = applyMirrorDomain(color, scenePos, uv, center, data, tint, edge);
+        } else if (mode == 22) {
+            color = applyClockworkDomain(color, scenePos, uv, center, data, tint, edge);
+        } else if (mode == 23) {
+            color = applySandDomain(color, scenePos, uv, center, data, tint, edge);
+        } else if (mode == 24) {
+            color = applyFloraDomain(color, scenePos, uv, center, data, tint, edge);
         }
     } else if (mode == 0) {
         color = applyShockwave(color, scenePos, uv, center, data, tint);
@@ -1745,6 +2443,18 @@ void main() {
         color = applyCosmicDomain(color, scenePos, uv, center, data, tint, edge);
     } else if (mode == 18) {
         color = applyLunarDomain(color, scenePos, uv, center, data, tint, edge);
+    } else if (mode == 19) {
+        color = applyBlueprintDomain(color, scenePos, uv, center, data, tint, edge);
+    } else if (mode == 20) {
+        color = applyThunderDomain(color, scenePos, uv, center, data, tint, edge);
+    } else if (mode == 21) {
+        color = applyMirrorDomain(color, scenePos, uv, center, data, tint, edge);
+    } else if (mode == 22) {
+        color = applyClockworkDomain(color, scenePos, uv, center, data, tint, edge);
+    } else if (mode == 23) {
+        color = applySandDomain(color, scenePos, uv, center, data, tint, edge);
+    } else if (mode == 24) {
+        color = applyFloraDomain(color, scenePos, uv, center, data, tint, edge);
     } else {
         color = applyMalevolentShrineTargetGlow(color, scenePos, uv, center, data, tint, edge);
     }

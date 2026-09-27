@@ -445,6 +445,12 @@ public final class ScreenSpaceDepthEffectPostProcessor {
             case 16 -> 1.9D;  // black_cat_head_fog: 雾球 radius * 1.58
             case 17 -> 1.7D;  // cosmic_domain: 领域球 radius + 球外日冕（约 0.6r）
             case 18 -> 1.7D;  // lunar_domain: 月球完全在球内，外扩同样是球外日冕
+            case 19 -> 1.5D;  // blueprint_domain: 线稿全在球内，只有球外日冕
+            case 20 -> 1.5D;  // thunder_domain: 闪电到 0.92r，落点灼痕在地表
+            case 21 -> 1.5D;  // mirror_domain: 反射全在地表上，只有球外日冕
+            case 22 -> 1.5D;  // clockwork_domain: 发条环最外圈 0.93r + 球外日冕
+            case 23 -> 1.5D;  // sand_domain: 沙丘盆地 0.82r + 球外沙尘日冕
+            case 24 -> 1.5D;  // flora_domain: 生长贴地、花瓣最远 0.55r，外扩是花雾日冕
             default -> 1.3D;  // 0/1/7/11/12 等：视觉边界基本就是 radius 本身
         };
     }
@@ -623,6 +629,30 @@ public final class ScreenSpaceDepthEffectPostProcessor {
             return 18;
         }
 
+        if (effect.id().equals(GDVisualEffects.BLUEPRINT_DOMAIN.getId())) {
+            return 19;
+        }
+
+        if (effect.id().equals(GDVisualEffects.THUNDER_DOMAIN.getId())) {
+            return 20;
+        }
+
+        if (effect.id().equals(GDVisualEffects.MIRROR_DOMAIN.getId())) {
+            return 21;
+        }
+
+        if (effect.id().equals(GDVisualEffects.CLOCKWORK_DOMAIN.getId())) {
+            return 22;
+        }
+
+        if (effect.id().equals(GDVisualEffects.SAND_DOMAIN.getId())) {
+            return 23;
+        }
+
+        if (effect.id().equals(GDVisualEffects.FLORA_DOMAIN.getId())) {
+            return 24;
+        }
+
         return -1;
     }
 
@@ -701,6 +731,30 @@ public final class ScreenSpaceDepthEffectPostProcessor {
             return GDVisualEffects.LUNAR_DOMAIN.get().renderDistance();
         }
 
+        if (effect.id().equals(GDVisualEffects.BLUEPRINT_DOMAIN.getId())) {
+            return GDVisualEffects.BLUEPRINT_DOMAIN.get().renderDistance();
+        }
+
+        if (effect.id().equals(GDVisualEffects.THUNDER_DOMAIN.getId())) {
+            return GDVisualEffects.THUNDER_DOMAIN.get().renderDistance();
+        }
+
+        if (effect.id().equals(GDVisualEffects.MIRROR_DOMAIN.getId())) {
+            return GDVisualEffects.MIRROR_DOMAIN.get().renderDistance();
+        }
+
+        if (effect.id().equals(GDVisualEffects.CLOCKWORK_DOMAIN.getId())) {
+            return GDVisualEffects.CLOCKWORK_DOMAIN.get().renderDistance();
+        }
+
+        if (effect.id().equals(GDVisualEffects.SAND_DOMAIN.getId())) {
+            return GDVisualEffects.SAND_DOMAIN.get().renderDistance();
+        }
+
+        if (effect.id().equals(GDVisualEffects.FLORA_DOMAIN.getId())) {
+            return GDVisualEffects.FLORA_DOMAIN.get().renderDistance();
+        }
+
         return 0.0D;
     }
 
@@ -709,7 +763,8 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                 ? Mth.clamp(effect.data().getDouble("YOffset"), -4.0D, 4.0D)
                 : -0.04D;
 
-        if ((mode == 10 || mode == 13 || mode == 14 || mode == 15 || mode == 16 || mode == 17 || mode == 18)
+        if ((mode == 10 || mode == 13 || mode == 14 || mode == 15 || mode == 16 || mode == 17 || mode == 18
+                || mode == 19 || mode == 20 || mode == 21 || mode == 22 || mode == 23 || mode == 24)
                 && effect.data().contains("AnchorX")
                 && effect.data().contains("AnchorY")
                 && effect.data().contains("AnchorZ")) {
@@ -717,7 +772,7 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                     effect.data().getDouble("AnchorX"),
                     effect.data().getDouble("AnchorY"),
                     effect.data().getDouble("AnchorZ")
-            ).add(0.0D, mode == 16 || mode == 17 || mode == 18 ? yOffset : 0.0D, 0.0D);
+            ).add(0.0D, mode >= 16 ? yOffset : 0.0D, 0.0D);
         }
 
         if (mode == 16) {
@@ -769,6 +824,18 @@ public final class ScreenSpaceDepthEffectPostProcessor {
             case 17 -> Math.max(6.5F, entity.getBbWidth() * 5.0F);
             // 寂灭之月：月亮挂在球心上方，球小了月亮就贴脸，默认给得更大些。
             case 18 -> Math.max(9.0F, entity.getBbWidth() * 6.0F);
+            // 勘界蓝图：测绘范围要够大才有"地形图"的观感
+            case 19 -> Math.max(10.0F, entity.getBbWidth() * 6.0F);
+            // 雷狱：风暴单体本身就是大尺度现象
+            case 20 -> Math.max(9.0F, entity.getBbWidth() * 6.0F);
+            // 镜渊：镜面铺在领域的整个地表上，范围小了反而像水洼
+            case 21 -> Math.max(10.0F, entity.getBbWidth() * 6.0F);
+            // 静止时之匣：发条环要够大才有机械压迫感
+            case 22 -> Math.max(9.0F, entity.getBbWidth() * 5.5F);
+            // 流沙葬丘：沙丘盆地范围
+            case 23 -> Math.max(9.0F, entity.getBbWidth() * 5.5F);
+            // 华胥花海：花田范围
+            case 24 -> Math.max(9.0F, entity.getBbWidth() * 5.5F);
             default -> DEFAULT_RADIUS;
         };
     }
@@ -791,7 +858,9 @@ public final class ScreenSpaceDepthEffectPostProcessor {
             return yawDegrees * ((float) Math.PI / 180.0F);
         }
 
-        if (mode == 10 || mode == 11 || mode == 12 || mode == 13 || mode == 14 || mode == 15 || mode == 17 || mode == 18) {
+        if (mode == 10 || mode == 11 || mode == 12 || mode == 13 || mode == 14 || mode == 15
+                || mode == 17 || mode == 18 || mode == 19 || mode == 20 || mode == 21 || mode == 22
+                || mode == 23 || mode == 24) {
             return progress;
         }
 
@@ -816,8 +885,8 @@ public final class ScreenSpaceDepthEffectPostProcessor {
         if (mode == 8) {
             return base * Mth.clamp(progress * 1.3F, 0.0F, 1.0F);
         }
-        // 宇宙领域：有限时长时才做「展开浮现」，永久领域（progress 恒为 0）直接满强度。
-        if (mode == 17 || mode == 18) {
+        // 宇宙领域/寂灭之月/勘界蓝图/雷狱：有限时长时才做「展开浮现」，永久领域直接满强度。
+        if (mode >= 17) {
             float spawn = effect.initialDuration() == EntityVisualEffects.INFINITE
                     ? 1.0F
                     : Mth.clamp(progress * 4.0F, 0.0F, 1.0F);
@@ -899,6 +968,55 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                     readColor(effect.data(), "Tint", output, 0.60F, 0.63F, 0.70F);
                 } else {
                     readColor(effect.data(), "FogColor", output, 0.60F, 0.63F, 0.70F);
+                }
+            }
+            case 19 -> {
+                // 蓝图线稿色：默认测绘青蓝。{Tint:[1.0f,0.35f,0.10f]} 可换成琥珀工程图。
+                if (effect.data().contains("Tint")) {
+                    readColor(effect.data(), "Tint", output, 0.35F, 0.85F, 1.00F);
+                } else {
+                    readColor(effect.data(), "FogColor", output, 0.35F, 0.85F, 1.00F);
+                }
+            }
+            case 20 -> {
+                // 雷狱放电色：默认电蓝白。{Tint:[0.85f,0.55f,1.0f]} 可换成紫电。
+                if (effect.data().contains("Tint")) {
+                    readColor(effect.data(), "Tint", output, 0.78F, 0.90F, 1.00F);
+                } else {
+                    readColor(effect.data(), "FogColor", output, 0.78F, 0.90F, 1.00F);
+                }
+            }
+            case 21 -> {
+                // 镜渊水银色：默认冷银青。{Tint:[1.0f,0.85f,0.35f]} 可换成一潭黄金。
+                if (effect.data().contains("Tint")) {
+                    readColor(effect.data(), "Tint", output, 0.72F, 0.86F, 0.95F);
+                } else {
+                    readColor(effect.data(), "FogColor", output, 0.72F, 0.86F, 0.95F);
+                }
+            }
+            case 22 -> {
+                // 发条黄铜色：默认旧黄铜。{Tint:[0.70f,0.78f,0.85f]} 可换成冷钢。
+                if (effect.data().contains("Tint")) {
+                    readColor(effect.data(), "Tint", output, 0.88F, 0.68F, 0.34F);
+                } else {
+                    readColor(effect.data(), "FogColor", output, 0.88F, 0.68F, 0.34F);
+                }
+            }
+            case 23 -> {
+                // 沙色：默认赭黄。{Tint:[0.72f,0.70f,0.66f]} 可换成月面灰沙。
+                if (effect.data().contains("Tint")) {
+                    readColor(effect.data(), "Tint", output, 0.80F, 0.62F, 0.33F);
+                } else {
+                    readColor(effect.data(), "FogColor", output, 0.80F, 0.62F, 0.33F);
+                }
+            }
+            case 24 -> {
+                // 花海主色：默认嫩绿（花瓣色在 shader 里由它推出一份粉白）。
+                // {Tint:[0.95f,0.45f,0.65f]} 可换成纯花海粉。
+                if (effect.data().contains("Tint")) {
+                    readColor(effect.data(), "Tint", output, 0.42F, 0.80F, 0.45F);
+                } else {
+                    readColor(effect.data(), "FogColor", output, 0.42F, 0.80F, 0.45F);
                 }
             }
             default -> {

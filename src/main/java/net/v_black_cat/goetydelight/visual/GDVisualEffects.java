@@ -59,6 +59,12 @@ public final class GDVisualEffects {
     public static final ResourceKey<EntityVisualEffectType> MALEVOLENT_SHRINE_STARFIELD_KEY = key("malevolent_shrine_starfield");
     public static final ResourceKey<EntityVisualEffectType> COSMIC_DOMAIN_KEY = key("cosmic_domain");
     public static final ResourceKey<EntityVisualEffectType> LUNAR_DOMAIN_KEY = key("lunar_domain");
+    public static final ResourceKey<EntityVisualEffectType> BLUEPRINT_DOMAIN_KEY = key("blueprint_domain");
+    public static final ResourceKey<EntityVisualEffectType> THUNDER_DOMAIN_KEY = key("thunder_domain");
+    public static final ResourceKey<EntityVisualEffectType> MIRROR_DOMAIN_KEY = key("mirror_domain");
+    public static final ResourceKey<EntityVisualEffectType> CLOCKWORK_DOMAIN_KEY = key("clockwork_domain");
+    public static final ResourceKey<EntityVisualEffectType> SAND_DOMAIN_KEY = key("sand_domain");
+    public static final ResourceKey<EntityVisualEffectType> FLORA_DOMAIN_KEY = key("flora_domain");
 
     public static final RegistryObject<EntityVisualEffectType> ORBIT_SPHERE = register(
             ORBIT_SPHERE_KEY,
@@ -300,6 +306,87 @@ public final class GDVisualEffects {
      */
     public static final RegistryObject<EntityVisualEffectType> LUNAR_DOMAIN = register(
             LUNAR_DOMAIN_KEY,
+            EntityVisualEffectType.properties()
+                    .defaultDuration(240)
+                    .renderDistance(256.0D)
+                    .renderWhenInvisible()
+                    .renderInFirstPerson()
+                    .persistent()
+    );
+    /**
+     * 勘界・蓝图领域：纯"线稿"语言 —— 按世界高度画等高线、绕领域轴画测绘图环与辐条、
+     * 沿深度突变描边，场景压成青蓝蓝图（保亮度，近处依旧看得清）。屏幕空间模式 19。
+     */
+    public static final RegistryObject<EntityVisualEffectType> BLUEPRINT_DOMAIN = register(
+            BLUEPRINT_DOMAIN_KEY,
+            EntityVisualEffectType.properties()
+                    .defaultDuration(240)
+                    .renderDistance(256.0D)
+                    .renderWhenInvisible()
+                    .renderInFirstPerson()
+                    .persistent()
+    );
+    /**
+     * 雷狱・万钧领域：世界空间折线闪电 + 逐像素深度遮挡，落点由轮次 hash 决定（世界锚定），
+     * 每轮两道从领域上壳劈到地面，命中处留灼痕，整片压成冷铁灰并带贴地电离雾。屏幕空间模式 20。
+     */
+    public static final RegistryObject<EntityVisualEffectType> THUNDER_DOMAIN = register(
+            THUNDER_DOMAIN_KEY,
+            EntityVisualEffectType.properties()
+                    .defaultDuration(240)
+                    .renderDistance(256.0D)
+                    .renderWhenInvisible()
+                    .renderInFirstPerson()
+                    .persistent()
+    );
+    /**
+     * 镜渊・倒影领域：用深度缓冲重建地表法线，把朝上的地表当水银镜，沿镜像射线做屏幕空间反射。
+     * 不假设地面高度，平地/缓坡/坑底各自成镜；墙面与生物不会被糊上反射。屏幕空间模式 21。
+     */
+    public static final RegistryObject<EntityVisualEffectType> MIRROR_DOMAIN = register(
+            MIRROR_DOMAIN_KEY,
+            EntityVisualEffectType.properties()
+                    .defaultDuration(240)
+                    .renderDistance(256.0D)
+                    .renderWhenInvisible()
+                    .renderInFirstPerson()
+                    .persistent()
+    );
+
+    /**
+     * 静止・时之匣领域：解析求交的三层黄铜发条环（不同倾角/转速/齿数）+ 沿高度往返的秒针盘，
+     * 领域内压成岁月黄铜色但保留亮度。屏幕空间模式 22。
+     */
+    public static final RegistryObject<EntityVisualEffectType> CLOCKWORK_DOMAIN = register(
+            CLOCKWORK_DOMAIN_KEY,
+            EntityVisualEffectType.properties()
+                    .defaultDuration(240)
+                    .renderDistance(256.0D)
+                    .renderWhenInvisible()
+                    .renderInFirstPerson()
+                    .persistent()
+    );
+
+    /**
+     * 流沙・葬丘领域：高度场求交的沙丘盆地 —— 沙面高度由世界坐标噪声 + 随展开上涨的潮位决定，
+     * 视线用固定点迭代与沙面求交，只画在真正挡在场景前面的像素上。屏幕空间模式 23。
+     */
+    public static final RegistryObject<EntityVisualEffectType> SAND_DOMAIN = register(
+            SAND_DOMAIN_KEY,
+            EntityVisualEffectType.properties()
+                    .defaultDuration(240)
+                    .renderDistance(256.0D)
+                    .renderWhenInvisible()
+                    .renderInFirstPerson()
+                    .persistent()
+    );
+
+    /**
+     * 华胥・花海领域：表面生长投射 —— 深度法线定向，只在朝上的地表生长藤蔓与花簇，
+     * 另有世界锚定的浮空花瓣。屏幕空间模式 24。
+     */
+    public static final RegistryObject<EntityVisualEffectType> FLORA_DOMAIN = register(
+            FLORA_DOMAIN_KEY,
             EntityVisualEffectType.properties()
                     .defaultDuration(240)
                     .renderDistance(256.0D)
