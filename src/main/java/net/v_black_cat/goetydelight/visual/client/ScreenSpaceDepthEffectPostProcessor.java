@@ -858,9 +858,19 @@ public final class ScreenSpaceDepthEffectPostProcessor {
             return yawDegrees * ((float) Math.PI / 180.0F);
         }
 
-        if (mode == 10 || mode == 11 || mode == 12 || mode == 13 || mode == 14 || mode == 15
-                || mode == 17 || mode == 18 || mode == 19 || mode == 20 || mode == 21 || mode == 22
-                || mode == 23 || mode == 24) {
+        // 新模式（>=17）：data.z 不再是"生命进度"，而是**年龄斜坡**（0→1，45 tick 长满），
+        // 供 shader 里需要按绝对时间展开的几何使用（例如流沙上涨）。
+        // 亮度包络（淡入+淡出）已整体搬进 effectIntensity 按绝对 tick 计算。
+        if (mode >= 17) {
+            long start = effect.startGameTime();
+            if (start < 0) {
+                return 1.0F;
+            }
+            float elapsed = (float) (entity.level().getGameTime() - start);
+            return Mth.clamp(elapsed / 45.0F, 0.0F, 1.0F);
+        }
+
+        if (mode >= 10 && mode <= 15) {
             return progress;
         }
 
@@ -878,19 +888,49 @@ public final class ScreenSpaceDepthEffectPostProcessor {
                 ? effect.data().getFloat("Intensity")
                 : 1.0F;
 
-        // 领域雾和斩击在展开时逐渐浮现，避免瞬间铺满。
-        if (mode == 7) {
-            return base * Mth.clamp(progress * 1.6F, 0.0F, 1.0F);
+        // 淡入一律按「绝对 tick」，不按「时长的百分比」：
+        // 原实现是 progress*1.6 / progress*1.3 / progress*4 —— duration=99999 时要等
+        // 62% / 77% / 25% 的时长（约 52 / 64 / 21 分钟）才到满强度，长时长下等于一直不亮。
+        if (mode == 7 || mode == 8) {
+            // 领域雾 4s、斩击 3s 浮现（可用 data 的 FadeIn 覆盖，0 = 立即满强度）。
+            // 永久时长直接满强度：原实现在 INFINITE 下 progress 恒为 0，会把强度锁死在 0（顺带修掉）。
+            if (effect.initialDuration() == EntityVisualEffects.INFINITE) {
+                return base;
+            }
+            float rampTicks = effect.data().contains("FadeIn")
+                    ? Math.max(0.0F, effect.data().getFloat("FadeIn"))
+                    : (mode == 7 ? 80.0F : 60.0F);
+            if (rampTicks <= 0.0F) {
+                return base;
+            }
+            float elapsedTicks = progress * (float) effect.initialDuration();
+            return base * Mth.clamp(elapsedTicks / rampTicks, 0.0F, 1.0F);
         }
-        if (mode == 8) {
-            return base * Mth.clamp(progress * 1.3F, 0.0F, 1.0F);
-        }
-        // 宇宙领域/寂灭之月/勘界蓝图/雷狱：有限时长时才做「展开浮现」，永久领域直接满强度。
+        // 宇宙/月球/六个新领域：入场 2s（40 tick）长满；收尾按绝对时长淡出（最多 4s，
+        // 短时长下按生命的 1/4 自适应）。淡出也从 shader 搬到这里，shader 侧只吃最终强度。
         if (mode >= 17) {
-            float spawn = effect.initialDuration() == EntityVisualEffects.INFINITE
+            if (effect.initialDuration() == EntityVisualEffects.INFINITE) {
+                return base;
+            }
+            float duration = (float) effect.initialDuration();
+            // 淡入 tick：data.FadeIn 覆盖（0 = 立即满强度），默认 40（2s）
+            float fadeInTicks = effect.data().contains("FadeIn")
+                    ? Math.max(0.0F, effect.data().getFloat("FadeIn"))
+                    : 40.0F;
+            float spawn = fadeInTicks <= 0.0F
                     ? 1.0F
-                    : Mth.clamp(progress * 4.0F, 0.0F, 1.0F);
-            return base * spawn;
+                    : Mth.clamp(progress * duration / fadeInTicks, 0.0F, 1.0F);
+            // 淡出 tick：data.FadeOut 覆盖（0 = 不淡出），默认最多 4s、短时长取生命 1/4
+            float fadeTicks = effect.data().contains("FadeOut")
+                    ? Math.max(0.0F, effect.data().getFloat("FadeOut"))
+                    : Math.min(80.0F, duration * 0.25F);
+            float fadeOut = 1.0F;
+            if (fadeTicks > 0.0F) {
+                float remainTicks = duration * (1.0F - progress);
+                float t = Mth.clamp(1.0F - remainTicks / fadeTicks, 0.0F, 1.0F);
+                fadeOut = 1.0F - t * t * (3.0F - 2.0F * t);
+            }
+            return base * spawn * fadeOut;
         }
 
         return switch (mode) {

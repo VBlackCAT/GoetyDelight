@@ -1260,7 +1260,7 @@ vec3 applyCosmicDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 dat
     float sphereR = max(data.y, 0.001);
     float progress = clamp(data.z, 0.0, 1.0);
     float intensity = max(data.w, 0.0);
-    float energy = intensity * (1.0 - smoothstep(0.86, 1.0, progress));
+    float energy = intensity; // 包络（淡入/淡出）由 Java 的 effectIntensity 按绝对 tick 计算
 
     if (energy <= 0.002) return color;
 
@@ -1567,7 +1567,7 @@ vec3 applyLunarDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data
     float sphereR = max(data.y, 0.001);
     float progress = clamp(data.z, 0.0, 1.0);
     float intensity = max(data.w, 0.0);
-    float energy = intensity * (1.0 - smoothstep(0.86, 1.0, progress));
+    float energy = intensity; // 包络（淡入/淡出）由 Java 的 effectIntensity 按绝对 tick 计算
     if (energy <= 0.002) return color;
 
     vec3 ro = vec3(0.0);
@@ -1720,7 +1720,7 @@ vec3 applyBlueprintDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 
     float sphereR = max(data.y, 0.001);
     float progress = clamp(data.z, 0.0, 1.0);
     float intensity = max(data.w, 0.0);
-    float energy = intensity * (1.0 - smoothstep(0.86, 1.0, progress));
+    float energy = intensity; // 包络（淡入/淡出）由 Java 的 effectIntensity 按绝对 tick 计算
     if (energy <= 0.002) return color;
 
     vec3 rd = normalize(viewRay(uv));
@@ -1807,7 +1807,7 @@ vec3 applyThunderDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 da
     float sphereR = max(data.y, 0.001);
     float progress = clamp(data.z, 0.0, 1.0);
     float intensity = max(data.w, 0.0);
-    float energy = intensity * (1.0 - smoothstep(0.86, 1.0, progress));
+    float energy = intensity; // 包络（淡入/淡出）由 Java 的 effectIntensity 按绝对 tick 计算
     if (energy <= 0.002) return color;
 
     vec3 rd = normalize(viewRay(uv));
@@ -1957,7 +1957,7 @@ vec3 applyMirrorDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 dat
     float sphereR = max(data.y, 0.001);
     float progress = clamp(data.z, 0.0, 1.0);
     float intensity = max(data.w, 0.0);
-    float energy = intensity * (1.0 - smoothstep(0.86, 1.0, progress));
+    float energy = intensity; // 包络（淡入/淡出）由 Java 的 effectIntensity 按绝对 tick 计算
     if (energy <= 0.002) return color;
 
     vec3 rd = normalize(viewRay(uv));
@@ -2063,7 +2063,7 @@ vec3 applyClockworkDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 
     float sphereR = max(data.y, 0.001);
     float progress = clamp(data.z, 0.0, 1.0);
     float intensity = max(data.w, 0.0);
-    float energy = intensity * (1.0 - smoothstep(0.86, 1.0, progress));
+    float energy = intensity; // 包络（淡入/淡出）由 Java 的 effectIntensity 按绝对 tick 计算
     if (energy <= 0.002) return color;
 
     vec3 rd = normalize(viewRay(uv));
@@ -2152,7 +2152,7 @@ vec3 applySandDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data,
     float sphereR = max(data.y, 0.001);
     float progress = clamp(data.z, 0.0, 1.0);
     float intensity = max(data.w, 0.0);
-    float energy = intensity * (1.0 - smoothstep(0.86, 1.0, progress));
+    float energy = intensity; // 包络（淡入/淡出）由 Java 的 effectIntensity 按绝对 tick 计算
     if (energy <= 0.002) return color;
 
     vec3 rd = normalize(viewRay(uv));
@@ -2195,7 +2195,8 @@ vec3 applySandDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data,
 
     // ── 沙面求交：基准面随展开上涨（progress 0→1 时约从 -0.55R 涨到脚下）──
     float duneScale = 2.6 / sphereR;
-    float baseY = center.y - sphereR * 0.55 + sphereR * 0.55 * smoothstep(0.0, 0.35, progress);
+        // 沙面随展开上涨：data.z 是 Java 传的"年龄斜坡"（0→1，45 tick 长满），不再按生命百分比
+    float baseY = center.y - sphereR * 0.55 + sphereR * 0.55 * progress;
     float sandMask = 0.0;
     vec3 sandCol = color;
     if (rd.y < -0.05) {
@@ -2247,7 +2248,7 @@ vec3 applyFloraDomain(vec3 color, vec3 scenePos, vec2 uv, vec3 center, vec4 data
     float sphereR = max(data.y, 0.001);
     float progress = clamp(data.z, 0.0, 1.0);
     float intensity = max(data.w, 0.0);
-    float energy = intensity * (1.0 - smoothstep(0.86, 1.0, progress));
+    float energy = intensity; // 包络（淡入/淡出）由 Java 的 effectIntensity 按绝对 tick 计算
     if (energy <= 0.002) return color;
 
     vec3 rd = normalize(viewRay(uv));

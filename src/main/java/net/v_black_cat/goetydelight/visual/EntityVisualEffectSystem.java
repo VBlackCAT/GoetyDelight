@@ -138,6 +138,18 @@ public final class EntityVisualEffectSystem {
         long gameTime = entity.level().getGameTime();
 
 
+        // 可选（循环命令方块专用）：data 带 KeepStart:1 时，若同一特效已存在且 data 没有显式给
+        // StartGameTime，就沿用旧的开始时间 —— 反复 add 只刷新时长，不重播"展开 + 淡入"。
+        ActiveEntityVisualEffect existing = effects.get(effectId);
+        if (existing != null
+                && effectData.getBoolean("KeepStart")
+                && !effectData.contains("StartGameTime")) {
+            long previousStart = existing.startGameTime();
+            if (previousStart > 0L) {
+                effectData.putLong(ActiveEntityVisualEffect.START_GAME_TIME, previousStart);
+            }
+        }
+
         if (!effectData.contains("StartGameTime")) {
 
             effectData.putLong(
