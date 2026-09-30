@@ -1,0 +1,20 @@
+{
+  "type": "crafting_shaped",
+  "pattern": [
+    " A ",
+    "ABA",
+    " A "
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:moss_block"
+    },
+    "B": {
+      "item": "minecraft:spore_blossom"
+    }
+  },
+  "result": {
+    "item": "minecraft:spore_blossom",
+    "count": 2
+  }
+}
