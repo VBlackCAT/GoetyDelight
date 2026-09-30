@@ -1,5 +1,9 @@
 {
   "values": [
-    "goety:snapper"
+    "goety:snapper",
+    {
+      "id": "goetyawaken:hostile_snapper",
+      "required": false
+    }
   ]
 }
