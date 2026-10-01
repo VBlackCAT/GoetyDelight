@@ -43,14 +43,6 @@ public class NetworkHandler {
                 CustomDollReloadMessage::handle,
                 Optional.of(NetworkDirection.PLAY_TO_CLIENT)
         );
-        INSTANCE.registerMessage(
-                id++,
-                SyncEntityVisualEffectsPacket.class,
-                SyncEntityVisualEffectsPacket::encode,
-                SyncEntityVisualEffectsPacket::decode,
-                SyncEntityVisualEffectsPacket::handle,
-                Optional.of(NetworkDirection.PLAY_TO_CLIENT)
-        );
     }
 //    public static void sendToClient(SyncFoxKillCountPacket packet, ServerPlayer player) {
 //        INSTANCE.sendTo(packet, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);

@@ -10,7 +10,6 @@
     "CookingPotBlockEntityMixin",
     "DarkAltarBlockEntityMixin",
     "EntityAccessor",
-    "EntityVisualEffectMixin",
     "LivingEntityAccessor",
     "LivingEntityBuffMixin",
     "MobMixin",

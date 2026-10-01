@@ -99,8 +99,6 @@ public class Config
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SOUL_HEALING_BLACKLIST;
     // 杂项 - 玩家模型
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> PLAYER_MODEL_SCALES;
-    // 杂项 - 骷髅红眼
-    private static final ForgeConfigSpec.BooleanValue SKELETON_RED_EYE_EFFECT_ENABLED;
     // 杂项 - 兼容
     private static final ForgeConfigSpec.BooleanValue ENABLE_GOETY_REVELATION_COMPATIBILITY;
     // 工具 - 法术
@@ -374,12 +372,6 @@ public class Config
                 ), Config::validatePlayerScaleEntry);
         BUILDER.pop();
 
-        BUILDER.push("skeletonEye");
-        SKELETON_RED_EYE_EFFECT_ENABLED = BUILDER
-                .comment("Whether to enable the skeleton red-eye effect\n是否启用骷髅红眼特效")
-                .define("enabled", false);
-        BUILDER.pop();
-
         BUILDER.push("compat");
         ENABLE_GOETY_REVELATION_COMPATIBILITY = BUILDER
                 .comment("Whether to enable compatibility with goety_revelation mod\n是否启用与goety_revelation模组的兼容性")
@@ -413,7 +405,6 @@ public class Config
         registerLegacy("disableSoulMending", DISABLE_SOUL_MENDING);
         registerLegacy("disableSoulHealing", DISABLE_SOUL_HEALING);
         registerLegacy("disableSoulAffix", DISABLE_SOUL_AFFIX);
-        registerLegacy("skeletonRedEyeEffectEnabled", SKELETON_RED_EYE_EFFECT_ENABLED);
         registerLegacy("soulRepairBlacklist", SOUL_MENDING_BLACKLIST);
         registerLegacy("soulHealBlacklist", SOUL_HEALING_BLACKLIST);
         registerLegacy("soulAffixBlacklist", SOUL_AFFIX_BLACKLIST);
@@ -600,10 +591,6 @@ public class Config
 
     public static boolean isSoulAffixDisabled() {
         return DISABLE_SOUL_AFFIX.get();
-    }
-
-    public static boolean isSkeletonRedEyeEffectEnabled() {
-        return SKELETON_RED_EYE_EFFECT_ENABLED.get();
     }
 
     /** 超热维度（下界等）是否禁止大理石聚晶施法。 */

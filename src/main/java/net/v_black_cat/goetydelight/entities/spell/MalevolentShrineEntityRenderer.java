@@ -7,8 +7,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 
 /**
- * 领域本体不绘制任何模型；其视觉效果由 VisualEffect 系统
- * 的 {@code MALEVOLENT_SHRINE_DOMAIN} 渲染器负责。
+ * 领域本体不绘制任何模型（只负责斩击逻辑）。
  */
 public class MalevolentShrineEntityRenderer extends EntityRenderer<MalevolentShrineEntity> {
     private static final ResourceLocation TEXTURE =

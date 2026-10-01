@@ -54,7 +54,6 @@ import net.v_black_cat.goetydelight.structures.ModStructurePieceTypes;
 import net.v_black_cat.goetydelight.structures.ModStructureProcessorTypes;
 import net.v_black_cat.goetydelight.structures.ModStructures;
 import net.v_black_cat.goetydelight.util.ModSounds;
-import net.v_black_cat.goetydelight.visual.GDVisualEffects;
 import org.slf4j.Logger;
 
 import static net.v_black_cat.goetydelight.loot.ModLootModifier.GLOBAL_LOOT_MODIFIER_CODECS;
@@ -84,7 +83,6 @@ public class GoetyDelight
         ITEMS.register(modEventBus);
 
         ModSounds.SOUND_EVENTS.register(modEventBus);
-        GDVisualEffects.register(modEventBus);
 
         GLOBAL_LOOT_MODIFIER_CODECS.register(modEventBus);
         // Register ourselves for server and other game events we are interested in
