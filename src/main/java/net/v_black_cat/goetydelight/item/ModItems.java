@@ -160,7 +160,6 @@ public class ModItems {
     public static final RegistryObject<Item> UNHOLY_SAUCE;
     public static final RegistryObject<Item> COLDLEMONLEAF;
     public static final RegistryObject<Item> THERMAL_PULSE_PIE;
-    public static final RegistryObject<Item> HAO_ZI;
 
     //种子
     public static final RegistryObject<Item> ECTOPLASMIC_MELON_SEEDS;
@@ -311,8 +310,6 @@ public class ModItems {
                 () -> simpleFoodItem(10, 8, false));
         ROAST_LAOWANG_EAR = ITEMS.register("roast_laowang_ear",
                 () -> simpleFoodItem(4, 3, false));
-        HAO_ZI = ITEMS.register("hao_zi",
-                () -> simpleFoodItem(2, 1, false));
 
         SPIDER_EGG_BUBBLE_TEA = ITEMS.register("spider_egg_bubble_tea",
                 () -> new CustomDrinkItem(basicItem().stacksTo(16).food(
