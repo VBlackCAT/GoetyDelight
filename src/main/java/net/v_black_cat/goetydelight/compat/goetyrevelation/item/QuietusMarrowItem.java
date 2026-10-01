@@ -48,7 +48,7 @@ public class QuietusMarrowItem extends Item {
 
     private static final int DAMAGE_INTERVAL = 10;
     private static final float STARVATION_DAMAGE = 2.0F;
-    private static final int JUDGE_WINDOW = 15;
+    private static final int JUDGE_WINDOW = 20;
     private static final float JUDGE_THRESHOLD = 4.0F;
     private static final int NO_HEAL_DURATION = 20 * 60 * 5;
 

@@ -113,16 +113,20 @@ public class PiPieItem extends Item {
     }
 
     private static class ArrowRainTask {
-        final int executeTick;
+        final int startTick;
+        final int endTick;
         final Vec3 center;
         final UUID shooterId;
         final ServerLevel level;
+        int lastSpawnTick;
 
-        ArrowRainTask(int executeTick, Vec3 center, UUID shooterId, ServerLevel level) {
-            this.executeTick = executeTick;
+        ArrowRainTask(int startTick, int endTick, Vec3 center, UUID shooterId, ServerLevel level) {
+            this.startTick = startTick;
+            this.endTick = endTick;
             this.center = center;
             this.shooterId = shooterId;
             this.level = level;
+            this.lastSpawnTick = startTick - 2; // 保证第一次能生成
         }
     }
 
@@ -261,28 +265,29 @@ public class PiPieItem extends Item {
         }
 
         private static void createArrowRainTasks(ServerLevel level, Vec3 center, Player shooter) {
-            List<ArrowRainTask> tasks = new ArrayList<>();
             int currentTick = level.getServer().getTickCount();
             UUID shooterId = shooter.getUUID();
 
-            for (int i = 0; i < 15; i++) {
-                tasks.add(new ArrowRainTask(
-                        currentTick + i * 5,
-                        center,
-                        shooterId,
-                        level
-                ));
-            }
+            // 持续 7.5 秒 = 150 tick
+            ArrowRainTask task = new ArrowRainTask(
+                    currentTick,
+                    currentTick + 150,
+                    center,
+                    shooterId,
+                    level
+            );
 
-            pendingArrowRains.computeIfAbsent(shooterId, k -> new ArrayList<>()).addAll(tasks);
+            pendingArrowRains.computeIfAbsent(shooterId, k -> new ArrayList<>()).add(task);
         }
 
         private static void spawnArrowBatch(ServerLevel level, Vec3 center, Player shooter) {
-            int arrowCount = 7 + level.random.nextInt(4);
+            // 每次生成 2~3 支箭矢
+            int arrowCount = 2 + level.random.nextInt(2); // 2 或 3
 
             for (int j = 0; j < arrowCount; j++) {
                 double angle = level.random.nextDouble() * 360 * Math.PI / 180;
-                double radius = level.random.nextDouble() * 1.5;
+                // 半径 2 格内的随机位置（4*4 区域）
+                double radius = level.random.nextDouble() * 3.0;
 
                 Vec3 spawnPos = new Vec3(
                         center.x + Math.cos(angle) * radius,
@@ -291,21 +296,18 @@ public class PiPieItem extends Item {
                 );
 
                 Arrow rainArrow = new Arrow(level, spawnPos.x, spawnPos.y, spawnPos.z);
-                rainArrow.setDeltaMovement(
-                        (level.random.nextDouble() - 0.5) * 0.5,
-                        -2.5,
-                        (level.random.nextDouble() - 0.5) * 0.5
-                );
+                rainArrow.setDeltaMovement(0, -2.5, 0);
                 rainArrow.setOwner(shooter);
                 rainArrow.pickup = AbstractArrow.Pickup.DISALLOWED;
+                rainArrow.setCritArrow(true);
 
                 CompoundTag tag = rainArrow.getPersistentData();
                 tag.putUUID(SHOOTER_TAG, shooter.getUUID());
                 tag.putBoolean(RAIN_ARROW_TAG, true);
                 tag.putBoolean(BYPASS_IMMUNITY_TAG, true);
-                tag.putDouble(CUSTOM_DAMAGE_TAG, 6.0);
+                tag.putDouble(CUSTOM_DAMAGE_TAG, 3.0);
 
-                rainArrow.setBaseDamage(6.0);
+                rainArrow.setBaseDamage(3.0);
                 level.addFreshEntity(rainArrow);
                 trackedArrows.add(rainArrow);
             }
@@ -356,12 +358,22 @@ public class PiPieItem extends Item {
                 while (taskIterator.hasNext()) {
                     ArrowRainTask task = taskIterator.next();
 
-                    if (currentTick >= task.executeTick) {
+                    // 超过持续时间，移除任务
+                    if (currentTick >= task.endTick) {
+                        taskIterator.remove();
+                        continue;
+                    }
+
+                    // 每 2 tick 生成一次箭矢
+                    if (currentTick >= task.startTick && currentTick - task.lastSpawnTick >= 2) {
                         Player shooter = task.level.getPlayerByUUID(task.shooterId);
                         if (shooter != null && shooter.isAlive() && isPlayerActive(shooter)) {
                             spawnArrowBatch(task.level, task.center, shooter);
+                            task.lastSpawnTick = currentTick;
+                        } else if (shooter == null || !shooter.isAlive()) {
+                            // 射击者死亡或离线，提前结束
+                            taskIterator.remove();
                         }
-                        taskIterator.remove();
                     }
                 }
 

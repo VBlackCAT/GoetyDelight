@@ -121,7 +121,12 @@ public class ThermalPulsePieItem extends Item {
         Entity attacker = serverLevel.getEntity(attackerUUID);
         if (!(attacker instanceof LivingEntity living)) return;
         if (!(living instanceof IOwned owned)) return;
-        if (owned.getTrueOwner() == null) return;
+
+        LivingEntity trueOwner = owned.getTrueOwner();
+        if (trueOwner == null) return;
+
+        if (!(trueOwner instanceof Player player)) return;
+        if (player.getPersistentData().getFloat(ConvertServantUtil.POLARICE_TAG) <= 0) return;
 
         ItemStack drop = new ItemStack(ModItems.THERMAL_PULSE_PIE.get());
         ItemEntity itemEntity = new ItemEntity(
