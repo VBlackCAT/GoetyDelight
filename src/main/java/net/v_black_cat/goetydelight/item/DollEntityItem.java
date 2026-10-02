@@ -27,6 +27,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.entities.DollEntity;
 import net.v_black_cat.goetydelight.events.DollRegisterEventHandler;
 import net.v_black_cat.goetydelight.init.ModBlocks;
@@ -54,11 +55,46 @@ public class DollEntityItem extends Item {
     }
 
     public static ItemStack createItemWithBlockState(BlockState state) {
+        // 内置玩偶：方块注册名就是玩偶 id（doll_fox），一并写进去，保证「外观 + 音效/行为」都完整
+        return createItemWithDoll(state, getDollIdFromBlockState(state));
+    }
+
+    /**
+     * 玩偶实体物品的完整 NBT：block state（决定外观，走内置贴图）+ custom doll id（决定音效/行为）。
+     * <p>此前两条路径各写一半——合成配方只写 id、创造栏只写 block state——于是：
+     * 只有 id 的物品在实体渲染时会走「自定义玩偶」分支，而 {@code CustomDollLoader.getTexture(id)} 对内置玩偶返回 null
+     * → 退回默认贴图（也就是"滚木"）；只有 block state 的物品又会因为缺 id 而放不下去。
+     */
+    public static ItemStack createItemWithDoll(BlockState state, String customDollId) {
         ItemStack stack = new ItemStack(ModItems.DOLL_ITEM.get());
         CompoundTag entityTag = new CompoundTag();
         entityTag.put(TAG_BLOCK_STATE, NbtUtils.writeBlockState(state));
+        if (StringUtils.isNotBlank(customDollId)) {
+            entityTag.putString(TAG_CUSTOM_DOLL_ID, customDollId);
+        }
         stack.set(ModDataComponents.DOLL_ENTITY, entityTag);
         return stack;
+    }
+
+    /** 从方块状态反推玩偶 id：goetydelight:doll_fox → "doll_fox"（不是玩偶方块则返回空） */
+    public static String getDollIdFromBlockState(BlockState state) {
+        if (state == null || state.isAir()) {
+            return StringUtils.EMPTY;
+        }
+        ResourceLocation blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+        if (blockId == null || !GoetyDelight.MODID.equals(blockId.getNamespace())) {
+            return StringUtils.EMPTY;
+        }
+        return blockId.getPath();
+    }
+
+    /** 玩偶 id → 对应的玩偶方块状态（内置玩偶用；找不到返回 null） */
+    public static BlockState getBlockStateFromDollId(String customDollId) {
+        if (StringUtils.isBlank(customDollId)) {
+            return null;
+        }
+        Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.fromNamespaceAndPath(GoetyDelight.MODID, customDollId));
+        return block == Blocks.AIR ? null : block.defaultBlockState();
     }
 
     public static ItemStack createItemWithCustomDollId(String customDollId) {
@@ -181,6 +217,10 @@ public class DollEntityItem extends Item {
 
         if (StringUtils.isBlank(dollEntity.getCustomDollId())) {
             String customDollId = getCustomDollIdFromItemStack(stack);
+            if (StringUtils.isBlank(customDollId)) {
+                // 兜底：物品只带了 block state（创造栏 / 旧存档）→ 从方块反推玩偶 id
+                customDollId = getDollIdFromBlockState(dollEntity.getDisplayBlockState());
+            }
             if (StringUtils.isNotBlank(customDollId)) {
                 dollEntity.setCustomDollId(customDollId);
             } else {
@@ -189,7 +229,9 @@ public class DollEntityItem extends Item {
         }
 
         if (dollEntity.getDisplayBlockState().isAir()) {
-            dollEntity.setDisplayBlockState(ModBlocks.CUSTOM_DOLL.get().defaultBlockState());
+            // 物品只带了 id（老配方产物 / 自定义玩偶）→ 用对应玩偶方块补齐外观；补不上才退回通用 custom_doll
+            BlockState derived = getBlockStateFromDollId(dollEntity.getCustomDollId());
+            dollEntity.setDisplayBlockState(derived != null ? derived : ModBlocks.CUSTOM_DOLL.get().defaultBlockState());
         }
 
         dollEntity.setPos(spawnLocation.x, spawnLocation.y, spawnLocation.z);

@@ -59,16 +59,11 @@ public class DollEntityCraftingRecipe extends CustomRecipe {
     public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
         ItemStack dollItemStack = ItemStack.EMPTY;
         boolean isCustomDoll = false;
-        String extractedId = null;
 
         for (int i = 0; i < input.size(); i++) {
             ItemStack stack = input.getItem(i);
             if (stack.getItem() instanceof DollItem dollItem) {
                 dollItemStack = stack;
-                ResourceLocation registryName = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(dollItem);
-                if (registryName != null) {
-                    extractedId = registryName.getPath();
-                }
                 break;
             } else if (stack.is(ModItems.CUSTOM_DOLL.get())) {
                 String modelId = CustomDollItem.getModelId(stack);
@@ -88,12 +83,10 @@ public class DollEntityCraftingRecipe extends CustomRecipe {
             String modelId = CustomDollItem.getModelId(dollItemStack);
             return DollEntityItem.createItemWithCustomDollId(modelId);
         } else {
-            if (extractedId != null) {
-                return DollEntityItem.createItemWithCustomDollId(extractedId);
-            } else {
-                DollItem dollItem = (DollItem) dollItemStack.getItem();
-                return DollEntityItem.createItemWithBlockState(dollItem.getBlock().defaultBlockState());
-            }
+            // 内置玩偶：必须写全 block state + id（createItemWithBlockState 内部会补 id），
+            // 只写 id 会让实体玩偶渲染回退到默认贴图（"滚木"）
+            DollItem dollItem = (DollItem) dollItemStack.getItem();
+            return DollEntityItem.createItemWithBlockState(dollItem.getBlock().defaultBlockState());
         }
     }
 

@@ -17,7 +17,6 @@
         "ServerGamePacketListenerImplMixin"
     ],
     "client": [
-        "BlockStateModelLoaderMixin",
         "BookContentResourceListenerLoaderMixin",
         "ItemRendererMixin",
         "PlayerSkinMixin",

@@ -67,10 +67,17 @@ public class DollEntityRender extends EntityRenderer<DollEntity> {
 
         poseStack.translate(-0.5, 0, -0.5);
 
-        if (!StringUtils.isBlank(customDollId)) {
+        // 只有「资源包自定义玩偶」（CustomDollLoader 里能查到贴图）才走自定义模型分支；
+        // 内置玩偶（doll_fox 之类）虽然也带 id，但必须走 block state 的内置贴图，否则会退回默认贴图（"滚木"）
+        boolean hasCustomTexture = !StringUtils.isBlank(customDollId)
+                && CustomDollLoader.getTexture(customDollId) != null;
+        if (hasCustomTexture) {
             renderCustom(dollEntity, customDollId, poseStack, bufferSource, packedLight, partialTick);
         } else if (blockState != null && !blockState.isAir()) {
             renderBlock(dollEntity, poseStack, bufferSource, blockState);
+        } else if (!StringUtils.isBlank(customDollId)) {
+            // 有 id 但既没有自定义贴图也没有内置方块（异常数据）→ 退回默认自定义模型
+            renderCustom(dollEntity, customDollId, poseStack, bufferSource, packedLight, partialTick);
         }
 
         poseStack.popPose();

@@ -121,6 +121,16 @@ public class DollBlock extends HorizontalDirectionalBlock implements SimpleWater
                 .setValue(WATERLOGGED, isWaterlogged);
     }
 
+    /** 破坏已放置的玩偶时掉回对应物品（1.20.1 有、1.21.1 移植时漏了；玩偶没有 loot table，全靠这里） */
+    @Override
+    public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state,
+                              @Nullable BlockEntity blockEntity, ItemStack tool) {
+        if (!level.isClientSide && !player.isCreative()) {
+            popResource(level, pos, new ItemStack(this.asItem()));
+        }
+        super.playerDestroy(level, player, pos, state, blockEntity, tool);
+    }
+
     @Override
     public VoxelShape getShape(BlockState blockState, BlockGetter level, BlockPos blockPos, CollisionContext context) {
         return DOLL_SHAPE;
