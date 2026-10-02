@@ -7,6 +7,6 @@ public class ServerStartingHandler {
 
 
     public static void onServerStarting(ServerStartingEvent event) {
-        GoetyDelight.LOGGER.info("HELLO from server starting");
+        GoetyDelight.LOGGER.debug("HELLO from server starting");
     }
 }

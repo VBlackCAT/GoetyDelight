@@ -81,9 +81,14 @@ public class GoetyDelight {
         modEventBus.addListener(AddCreativeHandler::onAddCreative);
         modEventBus.addListener(RegisterPayloadHandlersEventHandler::register);
         modEventBus.addListener(ModEntityAttributesHandler::onEntityAttributeCreation);
+        // 万毒盛宴：配置变化（配置界面保存 / 文件重载）后丢弃效果缓存，下次使用时重建
+        modEventBus.addListener(net.v_black_cat.goetydelight.item.food.TenThousandPoisonFeastItem::onConfigChanged);
 
         // 游戏总线事件
         NeoForge.EVENT_BUS.addListener(ServerStartingHandler::onServerStarting);
+        // 万毒盛宴：进入存档 / 服务器启动时读取一次效果缓存，退出存档时丢弃
+        NeoForge.EVENT_BUS.addListener(net.v_black_cat.goetydelight.item.food.TenThousandPoisonFeastItem::onServerStarted);
+        NeoForge.EVENT_BUS.addListener(net.v_black_cat.goetydelight.item.food.TenThousandPoisonFeastItem::onServerStopped);
         NeoForge.EVENT_BUS.addListener(LivingEntityUseItemEventHandler::onItemUseFinish);
         NeoForge.EVENT_BUS.addListener(EntityTickEventHandler::onEntityTick);
         NeoForge.EVENT_BUS.addListener(RegisterCommandsEventHandler::onRegisterCommands);

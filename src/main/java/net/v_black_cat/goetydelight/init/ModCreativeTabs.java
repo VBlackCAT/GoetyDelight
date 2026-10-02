@@ -53,6 +53,7 @@ public class ModCreativeTabs {
                         // 普通食物
 //                        output.accept(ModItems.PROMOTION_HARD_CANDY.get());
                         output.accept(ModItems.PARASITIZED_WARDEN.get());
+                        output.accept(ModItems.RUBY_HARD_CANDY.get());
                         output.accept(ModItems.ECTOPLASM_JELLY.get());
                         output.accept(ModItems.WHITE_SHARK_SUGAR_PACK.get());
                         output.accept(ModItems.SUNSHINE_SUGAR_BUN.get());

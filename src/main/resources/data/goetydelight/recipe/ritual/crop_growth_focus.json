@@ -4,7 +4,7 @@
   "activation_item": {
     "item": "goety:mystic_core"
   },
-  "craftType": "wild",
+  "craftType": "overgrown",
   "soulCost": 100,
   "duration": 10,
   "ingredients": [

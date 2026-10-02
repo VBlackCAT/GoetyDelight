@@ -1,6 +1,5 @@
 package net.v_black_cat.goetydelight.spell;
 
-import com.Polarice3.Goety.api.items.magic.IWand;
 import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.common.effects.brew.BrewEffect;
 import com.Polarice3.Goety.common.effects.brew.BrewEffectInstance;
@@ -26,6 +25,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.v_black_cat.goetydelight.entities.spell.RichSoilSpellEntity;
 import net.v_black_cat.goetydelight.util.SpellCastUtil;
 
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ import java.util.UUID;
 public class LoveAndFertilitySpell extends Spell {
 
     private static final int DEFAULT_SIDE = 9;
-    private static final int SIDE_PER_LEVEL = 1;
+    private static final int SIDE_PER_LEVEL = 2; // 半径附魔每级长宽各 +2（III 级到顶 15×15）
     private static final int MAX_SIDE = 15;
 
     private static final int COOLDOWN_TICKS = 240 * 20;
@@ -80,39 +80,46 @@ public class LoveAndFertilitySpell extends Spell {
     @Override
     public List<ResourceKey<Enchantment>> acceptedEnchantments() {
         List<ResourceKey<Enchantment>> list = new ArrayList<>();
-        list.add(ModEnchantments.RANGE);     // 每级长宽各 +1，最大 15×15
+        list.add(ModEnchantments.RADIUS);    // 每级长宽各 +2，最大 15×15
         list.add(ModEnchantments.DURATION);  // 持续时间
         return list;
     }
 
     @Override
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
-        ItemStack focus = IWand.getFocus(staff);
-        if (focus.isEmpty()) {
-            focus = WandUtil.findFocus(caster);
-        }
-        if (focus.isEmpty()) {
-            focus = caster.getMainHandItem(); // 兜底
-        }
+        ItemStack focus = WandUtil.findFocus(caster);
 
-        int rangeLevel = getEnchantLevel(focus, caster, ModEnchantments.RANGE);
+        int radiusLevel = getEnchantLevel(focus, caster, ModEnchantments.RADIUS);
         int durationLevel = getEnchantLevel(focus, caster, ModEnchantments.DURATION);
         int durationTicks = (BASE_DURATION_SECONDS + DURATION_PER_LEVEL_SECONDS * durationLevel) * 20;
-        int side = cloudSide(rangeLevel);
+        int side = cloudSide(radiusLevel);
+        BlockPos center = SpellCastUtil.castCenterOrEntity(caster);
+        // 与 1.20.1 一致：交给光柱实体延迟铺云
+        worldIn.addFreshEntity(new RichSoilSpellEntity(worldIn, caster, center,
+                Math.max(1, side / 2), RichSoilSpellEntity.EffectType.LOVE_AND_FERTILITY)
+                .setStaff(staff)
+                .setCloudSide(side)
+                .setDurationTicks(durationTicks));
+    }
+
+    /** 实际铺云逻辑：由光柱实体延迟调用（与 1.20.1 同一套实现） */
+    public static boolean performDeferredEffect(ServerLevel worldIn, LivingEntity caster, BlockPos center,
+                                                int side, int durationTicks) {
+        if (caster == null) {
+            return false;
+        }
 
         // 药云要带的效果：两个都是瞬时 BrewEffect，且都允许滞留（canLinger）
         List<BrewEffectInstance> brewEffects = new ArrayList<>();
         addBrewEffect(brewEffects, LOVE_EFFECT_ID, durationTicks);
         addBrewEffect(brewEffects, FERTILITY_EFFECT_ID, durationTicks);
         if (brewEffects.isEmpty()) {
-            return; // 取不到 Goety 效果时安全退出
+            return false; // 取不到 Goety 效果时安全退出
         }
 
-        // 效果中心 = 右击的方块/实体（没指到就退回施法者脚下）
-        BlockPos center = SpellCastUtil.castCenterOrEntity(caster);
         Map<BlockPos, UUID> cloud = fillCloud(worldIn, caster, center, side, brewEffects);
         if (cloud.isEmpty()) {
-            return; // 一格都铺不出来（全被实心方块占满）就别白扣了
+            return false; // 一格都铺不出来（全被实心方块占满）就别白扣了
         }
         LoveCloudTracker.track(worldIn, caster, cloud, brewEffects, durationTicks);
 
@@ -121,11 +128,12 @@ public class LoveAndFertilitySpell extends Spell {
                 8, 0.4D, 0.4D, 0.4D, 0.0D);
         worldIn.playSound(null, caster.getX(), caster.getY(), caster.getZ(),
                 SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.0F, 1.2F);
+        return true;
     }
 
-    /** 边长 = 默认 8 + 每级范围 +1，上限 15 */
-    private static int cloudSide(int rangeLevel) {
-        return Math.min(DEFAULT_SIDE + SIDE_PER_LEVEL * rangeLevel, MAX_SIDE);
+    /** 边长 = 默认 9 + 每级半径 +2，上限 15 */
+    private static int cloudSide(int radiusLevel) {
+        return Math.min(DEFAULT_SIDE + SIDE_PER_LEVEL * radiusLevel, MAX_SIDE);
     }
 
 
@@ -173,7 +181,7 @@ public class LoveAndFertilitySpell extends Spell {
 
     @Override
     public boolean conditionsMet(ServerLevel worldIn, LivingEntity caster, SpellStat spellStat) {
-        int side = cloudSide(getEnchantLevel(WandUtil.findFocus(caster), caster, ModEnchantments.RANGE));
+        int side = cloudSide(getEnchantLevel(WandUtil.findFocus(caster), caster, ModEnchantments.RADIUS));
         int half = side / 2;
         AABB area = areaOf(SpellCastUtil.castCenterOrEntity(caster), -half, side - 1 - half);
         for (LivingEntity target : worldIn.getEntitiesOfClass(LivingEntity.class, area)) {

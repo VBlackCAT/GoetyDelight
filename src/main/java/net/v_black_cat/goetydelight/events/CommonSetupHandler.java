@@ -8,7 +8,7 @@ import net.v_black_cat.goetydelight.ritual.DelightRitualType;
 
 public class CommonSetupHandler {
     public static void onCommonSetup(FMLCommonSetupEvent event) {
-        GoetyDelight.LOGGER.info("HELLO FROM COMMON SETUP");
+        GoetyDelight.LOGGER.debug("HELLO FROM COMMON SETUP");
         DelightRitualType.onCommonSetup(event);
         event.enqueueWork(CuriosCompat::commonSetup);
         // 联动模块的注册表后置初始化统一入口

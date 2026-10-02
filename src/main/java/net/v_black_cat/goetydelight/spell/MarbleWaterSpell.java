@@ -2,11 +2,14 @@ package net.v_black_cat.goetydelight.spell;
 
 import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.common.blocks.ModBlocks;
+import com.Polarice3.Goety.common.enchantments.ModEnchantments;
 import com.Polarice3.Goety.common.magic.BlockSpell;
 import com.Polarice3.Goety.common.magic.SpellStat;
+import com.Polarice3.Goety.utils.WandUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -14,16 +17,25 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
+import net.v_black_cat.goetydelight.init.ModServerConfig;
+import net.v_black_cat.goetydelight.entities.spell.RichSoilSpellEntity;
+
+import java.util.List;
 
 public class MarbleWaterSpell extends BlockSpell {
 
-    /** 可被替换为粉砂质大理石的方块（默认 #c:stones，数据包可扩展） */
     private static final TagKey<Block> SILTIFIABLE = TagKey.create(Registries.BLOCK,
             ResourceLocation.fromNamespaceAndPath("goetydelight", "marble_focus/siltifiable"));
+
+    @Override
+    public SpellStat defaultStats() {
+        return new SpellStat(0, 0, 8, 1.0D, 0, 0.0F);
+    }
 
     @Override
     public int defaultSoulCost() {
@@ -43,6 +55,10 @@ public class MarbleWaterSpell extends BlockSpell {
     /** 施法前判定：返回 false 时既不耗灵魂也不进冷却 */
     @Override
     public boolean rightBlock(ServerLevel worldIn, LivingEntity caster, BlockPos target, Direction direction, SpellStat spellStat) {
+        // 超热维度（如下界）默认禁止施法，可由配置放开
+        if (isCastingDisabled(worldIn)) {
+            return false;
+        }
         BlockState state = worldIn.getBlockState(target);
         if (caster.isShiftKeyDown()) {
             // 替换模式：只有石头类方块才有效
@@ -53,27 +69,63 @@ public class MarbleWaterSpell extends BlockSpell {
     }
 
     @Override
+    public List<ResourceKey<Enchantment>> acceptedEnchantments() {
+        return List.of(ModEnchantments.RADIUS);
+    }
+
+    @Override
     public void blockResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff,
                             BlockPos target, Direction direction, SpellStat spellStat) {
-        BlockState state = worldIn.getBlockState(target);
+        ItemStack focus = WandUtil.findFocus(caster);
+        int radiusLevel = getEnchantLevel(focus, caster, ModEnchantments.RADIUS);
+        int radius = Math.max(1, 1 + radiusLevel);
+        worldIn.addFreshEntity(new RichSoilSpellEntity(worldIn, caster, target, radius,
+                RichSoilSpellEntity.EffectType.MARBLE_WATER)
+                .setStaff(staff)
+                .setShiftMode(caster.isShiftKeyDown())
+                .setDirection(direction));
+    }
 
-        if (caster.isShiftKeyDown()) {
-            if (!isSiltifiable(state)) {
-                return;
+    public static boolean performDeferredEffect(ServerLevel worldIn, LivingEntity caster, BlockPos target,
+                                                Direction direction, int radius, boolean shiftMode) {
+        if (shiftMode) {
+            int converted = 0;
+            for (int y = -2; y <= 2; ++y) {
+                for (int dx = -radius; dx <= radius; ++dx) {
+                    for (int dz = -radius; dz <= radius; ++dz) {
+                        BlockPos pos = target.offset(dx, y, dz);
+                        BlockState state = worldIn.getBlockState(pos);
+                        if (isSiltifiable(state)) {
+                            worldIn.setBlockAndUpdate(pos, ModBlocks.SILT_MARBLE_HEAVY_BLOCK.get().defaultBlockState());
+                            converted++;
+                        }
+                    }
+                }
             }
-            worldIn.setBlockAndUpdate(target, ModBlocks.SILT_MARBLE_HEAVY_BLOCK.get().defaultBlockState());
-            worldIn.playSound(null, target.getX() + 0.5D, target.getY() + 0.5D, target.getZ() + 0.5D,
-                    SoundEvents.STONE_PLACE, SoundSource.BLOCKS, 1.0F, 0.8F);
-            return;
+            if (converted > 0) {
+                worldIn.playSound(null, target.getX() + 0.5D, target.getY() + 0.5D, target.getZ() + 0.5D,
+                        SoundEvents.STONE_PLACE, SoundSource.BLOCKS, 1.0F, 0.8F);
+                return true;
+            }
+            return false;
         }
 
+        BlockState state = worldIn.getBlockState(target);
         BlockPos placePos = placeTarget(state, target, direction);
         BlockState placeState = worldIn.getBlockState(placePos);
         if (canPlaceWater(placeState)) {
             worldIn.setBlockAndUpdate(placePos, Blocks.WATER.defaultBlockState());
             worldIn.playSound(null, placePos.getX() + 0.5D, placePos.getY() + 0.5D, placePos.getZ() + 0.5D,
                     SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
+            return true;
         }
+        return false;
+    }
+
+
+    /** 超热维度 + 配置禁止 → 不允许施法（不耗灵魂、不进冷却、不放水/不替换） */
+    private static boolean isCastingDisabled(ServerLevel worldIn) {
+        return worldIn.dimensionType().ultraWarm() && ModServerConfig.isMarbleFocusDisabledInUltrawarm();
     }
 
     /** 放水位置：目标可放水就放目标处，否则放在点击面的相邻处 */
@@ -84,6 +136,17 @@ public class MarbleWaterSpell extends BlockSpell {
     /** 石头类（可替换为粉砂质大理石）判定；已经是目标方块则视为无效 */
     private static boolean isSiltifiable(BlockState state) {
         return state.is(SILTIFIABLE) && state.getBlock() != ModBlocks.SILT_MARBLE_HEAVY_BLOCK.get();
+    }
+
+    /** 直接从物品栈读取附魔等级；注册表/物品缺失时返回 0（不抛异常） */
+    private static int getEnchantLevel(ItemStack stack, LivingEntity caster, ResourceKey<Enchantment> enchantment) {
+        if (stack.isEmpty()) {
+            return 0;
+        }
+        return caster.registryAccess().registryOrThrow(Registries.ENCHANTMENT)
+                .getHolder(enchantment)
+                .map(stack::getEnchantmentLevel)
+                .orElse(0);
     }
 
     private static boolean canPlaceWater(BlockState state) {

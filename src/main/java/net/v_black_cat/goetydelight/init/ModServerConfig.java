@@ -268,6 +268,11 @@ public class ModServerConfig {
                     "合成万毒盛宴所需的最少debuff种类数（所有材料提供的不同debuff种类之和）")
             .defineInRange("tenThousandPoisonFeastMinDebuffCount", 8, 1, 100);
 
+    // ==================== 大理石聚晶 ====================
+    private static final ModConfigSpec.BooleanValue DISABLE_MARBLE_FOCUS_IN_ULTRAWARM = BUILDER
+            .comment("Disable Marble Focus casting in ultrawarm dimensions (e.g. the Nether)\n在超热维度（如下界）禁用大理石聚晶施法")
+            .define("disableMarbleFocusInUltrawarm", true);
+
     // ==================== 构建 Spec ====================
     public static final ModConfigSpec SPEC = BUILDER.build();
 
@@ -318,6 +323,11 @@ public class ModServerConfig {
 
     public static boolean isSoulAffixDisabled() {
         return DISABLE_SOUL_AFFIX.get();
+    }
+
+    /** 超热维度（下界等）是否禁止大理石聚晶施法。 */
+    public static boolean isMarbleFocusDisabledInUltrawarm() {
+        return DISABLE_MARBLE_FOCUS_IN_ULTRAWARM.get();
     }
 
     public static int getSoulAffixSoulCostPerLevel() {

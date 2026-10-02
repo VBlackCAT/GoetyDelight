@@ -1,6 +1,5 @@
 package net.v_black_cat.goetydelight.spell;
 
-import com.Polarice3.Goety.api.items.magic.IWand;
 import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.common.enchantments.ModEnchantments;
 import com.Polarice3.Goety.common.magic.Spell;
@@ -19,6 +18,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.v_black_cat.goetydelight.entities.spell.RichSoilSpellEntity;
 import net.v_black_cat.goetydelight.util.SpellCastUtil;
 
 import java.util.ArrayList;
@@ -27,7 +27,8 @@ import java.util.List;
 public class CropGrowthSpell extends Spell {
 
     private static final double BASE_RADIUS = 2.0D;    // 5×5
-    private static final double MAX_RADIUS = 7.0D;     // 15×15（范围附魔每级 +2，III 级封顶）
+    private static final double MAX_RADIUS = 7.0D;     // 15×15
+    private static final double RADIUS_PER_LEVEL = 2.0D; // 半径附魔每级 +2，III 级到顶
     private static final int COOLDOWN_TICKS = 10 * 20;  // 10 秒
     private static final int MAX_BONE_MEAL_PER_BLOCK = 8; // 小麦 0→7 每次 +2~5，8 次足够
 
@@ -59,7 +60,7 @@ public class CropGrowthSpell extends Spell {
     @Override
     public List<ResourceKey<Enchantment>> acceptedEnchantments() {
         List<ResourceKey<Enchantment>> list = new ArrayList<>();
-        list.add(ModEnchantments.RANGE);
+        list.add(ModEnchantments.RADIUS);
         return list;
     }
 
@@ -79,23 +80,26 @@ public class CropGrowthSpell extends Spell {
         return false;
     }
 
-    /** 范围 = 基础半径 + 强效(potency) + 半径属性加成 + 范围附魔(每级 +2)，上限 15×15（同锄头聚晶） */
+    /** 范围 = 基础半径 + 强效(potency) + 半径属性加成 + 半径附魔(每级 +2)，上限 15×15（同锄头聚晶） */
     private static int spellRadius(ItemStack focus, LivingEntity caster, SpellStat spellStat) {
-        int rangeLevel = getEnchantLevel(focus, caster, ModEnchantments.RANGE);
+        int radiusLevel = getEnchantLevel(focus, caster, ModEnchantments.RADIUS);
         double radius = Math.max(BASE_RADIUS, spellStat.getRadius() + spellStat.getPotency());
-        radius += 1.0D * rangeLevel;
+        radius += RADIUS_PER_LEVEL * radiusLevel;
         radius = Math.min(radius, MAX_RADIUS);
         return (int) Math.floor(radius);
     }
 
     @Override
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
-        ItemStack focus = IWand.getFocus(staff);
-        if (focus.isEmpty()) focus = WandUtil.findFocus(caster);
-        if (focus.isEmpty()) focus = caster.getMainHandItem(); // 兜底
+        ItemStack focus = WandUtil.findFocus(caster);
 
         int r = spellRadius(focus, caster, spellStat);
-        BlockPos center = SpellCastUtil.castCenter(caster); // 以右击的方块为中心
+        BlockPos center = SpellCastUtil.castCenter(caster);
+        worldIn.addFreshEntity(new RichSoilSpellEntity(worldIn, caster, center, r,
+                RichSoilSpellEntity.EffectType.CROP_GROWTH).setStaff(staff));
+    }
+
+    public static boolean performDeferredEffect(ServerLevel worldIn, BlockPos center, int r) {
         int grown = 0;
         for (int y = -2; y <= 2; ++y) {
             for (int dx = -r; dx <= r; ++dx) {
@@ -106,11 +110,11 @@ public class CropGrowthSpell extends Spell {
                 }
             }
         }
-
         if (grown > 0) {
-            worldIn.playSound(null, caster.getX(), caster.getY(), caster.getZ(),
+            worldIn.playSound(null, center.getX() + 0.5D, center.getY() + 0.5D, center.getZ() + 0.5D,
                     SoundEvents.BONE_MEAL_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
         }
+        return grown > 0;
     }
 
     /** 该方块是否可催熟：是 Bonemealable、可被骨粉催、且不是树苗 */

@@ -103,7 +103,7 @@ public final class LoveCloudTracker {
                         removed++;
                     }
                 }
-                GoetyDelight.LOGGER.info("[爱与丰饶] 药云到期回收 {} 团（其中曾提前消失 {} 团，补回 {} 格）",
+                GoetyDelight.LOGGER.debug("[爱与丰饶] 药云到期回收 {} 团（其中曾提前消失 {} 团，补回 {} 格）",
                         removed, cloud.cells.size() - removed, cloud.revives);
                 it.remove();
                 continue;

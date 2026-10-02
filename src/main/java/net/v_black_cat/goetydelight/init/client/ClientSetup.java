@@ -13,6 +13,8 @@ import net.v_black_cat.goetydelight.entities.ghostfarmer.GhostFarmerModel;
 import net.v_black_cat.goetydelight.entities.ghostfarmer.GhostFarmerRenderer;
 import net.v_black_cat.goetydelight.entities.soul_lich.SoulLichModel;
 import net.v_black_cat.goetydelight.entities.soul_lich.SoulLichRenderer;
+import net.v_black_cat.goetydelight.entities.spell.GrassCuttingSlashRenderer;
+import net.v_black_cat.goetydelight.entities.spell.RichSoilSpellRenderer;
 import net.v_black_cat.goetydelight.init.ModBlockEntities;
 import net.v_black_cat.goetydelight.init.ModEntities;
 import net.v_black_cat.goetydelight.init.ModMenuTypes;
@@ -60,6 +62,10 @@ public class ClientSetup {
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.GHOST_FARMER.get(), GhostFarmerRenderer::new);
         event.registerEntityRenderer(ModEntities.SOUL_LICH.get(), SoulLichRenderer::new);
+
+        event.registerEntityRenderer(ModEntities.RICH_SOIL_SPELL.get(), RichSoilSpellRenderer::new);
+        event.registerEntityRenderer(ModEntities.TREE_GROWTH_SPELL.get(), RichSoilSpellRenderer::new);
+        event.registerEntityRenderer(ModEntities.GRASS_CUTTING_SLASH.get(), GrassCuttingSlashRenderer::new);
 
         event.registerEntityRenderer(ModEntities.DOLL_ENTITY.get(), DollEntityRender::new);
         event.registerBlockEntityRenderer(ModBlockEntities.DOLL_BLOCK.get(), CustomDollRender::new);

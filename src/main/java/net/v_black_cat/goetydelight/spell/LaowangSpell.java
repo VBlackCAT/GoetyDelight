@@ -1,6 +1,5 @@
 package net.v_black_cat.goetydelight.spell;
 
-import com.Polarice3.Goety.api.items.magic.IWand;
 import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.common.enchantments.ModEnchantments;
 import com.Polarice3.Goety.common.magic.Spell;
@@ -62,16 +61,20 @@ public class LaowangSpell extends Spell {
 
     @Override
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
-        ItemStack focus = IWand.getFocus(staff);
-        if (focus.isEmpty()) {
-            focus = WandUtil.findFocus(caster);
-        }
-        if (focus.isEmpty()) {
-            focus = caster.getMainHandItem(); // 兜底
-        }
-
-        // 直接从聚晶栈读取强效等级（不走 WandUtil 的间接门禁）
+        ItemStack focus = WandUtil.findFocus(caster);
+        // 直接从聚晶栈读取强效等级
         int potency = getEnchantLevel(focus, caster, ModEnchantments.POTENCY);
+
+        // 【与光柱解耦】直接在施法时召唤，不再经由 RichSoilSpellEntity（光柱）延迟执行，
+        // 避免受光柱实体那一套 EffectType 分发/延迟生命周期的牵连。
+        performDeferredEffect(worldIn, caster, potency);
+    }
+
+    /** 实际召唤逻辑：由 {@link #SpellResult} 直接调用（光柱实体的 LAOWANG 分支也保留兼容） */
+    public static boolean performDeferredEffect(ServerLevel worldIn, LivingEntity caster, int potency) {
+        if (caster == null) {
+            return false;
+        }
 
         int count = randomBetween(worldIn, BASE_MIN, BASE_MAX);
         for (int level = 0; level < potency; ++level) {
@@ -86,8 +89,11 @@ public class LaowangSpell extends Spell {
         }
 
         if (summoned > 0) {
-            this.playSound(worldIn, caster, ModSounds.SUMMON_SPELL.get());
+            worldIn.playSound(null, caster.getX(), caster.getY(), caster.getZ(),
+                    ModSounds.SUMMON_SPELL.get(), caster.getSoundSource(), 1.0F, 1.0F);
+            return true;
         }
+        return false;
     }
 
     /** 在施法者附近召唤一只名为 laowang237 的成年猪 */

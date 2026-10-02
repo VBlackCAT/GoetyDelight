@@ -531,7 +531,8 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
             RecipeWrapper wrapper = new RecipeWrapper(this.inventory);
             this.cachedRecipe = this.level.getRecipeManager().getRecipeFor(ModRecipeTypes.COOKING.get(), wrapper, this.level).orElse(null);
             if (this.cachedRecipe != null) {
-                this.cachedResultStack = this.cachedRecipe.value().getResultItem(this.level.registryAccess());
+                // 取副本：FD 的 getResultItem() 直接返回配方内部的 output 栈（不 copy）
+                this.cachedResultStack = this.cachedRecipe.value().getResultItem(this.level.registryAccess()).copy();
                 this.cachedSoulCost = this.calculateSoulCost(this.cachedResultStack);
                 this.cookTimeTotal = this.cachedRecipe.value().getCookTime();
                 if (this.cookTime > this.cookTimeTotal) {
@@ -575,7 +576,9 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity
         ItemStack currentMeal = this.inventory.getStackInSlot(MEAL_DISPLAY_SLOT);
         ItemStack outputStack = this.inventory.getStackInSlot(OUTPUT_SLOT);
         boolean anyHasMark = isSoulInfused(currentMeal) || isSoulInfused(outputStack);
-        ItemStack resultStack = recipe.getResultItem(this.level.registryAccess());
+        // 【修复】FD 的 getResultItem() 返回配方内部的 output 栈（不是副本），
+        // 直接往上 set NBT 会永久污染该配方：之后即使没有灵魂源，这条配方的产物依旧带着 SoulInfused。
+        ItemStack resultStack = recipe.getResultItem(this.level.registryAccess()).copy();
 
         resultStack.remove(DataComponents.CUSTOM_DATA);
 

@@ -10,8 +10,8 @@ import net.v_black_cat.goetydelight.visual.client.ScreenSpaceDepthEffectPostProc
 
 public class ClientSetupHandler {
     public static void onClientSetup(FMLClientSetupEvent event) {
-        GoetyDelight.LOGGER.info("HELLO FROM CLIENT SETUP");
-        GoetyDelight.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+        GoetyDelight.LOGGER.debug("HELLO FROM CLIENT SETUP");
+        GoetyDelight.LOGGER.debug("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
 
         event.enqueueWork(() -> {
             ModItemBlockRender.setRenderLayer();

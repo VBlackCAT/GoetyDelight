@@ -1,6 +1,5 @@
 package net.v_black_cat.goetydelight.spell;
 
-import com.Polarice3.Goety.api.items.magic.IWand;
 import com.Polarice3.Goety.api.magic.SpellType;
 import com.Polarice3.Goety.common.enchantments.ModEnchantments;
 import com.Polarice3.Goety.common.magic.Spell;
@@ -11,8 +10,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,6 +18,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.v_black_cat.goetydelight.entities.spell.RichSoilSpellEntity;
 import net.v_black_cat.goetydelight.util.SpellCastUtil;
 import vectorwing.farmersdelight.common.registry.ModBlocks;
 
@@ -29,8 +27,9 @@ import java.util.List;
 
 public class RichSoilSpell extends Spell {
 
-    private static final double BASE_RADIUS = 1.0D;    // 3×3
-    private static final double MAX_RADIUS = 4.0D;     // 9×9（范围附魔每级 +2，III 级封顶）
+    private static final double BASE_RADIUS = 3.0D;    // 7×7（默认范围 +2，补上删掉的范围附魔）
+    private static final double MAX_RADIUS = 7.0D;     // 15×15
+    private static final double RADIUS_PER_LEVEL = 1.5D; // 半径附魔每级 +1.5（向下取整 → 9×9 / 13×13 / 15×15）
     private static final int COOLDOWN_TICKS = 120 * 20; // 120 秒
 
     private static final TagKey<Block> FARMLAND = TagKey.create(Registries.BLOCK,
@@ -64,46 +63,28 @@ public class RichSoilSpell extends Spell {
     @Override
     public List<ResourceKey<Enchantment>> acceptedEnchantments() {
         List<ResourceKey<Enchantment>> list = new ArrayList<>();
-        list.add(ModEnchantments.RANGE);
+        list.add(ModEnchantments.RADIUS);
         return list;
     }
 
     @Override
     public void SpellResult(ServerLevel worldIn, LivingEntity caster, ItemStack staff, SpellStat spellStat) {
-        ItemStack focus = IWand.getFocus(staff);
-        if (focus.isEmpty()) {
-            focus = WandUtil.findFocus(caster);
-        }
-        if (focus.isEmpty()) {
-            focus = caster.getMainHandItem(); // 兜底
-        }
+        ItemStack focus = WandUtil.findFocus(caster);
         int r = spellRadius(focus, caster, spellStat);
-        BlockPos center = SpellCastUtil.castCenter(caster); // 以右击的方块为中心
-        int converted = 0;
-        for (int y = -2; y <= 2; ++y) {
-            for (int dx = -r; dx <= r; ++dx) {
-                for (int dz = -r; dz <= r; ++dz) {
-                    BlockPos pos = center.offset(dx, y, dz);
-                    BlockState richSoil = convertState(worldIn.getBlockState(pos));
-                    if (richSoil != null) {
-                        worldIn.setBlock(pos, richSoil, 3);
-                        converted++;
-                    }
-                }
-            }
-        }
-
-        if (converted > 0) {
-            worldIn.playSound(null, caster.getX(), caster.getY(), caster.getZ(),
-                    SoundEvents.BONE_MEAL_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
-        }
+        BlockPos center = SpellCastUtil.castCenter(caster); // 以右击的方块为中心，之后由光柱实体延迟执行
+        worldIn.addFreshEntity(new RichSoilSpellEntity(worldIn, caster, center, r,
+                RichSoilSpellEntity.EffectType.RICH_SOIL)
+                .setStaff(staff)
+                .setPenetration(spellPenetration(focus, caster)));
     }
 
     @Override
     public boolean conditionsMet(ServerLevel worldIn, LivingEntity caster, SpellStat spellStat) {
-        int r = spellRadius(WandUtil.findFocus(caster), caster, spellStat);
+        ItemStack focus = WandUtil.findFocus(caster);
+        int r = spellRadius(focus, caster, spellStat);
+        int penetration = spellPenetration(focus, caster);
         BlockPos center = SpellCastUtil.castCenter(caster); // 与 SpellResult 同一中心
-        for (int y = -2; y <= 2; ++y) {
+        for (int y = -penetration; y <= penetration; ++y) {
             for (int dx = -r; dx <= r; ++dx) {
                 for (int dz = -r; dz <= r; ++dz) {
                     if (convertState(worldIn.getBlockState(center.offset(dx, y, dz))) != null) {
@@ -115,17 +96,22 @@ public class RichSoilSpell extends Spell {
         return false;
     }
 
-    /** 范围 = 基础半径 + 强效(potency) + 半径属性加成 + 范围附魔(每级 +2)，上限 9×9 */
+    /** 范围 = 基础半径 + 强效(potency) + 半径属性加成 + 半径附魔(每级 +1.5)，上限 15×15 */
     private static int spellRadius(ItemStack focus, LivingEntity caster, SpellStat spellStat) {
-        int rangeLevel = getEnchantLevel(focus, caster, ModEnchantments.RANGE);
+        int radiusLevel = getEnchantLevel(focus, caster, ModEnchantments.RADIUS);
         double radius = Math.max(BASE_RADIUS, spellStat.getRadius() + spellStat.getPotency());
-        radius += 2.0D * rangeLevel;
+        radius += RADIUS_PER_LEVEL * radiusLevel;
         radius = Math.min(radius, MAX_RADIUS);
         return (int) Math.floor(radius);
     }
 
-    /** 返回转换后的方块状态；不满足转换条件时返回 null */
-    private static BlockState convertState(BlockState state) {
+    /** 穿透 = 半径附魔等级（每级 ±1 层），III 级共 7 层；没有半径附魔就只转化表层 */
+    private static int spellPenetration(ItemStack focus, LivingEntity caster) {
+        return getEnchantLevel(focus, caster, ModEnchantments.RADIUS);
+    }
+
+    /** 返回转换后的方块状态；不满足转换条件时返回 null（光柱实体结算时会调用） */
+    public static BlockState convertState(BlockState state) {
         // 泥土/草方块/灰化土等原版土 → 沃土
         if (state.is(BlockTags.DIRT)) {
             return ModBlocks.RICH_SOIL.get().defaultBlockState();

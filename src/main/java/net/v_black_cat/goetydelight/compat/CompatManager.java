@@ -54,22 +54,22 @@ public final class CompatManager {
 
     /** 打印当前挂载的联动，便于排查"为什么某联动没生效" */
     public static void logStatus() {
-        StringBuilder sb = new StringBuilder();
-        append(sb, "curios", isCuriosLoaded());
-        append(sb, "jade", isJadeLoaded());
-        append(sb, "oculus/iris", isShaderModLoaded());
-        append(sb, "enigmaticdelicacy", isEnigmaticDelicacyLoaded());
-        append(sb, "goety_cataclysm", isGoetyCataclysmLoaded());
-        append(sb, "goety_revelation", isGoetyRevelationLoaded());
-        GoetyDelight.LOGGER.info("[compat] 已检测到联动：{}", sb.length() == 0 ? "（无）" : sb.toString());
+        StringBuilder compatload = new StringBuilder();
+        append(compatload, "curios", isCuriosLoaded());
+        append(compatload, "jade", isJadeLoaded());
+        append(compatload, "oculus/iris", isShaderModLoaded());
+        append(compatload, "enigmaticdelicacy", isEnigmaticDelicacyLoaded());
+        append(compatload, "goety_cataclysm", isGoetyCataclysmLoaded());
+        append(compatload, "goety_revelation", isGoetyRevelationLoaded());
+        GoetyDelight.LOGGER.info("[compat] 已检测到联动：{}", compatload.length() == 0 ? "（无）" : compatload.toString());
     }
 
-    private static void append(StringBuilder sb, String name, boolean present) {
+    private static void append(StringBuilder compatload, String name, boolean present) {
         if (present) {
-            if (sb.length() > 0) {
-                sb.append(", ");
+            if (compatload.length() > 0) {
+                compatload.append(", ");
             }
-            sb.append(name);
+            compatload.append(name);
         }
     }
 }
