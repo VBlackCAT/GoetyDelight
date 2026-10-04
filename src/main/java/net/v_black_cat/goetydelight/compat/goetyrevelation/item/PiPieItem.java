@@ -329,11 +329,6 @@ public class PiPieItem extends Item {
                     }
                 }
             }
-
-            if (event.getEntity() instanceof Player targetPlayer &&
-                    (targetPlayer.isCreative() || targetPlayer.isSpectator())) {
-                event.setCanceled(true);
-            }
         }
 
         @SubscribeEvent

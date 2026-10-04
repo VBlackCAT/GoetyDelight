@@ -149,7 +149,8 @@ public class ApocalyptiumCodItem extends Item {
         servant.setPos(spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5);
         servant.setTrueOwner(player);
 
-        servant.setLimitedLife(SERVANT_LIFETIME);
+        servant.setHasLifespan(true);
+        servant.setLifespan(SERVANT_LIFETIME);
 
         servant.getPersistentData().putBoolean(PREVENT_DROPS_TAG, true);
 

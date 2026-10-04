@@ -273,11 +273,11 @@ public class RichSoilSpellEntity extends SpellEntity {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
+    public void readAdditionalSaveData(CompoundTag tag) {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(CompoundTag tag) {
     }
 
     @Override

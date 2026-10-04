@@ -285,19 +285,21 @@ dependencies {
     modImplementation "curse.maven:farmers-delight-398521:8007609"//1.3.1
 //    modImplementation "curse.maven:goety-586095:7966952"// 2.5.52.4
 //    modImplementation "curse.maven:goety-586095:8242254"//2.5.54.5
-    modImplementation "curse.maven:goety-586095:8390977"//2.5.55.2
+//    modImplementation "curse.maven:goety-586095:8390977"//2.5.55.2
+    modImplementation "curse.maven:goety-586095:8951387"//2.5.58.4
 
-    modImplementation "curse.maven:goety-revelation-1236817:6892481"
-
-    compileOnly "blank:[Forge]RevelationFix-1.20.1-4.4"//启示录内置的jar，单独弄出来是因为直接用启示录会导致工作区被肘击
-    compileOnly "blank:goety-2.5.55.2"//我没活了，真连不上cf库
+//    compileOnly "blank:[Forge]RevelationFix-1.20.1-4.4"//启示录内置的jar，单独弄出来是因为直接用启示录会导致工作区被肘击
+    compileOnly "blank:[Forge]RevelationFix-1.20.1-4.6"
+//    compileOnly "blank:goety-2.5.55.2"//我没活了，真连不上cf库
     compileOnly "blank:FarmersDelight-1.20.1-1.3.1"//理由同上
     compileOnly "curse.maven:jade-324717:6855440"
-    compileOnly "curse.maven:endinglibrary-1471165:8292038"
+//    compileOnly "curse.maven:endinglibrary-1471165:8292038"//endinglibrary-1.20.1-2.0.3.jar
+    compileOnly "curse.maven:endinglibrary-1471165:9038151"
     compileOnly(annotationProcessor(
             "io.github.llamalad7:mixinextras-common:0.4.1"
     ))
-    compileOnly "curse.maven:goety-revelation-1236817:8311906"//编译时加载启示录
+//    compileOnly "curse.maven:goety-revelation-1236817:8311906"//编译时加载启示录2.3.3
+    compileOnly "curse.maven:goety-revelation-1236817:9039503"//编译时加载启示录2.3.4
     modImplementation "curse.maven:curios-309927:6418456"//5.14.1
 
     //帕秋莉
@@ -318,8 +320,10 @@ dependencies {
     modRuntimeOnly  "curse.maven:selene-499980:8261419" //moonlight-1.20-2.16.34-forge.jar
     modRuntimeOnly  "curse.maven:jade-324717:6855440"//Jade-1.20.1-Forge-11.13.2.jar
     modRuntimeOnly  "curse.maven:l2library-620203:6806000" //l2library-2.5.3.jar
-    modRuntimeOnly  "curse.maven:goety-revelation-1236817:8311906" //goety_revelation_2.3.3fix(1)
-    modRuntimeOnly  "curse.maven:endinglibrary-1471165:8292038" //endinglibrary-1.20.1-2.0.3.jar
+//    modRuntimeOnly  "curse.maven:goety-revelation-1236817:8311906" //goety_revelation_2.3.3fix(1)
+//    modRuntimeOnly  "curse.maven:endinglibrary-1471165:8292038" //endinglibrary-1.20.1-2.0.3.jar
+    modRuntimeOnly  "curse.maven:goety-revelation-1236817:9039503" //goety_revelation_2.3.4
+    modRuntimeOnly  "curse.maven:endinglibrary-1471165:9038151" //endinglibrary-1.20.1-2.2.1fix
 
     //森罗玩偶
     modRuntimeOnly "curse.maven:kaleidoscope-doll-1233277:8196009"

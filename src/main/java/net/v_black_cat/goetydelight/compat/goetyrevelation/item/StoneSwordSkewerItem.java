@@ -139,7 +139,7 @@ public class StoneSwordSkewerItem extends SwordItem {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
-    public void onLivingAttack(LivingAttackEvent event) {
+    public static void onLivingAttack(LivingAttackEvent event) {
         if (event.getEntity() instanceof Player player) {
             CompoundTag persistentData = player.getPersistentData();
             if (persistentData.contains(EFFECT_DURATION_TAG)) {
@@ -154,7 +154,7 @@ public class StoneSwordSkewerItem extends SwordItem {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onLivingDeath(LivingDeathEvent event) {
+    public  void onLivingDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof Player player) {
             CompoundTag persistentData = player.getPersistentData();
             if (persistentData.contains(DEATH_IMMUNITY_TAG) && persistentData.getBoolean(DEATH_IMMUNITY_TAG)) {
