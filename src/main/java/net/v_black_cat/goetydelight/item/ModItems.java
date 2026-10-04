@@ -160,6 +160,8 @@ public class ModItems {
     public static final RegistryObject<Item> UNHOLY_SAUCE;
     public static final RegistryObject<Item> COLDLEMONLEAF;
     public static final RegistryObject<Item> THERMAL_PULSE_PIE;
+    public static final RegistryObject<Item> HAO_ZI;
+    public static final RegistryObject<Item> ROAST_HAO_ZI;
 
     //种子
     public static final RegistryObject<Item> ECTOPLASMIC_MELON_SEEDS;
@@ -400,7 +402,7 @@ public class ModItems {
 
         TAIYAKI = ITEMS.register("taiyaki",
                 () -> new Item(basicItem().stacksTo(64).food(
-                        simpleFoodItemProperties(6, 4.0F)
+                        simpleFoodItemProperties(8, 5.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(3), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.WATER_BREATHING, sToTick(30), 0), 1.0F)
                                 .build())));
@@ -868,6 +870,16 @@ public class ModItems {
                         .food(simpleFoodItemProperties(10, 6)
                                 .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(3), 0), 1.0F)
                                 .effect(() ->new MobEffectInstance(ELECTRIFIED.get(), minToTick(3), 0), 1.0F)
+                                .build())));
+
+        HAO_ZI = ITEMS.register("hao_zi",
+                () -> new HaoZiItem(basicItem().stacksTo(64).rarity(Rarity.COMMON)
+                        .food(simpleFoodItemProperties(3, 1)
+                               .build())));
+
+        ROAST_HAO_ZI = ITEMS.register("roast_hao_zi",
+                () -> new RoastHaoZiItem(basicItem().stacksTo(64).rarity(Rarity.COMMON)
+                        .food(simpleFoodItemProperties(5, 3)
                                 .build())));
 
         // ==================== 种子物品 ====================

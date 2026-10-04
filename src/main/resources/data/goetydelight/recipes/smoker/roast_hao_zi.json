@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:smelting",
+  "category": "food",
+  "cookingtime": 150,
+  "experience": 0.35,
+  "ingredient": {
+    "item": "goetydelight:hao_zi"
+  },
+  "result": "goetydelight:roast_hao_zi"
+}
