@@ -16,7 +16,9 @@
     "ModelBakeryMixin",
     "RecipeManagerMixin",
     "SummonSpellMixin",
-    "WightSpawnerMixin"
+    "WightSpawnerMixin",
+    "ArtificialFlowerMixin",
+    "SummonApollyonMixin"
   ],
   "client": [
     "BookContentResourceListenerLoaderMixin",
