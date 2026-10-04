@@ -33,7 +33,6 @@ public class ModCreativeModTabs {
          BLACKLIST.add(ModItems.ROAST_LAOWANG);
          BLACKLIST.add(ModItems.METAMORPHIC_SCENT_FRUIT);
          BLACKLIST.add(ModItems.DOLL_ITEM);
-         BLACKLIST.add(ModItems.HAO_ZI);
 
          BLACKLIST.add(ModBlocks.NETHER_MARBLE);
          BLACKLIST.add(ModBlocks.POINTED_DRIPMARBLE);
