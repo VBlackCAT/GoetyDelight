@@ -173,13 +173,31 @@ public class ApollyonCakeBlock extends FeastBlock implements EntityBlock {
         return Shapes.empty();
     }
 
+    // ==================== 新增：放置时注册到世界数据 ====================
+
     @Override
     public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
         super.onPlace(state, level, pos, oldState, isMoving);
-        if (!oldState.is(state.getBlock())) {
+
+        // 仅在"新放置"时注册（避免同方块状态切换导致重复注册）
+        if (!oldState.is(state.getBlock()) && level instanceof ServerLevel serverLevel) {
+            ApollyonCakeData.get(serverLevel).addCake(serverLevel.dimension(), pos);
             level.scheduleTick(pos, this, REGEN_INTERVAL);
         }
     }
+
+    // ==================== 新增：破坏时从世界数据注销 ====================
+
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        // 仅在"蛋糕被替换成别的方块"时注销（避免状态切换误删）
+        if (!state.is(newState.getBlock()) && level instanceof ServerLevel serverLevel) {
+            ApollyonCakeData.get(serverLevel).removeCake(serverLevel.dimension(), pos);
+        }
+        super.onRemove(state, level, pos, newState, isMoving);
+    }
+
+    // ==================== 原有：再生 tick ====================
 
     @Override
     public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
