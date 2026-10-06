@@ -16,9 +16,12 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -33,8 +36,11 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class ApollyonCakeBlock extends FeastBlock {
+public class ApollyonCakeBlock extends FeastBlock implements EntityBlock {
+
     public static final IntegerProperty SERVINGS = IntegerProperty.create("servings", 0, 3);
+    public static final BooleanProperty IS_THE_END = BooleanProperty.create("is_the_end");
+
     private static final int REGEN_INTERVAL = 600;
 
     private static final VoxelShape FULL_SHAPE = Shapes.or(
@@ -61,7 +67,8 @@ public class ApollyonCakeBlock extends FeastBlock {
         this.servingItems = servingItems;
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
-                .setValue(SERVINGS, getMaxServings()));
+                .setValue(SERVINGS, getMaxServings())
+                .setValue(IS_THE_END, false));
     }
 
     @Override
@@ -132,7 +139,13 @@ public class ApollyonCakeBlock extends FeastBlock {
 
     @Override
     public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
+        return RenderShape.MODEL;//旋转写了之后会让整个model变成滚木，所以只能先走model渲染了
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new ApollyonCakeBlockEntity(pos, state);
     }
 
     @Override
@@ -220,6 +233,6 @@ public class ApollyonCakeBlock extends FeastBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, SERVINGS);
+        builder.add(FACING, SERVINGS, IS_THE_END);
     }
 }

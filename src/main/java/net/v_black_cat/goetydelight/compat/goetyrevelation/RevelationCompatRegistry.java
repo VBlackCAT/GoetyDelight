@@ -10,6 +10,7 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -17,7 +18,10 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.block.CursedIngotPotBlockEntity;
+import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.block.ApollyonCakeBlock;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.block.ApollyonCakeBlockEntity;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.item.*;
 import net.v_black_cat.goetydelight.effect.ModEffects;
 import net.v_black_cat.goetydelight.spell.MalevolentShrineSpell;
@@ -40,9 +44,16 @@ public class RevelationCompatRegistry {
     public static final DeferredRegister<Block> BLOCKS =
             DeferredRegister.create(ForgeRegistries.BLOCKS, GoetyDelight.MODID);
 
+    /** BlockEntity 注册器 */
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
+            DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, GoetyDelight.MODID);
+
     /** 启示录方块：神金罐（原注册在主 ModBlocks，按联动拆分到本模块） */
     public static final RegistryObject<Block> APOCALYPTIUM_POT;
     public static final RegistryObject<Item> APOCALYPTIUM_POT_ITEM;
+
+    public static final RegistryObject<Block> APOLLYON_CAKE;
+    public static final RegistryObject<BlockEntityType<ApollyonCakeBlockEntity>> APOLLYON_CAKE_BE;
 
     public static final RegistryObject<Item> APOCALYPTIUM_KNIFE;
     public static final RegistryObject<Item> VENOMOUS_SPIDER_KNIFE;
@@ -57,7 +68,6 @@ public class RevelationCompatRegistry {
     public static final RegistryObject<Item> ASCENSION_MOONCAKE;
     public static final RegistryObject<Item> QUIETUS_MARROW;
     public static final RegistryObject<Item> MALEVOLENT_SHRINE_FOCUS;
-    public static final RegistryObject<Block> APOLLYON_CAKE;
     public static final RegistryObject<Item> APOLLYON_CAKE_ITEM;
 
     static {
@@ -77,6 +87,10 @@ public class RevelationCompatRegistry {
                         List.of(() -> Items.CAKE),
                         true
                 ));
+        APOLLYON_CAKE_BE = BLOCK_ENTITIES.register("apollyon_cake",
+                () -> BlockEntityType.Builder
+                        .of(ApollyonCakeBlockEntity::new, APOLLYON_CAKE.get())
+                        .build(null));
         APOLLYON_CAKE_ITEM = ITEMS.register("apollyon_cake",
                 () -> new BlockItem(APOLLYON_CAKE.get(), new Item.Properties().stacksTo(1)));
 
@@ -162,5 +176,6 @@ public class RevelationCompatRegistry {
     public static void register(IEventBus eventBus) {
         BLOCKS.register(eventBus);
         ITEMS.register(eventBus);
+        BLOCK_ENTITIES.register(eventBus);
     }
 }

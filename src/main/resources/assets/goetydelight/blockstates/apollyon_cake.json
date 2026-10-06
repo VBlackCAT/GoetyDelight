@@ -1,63 +1,124 @@
 {
   "variants": {
-    "facing=east,servings=0": {
+    "is_the_end=false,facing=east,servings=0": {
       "model": "goetydelight:block/apollyon_cake",
       "y": 90
     },
-    "facing=east,servings=1": {
+    "is_the_end=false,facing=east,servings=1": {
       "model": "goetydelight:block/apollyon_cake",
       "y": 90
     },
-    "facing=east,servings=2": {
+    "is_the_end=false,facing=east,servings=2": {
       "model": "goetydelight:block/apollyon_cake",
       "y": 90
     },
-    "facing=east,servings=3": {
+    "is_the_end=false,facing=east,servings=3": {
       "model": "goetydelight:block/apollyon_cake",
       "y": 90
     },
-    "facing=north,servings=0": {
+    "is_the_end=false,facing=north,servings=0": {
       "model": "goetydelight:block/apollyon_cake"
     },
-    "facing=north,servings=1": {
+    "is_the_end=false,facing=north,servings=1": {
       "model": "goetydelight:block/apollyon_cake"
     },
-    "facing=north,servings=2": {
+    "is_the_end=false,facing=north,servings=2": {
       "model": "goetydelight:block/apollyon_cake"
     },
-    "facing=north,servings=3": {
+    "is_the_end=false,facing=north,servings=3": {
       "model": "goetydelight:block/apollyon_cake"
     },
-    "facing=south,servings=0": {
+    "is_the_end=false,facing=south,servings=0": {
       "model": "goetydelight:block/apollyon_cake",
       "y": 180
     },
-    "facing=south,servings=1": {
+    "is_the_end=false,facing=south,servings=1": {
       "model": "goetydelight:block/apollyon_cake",
       "y": 180
     },
-    "facing=south,servings=2": {
+    "is_the_end=false,facing=south,servings=2": {
       "model": "goetydelight:block/apollyon_cake",
       "y": 180
     },
-    "facing=south,servings=3": {
+    "is_the_end=false,facing=south,servings=3": {
       "model": "goetydelight:block/apollyon_cake",
       "y": 180
     },
-    "facing=west,servings=0": {
+    "is_the_end=false,facing=west,servings=0": {
       "model": "goetydelight:block/apollyon_cake",
       "y": 270
     },
-    "facing=west,servings=1": {
+    "is_the_end=false,facing=west,servings=1": {
       "model": "goetydelight:block/apollyon_cake",
       "y": 270
     },
-    "facing=west,servings=2": {
+    "is_the_end=false,facing=west,servings=2": {
       "model": "goetydelight:block/apollyon_cake",
       "y": 270
     },
-    "facing=west,servings=3": {
+    "is_the_end=false,facing=west,servings=3": {
       "model": "goetydelight:block/apollyon_cake",
+      "y": 270
+    },
+
+    "is_the_end=true,facing=east,servings=0": {
+      "model": "goetydelight:block/the_end_cake",
+      "y": 90
+    },
+    "is_the_end=true,facing=east,servings=1": {
+      "model": "goetydelight:block/the_end_cake",
+      "y": 90
+    },
+    "is_the_end=true,facing=east,servings=2": {
+      "model": "goetydelight:block/the_end_cake",
+      "y": 90
+    },
+    "is_the_end=true,facing=east,servings=3": {
+      "model": "goetydelight:block/the_end_cake",
+      "y": 90
+    },
+    "is_the_end=true,facing=north,servings=0": {
+      "model": "goetydelight:block/the_end_cake"
+    },
+    "is_the_end=true,facing=north,servings=1": {
+      "model": "goetydelight:block/the_end_cake"
+    },
+    "is_the_end=true,facing=north,servings=2": {
+      "model": "goetydelight:block/the_end_cake"
+    },
+    "is_the_end=true,facing=north,servings=3": {
+      "model": "goetydelight:block/the_end_cake"
+    },
+    "is_the_end=true,facing=south,servings=0": {
+      "model": "goetydelight:block/the_end_cake",
+      "y": 180
+    },
+    "is_the_end=true,facing=south,servings=1": {
+      "model": "goetydelight:block/the_end_cake",
+      "y": 180
+    },
+    "is_the_end=true,facing=south,servings=2": {
+      "model": "goetydelight:block/the_end_cake",
+      "y": 180
+    },
+    "is_the_end=true,facing=south,servings=3": {
+      "model": "goetydelight:block/the_end_cake",
+      "y": 180
+    },
+    "is_the_end=true,facing=west,servings=0": {
+      "model": "goetydelight:block/the_end_cake",
+      "y": 270
+    },
+    "is_the_end=true,facing=west,servings=1": {
+      "model": "goetydelight:block/the_end_cake",
+      "y": 270
+    },
+    "is_the_end=true,facing=west,servings=2": {
+      "model": "goetydelight:block/the_end_cake",
+      "y": 270
+    },
+    "is_the_end=true,facing=west,servings=3": {
+      "model": "goetydelight:block/the_end_cake",
       "y": 270
     }
   }

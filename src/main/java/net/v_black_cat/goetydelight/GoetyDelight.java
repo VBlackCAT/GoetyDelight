@@ -21,6 +21,8 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.v_black_cat.goetydelight.advancements.ModAdvancementsTrigger;
 import net.v_black_cat.goetydelight.compat.CompatRegistry;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.RevelationCompatRegistry;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.block.ApollyonCakeRenderer;
 import net.v_black_cat.goetydelight.event.AnvilLandInBlockEvent;
 import net.v_black_cat.goetydelight.init.ModBuffTypes;
 import net.v_black_cat.goetydelight.block.ModBlockEntities;
@@ -56,6 +58,7 @@ import net.v_black_cat.goetydelight.structures.ModStructures;
 import net.v_black_cat.goetydelight.util.ModSounds;
 import org.slf4j.Logger;
 
+import static net.v_black_cat.goetydelight.compat.goetyrevelation.GoetyRevelationCompat.IS_LOADED;
 import static net.v_black_cat.goetydelight.loot.ModLootModifier.GLOBAL_LOOT_MODIFIER_CODECS;
 import static net.v_black_cat.goetydelight.item.ModItems.ITEMS;
 import static net.v_black_cat.goetydelight.block.ModBlocks.BLOCKS;
@@ -189,6 +192,12 @@ public class GoetyDelight
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.BOAT_STUFFED_ROASTED_WARDEN_BlOCK.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.ROAST_LAOWANG_BLOCK.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.METAMORPHIC_SCENT_GRASS.get(), RenderType.cutout());
+            if (IS_LOADED) {
+                BlockEntityRenderers.register(
+                        RevelationCompatRegistry.APOLLYON_CAKE_BE.get(),
+                        ApollyonCakeRenderer::new
+                );
+            }
         }
     }
 }
