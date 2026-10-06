@@ -154,6 +154,11 @@
 			"name": "melon",
 			"from": [4.6, 2, 16.9],
 			"to": [11.6, 6, 23.9],
+          "forge_data": {
+            "block_light":10,
+            "sky_light":10,
+            "ambient_occlusion":false
+          },
 			"rotation": {"angle": 0, "axis": "y", "origin": [-0.4, 1, 0.9]},
 			"faces": {
 				"north": {"uv": [4.75, 14.25, 5.625, 14.75], "texture": "#0"},
@@ -168,6 +173,11 @@
 			"name": "melon_outline",
 			"from": [11.8, 6.2, 24.1],
 			"to": [4.4, 1.8, 16.7],
+            "forge_data": {
+            "block_light":10,
+            "sky_light":10,
+            "ambient_occlusion":false
+            },
 			"rotation": {"angle": 0, "axis": "y", "origin": [-0.4, 1, 0.9]},
 			"faces": {
 				"north": {"uv": [4.125, 13.375, 4, 13.25], "rotation": 180, "texture": "#0"},

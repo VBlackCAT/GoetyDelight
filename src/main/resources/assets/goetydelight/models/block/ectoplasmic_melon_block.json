@@ -10,6 +10,11 @@
 		{
 			"from": [1, 1, 1],
 			"to": [15, 15, 15],
+          "forge_data": {
+            "block_light":10,
+            "sky_light":10,
+            "ambient_occlusion":false
+          },
 			"rotation": {"angle": 0, "axis": "y", "origin": [1, 0, 1]},
 			"faces": {
 				"north": {"uv": [0, 0, 3.5, 3.5], "texture": "#0"},
@@ -24,6 +29,11 @@
 			"name": "cube_outline",
 			"from": [16, 16, 16],
 			"to": [0, 0, 0],
+          "forge_data": {
+            "block_light":10,
+            "sky_light":10,
+            "ambient_occlusion":false
+          },
 			"rotation": {"angle": 0, "axis": "y", "origin": [1, 0, 1]},
 			"faces": {
 				"north": {"uv": [3.5, 7, 7, 10.5], "texture": "#0"},

@@ -4,12 +4,9 @@ import com.Polarice3.Goety.common.effects.GoetyEffects;
 import com.Polarice3.Goety.common.items.magic.MagicFocus;
 import com.mega.revelationfix.common.item.ModItemTiers;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.*;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
@@ -20,10 +17,13 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.block.ApollyonCakeBlock;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.item.*;
 import net.v_black_cat.goetydelight.effect.ModEffects;
 import net.v_black_cat.goetydelight.spell.MalevolentShrineSpell;
 import vectorwing.farmersdelight.common.item.KnifeItem;
+
+import java.util.List;
 
 import static net.v_black_cat.goetydelight.item.ModItems.NOURISHMENT_EFFECT_SUPPLIER;
 import static net.v_black_cat.goetydelight.util.TimeConverter.minToTick;
@@ -57,14 +57,28 @@ public class RevelationCompatRegistry {
     public static final RegistryObject<Item> ASCENSION_MOONCAKE;
     public static final RegistryObject<Item> QUIETUS_MARROW;
     public static final RegistryObject<Item> MALEVOLENT_SHRINE_FOCUS;
+    public static final RegistryObject<Block> APOLLYON_CAKE;
+    public static final RegistryObject<Item> APOLLYON_CAKE_ITEM;
 
     static {
-        APOCALYPTIUM_POT = BLOCKS.register("apocalyptium_pot", () -> new Block(
+        APOCALYPTIUM_POT = BLOCKS.register("apocalyptium_pot_block", () -> new Block(
                 BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
                         .noLootTable()
                         .sound(SoundType.AMETHYST)));
         APOCALYPTIUM_POT_ITEM = ITEMS.register("apocalyptium_pot",
                 () -> new BlockItem(APOCALYPTIUM_POT.get(), new Item.Properties()));
+
+        APOLLYON_CAKE = BLOCKS.register("apollyon_cake",
+                () -> new ApollyonCakeBlock(
+                        BlockBehaviour.Properties.copy(Blocks.CAKE)
+                                .strength(0.5F)
+                                .sound(SoundType.WOOL)
+                                .noOcclusion(),
+                        List.of(() -> Items.CAKE),
+                        true
+                ));
+        APOLLYON_CAKE_ITEM = ITEMS.register("apollyon_cake",
+                () -> new BlockItem(APOLLYON_CAKE.get(), new Item.Properties().stacksTo(1)));
 
         APOCALYPTIUM_KNIFE = ITEMS.register("apocalyptium_knife",
                 () -> new ApocalyptiumKnifeItem(
