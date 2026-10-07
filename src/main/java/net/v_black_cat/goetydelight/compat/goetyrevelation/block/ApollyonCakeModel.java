@@ -21,11 +21,18 @@ import java.util.Map;
 public class ApollyonCakeModel {
 
     /**
-     * 对应：
+     * 普通形态：
      * assets/goetydelight/models/block/apollyon_cake.json
      */
-    private static final ResourceLocation MODEL_LOCATION =
+    private static final ResourceLocation MODEL_APOLLYON_CAKE =
             new ResourceLocation("goetydelight", "block/apollyon_cake");
+
+    /**
+     * 末地形态：
+     * assets/goetydelight/models/block/the_end_cake.json
+     */
+    private static final ResourceLocation MODEL_THE_END_CAKE =
+            new ResourceLocation("goetydelight", "block/the_end_cake");
 
     /**
      * 使用模型原本的 X0_Y0 状态。
@@ -50,6 +57,11 @@ public class ApollyonCakeModel {
     private final List<BakedQuad> animatedQuads = new ArrayList<>();
 
     /**
+     * 当前是否处于 the_end 形态。
+     */
+    private boolean isTheEnd = false;
+
+    /**
      * 这个向量不是世界 Y。
      *
      * 它是 FaceBakery 根据 JSON：
@@ -64,21 +76,53 @@ public class ApollyonCakeModel {
     private Vector3f animatedNormal = new Vector3f(0.0F, 1.0F, 0.0F);
 
     public ApollyonCakeModel() {
-        bakeModel();
+        this(false);
     }
 
-    private void bakeModel() {
+    public ApollyonCakeModel(boolean isTheEnd) {
+        this.isTheEnd = isTheEnd;
+        bakeModel(getCurrentModelLocation());
+    }
+
+    /**
+     * 当蛋糕的 is_the_end 变化时调用。
+     *
+     * 返回 true 表示模型确实发生了切换并重新烘焙。
+     */
+    public boolean setTheEnd(boolean isTheEnd) {
+        if (this.isTheEnd == isTheEnd) {
+            return false;
+        }
+
+        this.isTheEnd = isTheEnd;
+        bakeModel(getCurrentModelLocation());
+        return true;
+    }
+
+    public boolean isTheEnd() {
+        return isTheEnd;
+    }
+
+    private ResourceLocation getCurrentModelLocation() {
+        return isTheEnd ? MODEL_THE_END_CAKE : MODEL_APOLLYON_CAKE;
+    }
+
+    private void bakeModel(ResourceLocation modelLocation) {
+        staticQuads.clear();
+        animatedQuads.clear();
+        animatedNormal.set(0.0F, 1.0F, 0.0F);
+
         Minecraft minecraft = Minecraft.getInstance();
 
         ModelManager modelManager = minecraft.getModelManager();
         ModelBakery modelBakery = modelManager.getModelBakery();
 
         UnbakedModel unbakedModel =
-                modelBakery.getModel(MODEL_LOCATION);
+                modelBakery.getModel(modelLocation);
 
         if (!(unbakedModel instanceof BlockModel blockModel)) {
             throw new IllegalStateException(
-                    "Model is not a BlockModel: " + MODEL_LOCATION
+                    "Model is not a BlockModel: " + modelLocation
             );
         }
 
@@ -108,36 +152,20 @@ public class ApollyonCakeModel {
                             "Cannot resolve texture '" +
                                     face.texture +
                                     "' in model " +
-                                    MODEL_LOCATION
+                                    modelLocation
                     );
                 }
 
                 TextureAtlasSprite sprite =
                         blockAtlas.getSprite(material.texture());
 
-                /*
-                 * Forge 1.20.1 正确签名：
-                 *
-                 * bakeFace(
-                 *     BlockElement,
-                 *     BlockElementFace,
-                 *     TextureAtlasSprite,
-                 *     Direction,
-                 *     ModelState,
-                 *     ResourceLocation
-                 * )
-                 *
-                 * 注意：
-                 * element 本身传进去以后，
-                 * FaceBakery 会处理 element.rotation。
-                 */
                 BakedQuad quad = BlockModel.bakeFace(
                         element,
                         face,
                         sprite,
                         direction,
                         MODEL_STATE,
-                        MODEL_LOCATION
+                        modelLocation
                 );
 
                 if (animated) {
@@ -305,21 +333,13 @@ public class ApollyonCakeModel {
 
     /**
      * 渲染旋转环。
-     *
-     * 注意：
-     *
-     * yAngle 这个名字现在只是“动画角度”。
-     * 它不再意味着绕世界 Y 轴旋转。
-     *
-     * 实际旋转轴：
-     *
-     * animatedNormal
      */
     public void renderAnimated(
             PoseStack poseStack,
             VertexConsumer buffer,
             float angle,
-            Vector3f worldNormal, float red,
+            Vector3f worldNormal,
+            float red,
             float green,
             float blue,
             float alpha,
@@ -333,32 +353,12 @@ public class ApollyonCakeModel {
 
         poseStack.pushPose();
 
-        /*
-         * 以 JSON 的 origin：
-         *
-         * [8,29,8]
-         *
-         * 作为旋转中心。
-         */
         poseStack.translate(
                 ANIMATION_ORIGIN_X,
                 ANIMATION_ORIGIN_Y,
                 ANIMATION_ORIGIN_Z
         );
 
-        /*
-         * 关键：
-         *
-         * 不再：
-         *
-         * Axis.YP.rotationDegrees(angle)
-         *
-         * 而是：
-         *
-         * 绕动画平面自己的法线旋转。
-         *
-         * 这样法线本身不会随着动画旋转。
-         */
         poseStack.mulPose(
                 new org.joml.Quaternionf()
                         .fromAxisAngleDeg(
@@ -369,9 +369,6 @@ public class ApollyonCakeModel {
                         )
         );
 
-        /*
-         * 回到模型局部坐标。
-         */
         poseStack.translate(
                 -ANIMATION_ORIGIN_X,
                 -ANIMATION_ORIGIN_Y,
@@ -408,18 +405,6 @@ public class ApollyonCakeModel {
         PoseStack.Pose pose = poseStack.last();
 
         for (BakedQuad quad : quads) {
-
-            /*
-             * Forge 的 putBulkData 会正确处理：
-             *
-             * - BakedQuad 顶点
-             * - UV
-             * - baked normal
-             * - light
-             * - overlay
-             *
-             * 这比我们手写 vertex() 要可靠得多。
-             */
             buffer.putBulkData(
                     pose,
                     quad,

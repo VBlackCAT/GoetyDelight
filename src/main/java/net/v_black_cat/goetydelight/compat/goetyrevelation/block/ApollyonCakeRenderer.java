@@ -37,6 +37,26 @@ public class ApollyonCakeRenderer
 
         /*
          * ============================
+         * 是否处于 the_end 形态
+         * ============================
+         *
+         * 该值同时决定：
+         * 1. 使用哪个模型（apollyon_cake / the_end_cake）
+         * 2. 动态环是否旋转
+         */
+        boolean isTheEnd =
+                state.getValue(ApollyonCakeBlock.IS_THE_END);
+
+        /*
+         * 状态变化时重新烘焙模型。
+         *
+         * setTheEnd 内部会判断是否真的变化，
+         * 没变就不会重复烘焙。
+         */
+        model.setTheEnd(isTheEnd);
+
+        /*
+         * ============================
          * 动画时间
          * ============================
          */
@@ -57,7 +77,7 @@ public class ApollyonCakeRenderer
         /*
          * The End 中不旋转。
          */
-        if (state.getValue(ApollyonCakeBlock.IS_THE_END)) {
+        if (isTheEnd) {
             angle = 0.0F;
         }
 
