@@ -60,6 +60,41 @@ public class ApollyonCakeModel {
         return isTheEnd ? MODEL_THE_END_CAKE : MODEL_APOLLYON_CAKE;
     }
 
+    private static boolean isSingleFaceElement(BlockElement element) {
+        if (isAnimatedElement(element)) {
+            return true;
+        }
+
+        return isElement(element,
+                4.5F, 29.0F, -6.0F,
+                11.5F, 29.0F, 1.0F)
+
+                || isElement(element,
+                4.5F, 29.0F, 16.0F,
+                11.5F, 29.0F, 23.0F)
+
+                || isElement(element,
+                16.0F, 29.0F, 4.0F,
+                25.0F, 29.0F, 13.0F)
+
+                || isElement(element,
+                -9.0F, 29.0F, 4.0F,
+                0.0F, 29.0F, 13.0F);
+    }
+
+    private static boolean isElement(
+            BlockElement element,
+            float fromX, float fromY, float fromZ,
+            float toX, float toY, float toZ
+    ) {
+        return approximatelyEquals(element.from.x(), fromX)
+                && approximatelyEquals(element.from.y(), fromY)
+                && approximatelyEquals(element.from.z(), fromZ)
+                && approximatelyEquals(element.to.x(), toX)
+                && approximatelyEquals(element.to.y(), toY)
+                && approximatelyEquals(element.to.z(), toZ);
+    }
+
     private void bakeModel(ResourceLocation modelLocation) {
         staticQuads.clear();
         animatedQuads.clear();
@@ -78,14 +113,27 @@ public class ApollyonCakeModel {
         TextureAtlas blockAtlas = modelManager.getAtlas(TextureAtlas.LOCATION_BLOCKS);
         for (BlockElement element : blockModel.getElements()) {
             boolean animated = isAnimatedElement(element);
+            boolean singleFace = isSingleFaceElement(element);
+
             for (Map.Entry<Direction, BlockElementFace> entry : element.faces.entrySet()) {
                 Direction direction = entry.getKey();
                 BlockElementFace face = entry.getValue();
-                Material material = blockModel.getMaterial(face.texture);
-                if (material == null) {
-                    throw new IllegalStateException("Cannot resolve texture '" + face.texture + "' in model " + modelLocation);
+                if (singleFace && direction != Direction.UP) {
+                    continue;
                 }
-                TextureAtlasSprite sprite = blockAtlas.getSprite(material.texture());
+
+                Material material = blockModel.getMaterial(face.texture);
+
+                if (material == null) {
+                    throw new IllegalStateException(
+                            "Cannot resolve texture '" + face.texture +
+                                    "' in model " + modelLocation
+                    );
+                }
+
+                TextureAtlasSprite sprite =
+                        blockAtlas.getSprite(material.texture());
+
                 BakedQuad quad = BlockModel.bakeFace(
                         element,
                         face,
@@ -94,10 +142,9 @@ public class ApollyonCakeModel {
                         MODEL_STATE,
                         modelLocation
                 );
+
                 if (animated) {
-                    if (direction == Direction.UP) {
-                        animatedQuads.add(quad);
-                    }
+                    animatedQuads.add(quad);
                 } else {
                     staticQuads.add(quad);
                 }
