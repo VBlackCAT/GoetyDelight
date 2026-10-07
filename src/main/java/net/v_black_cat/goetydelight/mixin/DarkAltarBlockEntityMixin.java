@@ -20,8 +20,6 @@ import static net.v_black_cat.goetydelight.item.MetamorphicScentGrassItem.metamo
 @Mixin(DarkAltarBlockEntity.class)
 public class DarkAltarBlockEntityMixin {
 
-    // ==================== 已有：替换配方 ====================
-
     @ModifyVariable(
             method = "activate",
             at = @At(
@@ -42,14 +40,11 @@ public class DarkAltarBlockEntityMixin {
                 player.getItemInHand(hand), value);
     }
 
-    // ==================== 新增：仪式完成激活蛋糕（桥接） ====================
-
     @Inject(method = "stopRitual(Z)V", at = @At("HEAD"), remap = false)
     private void goetydelight$onRitualStop(boolean finished, CallbackInfo ci) {
         if (!finished) {
             return;
         }
-        // 只调用桥接类，绝不在这里 import goetyrevelation 的类
         GoetyRevelationBridge.onRitualStop((DarkAltarBlockEntity) (Object) this);
     }
 }

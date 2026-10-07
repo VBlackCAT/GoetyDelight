@@ -3,8 +3,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [512, 512],
 	"textures": {
-		"1": "goetydelight:block/boat_stuffed_roasted_warden_block",
-		"particle": "goetydelight:block/boat_stuffed_roasted_warden_block"
+      "1": "goetydelight:block/boat_stuffed_roasted_warden_block",
+      "particle": "goetydelight:block/boat_stuffed_roasted_warden_block"
 	},
 	"elements": [
 		{
@@ -231,6 +231,11 @@
 			"name": "cube_outline",
 			"from": [24.3, 9.3, -3.2],
 			"to": [17.7, 2.7, -9.8],
+          "forge_data": {
+            "block_light":15,
+            "sky_light":15,
+            "ambient_occlusion":false
+          },
 			"rotation": {"angle": 0, "axis": "y", "origin": [18, 3, -9.5]},
 			"faces": {
 				"north": {"uv": [5.1875, 4.5, 5, 4.3125], "texture": "#1"},
@@ -252,6 +257,19 @@
 				"west": {"uv": [1.15625, 7.0625, 1.34375, 7.25], "texture": "#1"},
 				"up": {"uv": [1.15625, 7.0625, 0.96875, 6.875], "texture": "#1"},
 				"down": {"uv": [1.34375, 6.875, 1.15625, 7.0625], "texture": "#1"}
+			}
+		},
+		{
+			"from": [17.75, 10.75, 16.75],
+			"to": [24.25, 17.25, 23.25],
+			"rotation": {"angle": 0, "axis": "y", "origin": [18, 11, 17]},
+			"faces": {
+				"north": {"uv": [0.96875, 7.46875, 1.15625, 7.65625], "texture": "#1"},
+				"east": {"uv": [0.78125, 7.46875, 0.96875, 7.65625], "texture": "#1"},
+				"south": {"uv": [1.34375, 7.46875, 1.53125, 7.65625], "texture": "#1"},
+				"west": {"uv": [1.15625, 7.46875, 1.34375, 7.65625], "texture": "#1"},
+				"up": {"uv": [1.15625, 7.46875, 0.96875, 7.28125], "texture": "#1"},
+				"down": {"uv": [1.34375, 7.28125, 1.15625, 7.46875], "texture": "#1"}
 			}
 		},
 		{
@@ -507,7 +525,7 @@
 					"name": "melon",
 					"origin": [18, 11, 17],
 					"color": 0,
-					"children": [16, 17, 18]
+					"children": [16, 17, 18, 19]
 				},
 				{
 					"name": "warden",
@@ -518,27 +536,27 @@
 							"name": "right_arm",
 							"origin": [21, 34, 9],
 							"color": 0,
-							"children": [19, 20, 21]
+							"children": [20, 21, 22]
 						},
 						{
 							"name": "body",
 							"origin": [8, 9, -9],
 							"color": 0,
 							"children": [
-								22,
 								23,
 								24,
+								25,
 								{
 									"name": "group",
 									"origin": [14, 13, 13],
 									"color": 0,
-									"children": [25, 26, 27, 28]
+									"children": [26, 27, 28, 29]
 								},
 								{
 									"name": "group",
 									"origin": [14, 13, 13],
 									"color": 0,
-									"children": [29, 30, 31, 32]
+									"children": [30, 31, 32, 33]
 								}
 							]
 						},
@@ -546,7 +564,7 @@
 							"name": "right_leg",
 							"origin": [13.9, 13, 8],
 							"color": 0,
-							"children": [33, 34]
+							"children": [34, 35]
 						}
 					]
 				}

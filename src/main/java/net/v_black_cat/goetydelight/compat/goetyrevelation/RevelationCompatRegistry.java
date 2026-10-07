@@ -1,7 +1,6 @@
 package net.v_black_cat.goetydelight.compat.goetyrevelation;
 
 import com.Polarice3.Goety.common.effects.GoetyEffects;
-import com.Polarice3.Goety.common.items.magic.MagicFocus;
 import com.mega.revelationfix.common.item.ModItemTiers;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.*;
@@ -18,8 +17,6 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
-import net.v_black_cat.goetydelight.block.CursedIngotPotBlockEntity;
-import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.block.ApollyonCakeBlock;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.block.ApollyonCakeBlockEntity;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.item.*;
@@ -40,15 +37,12 @@ public class RevelationCompatRegistry {
     public static final DeferredRegister<Item> ITEMS =
             DeferredRegister.create(ForgeRegistries.ITEMS, GoetyDelight.MODID);
 
-    /** 本模块的方块注册器（联动方块只在 goety_revelation 存在时注册） */
     public static final DeferredRegister<Block> BLOCKS =
             DeferredRegister.create(ForgeRegistries.BLOCKS, GoetyDelight.MODID);
 
-    /** BlockEntity 注册器 */
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
             DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, GoetyDelight.MODID);
 
-    /** 启示录方块：神金罐（原注册在主 ModBlocks，按联动拆分到本模块） */
     public static final RegistryObject<Block> APOCALYPTIUM_POT;
     public static final RegistryObject<Item> APOCALYPTIUM_POT_ITEM;
 
@@ -69,6 +63,7 @@ public class RevelationCompatRegistry {
     public static final RegistryObject<Item> QUIETUS_MARROW;
     public static final RegistryObject<Item> MALEVOLENT_SHRINE_FOCUS;
     public static final RegistryObject<Item> APOLLYON_CAKE_ITEM;
+    public static final RegistryObject<Item> APOLLYON_CAKE_SLICE;
 
     static {
         APOCALYPTIUM_POT = BLOCKS.register("apocalyptium_pot_block", () -> new Block(
@@ -84,15 +79,20 @@ public class RevelationCompatRegistry {
                                 .strength(0.5F)
                                 .sound(SoundType.WOOL)
                                 .noOcclusion(),
-                        List.of(() -> Items.CAKE),
+                        List.of(RevelationCompatRegistry.APOLLYON_CAKE_SLICE,
+                                RevelationCompatRegistry.APOLLYON_CAKE_SLICE,
+                                RevelationCompatRegistry.APOLLYON_CAKE_SLICE),
                         true
                 ));
         APOLLYON_CAKE_BE = BLOCK_ENTITIES.register("apollyon_cake",
                 () -> BlockEntityType.Builder
                         .of(ApollyonCakeBlockEntity::new, APOLLYON_CAKE.get())
                         .build(null));
+
         APOLLYON_CAKE_ITEM = ITEMS.register("apollyon_cake",
-                () -> new BlockItem(APOLLYON_CAKE.get(), new Item.Properties().stacksTo(1)));
+                () -> new ApollyonCakeItem(
+                        APOLLYON_CAKE.get(),
+                        new Item.Properties().stacksTo(1)));
 
         APOCALYPTIUM_KNIFE = ITEMS.register("apocalyptium_knife",
                 () -> new ApocalyptiumKnifeItem(
@@ -117,8 +117,8 @@ public class RevelationCompatRegistry {
         PI_PIE = ITEMS.register("pi_pie",
                 () -> new PiPieItem(basicItem().stacksTo(1).rarity(Rarity.EPIC).food(
                         simpleFoodItemProperties(15, 10)
-                               .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
-                               .build())));
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
+                                .build())));
 
         SHARK_GUMMY = ITEMS.register("shark_gummy",
                 () -> new SharkGummyItem(basicItem().stacksTo(1).rarity(Rarity.EPIC).food(
@@ -135,16 +135,16 @@ public class RevelationCompatRegistry {
         DOOM_COOKIE = ITEMS.register("doom_cookie",
                 () -> new DoomCookieItem(
                         basicItem().stacksTo(16).rarity(Rarity.UNCOMMON).food(
-                        simpleFoodItemProperties(6, 4)
-                                .effect(() -> new MobEffectInstance(GoetyEffects.DOOM.get(), minToTick(1), 19), 1.0F)
-                                .build())));
+                                simpleFoodItemProperties(6, 4)
+                                        .effect(() -> new MobEffectInstance(GoetyEffects.DOOM.get(), minToTick(1), 19), 1.0F)
+                                        .build())));
 
         ATONEMENT_VOUCHER_WRAPED_COD = ITEMS.register("atonement_voucher_wraped_cod",
                 () -> new AtonementVoucherWrapedCodItem(
                         basicItem().stacksTo(16).rarity(Rarity.UNCOMMON).food(
-                        simpleFoodItemProperties(10, 7)
-                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
-                                .build())));
+                                simpleFoodItemProperties(10, 7)
+                                        .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
+                                        .build())));
 
         ASCENSION_MOONCAKE = ITEMS.register("ascension_mooncake",
                 () -> new AscensionMooncakeItem(basicItem().stacksTo(1).rarity(Rarity.EPIC).food(
@@ -158,9 +158,16 @@ public class RevelationCompatRegistry {
         QUIETUS_MARROW = ITEMS.register("quietus_marrow",
                 () -> new QuietusMarrowItem(basicItem().stacksTo(16).rarity(Rarity.EPIC).food(
                         simpleFoodItemProperties(5, 0)
-                                 .effect(() -> new MobEffectInstance(com.mega.revelationfix.common.init.ModEffects.QUIETUS.get(), -1, 1), 1.0F)
-                                 .effect(() -> new MobEffectInstance(net.v_black_cat.goetydelight.effect.ModEffects.FASTING.get(), -1, 0), 1.0F)
-                                 .build())));
+                                .effect(() -> new MobEffectInstance(com.mega.revelationfix.common.init.ModEffects.QUIETUS.get(), -1, 1), 1.0F)
+                                .effect(() -> new MobEffectInstance(net.v_black_cat.goetydelight.effect.ModEffects.FASTING.get(), -1, 0), 1.0F)
+                                .build())));
+
+        APOLLYON_CAKE_SLICE = ITEMS.register("apollyon_cake_slice",
+                () -> new ApollyonCakeSliceItem(basicItem().stacksTo(64).rarity(Rarity.EPIC).food(
+                        simpleFoodItemProperties(16, 33)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(66), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), sToTick(66), 0), 1.0F)
+                                .build())));
 
         MALEVOLENT_SHRINE_FOCUS = ITEMS.register("malevolent_shrine_focus",
                 () -> new PetroleumMistFocus(new MalevolentShrineSpell()));

@@ -2,13 +2,14 @@ package net.v_black_cat.goetydelight.compat.goetyrevelation.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -23,17 +24,22 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.item.ApollyonCakeItem;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.item.ApollyonCakeSliceItem;
 import vectorwing.farmersdelight.common.block.FeastBlock;
 import vectorwing.farmersdelight.common.registry.ModSounds;
 import vectorwing.farmersdelight.common.utility.TextUtils;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 public class ApollyonCakeBlock extends FeastBlock implements EntityBlock {
@@ -85,11 +91,46 @@ public class ApollyonCakeBlock extends FeastBlock implements EntityBlock {
     public ItemStack getServingItem(BlockState state) {
         int servings = state.getValue(SERVINGS);
         int itemIndex = (getMaxServings() - servings) % servingItems.size();
-        return new ItemStack(servingItems.get(itemIndex).get());
+        Item item = servingItems.get(itemIndex).get();
+
+        boolean isTheEnd = state.hasProperty(IS_THE_END) && state.getValue(IS_THE_END);
+
+        if (item instanceof ApollyonCakeSliceItem) {
+            return ApollyonCakeSliceItem.createStack(item, isTheEnd);
+        }
+        return new ItemStack(item);
+    }
+
+    public static void setCakeOwner(Level level, BlockPos pos, @Nullable UUID ownerUuid) {
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be instanceof ApollyonCakeBlockEntity cakeBe) {
+            cakeBe.setOwnerUuid(ownerUuid);
+        }
+    }
+
+    @Nullable
+    public static UUID getCakeOwner(Level level, BlockPos pos) {
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be instanceof ApollyonCakeBlockEntity cakeBe) {
+            return cakeBe.getOwnerUuid();
+        }
+        return null;
+    }
+
+    public static boolean canInteract(Level level, BlockPos pos, BlockState state, Player player) {
+        if (!state.hasProperty(IS_THE_END) || !state.getValue(IS_THE_END)) {
+            return true;
+        }
+        UUID owner = getCakeOwner(level, pos);
+        return owner != null && owner.equals(player.getUUID());
     }
 
     @Override
     protected InteractionResult takeServing(Level level, BlockPos pos, BlockState state, Player player, InteractionHand hand) {
+        if (!level.isClientSide && !canInteract(level, pos, state, player)) {
+            return InteractionResult.PASS;
+        }
+
         int servings = state.getValue(SERVINGS);
 
         if (servings == 0) {
@@ -134,7 +175,37 @@ public class ApollyonCakeBlock extends FeastBlock implements EntityBlock {
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection());
+        BlockState state = this.defaultBlockState()
+                .setValue(FACING, context.getHorizontalDirection());
+
+        CompoundTag tag = ApollyonCakeItem.getCakeTag(context.getItemInHand());
+        if (tag != null) {
+            if (tag.contains(ApollyonCakeItem.TAG_SERVINGS)) {
+                int servings = tag.getInt(ApollyonCakeItem.TAG_SERVINGS);
+                servings = Math.max(0, Math.min(getMaxServings(), servings));
+                state = state.setValue(SERVINGS, servings);
+            }
+            if (tag.contains(ApollyonCakeItem.TAG_IS_THE_END)) {
+                state = state.setValue(IS_THE_END, tag.getBoolean(ApollyonCakeItem.TAG_IS_THE_END));
+            }
+        }
+        return state;
+    }
+
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state,
+                            @Nullable LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(level, pos, state, placer, stack);
+
+        CompoundTag tag = ApollyonCakeItem.getCakeTag(stack);
+        if (tag != null && tag.hasUUID(ApollyonCakeItem.TAG_OWNER)) {
+            setCakeOwner(level, pos, tag.getUUID(ApollyonCakeItem.TAG_OWNER));
+        }
+    }
+
+    @Override
+    public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+        return Collections.emptyList();
     }
 
     @Override
@@ -173,31 +244,37 @@ public class ApollyonCakeBlock extends FeastBlock implements EntityBlock {
         return Shapes.empty();
     }
 
-    // ==================== 新增：放置时注册到世界数据 ====================
+    // ==================== 放置时注册到世界数据 ====================
 
     @Override
     public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
         super.onPlace(state, level, pos, oldState, isMoving);
 
-        // 仅在"新放置"时注册（避免同方块状态切换导致重复注册）
         if (!oldState.is(state.getBlock()) && level instanceof ServerLevel serverLevel) {
             ApollyonCakeData.get(serverLevel).addCake(serverLevel.dimension(), pos);
             level.scheduleTick(pos, this, REGEN_INTERVAL);
         }
     }
 
-    // ==================== 新增：破坏时从世界数据注销 ====================
+    // ==================== 破坏时从世界数据注销 ====================
+
+    // ==================== 破坏时：注销数据 + 掉落带数据物品 ====================
 
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        // 仅在"蛋糕被替换成别的方块"时注销（避免状态切换误删）
         if (!state.is(newState.getBlock()) && level instanceof ServerLevel serverLevel) {
+            // 1. 从世界数据注销
             ApollyonCakeData.get(serverLevel).removeCake(serverLevel.dimension(), pos);
+            int servings = state.getValue(SERVINGS);
+            boolean isTheEnd = state.hasProperty(IS_THE_END) && state.getValue(IS_THE_END);
+            UUID owner = getCakeOwner(level, pos);
+
+            ItemStack drop = ApollyonCakeItem.createStack(this, servings, isTheEnd, owner);
+            Block.popResource(level, pos, drop);
         }
         super.onRemove(state, level, pos, newState, isMoving);
     }
-
-    // ==================== 原有：再生 tick ====================
+    // ==================== 再生 tick ====================
 
     @Override
     public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {

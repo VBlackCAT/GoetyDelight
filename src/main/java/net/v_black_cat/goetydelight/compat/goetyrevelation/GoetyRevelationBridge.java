@@ -2,33 +2,33 @@ package net.v_black_cat.goetydelight.compat.goetyrevelation;
 
 import com.Polarice3.Goety.common.blocks.entities.DarkAltarBlockEntity;
 import com.Polarice3.Goety.common.crafting.RitualRecipe;
+import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.block.ApollyonCakeBlock;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.block.ApollyonCakeData;
+import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.UUID;
 
-/**
- * 桥接类：所有对 goetyrevelation 模组的跨模组引用集中在这里。
- * Mixin 类只调用本类的静态方法，不直接 import goetyrevelation 的类。
- */
 public final class GoetyRevelationBridge {
 
     private GoetyRevelationBridge() {}
 
-    /** 目标仪式配方 ID */
-    private static final ResourceLocation GOETYDELIGHT_THE_END_RITUAL =
+    private static final Logger LOGGER = LogUtils.getLogger();
+
+    private static final ResourceLocation THE_END_RITUAL =
             new ResourceLocation("goety_revelation", "the_end_ritual");
 
-    /** 搜索半径（方块距离） */
-    private static final int GOETYDELIGHT_CAKE_RADIUS = 10;
+    private static final int CAKE_RADIUS = 10;
 
     /**
-     * 仪式成功完成时调用。
-     * 内部再做模组加载判断和异常保护。
+     * 由 Mixin 在 {@code DarkAltarBlockEntity#stopRitual(Z)V} 的 HEAD 处调用。
+     * 此时 {@code castingPlayer} / {@code castingPlayerId} 尚未被 clearRitual 清空。
      */
     public static void onRitualStop(DarkAltarBlockEntity self) {
         if (!GoetyRevelationCompat.IS_LOADED) {
@@ -37,30 +37,38 @@ public final class GoetyRevelationBridge {
         try {
             handleRitualStop(self);
         } catch (Throwable t) {
-            // 防止任何意外异常导致 Mixin 注入失败
-            // 可换成你自己的 logger
-            System.err.println("[goetydelight] GoetyRevelationBridge.onRitualStop failed: " + t);
+            LOGGER.error("[goetydelight] GoetyRevelationBridge.onRitualStop failed", t);
         }
     }
 
+    @Nullable
+    private static UUID resolveRitualOwner(DarkAltarBlockEntity self) {
+        if (self.castingPlayer != null) {
+            return self.castingPlayer.getUUID();
+        }
+        return self.castingPlayerId;
+    }
+
     private static void handleRitualStop(DarkAltarBlockEntity self) {
-        // 获取当前配方
         RitualRecipe recipe = self.getCurrentRitualRecipe();
         if (recipe == null) {
             return;
         }
 
         ResourceLocation recipeId = recipe.getId();
-        if (recipeId == null || !GOETYDELIGHT_THE_END_RITUAL.equals(recipeId)) {
+        if (recipeId == null || !THE_END_RITUAL.equals(recipeId)) {
             return;
         }
 
-        // 仅在服务端执行
         if (!(self.getLevel() instanceof ServerLevel serverLevel)) {
             return;
         }
 
-        BlockPos centerPos = self.getBlockPos();
+        @Nullable UUID ownerUuid = resolveRitualOwner(self);
+        if (ownerUuid == null) {
+            LOGGER.warn("[goetydelight] The End ritual finished without a resolvable owner UUID; skip activation.");
+            return;
+        }
 
         ApollyonCakeData data = ApollyonCakeData.get(serverLevel);
         if (data == null) {
@@ -69,25 +77,31 @@ public final class GoetyRevelationBridge {
 
         List<BlockPos> nearbyCakes = data.getCakesNear(
                 serverLevel.dimension(),
-                centerPos,
-                GOETYDELIGHT_CAKE_RADIUS
+                self.getBlockPos(),
+                CAKE_RADIUS
         );
-
         if (nearbyCakes.isEmpty()) {
             return;
         }
 
         for (BlockPos cakePos : nearbyCakes) {
             BlockState state = serverLevel.getBlockState(cakePos);
-            if (state.getBlock() instanceof ApollyonCakeBlock
-                    && state.hasProperty(ApollyonCakeBlock.IS_THE_END)
-                    && !state.getValue(ApollyonCakeBlock.IS_THE_END)) {
-                serverLevel.setBlock(
-                        cakePos,
-                        state.setValue(ApollyonCakeBlock.IS_THE_END, true),
-                        3
-                );
+            if (!(state.getBlock() instanceof ApollyonCakeBlock)) {
+                continue;
             }
+            if (!state.hasProperty(ApollyonCakeBlock.IS_THE_END)) {
+                continue;
+            }
+            if (state.getValue(ApollyonCakeBlock.IS_THE_END)) {
+                continue;
+            }
+
+            ApollyonCakeBlock.setCakeOwner(serverLevel, cakePos, ownerUuid);
+            serverLevel.setBlock(
+                    cakePos,
+                    state.setValue(ApollyonCakeBlock.IS_THE_END, true),
+                    3
+            );
         }
     }
 }
