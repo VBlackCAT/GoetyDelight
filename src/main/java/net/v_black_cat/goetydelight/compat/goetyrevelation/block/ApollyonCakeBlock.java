@@ -139,7 +139,7 @@ public class ApollyonCakeBlock extends FeastBlock implements EntityBlock {
 
     @Override
     public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;//旋转写了之后会让整个model变成滚木，所以只能先走model渲染了
+        return RenderShape.ENTITYBLOCK_ANIMATED;
     }
 
     @Nullable
