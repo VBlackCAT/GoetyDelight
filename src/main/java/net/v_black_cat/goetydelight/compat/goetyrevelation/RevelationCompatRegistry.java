@@ -66,6 +66,7 @@ public class RevelationCompatRegistry {
     public static final RegistryObject<Item> APOLLYON_CAKE_SLICE;
     public static final RegistryObject<Item> APOCALYPTIUM_POPSICLE;
 
+
     static {
         APOCALYPTIUM_POT = BLOCKS.register("apocalyptium_pot_block", () -> new Block(
                 BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)

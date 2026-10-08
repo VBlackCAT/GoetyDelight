@@ -162,6 +162,7 @@ public class ModItems {
     public static final RegistryObject<Item> THERMAL_PULSE_PIE;
     public static final RegistryObject<Item> HAO_ZI;
     public static final RegistryObject<Item> ROAST_HAO_ZI;
+    public static final RegistryObject<Item> UNHOLY_COMMUNION;
 
     //种子
     public static final RegistryObject<Item> ECTOPLASMIC_MELON_SEEDS;
@@ -880,6 +881,13 @@ public class ModItems {
         ROAST_HAO_ZI = ITEMS.register("roast_hao_zi",
                 () -> new RoastHaoZiItem(basicItem().stacksTo(64).rarity(Rarity.COMMON)
                         .food(simpleFoodItemProperties(5, 3)
+                                .build())));
+
+        UNHOLY_COMMUNION = ITEMS.register("unholy_communion",
+                () -> new UnholyCommunionItem(basicItem().stacksTo(16).rarity(Rarity.UNCOMMON)
+                        .food(simpleFoodItemProperties(14, 10)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(100), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), sToTick(50), 0), 1.0F)
                                 .build())));
 
         // ==================== 种子物品 ====================
