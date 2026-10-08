@@ -11,6 +11,9 @@ public class ApollyonCakeSliceItem extends Item {
 
     public static final String TAG_IS_THE_END = "SliceIsTheEnd";
 
+    /** is_the_end 变体的显示名键 */
+    public static final String THE_END_NAME_KEY = "item.goetydelight.apollyon_cake_slice.the_end";
+
     /** 时停持续 tick 数，按需调整 */
     private static final int TIME_STOP_DURATION = 200;
 
@@ -22,6 +25,18 @@ public class ApollyonCakeSliceItem extends Item {
 
     public ApollyonCakeSliceItem(Properties properties) {
         super(properties);
+    }
+
+    /** 该堆叠是否带 is_the_end 标记 */
+    public static boolean isTheEnd(ItemStack stack) {
+        CompoundTag tag = stack.getTag();
+        return tag != null && tag.getBoolean(TAG_IS_THE_END);
+    }
+
+    /** is_the_end 时把名字键换成「终末蛋糕切片」 */
+    @Override
+    public String getDescriptionId(ItemStack stack) {
+        return isTheEnd(stack) ? THE_END_NAME_KEY : super.getDescriptionId(stack);
     }
 
     /** 由蛋糕方块调用，生成带标记的切片 */
@@ -36,18 +51,16 @@ public class ApollyonCakeSliceItem extends Item {
 
     @Override
     public boolean isFoil(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
-        return tag != null && tag.getBoolean(TAG_IS_THE_END);
+        return isTheEnd(stack);
     }
 
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
-        CompoundTag tag = stack.getTag();
-        boolean isTheEnd = tag != null && tag.getBoolean(TAG_IS_THE_END);
+        boolean theEnd = isTheEnd(stack);
 
         ItemStack result = super.finishUsingItem(stack, level, entity);
 
-        if (!level.isClientSide && isTheEnd) {
+        if (!level.isClientSide && theEnd) {
             if (TIME_STOP_PLAY_SOUND) {
                 TimeStopAPI.use(true, entity, TIME_STOP_FORCE, TIME_STOP_DURATION);
             } else {

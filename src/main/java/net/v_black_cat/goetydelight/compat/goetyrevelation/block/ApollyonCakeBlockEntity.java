@@ -2,14 +2,17 @@ package net.v_black_cat.goetydelight.compat.goetyrevelation.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.Nameable;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.RevelationCompatRegistry;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.item.ApollyonCakeItem;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class ApollyonCakeBlockEntity extends BlockEntity {
+public class ApollyonCakeBlockEntity extends BlockEntity implements Nameable {
 
     private static final String TAG_OWNER_UUID = "OwnerUuid";
 
@@ -28,6 +31,30 @@ public class ApollyonCakeBlockEntity extends BlockEntity {
     @Nullable
     public UUID getOwnerUuid() {
         return ownerUuid;
+    }
+
+
+    private boolean isTheEnd() {
+        BlockState state = this.getBlockState();
+        return state.hasProperty(ApollyonCakeBlock.IS_THE_END) && state.getValue(ApollyonCakeBlock.IS_THE_END);
+    }
+
+    @Override
+    public boolean hasCustomName() {
+        return isTheEnd();
+    }
+
+    @Nullable
+    @Override
+    public Component getCustomName() {
+        return isTheEnd() ? Component.translatable(ApollyonCakeItem.THE_END_NAME_KEY) : null;
+    }
+
+    @Override
+    public Component getName() {
+        return isTheEnd()
+                ? Component.translatable(ApollyonCakeItem.THE_END_NAME_KEY)
+                : Component.translatable(this.getBlockState().getBlock().getDescriptionId());
     }
 
     @Override

@@ -13,9 +13,22 @@ public class ApollyonCakeItem extends BlockItem {
     public static final String TAG_SERVINGS = "CakeServings";
     public static final String TAG_IS_THE_END = "CakeIsTheEnd";
     public static final String TAG_OWNER = "CakeOwner";
+    public static final String THE_END_NAME_KEY = "block.goetydelight.apollyon_cake.the_end";
 
     public ApollyonCakeItem(Block block, Properties properties) {
         super(block, properties);
+    }
+
+    /** 该堆叠是否带 is_the_end 标记（破坏掉落、放置时都靠它传递状态） */
+    public static boolean isTheEnd(ItemStack stack) {
+        CompoundTag tag = stack.getTag();
+        return tag != null && tag.getBoolean(TAG_IS_THE_END);
+    }
+
+    /** is_the_end 时把名字键换成「终末蛋糕」 */
+    @Override
+    public String getDescriptionId(ItemStack stack) {
+        return isTheEnd(stack) ? THE_END_NAME_KEY : super.getDescriptionId(stack);
     }
 
     /** 由方块破坏逻辑调用，生成带数据的掉落物 */

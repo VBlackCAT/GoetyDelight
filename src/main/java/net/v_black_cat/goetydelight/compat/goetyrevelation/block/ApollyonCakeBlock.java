@@ -208,6 +208,17 @@ public class ApollyonCakeBlock extends FeastBlock implements EntityBlock {
         return Collections.emptyList();
     }
 
+    /** 中键取方块时也要带上全部数据，否则取到的是白板蛋糕（名字、份数、终末标记、主人全丢） */
+    @Override
+    public ItemStack getCloneItemStack(BlockGetter level, BlockPos pos, BlockState state) {
+        int servings = state.getValue(SERVINGS);
+        boolean isTheEnd = state.hasProperty(IS_THE_END) && state.getValue(IS_THE_END);
+        UUID owner = level.getBlockEntity(pos) instanceof ApollyonCakeBlockEntity cakeBe
+                ? cakeBe.getOwnerUuid()
+                : null;
+        return ApollyonCakeItem.createStack(this, servings, isTheEnd, owner);
+    }
+
     @Override
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.ENTITYBLOCK_ANIMATED;
