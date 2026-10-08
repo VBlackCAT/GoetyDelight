@@ -65,6 +65,7 @@ public class RevelationCompatRegistry {
     public static final RegistryObject<Item> APOLLYON_CAKE_ITEM;
     public static final RegistryObject<Item> APOLLYON_CAKE_SLICE;
     public static final RegistryObject<Item> APOCALYPTIUM_POPSICLE;
+    public static final RegistryObject<Item> APOCALYPTIUM_LOLLIPOP;
 
 
     static {
@@ -135,15 +136,13 @@ public class RevelationCompatRegistry {
                                 .build())));
 
         DOOM_COOKIE = ITEMS.register("doom_cookie",
-                () -> new DoomCookieItem(
-                        basicItem().stacksTo(16).rarity(Rarity.UNCOMMON).food(
+                () -> new DoomCookieItem(basicItem().stacksTo(16).rarity(Rarity.UNCOMMON).food(
                                 simpleFoodItemProperties(6, 4)
                                         .effect(() -> new MobEffectInstance(GoetyEffects.DOOM.get(), minToTick(1), 19), 1.0F)
                                         .build())));
 
         ATONEMENT_VOUCHER_WRAPED_COD = ITEMS.register("atonement_voucher_wraped_cod",
-                () -> new AtonementVoucherWrapedCodItem(
-                        basicItem().stacksTo(16).rarity(Rarity.UNCOMMON).food(
+                () -> new AtonementVoucherWrapedCodItem(basicItem().stacksTo(16).rarity(Rarity.UNCOMMON).food(
                                 simpleFoodItemProperties(10, 7)
                                         .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(10), 0), 1.0F)
                                         .build())));
@@ -177,6 +176,12 @@ public class RevelationCompatRegistry {
                                 .food(simpleFoodItemProperties(5, 8)
                                         .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(30), 0), 1.0F)
                                         .build())));
+
+        APOCALYPTIUM_LOLLIPOP = ITEMS.register("ascension_lollipop",
+                () -> new AscensionLollipopItem(basicItem().stacksTo(1).rarity(Rarity.EPIC).food(
+                        simpleFoodItemProperties(-1, 20)
+                                .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), sToTick(5), 0), 1.0F)
+                                .build())));
 
 
         MALEVOLENT_SHRINE_FOCUS = ITEMS.register("malevolent_shrine_focus",
