@@ -8,6 +8,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityType;
@@ -37,6 +38,7 @@ import com.Polarice3.Goety.common.blocks.SnapWartsBlock;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -47,19 +49,31 @@ public class ApocalyptiumKnifeItem extends KnifeItem {
 
     @SubscribeEvent
     public static void onLivingAttack(LivingAttackEvent event) {
-        if (event.getSource().getEntity() instanceof Player player) {
-            ItemStack heldItem = player.getMainHandItem();
-            if (heldItem.getItem() instanceof ApocalyptiumKnifeItem) {
-                DamageSource source = event.getSource();
-                Holder<DamageType> damageTypeHolder = source.typeHolder();
-                if (damageTypeHolder instanceof Holder.Reference<DamageType> reference) {
-                    reference.bindTags(Set.of(
-                            DamageTypeTags.BYPASSES_ARMOR,
-                            DamageTypeTags.BYPASSES_ENCHANTMENTS,
-                            DamageTypeTags.BYPASSES_RESISTANCE
-                    ));
-                }
+        if (!(event.getSource().getEntity() instanceof Player player)) {
+            return;
+        }
+
+        ItemStack heldItem = player.getMainHandItem();
+        if (!(heldItem.getItem() instanceof ApocalyptiumKnifeItem)) {
+            return;
+        }
+
+        DamageSource source = event.getSource();
+        Holder<DamageType> damageTypeHolder = source.typeHolder();
+
+        if (damageTypeHolder instanceof Holder.Reference<DamageType> reference) {
+            if (reference.is(DamageTypeTags.BYPASSES_ARMOR)
+                    && reference.is(DamageTypeTags.BYPASSES_ENCHANTMENTS)
+                    && reference.is(DamageTypeTags.BYPASSES_RESISTANCE)) {
+                return;
             }
+
+            Set<TagKey<DamageType>> merged = new HashSet<>(reference.tags().toList());
+            merged.add(DamageTypeTags.BYPASSES_ARMOR);
+            merged.add(DamageTypeTags.BYPASSES_ENCHANTMENTS);
+            merged.add(DamageTypeTags.BYPASSES_RESISTANCE);
+
+            reference.bindTags(merged);
         }
     }
 

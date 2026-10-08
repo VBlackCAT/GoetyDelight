@@ -64,6 +64,7 @@ public class RevelationCompatRegistry {
     public static final RegistryObject<Item> MALEVOLENT_SHRINE_FOCUS;
     public static final RegistryObject<Item> APOLLYON_CAKE_ITEM;
     public static final RegistryObject<Item> APOLLYON_CAKE_SLICE;
+    public static final RegistryObject<Item> APOCALYPTIUM_POPSICLE;
 
     static {
         APOCALYPTIUM_POT = BLOCKS.register("apocalyptium_pot_block", () -> new Block(
@@ -168,6 +169,14 @@ public class RevelationCompatRegistry {
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(66), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), sToTick(66), 0), 1.0F)
                                 .build())));
+
+        APOCALYPTIUM_POPSICLE = ITEMS.register("apocalyptium_popsicle",
+                () -> new ApocalyptiumPopsicleItem(Tiers.NETHERITE, 1, -2.4F,
+                        basicItem().stacksTo(1).rarity(Rarity.UNCOMMON)
+                                .food(simpleFoodItemProperties(5, 8)
+                                        .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(30), 0), 1.0F)
+                                        .build())));
+
 
         MALEVOLENT_SHRINE_FOCUS = ITEMS.register("malevolent_shrine_focus",
                 () -> new PetroleumMistFocus(new MalevolentShrineSpell()));

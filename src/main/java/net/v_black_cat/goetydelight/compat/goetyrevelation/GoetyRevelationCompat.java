@@ -7,11 +7,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.compat.CompatManager;
-import net.v_black_cat.goetydelight.compat.goetyrevelation.item.ApocalyptiumKnifeItem;
-import net.v_black_cat.goetydelight.compat.goetyrevelation.item.AscensionMooncakeItem;
-import net.v_black_cat.goetydelight.compat.goetyrevelation.item.PiPieItem;
-import net.v_black_cat.goetydelight.compat.goetyrevelation.item.QuietusMarrowItem;
-import net.v_black_cat.goetydelight.compat.goetyrevelation.item.StoneSwordSkewerItem;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.item.*;
 
 /**
  * goety_revelation 联动模块入口（对齐 1.21.1 优化版的三段式）。
@@ -45,6 +41,7 @@ public final class GoetyRevelationCompat {
         MinecraftForge.EVENT_BUS.register(PiPieItem.class);
         MinecraftForge.EVENT_BUS.register(QuietusMarrowItem.class);
         MinecraftForge.EVENT_BUS.register(StoneSwordSkewerItem.class);
+        MinecraftForge.EVENT_BUS.register(ApocalyptiumPopsicleItem.class);
     }
 
     /** 客户端初始化（Dist.CLIENT 下调用）：渲染器/模型层等 */
