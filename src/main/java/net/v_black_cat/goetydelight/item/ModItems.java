@@ -201,6 +201,7 @@ public class ModItems {
     public static final Supplier<MobEffect> ILLAGUE = goetyBuff("illague");
     public static final Supplier<MobEffect> VENOMOUS_HANDS = goetyBuff("venomous_hands");
     public static final Supplier<MobEffect> ELECTRIFIED = goetyBuff("electrified");
+    public static final Supplier<MobEffect> RALLIED = goetyBuff("rallied");
 
     // ==================== 静态初始化块：物品定义区域 ====================
     static {

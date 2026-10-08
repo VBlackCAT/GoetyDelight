@@ -27,6 +27,7 @@ import vectorwing.farmersdelight.common.item.KnifeItem;
 import java.util.List;
 
 import static net.v_black_cat.goetydelight.item.ModItems.NOURISHMENT_EFFECT_SUPPLIER;
+import static net.v_black_cat.goetydelight.item.ModItems.RALLIED;
 import static net.v_black_cat.goetydelight.util.TimeConverter.minToTick;
 import static net.v_black_cat.goetydelight.util.TimeConverter.sToTick;
 import static vectorwing.farmersdelight.common.registry.ModItems.basicItem;
@@ -66,7 +67,7 @@ public class RevelationCompatRegistry {
     public static final RegistryObject<Item> APOLLYON_CAKE_SLICE;
     public static final RegistryObject<Item> APOCALYPTIUM_POPSICLE;
     public static final RegistryObject<Item> APOCALYPTIUM_LOLLIPOP;
-
+    public static final RegistryObject<Item> ASCENSION_COD_STEW;
 
     static {
         APOCALYPTIUM_POT = BLOCKS.register("apocalyptium_pot_block", () -> new Block(
@@ -168,19 +169,35 @@ public class RevelationCompatRegistry {
                         simpleFoodItemProperties(16, 33)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(66), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), sToTick(66), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, sToTick(66), 5), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, sToTick(66), 9), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.LUCK, sToTick(66), 9), 1.0F)
                                 .build())));
 
         APOCALYPTIUM_POPSICLE = ITEMS.register("apocalyptium_popsicle",
-                () -> new ApocalyptiumPopsicleItem(Tiers.NETHERITE, 1, -2.4F,
+                () -> new ApocalyptiumPopsicleItem(Tiers.NETHERITE, 3, -2.4F,
                         basicItem().stacksTo(1).rarity(Rarity.UNCOMMON)
                                 .food(simpleFoodItemProperties(5, 8)
+                                        .effect(() -> new MobEffectInstance(RALLIED.get(), sToTick(300), 2), 1.0F)
                                         .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(30), 0), 1.0F)
+                                        .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, sToTick(3), 4), 1.0F)
                                         .build())));
 
         APOCALYPTIUM_LOLLIPOP = ITEMS.register("ascension_lollipop",
                 () -> new AscensionLollipopItem(basicItem().stacksTo(1).rarity(Rarity.EPIC).food(
                         simpleFoodItemProperties(-1, 20)
-                                .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), sToTick(5), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), sToTick(10), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, sToTick(10), 4), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, sToTick(10), 3), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.LUCK, sToTick(10), 3), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, sToTick(10), 4), 1.0F)
+                                .build())));
+
+        ASCENSION_COD_STEW = ITEMS.register("ascension_cod_stew",
+                () -> new AscensionCodStewItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).food(
+                        simpleFoodItemProperties(15, 12)
+                                .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), sToTick(90), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(90), 0), 1.0F)
                                 .build())));
 
 
