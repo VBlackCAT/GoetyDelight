@@ -1,0 +1,12 @@
+{
+    "name": "Ascension Cod Stew",
+    "icon": "goetydelight:ascension_cod_stew",
+    "flag": "mod:goety_revelation",
+    "category": "goety:goetydelight/food/goety_revelation",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Upon consumption, grants the eater:$(br)$(li)90 seconds of The Pale Messenger$(li)90 seconds of Nourishment$(br2)Permanently grants one chest slot.$(br)Eating raw or cooked cod within the following 20 minutes grants 3 minutes of Resistance IV and 3 minutes of Regeneration V."
+        }
+    ]
+}

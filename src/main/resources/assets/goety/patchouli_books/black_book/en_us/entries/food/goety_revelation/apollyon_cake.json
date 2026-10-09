@@ -1,0 +1,12 @@
+{
+    "name": "Ascension Cake",
+    "icon": "goetydelight:apollyon_cake",
+    "flag": "mod:goety_revelation",
+    "category": "goety:goetydelight/food/goety_revelation",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Right-click after placing to obtain one Ascension Cake Slice.$(br)Grants the eater:$(br)$(li)66 seconds of Nourishment$(li)66 seconds of The Pale Messenger$(li)66 seconds of Resistance IV$(li)66 seconds of Strength X$(li)66 seconds of Luck X$(br2)When a The End ritual is completed within 10 blocks, the cake turns into a The-End Cake, and only the ritual's caster may take from it."
+        }
+    ]
+}

@@ -13,7 +13,6 @@
     "LivingEntityAccessor",
     "LivingEntityBuffMixin",
     "MobMixin",
-    "ModelBakeryMixin",
     "RecipeManagerMixin",
     "SummonSpellMixin",
     "WightSpawnerMixin",

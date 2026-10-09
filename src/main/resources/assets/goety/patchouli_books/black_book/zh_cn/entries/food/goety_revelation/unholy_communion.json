@@ -1,0 +1,12 @@
+{
+    "name": "不洁帽炖汤",
+    "icon": "goetydelight:unholy_communion",
+    "flag": "mod:goety_revelation",
+    "category": "goety:goetydelight/food/goety_revelation",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "食用后给予食用者:$(br)$(li)100秒的滋养$(li)50秒的苍白使者$(br2)首次食用后永久获得一个头部饰品槽位，并将已有的苍白使者持续时间翻倍。$(br)食用后返还一个不洁圣冠。"
+        }
+    ]
+}

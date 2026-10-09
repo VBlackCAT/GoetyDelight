@@ -1,0 +1,12 @@
+{
+    "name": "Ascension Lollipop",
+    "icon": "goetydelight:ascension_lollipop",
+    "flag": "mod:goety_revelation",
+    "category": "goety:goetydelight/food/goety_revelation",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Can be eaten indefinitely, granting the eater:$(br)$(li)10 seconds of The Pale Messenger$(li)10 seconds of Regeneration V$(li)10 seconds of Resistance IV$(li)10 seconds of Luck IV$(li)10 seconds of Strength V$(br2)Eating it also restores 20 saturation.$(br)Right-clicking another player empties their hunger bar."
+        }
+    ]
+}

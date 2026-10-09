@@ -1,0 +1,12 @@
+{
+    "name": "晋升蛋糕",
+    "icon": "goetydelight:apollyon_cake",
+    "flag": "mod:goety_revelation",
+    "category": "goety:goetydelight/food/goety_revelation",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "放置后可右键获得一份晋升蛋糕切片$(br)给予食用者:$(br)$(li)66秒的滋养$(li)66秒的苍白使者$(li)66秒的抗性提升4$(li)66秒的力量10$(li)66秒的幸运10$(br2)当附近10格内完成终末仪式后，蛋糕会转变为终末蛋糕，此时只有仪式的发起者可以取食。"
+        }
+    ]
+}

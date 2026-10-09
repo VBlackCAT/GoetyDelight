@@ -1,0 +1,12 @@
+{
+    "name": "神灵金属冰棒",
+    "icon": "goetydelight:apocalyptium_popsicle",
+    "flag": "mod:goety_revelation",
+    "category": "goety:goetydelight/food/goety_revelation",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "硬度足以当剑用的下界神金老冰棒。$(br)食用后给予食用者:$(br)$(li)5分钟的斗志3$(li)30秒的滋养$(li)3秒的抗性提升5$(br2)首次食用后永久获得神灵祝福：攻击无视受击无敌帧、药水效果、护甲、附魔、抗性提升与盾牌。"
+        }
+    ]
+}

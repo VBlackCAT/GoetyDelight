@@ -1,0 +1,12 @@
+{
+    "name": "晋升鳕鱼炖",
+    "icon": "goetydelight:ascension_cod_stew",
+    "flag": "mod:goety_revelation",
+    "category": "goety:goetydelight/food/goety_revelation",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "食用后给予食用者:$(br)$(li)90秒的苍白使者$(li)90秒的滋养$(br2)食用后永久获得一个胸饰槽位。$(br)之后的 20 分钟内食用生鳕鱼或熟鳕鱼，会获得3分钟的抗性提升4和3分钟的生命回复5。"
+        }
+    ]
+}
