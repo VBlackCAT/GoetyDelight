@@ -169,7 +169,7 @@ public class RevelationCompatRegistry {
                         simpleFoodItemProperties(16, 33)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(66), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), sToTick(66), 0), 1.0F)
-                                .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, sToTick(66), 5), 1.0F)
+                                .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, sToTick(66), 3), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, sToTick(66), 9), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.LUCK, sToTick(66), 9), 1.0F)
                                 .build())));

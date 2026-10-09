@@ -70,9 +70,12 @@ public class ApocalyptiumPopsicleItem extends SwordItem {
         if (damageTypeHolder instanceof Holder.Reference<DamageType> reference) {
             Set<net.minecraft.tags.TagKey<DamageType>> tags =
                     new HashSet<>(reference.tags().toList());
-
-            tags.add(DamageTypeTags.BYPASSES_INVULNERABILITY);
             tags.add(DamageTypeTags.BYPASSES_COOLDOWN);
+            tags.add(DamageTypeTags.BYPASSES_EFFECTS);
+            tags.add(DamageTypeTags.BYPASSES_ARMOR);
+            tags.add(DamageTypeTags.BYPASSES_ENCHANTMENTS);
+            tags.add(DamageTypeTags.BYPASSES_RESISTANCE);
+            tags.add(DamageTypeTags.BYPASSES_SHIELD);
 
             reference.bindTags(tags);
         }

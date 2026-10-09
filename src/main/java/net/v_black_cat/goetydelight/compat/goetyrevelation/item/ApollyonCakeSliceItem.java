@@ -2,10 +2,15 @@ package net.v_black_cat.goetydelight.compat.goetyrevelation.item;
 
 import com.mega.endinglib.api.time.TimeStopAPI;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.v_black_cat.goetydelight.util.TimeConverter;
+
+import static net.v_black_cat.goetydelight.util.TimeConverter.sToTick;
 
 public class ApollyonCakeSliceItem extends Item {
 
@@ -61,6 +66,7 @@ public class ApollyonCakeSliceItem extends Item {
         ItemStack result = super.finishUsingItem(stack, level, entity);
 
         if (!level.isClientSide && theEnd) {
+            entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, TimeConverter.sToTick(66), 5));
             if (TIME_STOP_PLAY_SOUND) {
                 TimeStopAPI.use(true, entity, TIME_STOP_FORCE, TIME_STOP_DURATION);
             } else {
