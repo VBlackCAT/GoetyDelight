@@ -94,7 +94,7 @@ public class ToxicMealItem extends BowlFoodItem {
                 stack.shrink(1);
             }
 
-            player.displayClientMessage(Component.literal("已对目标喂了毒物饭！"), true);
+            player.displayClientMessage(Component.translatable("message.goetydelight.toxic_meal.fed"), true);
             return InteractionResult.SUCCESS;
         }
 

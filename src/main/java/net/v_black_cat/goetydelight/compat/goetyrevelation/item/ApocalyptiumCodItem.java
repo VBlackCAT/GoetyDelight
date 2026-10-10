@@ -168,7 +168,7 @@ public class ApocalyptiumCodItem extends Item {
         // 缓存到 ApocalyptiumData（保持兼容）
         ApocalyptiumData.get(serverLevel).cacheEntity(servantUUID, servant);
 
-        player.sendSystemMessage(Component.literal("§6使徒仆从已召唤，将持续30分钟"));
+        player.sendSystemMessage(Component.translatable("message.goetydelight.apocalyptium_cod.servant_summoned"));
     }
 
     // ==================== 转化为亚形态 ====================
@@ -187,7 +187,7 @@ public class ApocalyptiumCodItem extends Item {
             UUID existing = MANAGER.findExistingTrackedFor(
                     owner, ITimedEntityManager.Category.APOLLYON, currentTime);
             if (existing != null && !existing.equals(target.getUUID())) {
-                owner.sendSystemMessage(Component.literal("§c你已经有一个转化后的使徒，无法再次转化"));
+                owner.sendSystemMessage(Component.translatable("message.goetydelight.apocalyptium_cod.apollyon_already_bound"));
                 return false;
             }
         }
@@ -222,7 +222,7 @@ public class ApocalyptiumCodItem extends Item {
         // 提示
         Player nearestPlayer = serverLevel.getNearestPlayer(target, 10);
         if (nearestPlayer != null) {
-            nearestPlayer.sendSystemMessage(Component.literal("§c使徒已暂时转化为亚形态，将持续5分钟"));
+            nearestPlayer.sendSystemMessage(Component.translatable("message.goetydelight.apocalyptium_cod.apollyon_converted"));
         }
         return true;
     }
