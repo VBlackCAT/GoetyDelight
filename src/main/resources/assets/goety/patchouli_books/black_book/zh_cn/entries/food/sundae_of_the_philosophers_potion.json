@@ -1,6 +1,6 @@
 {
     "name": "贤者灵药圣代",
-    "icon": "goetydelight:sweet_berry_pudding",
+    "icon": "goetydelight:sundae_of_the_philosophers_potion",
     "category": "goety:goetydelight/food",
     "pages": [
         {
@@ -10,7 +10,7 @@
         {
             "type": "goety:cooking",
             "recipe": "goetydelight:cooking/sundae_of_the_philosophers_potion",
-            "text":"$(o)牙口不错嘛，小巫妖~"
+            "text": "$(o)牙口不错嘛，小巫妖~"
         }
     ]
 }

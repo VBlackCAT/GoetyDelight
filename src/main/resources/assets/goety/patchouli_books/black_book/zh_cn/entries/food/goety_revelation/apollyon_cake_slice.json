@@ -1,0 +1,12 @@
+{
+    "name": "晋升蛋糕切片",
+    "icon": "goetydelight:apollyon_cake_slice",
+    "flag": "mod:goety_revelation",
+    "category": "goety:goetydelight/food/goety_revelation",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "由晋升蛋糕切下，每个蛋糕可以切出3片。$(br)食用后给予食用者:$(br)$(li)66秒的滋养$(li)66秒的苍白使者$(li)66秒的抗性提升4$(li)66秒的力量10$(li)66秒的幸运10$(br2)带有终末标记的切片（终末蛋糕切片）额外给予66秒的抗性提升6，并停止整个世界的时间。"
+        }
+    ]
+}

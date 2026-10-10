@@ -1,0 +1,12 @@
+{
+    "name": "晋升棒棒糖",
+    "icon": "goetydelight:ascension_lollipop",
+    "flag": "mod:goety_revelation",
+    "category": "goety:goetydelight/food/goety_revelation",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "可以无限食用，给予食用者:$(br)$(li)10秒的苍白使者$(li)10秒的生命回复5$(li)10秒的抗性提升4$(li)10秒的幸运4$(li)10秒的力量5$(br2)食用时额外补充 20 点饱和度。$(br)对着其他玩家右键可以清空其饱食度。"
+        }
+    ]
+}

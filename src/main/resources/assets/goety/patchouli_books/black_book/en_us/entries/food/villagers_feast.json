@@ -5,7 +5,7 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "Grants consumer:$(br)$(li)1-minute Hero of the Village$(li)10-minute Nourishment"
+            "text": "Grants consumer:$(br)$(li)3-minute Hero of the Village$(li)5-minute Nourishment"
         },
         {
             "type": "goety:ritual",

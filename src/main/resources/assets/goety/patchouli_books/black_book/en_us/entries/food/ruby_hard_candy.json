@@ -5,7 +5,7 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "Pour $(l:goety:food/ruby_syrup)Ruby Syrup$() and honey into a cauldron, sprinkle in sugar, then add Condensed Emerald. After eating it, you might absorb its power to enhance your spellcasting...$(br)For the consumer:$(br)$(li)10 minutes of Spell Mastery III$(li)8 minutes of Regeneration II$(li)15 minutes of Nourishment$(br)Permanently increases your Potency level by 1 after consumption, up to three times."
+            "text": "Pour $(l:goety:food/ruby_syrup)Ruby Syrup$() and honey into a cauldron, sprinkle in sugar, then add Condensed Emerald. After eating it, you might absorb its power to enhance your spellcasting...$(br)For the consumer:$(br)$(li)10 minutes of Spell Mastery II$(li)10 minutes of Spell Duration II$(li)3 minutes of Regeneration II$(li)10 minutes of Nourishment$(br)Permanently increases your Potency level by 1 after consumption, up to three times."
         },
         {
             "type": "goety:cooking",

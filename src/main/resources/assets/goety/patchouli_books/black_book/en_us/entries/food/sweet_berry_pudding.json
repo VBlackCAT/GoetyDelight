@@ -5,7 +5,7 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "Toss berries, ectoplasm, and slimeballs into a cauldron to stew, yielding this silky-smooth pudding.$(br)Grants consumer:$(br)$(li)5-minute Regeneration II & Nourishment$(br)Additionally increases attack damage by 3 and movement speed by 5%."
+            "text": "Toss berries, ectoplasm, and slimeballs into a cauldron to stew, yielding this silky-smooth pudding.$(br)Grants consumer:$(br)$(li)1-minute 30-second Regeneration II & 1-minute Nourishment$(br)Additionally increases attack damage by 3 and movement speed by 5%."
         },
         {
             "type": "goety:cooking",

@@ -5,7 +5,7 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "Does anyone actually dare to eat spider eggs?$(br)Grants consumer$(br)$(li)1-minute Climbing"
+            "text": "Does anyone actually dare to eat spider eggs?$(br)Grants consumer$(br)$(li)7-minute Climbing"
         },
         {
             "type": "goety:cooking",

@@ -1,0 +1,12 @@
+{
+    "name": "Apocalyptium Popsicle",
+    "icon": "goetydelight:apocalyptium_popsicle",
+    "flag": "mod:goety_revelation",
+    "category": "goety:goetydelight/food/goety_revelation",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "A nether Apocalyptium ice pop, hard enough to serve as a blade.$(br)Upon consumption, grants the eater:$(br)$(li)5 minutes of Rallied III$(li)30 seconds of Nourishment$(li)3 seconds of Resistance V$(br2)The first consumption permanently grants Apocalyptium Blessing: attacks ignore hurt invulnerability frames, potion effects, armor, enchantments, Resistance, and shields."
+        }
+    ]
+}

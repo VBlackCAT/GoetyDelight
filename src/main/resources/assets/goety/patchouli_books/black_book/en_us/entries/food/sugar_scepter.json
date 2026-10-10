@@ -5,7 +5,7 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "Grants consumer:$(br)$(li)10-minute Nourishment$(li)1-minute Regeneration II$(br)Grants one instance of damage immunity upon consumption (20s cooldown per immunity, non-stackable)"
+            "text": "Grants consumer:$(br)$(li)5-minute Nourishment$(li)30-second Regeneration II$(br)Grants one instance of damage immunity upon consumption (20s cooldown per immunity, non-stackable)"
         },
         {
             "type": "goety:cooking",

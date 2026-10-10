@@ -1,20 +1,20 @@
 {
-  "name": "Shark Gummy",
-  "icon": "goetydelight:shark_gummy",
-  "flag": "mod:goety_revelation",
-  "category": "goety:goetydelight/food/goety_revelation",
-  "pages": [
-    {
-      "type": "patchouli:text",
-      "text": "Upon consumption, grants the eater:$(br)$(li)Thrown tridents will inflict 15 seconds of Darkness, 15 seconds of Stun, and 15 seconds of Curse upon the target hit$(li)Effect lasts 10 minutes"
-    },
-    {
-      "type": "goety:ritual",
-      "recipe": "goetydelight:ritual/shark_gummy"
-    },
-    {
-      "type": "patchouli:text",
-      "text": "Using the great trident, thorned vines, and the frigid glacier as guidance, one can find the Lord's dream.$(br)$(br)He stood, and shook the earth; he looked, and made the nations tremble. The eternal mountains were shattered, the ancient hills collapsed. — Habakkuk"
-    }
-  ]
+    "name": "Shark Gummy",
+    "icon": "goetydelight:shark_gummy",
+    "flag": "mod:goety_revelation",
+    "category": "goety:goetydelight/food/goety_revelation",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "Upon consumption, grants the eater:$(br)$(li)3 minutes of Nourishment$(li)Thrown tridents will inflict 15 seconds of Darkness, 15 seconds of Stun, and 15 seconds of Curse upon the target hit$(li)Effect lasts 10 minutes"
+        },
+        {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/shark_gummy"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "Using the great trident, thorned vines, and the frigid glacier as guidance, one can find the Lord's dream.$(br)$(br)He stood, and shook the earth; he looked, and made the nations tremble. The eternal mountains were shattered, the ancient hills collapsed. — Habakkuk"
+        }
+    ]
 }

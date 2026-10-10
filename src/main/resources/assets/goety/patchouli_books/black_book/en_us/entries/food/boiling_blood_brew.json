@@ -5,7 +5,7 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "给予食用者：$(br)$(li)5分钟的炽热气场，$(li)5分钟的舒适"
+            "text": "给予食用者：$(br)$(li)5 minutes of Fiery Aura$(li)5 minutes of Nourishment"
         },
         {
             "type": "goety:cooking",
