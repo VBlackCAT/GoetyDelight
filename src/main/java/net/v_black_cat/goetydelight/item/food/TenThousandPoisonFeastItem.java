@@ -17,11 +17,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.util.RandomSource;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
-import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.init.ModServerConfig;
 import net.v_black_cat.goetydelight.init.ModEffects;   // 确保存在
 import net.v_black_cat.goetydelight.util.TickConverterUtil;
@@ -33,10 +31,11 @@ import java.util.stream.Collectors;
 import static net.v_black_cat.goetydelight.util.TickConverterUtil.minToTick;
 import static net.v_black_cat.goetydelight.util.TickConverterUtil.sToTick;
 
-@EventBusSubscriber(modid = GoetyDelight.MODID)
 public class TenThousandPoisonFeastItem extends BowlFoodItem {
 
+
     private static List<Holder<MobEffect>> cachedFilteredDebuffs = null;
+
 
     public TenThousandPoisonFeastItem(Properties properties) {
         super(properties);
@@ -101,24 +100,27 @@ public class TenThousandPoisonFeastItem extends BowlFoodItem {
     }
 
     private static List<Holder<MobEffect>> getFilteredDebuffEffects() {
-        if (cachedFilteredDebuffs == null) {
-            cacheFilteredDebuffEffects();
+        List<Holder<MobEffect>> cached = cachedFilteredDebuffs;
+        if (cached == null) {
+            // 兜底：进存档前被调用（正常不会发生，onServerStarted 已建好缓存）
+            cached = buildFilteredDebuffEffects();
+            cachedFilteredDebuffs = cached;
         }
-        return cachedFilteredDebuffs != null ? cachedFilteredDebuffs : Collections.emptyList();
+        return cached;
     }
 
-    private static void cacheFilteredDebuffEffects() {
+    /** 真正的读取点：扫一遍效果注册表 + 读当前配置。只在上面三个时机被调用，本身不打日志 */
+    private static List<Holder<MobEffect>> buildFilteredDebuffEffects() {
         boolean useWhitelist = ModServerConfig.isTenThousandPoisonFeastUseWhitelist();
         Map<ResourceLocation, int[]> levelConfig = ModServerConfig.getTenThousandPoisonFeastLevelConfig();
         Map<ResourceLocation, double[]> durationConfig = ModServerConfig.getTenThousandPoisonFeastDurationConfig();
 
-        cachedFilteredDebuffs = BuiltInRegistries.MOB_EFFECT.holders()
+        return BuiltInRegistries.MOB_EFFECT.holders()
                 .filter(holder -> holder.value().getCategory() == MobEffectCategory.HARMFUL)
                 .filter(holder -> {
-                    ResourceLocation effectId = holder.unwrapKey()
-                            .map(ResourceKey::location)
-                            .orElse(null);
+                    ResourceLocation effectId = holder.unwrapKey().map(ResourceKey::location).orElse(null);
                     if (effectId == null) return false;
+                    // 显式配了等级/时长的效果无条件放行，其余按白/黑名单过滤
                     if (levelConfig.containsKey(effectId) || durationConfig.containsKey(effectId)) {
                         return true;
                     }
@@ -126,23 +128,24 @@ public class TenThousandPoisonFeastItem extends BowlFoodItem {
                     return useWhitelist == isInFilterList;
                 })
                 .collect(Collectors.toList());
-
-        GoetyDelight.LOGGER.info("Cached {} filtered harmful effects for Ten Thousand Poison Feast (Mode: {})",
-                cachedFilteredDebuffs.size(), useWhitelist ? "Whitelist" : "Blacklist");
     }
 
-    private static void clearDebuffCache() {
+    /** ① 进入存档 / 服务器启动时读取一次（游戏总线） */
+    public static void onServerStarted(ServerStartedEvent event) {
+        cachedFilteredDebuffs = buildFilteredDebuffEffects();
+    }
+
+    /** 退出存档时丢弃（游戏总线） */
+    public static void onServerStopped(ServerStoppedEvent event) {
         cachedFilteredDebuffs = null;
     }
 
-    @SubscribeEvent
-    public static void onServerStarted(ServerStartedEvent event) {
-        cacheFilteredDebuffEffects();
-    }
-
-    @SubscribeEvent
-    public static void onServerStopped(ServerStoppedEvent event) {
-        clearDebuffCache();
+    /** ② 配置发生变化后丢弃缓存，下次使用时重建（MOD 总线；只处理本模组自己的配置） */
+    public static void onConfigChanged(ModConfigEvent event) {
+        if (event.getConfig().getSpec() != ModServerConfig.SPEC) {
+            return;
+        }
+        cachedFilteredDebuffs = null;
     }
 
     private void applyRandomDebuffs(LivingEntity entity, Player player) {
