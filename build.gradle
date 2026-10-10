@@ -26,9 +26,23 @@ sourceSets.main.resources {
     exclude("src/generated/**/.cache") // datagen cache files
 }
 
+repositories.clear()
 repositories {
-    // Add here additional repositories if required by some of the dependencies below.
-    maven { url = "https://cursemaven.com" }
+    maven {
+        url = "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+    maven {
+        url = "https://neoforged.forgecdn.net/releases"
+    }
+    maven {
+        url = "https://neoforged.forgecdn.net/mojang-meta"
+    }
+    maven {
+        url = "https://libraries.minecraft.net/"
+    }
 }
 
 base {
