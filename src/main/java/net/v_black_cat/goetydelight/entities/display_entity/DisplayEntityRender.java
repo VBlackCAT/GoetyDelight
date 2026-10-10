@@ -126,24 +126,24 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
 
         poseStack.pushPose();
 
+        // 实体朝向
         float yaw = Mth.lerp(partialTick, entity.yRotO, entity.getYRot());
         poseStack.mulPose(Axis.YP.rotationDegrees(-yaw));
         float pitch = Mth.lerp(partialTick, entity.xRotO, entity.getXRot());
         poseStack.mulPose(Axis.XP.rotationDegrees(pitch));
 
+        // 缩放
         poseStack.scale(MODEL_SCALE, MODEL_SCALE, MODEL_SCALE);
 
+        // ★ 抬出地面（+1.5）
         poseStack.translate(0.0, 1.5, 0.0);
-        poseStack.mulPose(Axis.ZN.rotationDegrees(180));
+
         poseStack.mulPose(Axis.YN.rotationDegrees(180));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(180));
 
-        // 关键：先把模型重置到加载时的初始姿态，消除上一帧/上一实体的残留
         resetModelToInitial(model);
-
-        // 应用当前实体的动画
         applyAnimation(entity, model, partialTick);
 
-        // 无动画时，头部跟随视角
         BedrockPart head = model.getModelMap().get("Head");
         if (head != null && entity.getAnimation().isEmpty()) {
             head.yRot = headInitYRot + (float) Math.toRadians(entity.getYRot() - yaw);
