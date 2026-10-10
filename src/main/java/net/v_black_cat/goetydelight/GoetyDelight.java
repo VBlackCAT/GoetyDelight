@@ -23,6 +23,8 @@ import net.v_black_cat.goetydelight.advancements.ModAdvancementsTrigger;
 import net.v_black_cat.goetydelight.compat.CompatRegistry;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.RevelationCompatRegistry;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.block.ApollyonCakeRenderer;
+import net.v_black_cat.goetydelight.entities.display_entity.DisplayEntity;
+import net.v_black_cat.goetydelight.entities.display_entity.DisplayEntityRender;
 import net.v_black_cat.goetydelight.event.AnvilLandInBlockEvent;
 import net.v_black_cat.goetydelight.init.ModBuffTypes;
 import net.v_black_cat.goetydelight.block.ModBlockEntities;
@@ -184,6 +186,7 @@ public class GoetyDelight
             EntityRenderers.register(ModEntities.GRASS_CUTTING_SLASH.get(), GrassCuttingSlashRenderer::new);
             EntityRenderers.register(ModEntities.MALEVOLENT_SHRINE.get(), MalevolentShrineEntityRenderer::new);
             EntityRenderers.register(ModEntities.DOLL_ENTITY.get(),DollEntityRender::new);
+            EntityRenderers.register(ModEntities.DISPLAY_ENTITY.get(), DisplayEntityRender::new);
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.ECTOPLASMIC_MELON_STEM.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.ATTACHED_ECTOPLASMIC_MELON_STEM.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.DRIPMARBLE_BLOCK.get(), RenderType.cutout());
