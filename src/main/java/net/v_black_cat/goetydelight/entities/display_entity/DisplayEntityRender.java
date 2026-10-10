@@ -28,7 +28,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
-import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,10 +54,6 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
 
     private static final String WU1WU2_NAME = "wu1wu2";
 
-    /** 解析失败哨兵值（ConcurrentHashMap 不允许 null） */
-    private static final ResourceLocation FAILED_SKIN =
-            new ResourceLocation("goetydelight", "skins/__failed__");
-
     /** 模型整体缩放 */
     private static final float MODEL_SCALE = 0.9F;
 
@@ -66,7 +61,7 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
     private static final long RETRY_INTERVAL_MS = 60_000L;
 
     // ============================================================
-    // 模型状态（客户端全局共享一份）
+    // 模型状态
     // ============================================================
 
     @Nullable
@@ -76,12 +71,11 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
     /** 每根骨骼的初始旋转/位置，加载模型时快照一次 */
     private static final Map<String, float[]> INITIAL_POSE = new ConcurrentHashMap<>();
 
-    /** Head 的初始旋转，单独存一份方便读取 */
     private static float headInitXRot = 0f;
     private static float headInitYRot = 0f;
 
     // ============================================================
-    // 皮肤状态（按玩家名缓存，同名字多个实体共享）
+    // 皮肤状态（名字作为 key，成功才写缓存）
     // ============================================================
 
     private static final Map<String, ResourceLocation> SKIN_CACHE = new ConcurrentHashMap<>();
@@ -89,16 +83,7 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
     private static final Map<String, Long> FAILED_AT = new ConcurrentHashMap<>();
     private static final Map<ResourceLocation, DynamicTexture> REGISTERED_TEXTURES = new ConcurrentHashMap<>();
 
-    // ============================================================
-    // 实体状态（按实体实例隔离）
-    // ============================================================
-
-    /**
-     * 每个实体上次处理过的皮肤 revision。
-     *
-     * 用 WeakHashMap 保证实体卸载后条目能被 GC，避免泄漏。
-     * key 是实体实例本身，天然按实例隔离，不会出现"多实体共用"问题。
-     */
+    /** 每个实体上次处理过的命名牌 revision，用 WeakHashMap 保证实体卸载后条目自动回收 */
     private static final Map<DisplayEntity, Integer> LAST_REVISION =
             java.util.Collections.synchronizedMap(new WeakHashMap<>());
 
@@ -125,25 +110,18 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
         ResourceLocation texture = resolveTexture(entity);
 
         poseStack.pushPose();
-
-        // 实体朝向
         float yaw = Mth.lerp(partialTick, entity.yRotO, entity.getYRot());
         poseStack.mulPose(Axis.YP.rotationDegrees(-yaw));
         float pitch = Mth.lerp(partialTick, entity.xRotO, entity.getXRot());
         poseStack.mulPose(Axis.XP.rotationDegrees(pitch));
 
-        // 缩放
         poseStack.scale(MODEL_SCALE, MODEL_SCALE, MODEL_SCALE);
-
-        // ★ 抬出地面（+1.5）
         poseStack.translate(0.0, 1.5, 0.0);
-
         poseStack.mulPose(Axis.YN.rotationDegrees(180));
         poseStack.mulPose(Axis.ZP.rotationDegrees(180));
-
         resetModelToInitial(model);
         applyAnimation(entity, model, partialTick);
-
+        
         BedrockPart head = model.getModelMap().get("Head");
         if (head != null && entity.getAnimation().isEmpty()) {
             head.yRot = headInitYRot + (float) Math.toRadians(entity.getYRot() - yaw);
@@ -178,7 +156,6 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
         for (Map.Entry<String, BedrockPart> e : model.getModelMap().entrySet()) {
             float[] init = INITIAL_POSE.get(e.getKey());
             if (init == null) continue;
-
             BedrockPart part = e.getValue();
             part.xRot = init[0];
             part.yRot = init[1];
@@ -200,7 +177,6 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
         DisplayAnimation anim = DisplayAnimation.get(animName);
         if (anim == null) return;
 
-        // tick → 秒，循环播放
         float timeSeconds = (entity.tickCount + partialTick) / 20.0F;
 
         for (Map.Entry<String, java.util.List<DisplayAnimation.Keyframe>> entry : anim.boneKeys.entrySet()) {
@@ -209,7 +185,6 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
 
             float[] s = anim.sampleBone(entry.getKey(), timeSeconds, true);
 
-            // 在初始姿态基础上叠加，保证动画之间互不残留
             float[] init = INITIAL_POSE.get(entry.getKey());
             float baseXRot = init != null ? init[0] : 0f;
             float baseYRot = init != null ? init[1] : 0f;
@@ -222,7 +197,6 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
             part.yRot = baseYRot + (float) Math.toRadians(s[1]);
             part.zRot = baseZRot + (float) Math.toRadians(s[2]);
 
-            // Bedrock y 轴向下 → Java y 轴向上，取负；像素 → 方块单位除以 16
             part.x = baseX + s[3] / 16f;
             part.y = baseY - s[4] / 16f;
             part.z = baseZ + s[5] / 16f;
@@ -246,7 +220,6 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
             BedrockModel model = new BedrockModel(in);
             cachedModel = model;
 
-            // 快照初始姿态，供每帧重置使用
             snapshotInitialPose(model);
 
             BedrockPart head = model.getModelMap().get("Head");
@@ -254,7 +227,6 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
                 headInitXRot = head.xRot;
                 headInitYRot = head.yRot;
             }
-
             return model;
 
         } catch (InvalidVersionSpecificationException e) {
@@ -277,11 +249,10 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
         String raw = customName == null ? "" : customName.getString();
         String name = cleanName(raw);
 
-        // 按实体实例隔离：每个实体记录自己上次处理过的 revision
         int revision = entity.getSkinRevision();
         Integer lastRev = LAST_REVISION.get(entity);
 
-        // 命名牌每交互一次 revision 就 +1，即使名字相同也重新触发
+        // 命名牌每交互一次 revision 就 +1，即使名字相同也重新触发解析
         boolean interacted = (lastRev == null || lastRev != revision);
         if (interacted) {
             LAST_REVISION.put(entity, revision);
@@ -294,27 +265,26 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
 
         if (name == null || name.isEmpty()) return;
 
-        // wu1wu2 走本地贴图
+        // wu1wu2 直接走本地贴图
         if (name.equalsIgnoreCase(WU1WU2_NAME)) {
             SKIN_CACHE.put(name, WU1WU2_TEXTURE);
             return;
         }
 
-        // 已有成功缓存
-        if (SKIN_CACHE.containsKey(name)) {
-            ResourceLocation cached = SKIN_CACHE.get(name);
-            if (cached != FAILED_SKIN) return;
+        // 已成功解析，直接用
+        if (SKIN_CACHE.containsKey(name)) return;
 
-            Long failedAt = FAILED_AT.get(name);
-            if (failedAt != null && System.currentTimeMillis() - failedAt < RETRY_INTERVAL_MS) {
-                return;
-            }
-            SKIN_CACHE.remove(name);
-            FAILED_AT.remove(name);
+        // 解析中
+        if (PENDING.containsKey(name)) return;
+
+        // 最近失败过：短时间内不重试
+        Long failedAt = FAILED_AT.get(name);
+        if (failedAt != null && System.currentTimeMillis() - failedAt < RETRY_INTERVAL_MS) {
+            return;
         }
 
-        if (PENDING.putIfAbsent(name, Boolean.TRUE) != null) return;
-
+        // 可以解析
+        PENDING.put(name, Boolean.TRUE);
         resolveSkinAsync(name);
     }
 
@@ -337,15 +307,16 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
                 })
                 .thenAccept(hash -> {
                     if (hash == null) {
-                        SKIN_CACHE.put(playerName, FAILED_SKIN);
+                        // 失败：不写 SKIN_CACHE，只记时间戳，允许后续重试
                         FAILED_AT.put(playerName, System.currentTimeMillis());
                         PENDING.remove(playerName);
                         return;
                     }
                     Minecraft.getInstance().execute(() -> {
                         ResourceLocation loc = registerDynamicSkin(playerName, hash);
-                        SKIN_CACHE.put(playerName, loc != null ? loc : FAILED_SKIN);
-                        if (loc == null) {
+                        if (loc != null) {
+                            SKIN_CACHE.put(playerName, loc);
+                        } else {
                             FAILED_AT.put(playerName, System.currentTimeMillis());
                         }
                         PENDING.remove(playerName);
@@ -353,7 +324,6 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
                 })
                 .exceptionally(ex -> {
                     GoetyDelight.LOGGER.error("解析皮肤失败: {}", playerName, ex);
-                    SKIN_CACHE.put(playerName, FAILED_SKIN);
                     FAILED_AT.put(playerName, System.currentTimeMillis());
                     PENDING.remove(playerName);
                     return null;
@@ -488,7 +458,7 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
             String name = cleanName(customName.getString());
             if (name != null) {
                 ResourceLocation cached = SKIN_CACHE.get(name);
-                if (cached != null && cached != FAILED_SKIN) {
+                if (cached != null) {
                     return cached;
                 }
             }
@@ -499,5 +469,15 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
     @Override
     public ResourceLocation getTextureLocation(DisplayEntity entity) {
         return resolveTexture(entity);
+    }
+
+    // ============================================================
+    // 工具：清空缓存（可用于测试）
+    // ============================================================
+
+    public static void clearSkinCache() {
+        SKIN_CACHE.clear();
+        PENDING.clear();
+        FAILED_AT.clear();
     }
 }

@@ -87,7 +87,6 @@ public final class DisplayAnimation {
                 return null;
             }
 
-            // 取第一个动画条目（一个文件一个动画）
             JsonObject anim = animations.entrySet().iterator().next()
                     .getValue().getAsJsonObject();
 
