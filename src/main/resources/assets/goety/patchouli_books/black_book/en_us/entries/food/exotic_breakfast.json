@@ -5,7 +5,7 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "Grants consumer:$(br)$(li)30-second Primal Rage$(li)3-minute Nourishment"
+            "text": "Grants consumer:$(br)$(li)1-minute Wild Rage$(li)3-minute Nourishment"
         },
         {
             "type": "goety:cooking",

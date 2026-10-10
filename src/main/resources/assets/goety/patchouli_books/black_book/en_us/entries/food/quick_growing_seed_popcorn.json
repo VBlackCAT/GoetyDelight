@@ -5,7 +5,7 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "Quick Growing Seeds sprout rapidly—turning them into popcorn would surely be filling. As a pica-afflicted individual, you could probably endure the expansion of popcorn in your stomach.$(br)Grants consumer:$(br)$(li)30-second Saturation, 10-minute Nourishment & Comfort$(li)5-minute Photosynthesis"
+            "text": "Quick Growing Seeds sprout rapidly—turning them into popcorn would surely be filling. As a pica-afflicted individual, you could probably endure the expansion of popcorn in your stomach.$(br)Grants consumer:$(br)$(li)1-second Saturation, 5-minute Nourishment & Comfort$(li)2-minute Photosynthesis"
         },
         {
             "type": "goety:cooking",

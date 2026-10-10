@@ -5,7 +5,7 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "An exceptional ingredient obtained by hunting bear-like creatures.$(br)Confers to the consumer:$(br)$(li)2 minutes of Fury$(li)5 minutes of Saturation$(li)20 seconds of Poison$(li)10 seconds of Nausea"
+            "text": "An exceptional ingredient obtained by hunting bear-like creatures.$(br)Confers to the consumer:$(br)$(li)30 seconds of Nourishment$(li)2 minutes of Rampage"
         },
         {
             "type": "patchouli:text",

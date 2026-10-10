@@ -5,7 +5,7 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "Upon consumption, grants the consumer:$(br)$(li)5-minute Climbing & Nourishment"
+            "text": "Upon consumption, grants the consumer:$(br)$(li)5-minute Climbing$(li)3-minute Nourishment"
         },
         {
             "type": "goety:cooking",
