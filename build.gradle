@@ -91,27 +91,30 @@ legacyForge {
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
+repositories.clear()
 repositories {
+    maven {
+        url = "https://neoforged.forgecdn.net/releases"
+    }
+    maven {
+        url = "https://neoforged.forgecdn.net/mojang-meta"
+    }
+    maven {
+        url = "https://libraries.minecraft.net/"
+    }
+    maven {
+        url 'https://bmclapi2.bangbang93.com/maven'
+    }
     exclusiveContent {
         forRepository {
-            maven {
-                url "https://cursemaven.com"
-            }
+            maven { url "https://cursemaven.com" }
         }
         filter {
             includeGroup "curse.maven"
         }
     }
     maven { url 'https://maven.blamejared.com' }
-     flatDir {
-         dir 'libs'
-     }
-    maven {
-        // location of the maven that hosts JEI files since January 2023
-        name = "Jared's maven"
-        url = "https://maven.blamejared.com/"
-    }
-    // Aliyun mirror: force net.neoforged build tools such as AutoRenamingTool to resolve here.
+    flatDir { dir 'libs' }
     exclusiveContent {
         forRepository {
             maven { url "https://maven.aliyun.com/repository/public" }
