@@ -44,21 +44,17 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
     private static final ResourceLocation MODEL_LOCATION =
             new ResourceLocation("goetydelight", "models/entity/display_entity.json");
 
-    /** 默认贴图：原版史蒂夫 */
     private static final ResourceLocation DEFAULT_STEVE =
             new ResourceLocation("minecraft", "textures/entity/player/wide/steve.png");
 
-    /** 本地贴图：命名牌为 wu1wu2 时使用 */
     private static final ResourceLocation WU1WU2_TEXTURE =
             new ResourceLocation("goetydelight", "textures/entity/wu1wu2.png");
 
     private static final String WU1WU2_NAME = "wu1wu2";
 
-    /** 模型整体缩放 */
     private static final float MODEL_SCALE = 0.9F;
 
-    /** 失败重试间隔（毫秒） */
-    private static final long RETRY_INTERVAL_MS = 10_000L;
+    private static final long RETRY_INTERVAL_MS = 60_000L;
 
     // ============================================================
     // 模型状态
@@ -68,14 +64,13 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
     private static BedrockModel cachedModel = null;
     private static boolean modelLoadFailed = false;
 
-    /** 每根骨骼的初始旋转/位置，加载模型时快照一次 */
     private static final Map<String, float[]> INITIAL_POSE = new ConcurrentHashMap<>();
 
     private static float headInitXRot = 0f;
     private static float headInitYRot = 0f;
 
     // ============================================================
-    // 皮肤状态（名字作为 key，成功才写缓存）
+    // 皮肤状态
     // ============================================================
 
     private static final Map<String, ResourceLocation> SKIN_CACHE = new ConcurrentHashMap<>();
@@ -83,7 +78,6 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
     private static final Map<String, Long> FAILED_AT = new ConcurrentHashMap<>();
     private static final Map<ResourceLocation, DynamicTexture> REGISTERED_TEXTURES = new ConcurrentHashMap<>();
 
-    /** 每个实体上次处理过的命名牌 revision，用 WeakHashMap 保证实体卸载后条目自动回收 */
     private static final Map<DisplayEntity, Integer> LAST_REVISION =
             java.util.Collections.synchronizedMap(new WeakHashMap<>());
 
@@ -121,7 +115,7 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
         poseStack.mulPose(Axis.ZP.rotationDegrees(180));
         resetModelToInitial(model);
         applyAnimation(entity, model, partialTick);
-        
+
         BedrockPart head = model.getModelMap().get("Head");
         if (head != null && entity.getAnimation().isEmpty()) {
             head.yRot = headInitYRot + (float) Math.toRadians(entity.getYRot() - yaw);
@@ -177,7 +171,8 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
         DisplayAnimation anim = DisplayAnimation.get(animName);
         if (anim == null) return;
 
-        float timeSeconds = (entity.tickCount + partialTick) / 20.0F;
+        // 时间基准：tickCount + 时停期间手动计数 + partialTick
+        float timeSeconds = (entity.tickCount + entity.getTimeStopTickCount() + partialTick) / 20.0F;
 
         for (Map.Entry<String, java.util.List<DisplayAnimation.Keyframe>> entry : anim.boneKeys.entrySet()) {
             BedrockPart part = model.getModelMap().get(entry.getKey());
@@ -197,9 +192,10 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
             part.yRot = baseYRot + (float) Math.toRadians(s[1]);
             part.zRot = baseZRot + (float) Math.toRadians(s[2]);
 
-            part.x = baseX + s[3] ;
-            part.y = baseY - s[4] ;
-            part.z = baseZ + s[5] ;
+            // 位移：s[3..5] 是像素，part.x/y/z 也是像素，渲染时 translateAndRotate 会再 /16
+            part.x = baseX + s[3];
+            part.y = baseY - s[4];
+            part.z = baseZ + s[5];
         }
     }
 
@@ -252,7 +248,6 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
         int revision = entity.getSkinRevision();
         Integer lastRev = LAST_REVISION.get(entity);
 
-        // 命名牌每交互一次 revision 就 +1，即使名字相同也重新触发解析
         boolean interacted = (lastRev == null || lastRev != revision);
         if (interacted) {
             LAST_REVISION.put(entity, revision);
@@ -265,25 +260,19 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
 
         if (name == null || name.isEmpty()) return;
 
-        // wu1wu2 直接走本地贴图
         if (name.equalsIgnoreCase(WU1WU2_NAME)) {
             SKIN_CACHE.put(name, WU1WU2_TEXTURE);
             return;
         }
 
-        // 已成功解析，直接用
         if (SKIN_CACHE.containsKey(name)) return;
-
-        // 解析中
         if (PENDING.containsKey(name)) return;
 
-        // 最近失败过：短时间内不重试
         Long failedAt = FAILED_AT.get(name);
         if (failedAt != null && System.currentTimeMillis() - failedAt < RETRY_INTERVAL_MS) {
             return;
         }
 
-        // 可以解析
         PENDING.put(name, Boolean.TRUE);
         resolveSkinAsync(name);
     }
@@ -307,19 +296,24 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
                 })
                 .thenAccept(hash -> {
                     if (hash == null) {
-                        // 失败：不写 SKIN_CACHE，只记时间戳，允许后续重试
                         FAILED_AT.put(playerName, System.currentTimeMillis());
                         PENDING.remove(playerName);
                         return;
                     }
                     Minecraft.getInstance().execute(() -> {
-                        ResourceLocation loc = registerDynamicSkin(playerName, hash);
-                        if (loc != null) {
-                            SKIN_CACHE.put(playerName, loc);
-                        } else {
+                        try {
+                            ResourceLocation loc = registerDynamicSkin(playerName, hash);
+                            if (loc != null) {
+                                SKIN_CACHE.put(playerName, loc);
+                            } else {
+                                FAILED_AT.put(playerName, System.currentTimeMillis());
+                            }
+                        } catch (Exception e) {
+                            GoetyDelight.LOGGER.error("注册皮肤异常: {}", playerName, e);
                             FAILED_AT.put(playerName, System.currentTimeMillis());
+                        } finally {
+                            PENDING.remove(playerName);
                         }
-                        PENDING.remove(playerName);
                     });
                 })
                 .exceptionally(ex -> {
@@ -333,7 +327,7 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
     @Nullable
     private static ResourceLocation registerDynamicSkin(String playerName, String skinHash) {
         try {
-            URL url = new URL("http://textures.minecraft.net/texture/" + skinHash);
+            URL url = new URL("https://textures.minecraft.net/texture/" + skinHash);
             byte[] bytes;
             try (InputStream in = url.openStream()) {
                 bytes = in.readAllBytes();
@@ -384,8 +378,8 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
         try {
             URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + username);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setConnectTimeout(10000);
-            conn.setReadTimeout(10000);
+            conn.setConnectTimeout(5000);
+            conn.setReadTimeout(5000);
             conn.setRequestMethod("GET");
 
             if (conn.getResponseCode() != 200) return null;
@@ -407,8 +401,8 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
         try {
             URL url = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setConnectTimeout(10000);
-            conn.setReadTimeout(10000);
+            conn.setConnectTimeout(5000);
+            conn.setReadTimeout(5000);
             conn.setRequestMethod("GET");
 
             if (conn.getResponseCode() != 200) return null;
@@ -436,7 +430,7 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
 
     private static boolean isValidSkinSize(String skinHash) {
         try {
-            URL url = new URL("http://textures.minecraft.net/texture/" + skinHash);
+            URL url = new URL("https://textures.minecraft.net/texture/" + skinHash);
             try (InputStream in = url.openStream()) {
                 NativeImage image = NativeImage.read(in);
                 boolean valid = image.getWidth() == 64 && image.getHeight() == 64;
@@ -472,7 +466,7 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
     }
 
     // ============================================================
-    // 工具：清空缓存（可用于测试）
+    // 工具：清空缓存
     // ============================================================
 
     public static void clearSkinCache() {

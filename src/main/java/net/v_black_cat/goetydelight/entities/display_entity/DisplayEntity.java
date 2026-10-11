@@ -6,6 +6,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
@@ -18,10 +19,22 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
 public class DisplayEntity extends LivingEntity {
+
+    // ------------------------------------------------------------------
+    // 同步数据
+    // ------------------------------------------------------------------
+
     private static final EntityDataAccessor<Integer> DATA_SKIN_REVISION =
             SynchedEntityData.defineId(DisplayEntity.class, EntityDataSerializers.INT);
+
     private static final EntityDataAccessor<String> DATA_ANIMATION =
             SynchedEntityData.defineId(DisplayEntity.class, EntityDataSerializers.STRING);
+
+    // ------------------------------------------------------------------
+    // 时停期间的手动 tick 计数（由动态 Mixin 的 updateSkill 推进）
+    // ------------------------------------------------------------------
+
+    private int timeStopTickCount = 0;
 
     public DisplayEntity(EntityType<? extends DisplayEntity> entityType, Level level) {
         super(entityType, level);
@@ -32,6 +45,34 @@ public class DisplayEntity extends LivingEntity {
         super.defineSynchedData();
         this.entityData.define(DATA_SKIN_REVISION, 0);
         this.entityData.define(DATA_ANIMATION, "");
+    }
+
+    // ------------------------------------------------------------------
+    // 免疫伤害
+    // ------------------------------------------------------------------
+
+    @Override
+    public boolean hurt(DamageSource source, float amount) {
+        return false;
+    }
+
+    @Override
+    public boolean isInvulnerableTo(DamageSource source) {
+        return true;
+    }
+
+    // ------------------------------------------------------------------
+    // /kill 时自清除（不触发死亡动画、不掉落）
+    // ------------------------------------------------------------------
+
+    @Override
+    public void kill() {
+        this.discard();
+    }
+
+    @Override
+    protected void dropAllDeathLoot(DamageSource source) {
+        // 空实现，不掉落
     }
 
     // ------------------------------------------------------------------
@@ -76,6 +117,22 @@ public class DisplayEntity extends LivingEntity {
     }
 
     // ------------------------------------------------------------------
+    // 时停期间手动 tick
+    // ------------------------------------------------------------------
+
+    /**
+     * 由动态 Mixin 的 TimeStopEntity.updateSkill 每 tick 调用。
+     * 时停期间 tickCount 不涨，这个计数用来推进动画时间，避免动画卡住。
+     */
+    public void tickTimeStop() {
+        this.timeStopTickCount++;
+    }
+
+    public int getTimeStopTickCount() {
+        return timeStopTickCount;
+    }
+
+    // ------------------------------------------------------------------
     // NBT 持久化
     // ------------------------------------------------------------------
 
@@ -83,6 +140,7 @@ public class DisplayEntity extends LivingEntity {
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putString("Animation", getAnimation());
+        tag.putInt("TimeStopTickCount", timeStopTickCount);
     }
 
     @Override
@@ -90,6 +148,9 @@ public class DisplayEntity extends LivingEntity {
         super.readAdditionalSaveData(tag);
         if (tag.contains("Animation")) {
             setAnimation(tag.getString("Animation"));
+        }
+        if (tag.contains("TimeStopTickCount")) {
+            timeStopTickCount = tag.getInt("TimeStopTickCount");
         }
     }
 

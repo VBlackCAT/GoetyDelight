@@ -15,11 +15,11 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import javax.annotation.Nullable;
 
-public class BakawuDollBlock extends DollBlock {
+public class BakaHaoZiDollBlock extends DollBlock {
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new BakawuBlockEntity(pos, state);
+        return new BakaHaoZiBlockEntity(pos, state);
     }
 
     @Override

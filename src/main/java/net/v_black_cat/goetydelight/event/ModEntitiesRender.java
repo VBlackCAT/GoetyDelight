@@ -19,6 +19,6 @@ public class ModEntitiesRender {
         EntityRenderers.register(ModEntities.DOLL_ENTITY.get(), DollEntityRender::new);
 
         BlockEntityRenderers.register(ModBlockEntities.CUSTOM_DOLL_BE.get(), CustomDollRender::new);
-        BlockEntityRenderers.register(ModBlockEntities.BAKAWU_BE.get(), CustomDollRender::new);
+        BlockEntityRenderers.register(ModBlockEntities.BAKAHAOZI_BE.get(), CustomDollRender::new);
     }
 }

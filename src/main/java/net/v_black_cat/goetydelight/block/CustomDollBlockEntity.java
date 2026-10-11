@@ -38,7 +38,7 @@ public class CustomDollBlockEntity extends BlockEntity {
     }
 
     protected boolean providesInfiniteWater() {
-        return this.getBlockState().getBlock() instanceof BakawuDollBlock;
+        return this.getBlockState().getBlock() instanceof BakaHaoZiDollBlock;
     }
 
     @Nonnull
