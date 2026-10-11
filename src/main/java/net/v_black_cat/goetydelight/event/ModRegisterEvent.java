@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegisterEvent;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.block.BakawuDollBlock;
 import net.v_black_cat.goetydelight.block.DollBlock;
 import net.v_black_cat.goetydelight.item.DollEntityItem;
 import net.v_black_cat.goetydelight.item.DollItem;
@@ -23,6 +24,12 @@ public class ModRegisterEvent {
     public static final Map<ResourceLocation, String> VANILLA_TOOLTIPS = Maps.newHashMap();
     public static final Map<ResourceLocation, String> SPECIAL_TOOLTIPS = Maps.newHashMap();
     public static final Set<Item> DOLL_ITEMS = Sets.newLinkedHashSet();
+
+    //笨wu牌水槽
+    public static final Set<String> BAKAWU_DOLL_NAMES = Sets.newLinkedHashSet(java.util.List.of(
+            "doll_5152", "doll_wu1wu2wu3"
+    ));
+
     public static final String[] SPECIAL_DOLL_NAMES = {
             "doll_5152", "doll_p0", "doll_p7", "doll_bai", "doll_baka",
             "doll_fox", "doll_kunzhong", "doll_lamiao", "doll_lll252", "doll_m3",
@@ -70,7 +77,7 @@ public class ModRegisterEvent {
         if (event.getRegistryKey().equals(ForgeRegistries.BLOCKS.getRegistryKey())) {
             for (String dollName : SPECIAL_DOLL_NAMES) {
                 ResourceLocation name = new ResourceLocation(GoetyDelight.MODID, dollName);
-                DollBlock block = new DollBlock();
+                DollBlock block = BAKAWU_DOLL_NAMES.contains(dollName) ? new BakawuDollBlock() : new DollBlock();
                 DOLL_BLOCKS.put(name, block);
                 event.register(ForgeRegistries.BLOCKS.getRegistryKey(), name, () -> block);
             }

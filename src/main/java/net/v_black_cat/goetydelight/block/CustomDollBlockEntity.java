@@ -1,6 +1,7 @@
 package net.v_black_cat.goetydelight.block;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -9,8 +10,13 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class CustomDollBlockEntity extends BlockEntity {
@@ -18,12 +24,47 @@ public class CustomDollBlockEntity extends BlockEntity {
 
     private String modelId = StringUtils.EMPTY;
 
+    private final InfiniteWaterTank waterTank = new InfiniteWaterTank();
+
+    @Nullable
+    private LazyOptional<IFluidHandler> fluidHandler;
+
     public CustomDollBlockEntity(BlockEntityType<?> entityType, BlockPos pos, BlockState state) {
         super(entityType, pos, state);
     }
 
     public CustomDollBlockEntity(BlockPos pos, BlockState state) {
         this(ModBlockEntities.CUSTOM_DOLL_BE.get(), pos, state);
+    }
+
+    protected boolean providesInfiniteWater() {
+        return this.getBlockState().getBlock() instanceof BakawuDollBlock;
+    }
+
+    @Nonnull
+    @Override
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (cap == ForgeCapabilities.FLUID_HANDLER && this.providesInfiniteWater()) {
+            LazyOptional<IFluidHandler> handler = this.fluidHandler;
+            if (handler == null || !handler.isPresent()) {
+                // 首次访问，或此前被 invalidateCaps 作废：重新创建
+                handler = LazyOptional.of(() -> this.waterTank);
+                this.fluidHandler = handler;
+            }
+            // 六面皆可抽水
+            return handler.cast();
+        }
+        return super.getCapability(cap, side);
+    }
+
+    @Override
+    public void invalidateCaps() {
+        super.invalidateCaps();
+        LazyOptional<IFluidHandler> handler = this.fluidHandler;
+        if (handler != null) {
+            handler.invalidate();
+            this.fluidHandler = null;
+        }
     }
 
     @Override
