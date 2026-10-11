@@ -27,6 +27,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * 基岩版 animation JSON 的解析与采样。
  *
  * 文件位置：assets/goetydelight/models/entity_animation/<name>.json
+ *
+ * 支持的关键帧形态：
+ *   1) 顶层常量数组：       "rotation": [x, y, z]
+ *   2) 时间 -> 数组：        "rotation": { "0.0": [x,y,z], "0.5": [x,y,z] }
+ *   3) 时间 -> {pre,post}：  "rotation": { "0.375": {"pre":[...], "post":[...], "lerp_mode":"catmullrom"} }
+ *
+ * 目前 lerp_mode 统一按线性插值处理；如需 catmullrom，可后续在 sampleBone 里扩展。
  */
 @OnlyIn(Dist.CLIENT)
 public final class DisplayAnimation {
@@ -34,8 +41,15 @@ public final class DisplayAnimation {
     /** 动画名 -> 动画数据（解析后缓存） */
     private static final Map<String, DisplayAnimation> CACHE = new ConcurrentHashMap<>();
 
-    /** 明确标记"加载失败"，避免重复 IO */
-    private static final DisplayAnimation FAILED = new DisplayAnimation(0f, Map.of());
+    /** 动画名 -> 上次加载失败时间戳（用于失败重试） */
+    private static final Map<String, Long> FAILED_AT = new ConcurrentHashMap<>();
+
+    /** 失败后多久允许重试（毫秒） */
+    private static final long RETRY_INTERVAL_MS = 30_000L;
+
+    // ------------------------------------------------------------------
+    // 数据结构
+    // ------------------------------------------------------------------
 
     public record Keyframe(float time,
                            float rx, float ry, float rz,
@@ -60,12 +74,27 @@ public final class DisplayAnimation {
         if (name == null || name.isEmpty()) return null;
 
         DisplayAnimation cached = CACHE.get(name);
-        if (cached == FAILED) return null;
         if (cached != null) return cached;
 
+        Long failedAt = FAILED_AT.get(name);
+        if (failedAt != null && System.currentTimeMillis() - failedAt < RETRY_INTERVAL_MS) {
+            return null;
+        }
+
         DisplayAnimation loaded = load(name);
-        CACHE.put(name, loaded != null ? loaded : FAILED);
+        if (loaded != null) {
+            CACHE.put(name, loaded);
+            FAILED_AT.remove(name);
+        } else {
+            FAILED_AT.put(name, System.currentTimeMillis());
+        }
         return loaded;
+    }
+
+    /** 资源重载时清空缓存，下次 get 重新从磁盘读 */
+    public static void clearCache() {
+        CACHE.clear();
+        FAILED_AT.clear();
     }
 
     @Nullable
@@ -87,6 +116,7 @@ public final class DisplayAnimation {
                 return null;
             }
 
+            // 一个文件里可能定义多个动画，这里只取第一个
             JsonObject anim = animations.entrySet().iterator().next()
                     .getValue().getAsJsonObject();
 
@@ -104,8 +134,8 @@ public final class DisplayAnimation {
                     TreeMap<Float, float[]> rotMap = new TreeMap<>();
                     TreeMap<Float, float[]> posMap = new TreeMap<>();
 
-                    collectRotation(bone.get("rotation"), rotMap);
-                    collectPosition(bone.get("position"), posMap);
+                    collectChannel(bone.get("rotation"), rotMap);
+                    collectChannel(bone.get("position"), posMap);
 
                     TreeSet<Float> times = new TreeSet<>();
                     times.addAll(rotMap.keySet());
@@ -130,49 +160,91 @@ public final class DisplayAnimation {
                     boneKeys.put(boneName, keys);
                 }
             }
-
-            GoetyDelight.LOGGER.info("已加载动画 '{}'，length={}s，骨骼数={}",
-                    name, length, boneKeys.size());
             return new DisplayAnimation(length, boneKeys);
 
         } catch (Exception e) {
-            GoetyDelight.LOGGER.error("加载动画失败: {}", name, e);
             return null;
         }
     }
 
-    /** 收集 rotation：可能是 [x,y,z] 常量，也可能是 {"t":[x,y,z]} */
-    private static void collectRotation(JsonElement el, TreeMap<Float, float[]> out) {
-        if (el == null) return;
+    /**
+     * 统一收集 rotation / position 通道。
+     *
+     * 支持三种形态：
+     *   [x, y, z]                              -> t = 0 的常量
+     *   { "0.0": [x,y,z], ... }                -> 时间表
+     *   { "0.375": {pre, post, lerp_mode}, ...}-> 时间表（取 post，没有则取 pre）
+     */
+    private static void collectChannel(JsonElement el, TreeMap<Float, float[]> out) {
+        if (el == null || el.isJsonNull()) return;
+
+        // 形态 1：顶层常量数组
         if (el.isJsonArray()) {
             JsonArray a = el.getAsJsonArray();
-            out.put(0f, new float[]{a.get(0).getAsFloat(), a.get(1).getAsFloat(), a.get(2).getAsFloat()});
+            if (a.size() < 3) return;
+            out.put(0f, new float[]{
+                    a.get(0).getAsFloat(),
+                    a.get(1).getAsFloat(),
+                    a.get(2).getAsFloat()
+            });
             return;
         }
-        if (el.isJsonObject()) {
-            for (var e : el.getAsJsonObject().entrySet()) {
-                float t = Float.parseFloat(e.getKey());
-                JsonArray a = e.getValue().getAsJsonArray();
-                out.put(t, new float[]{a.get(0).getAsFloat(), a.get(1).getAsFloat(), a.get(2).getAsFloat()});
+
+        if (!el.isJsonObject()) return;
+
+        JsonObject obj = el.getAsJsonObject();
+
+        // 形态 2 / 3：key 必须是时间
+        for (var e : obj.entrySet()) {
+            float t;
+            try {
+                t = Float.parseFloat(e.getKey());
+            } catch (NumberFormatException ex) {
+                // key 不是数字，跳过（防止 pre/post 被当成时间）
+                continue;
+            }
+
+            JsonElement v = e.getValue();
+            float[] xyz = readXYZ(v);
+            if (xyz != null) {
+                out.put(t, xyz);
             }
         }
     }
 
-    /** 收集 position：格式同 rotation */
-    private static void collectPosition(JsonElement el, TreeMap<Float, float[]> out) {
-        if (el == null) return;
-        if (el.isJsonArray()) {
-            JsonArray a = el.getAsJsonArray();
-            out.put(0f, new float[]{a.get(0).getAsFloat(), a.get(1).getAsFloat(), a.get(2).getAsFloat()});
-            return;
+    /** 从 JsonElement 里读出 [x,y,z]；支持数组和 {pre,post} 两种 */
+    @Nullable
+    private static float[] readXYZ(JsonElement v) {
+        if (v == null || v.isJsonNull()) return null;
+
+        if (v.isJsonArray()) {
+            JsonArray a = v.getAsJsonArray();
+            if (a.size() < 3) return null;
+            return new float[]{
+                    a.get(0).getAsFloat(),
+                    a.get(1).getAsFloat(),
+                    a.get(2).getAsFloat()
+            };
         }
-        if (el.isJsonObject()) {
-            for (var e : el.getAsJsonObject().entrySet()) {
-                float t = Float.parseFloat(e.getKey());
-                JsonArray a = e.getValue().getAsJsonArray();
-                out.put(t, new float[]{a.get(0).getAsFloat(), a.get(1).getAsFloat(), a.get(2).getAsFloat()});
+
+        if (v.isJsonObject()) {
+            JsonObject o = v.getAsJsonObject();
+            JsonArray a = null;
+            // 优先 post，其次 pre
+            if (o.has("post") && o.get("post").isJsonArray()) {
+                a = o.getAsJsonArray("post");
+            } else if (o.has("pre") && o.get("pre").isJsonArray()) {
+                a = o.getAsJsonArray("pre");
             }
+            if (a == null || a.size() < 3) return null;
+            return new float[]{
+                    a.get(0).getAsFloat(),
+                    a.get(1).getAsFloat(),
+                    a.get(2).getAsFloat()
+            };
         }
+
+        return null;
     }
 
     // ------------------------------------------------------------------
@@ -183,7 +255,7 @@ public final class DisplayAnimation {
      * 在时间 t（秒）处采样一根骨骼。
      *
      * @param loop 是否循环
-     * @return float[6]：rx,ry,rz（角度）, px,py,pz（Bedrock 像素，y 向下）
+     * @return float[6]：rx,ry,rz（角度），px,py,pz（Bedrock 像素）
      */
     public float[] sampleBone(String boneName, float t, boolean loop) {
         List<Keyframe> keys = boneKeys.get(boneName);
@@ -191,24 +263,43 @@ public final class DisplayAnimation {
             return new float[]{0, 0, 0, 0, 0, 0};
         }
 
-        if (loop && length > 0f) {
-            t = t % length;
+        // 有效长度：优先用 animation_length，没有就用最后一帧时间
+        float effLength = length > 0f ? length : keys.get(keys.size() - 1).time;
+
+        if (loop && effLength > 0f) {
+            t = t % effLength;
+            if (t < 0) t += effLength;
         } else {
-            t = Mth.clamp(t, 0f, length > 0f ? length : keys.get(keys.size() - 1).time);
+            t = Mth.clamp(t, 0f, effLength);
+        }
+
+        // 单关键帧：直接返回
+        if (keys.size() == 1) {
+            Keyframe k = keys.get(0);
+            return new float[]{
+                    k.hasRot ? k.rx : 0f,
+                    k.hasRot ? k.ry : 0f,
+                    k.hasRot ? k.rz : 0f,
+                    k.hasPos ? k.px : 0f,
+                    k.hasPos ? k.py : 0f,
+                    k.hasPos ? k.pz : 0f
+            };
         }
 
         Keyframe prev = keys.get(0);
         Keyframe next = keys.get(keys.size() - 1);
 
         for (Keyframe k : keys) {
-            if (k.time <= t) prev = k;
+            if (k.time <= t) {
+                prev = k;
+            }
             if (k.time >= t) {
                 next = k;
                 break;
             }
         }
 
-        if (prev == next || next.time == prev.time) {
+        if (prev == next || next.time <= prev.time) {
             return new float[]{
                     prev.hasRot ? prev.rx : 0f,
                     prev.hasRot ? prev.ry : 0f,
@@ -231,7 +322,7 @@ public final class DisplayAnimation {
         };
     }
 
-    /** 只有两端都有值才插值，否则取存在的那个 */
+    /** 只有两端都有值才插值，否则取存在的那个；都没有返回 0 */
     private static float lerpIf(boolean aHas, boolean bHas, float f, float a, float b) {
         if (aHas && bHas) return Mth.lerp(f, a, b);
         if (aHas) return a;
