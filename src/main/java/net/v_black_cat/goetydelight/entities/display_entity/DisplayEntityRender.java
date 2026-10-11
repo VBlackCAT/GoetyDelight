@@ -58,7 +58,7 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
     private static final float MODEL_SCALE = 0.9F;
 
     /** 失败重试间隔（毫秒） */
-    private static final long RETRY_INTERVAL_MS = 60_000L;
+    private static final long RETRY_INTERVAL_MS = 10_000L;
 
     // ============================================================
     // 模型状态
@@ -197,9 +197,9 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
             part.yRot = baseYRot + (float) Math.toRadians(s[1]);
             part.zRot = baseZRot + (float) Math.toRadians(s[2]);
 
-            part.x = baseX + s[3] / 16f;
-            part.y = baseY - s[4] / 16f;
-            part.z = baseZ + s[5] / 16f;
+            part.x = baseX + s[3] ;
+            part.y = baseY - s[4] ;
+            part.z = baseZ + s[5] ;
         }
     }
 
@@ -384,8 +384,8 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
         try {
             URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + username);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setConnectTimeout(5000);
-            conn.setReadTimeout(5000);
+            conn.setConnectTimeout(10000);
+            conn.setReadTimeout(10000);
             conn.setRequestMethod("GET");
 
             if (conn.getResponseCode() != 200) return null;
@@ -407,8 +407,8 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
         try {
             URL url = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setConnectTimeout(5000);
-            conn.setReadTimeout(5000);
+            conn.setConnectTimeout(10000);
+            conn.setReadTimeout(10000);
             conn.setRequestMethod("GET");
 
             if (conn.getResponseCode() != 200) return null;
