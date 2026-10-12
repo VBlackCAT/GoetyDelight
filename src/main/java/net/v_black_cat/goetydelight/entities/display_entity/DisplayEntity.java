@@ -154,6 +154,10 @@ public class DisplayEntity extends LivingEntity {
         }
     }
 
+    public boolean isTimeStopImmune() {
+        return this.getPersistentData().getBoolean("TimeStopImmune");
+    }
+
     // ------------------------------------------------------------------
     // LivingEntity 抽象方法
     // ------------------------------------------------------------------

@@ -24,7 +24,7 @@ public class ModRegisterEvent {
     public static final Set<Item> DOLL_ITEMS = Sets.newLinkedHashSet();
 
     public static final Set<String> BAKAHAOZI_DOLL_NAMES = Sets.newLinkedHashSet(java.util.List.of(
-             "doll_haozi"
+             "doll_haozi","doll_wu1wu2wu3","doll_5152"
     ));
 
     public static final String[] SPECIAL_DOLL_NAMES = {
