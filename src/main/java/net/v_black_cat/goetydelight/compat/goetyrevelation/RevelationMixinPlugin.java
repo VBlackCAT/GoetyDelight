@@ -30,8 +30,7 @@ public class RevelationMixinPlugin implements IMixinConfigPlugin {
         }
 
         // EndingLibrary 相关的 Mixin：只有 EL 加载时才应用
-        if (mixinClassName.contains("DisplayEntityTimeStopMixin")
-                || mixinClassName.contains("ServerExpandedContextMixin")) {
+        if (mixinClassName.contains("DisplayEntityTimeStopMixin")) {
             return LoadingModList.get().getModFileById(ENDING_LIBRARY_MODID) != null;
         }
 

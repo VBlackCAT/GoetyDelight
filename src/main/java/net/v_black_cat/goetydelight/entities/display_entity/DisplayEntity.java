@@ -36,6 +36,15 @@ public class DisplayEntity extends LivingEntity {
 
     private int timeStopTickCount = 0;
 
+    // ------------------------------------------------------------------
+    // TimeStopImmune 存活倒计时（单位：tick，10 秒 = 200 tick）
+    // -1 表示尚未启动
+    // ------------------------------------------------------------------
+
+    private static final int TIME_STOP_IMMUNE_LIFETIME = 200;
+
+    private int timeStopImmuneTicks = -1;
+
     public DisplayEntity(EntityType<? extends DisplayEntity> entityType, Level level) {
         super(entityType, level);
     }
@@ -45,6 +54,16 @@ public class DisplayEntity extends LivingEntity {
         super.defineSynchedData();
         this.entityData.define(DATA_SKIN_REVISION, 0);
         this.entityData.define(DATA_ANIMATION, "");
+    }
+
+    // ------------------------------------------------------------------
+    // tick：正常推进 TimeStopImmune 存活倒计时
+    // ------------------------------------------------------------------
+
+    @Override
+    public void tick() {
+        super.tick();
+        tickTimeStopImmuneLifetime();
     }
 
     // ------------------------------------------------------------------
@@ -126,10 +145,45 @@ public class DisplayEntity extends LivingEntity {
      */
     public void tickTimeStop() {
         this.timeStopTickCount++;
+        tickTimeStopImmuneLifetime();
     }
 
     public int getTimeStopTickCount() {
         return timeStopTickCount;
+    }
+
+    // ------------------------------------------------------------------
+    // TimeStopImmune 存活倒计时逻辑
+    // ------------------------------------------------------------------
+
+    /**
+     * 推进 TimeStopImmune 存活倒计时。
+     * 若实体身上带有 TimeStopImmune 标记，则从首次检测到开始计 200 tick（10 秒），
+     * 计时结束后自我清除。标记被移除时倒计时重置。
+     */
+    private void tickTimeStopImmuneLifetime() {
+        if (this.level().isClientSide) {
+            return;
+        }
+
+        if (!isTimeStopImmune()) {
+            // 标记不存在，重置倒计时
+            timeStopImmuneTicks = -1;
+            return;
+        }
+
+        // 首次检测到，启动倒计时
+        if (timeStopImmuneTicks < 0) {
+            timeStopImmuneTicks = TIME_STOP_IMMUNE_LIFETIME;
+        }
+
+        if (timeStopImmuneTicks > 0) {
+            timeStopImmuneTicks--;
+        }
+
+        if (timeStopImmuneTicks == 0) {
+            this.discard();
+        }
     }
 
     // ------------------------------------------------------------------
@@ -141,6 +195,7 @@ public class DisplayEntity extends LivingEntity {
         super.addAdditionalSaveData(tag);
         tag.putString("Animation", getAnimation());
         tag.putInt("TimeStopTickCount", timeStopTickCount);
+        tag.putInt("TimeStopImmuneTicks", timeStopImmuneTicks);
     }
 
     @Override
@@ -151,6 +206,9 @@ public class DisplayEntity extends LivingEntity {
         }
         if (tag.contains("TimeStopTickCount")) {
             timeStopTickCount = tag.getInt("TimeStopTickCount");
+        }
+        if (tag.contains("TimeStopImmuneTicks")) {
+            timeStopImmuneTicks = tag.getInt("TimeStopImmuneTicks");
         }
     }
 

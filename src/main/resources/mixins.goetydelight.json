@@ -16,7 +16,6 @@
     "LivingEntityBuffMixin",
     "MobMixin",
     "RecipeManagerMixin",
-    "ServerExpandedContextMixin",
     "SummonApollyonMixin",
     "SummonSpellMixin",
     "WightSpawnerMixin"
