@@ -22,4 +22,8 @@ public class RegHelper {
             LOOT_CONDITIONS.register("y_below",
                     () -> new LootItemConditionType(new YBelowCondition.Serializer()));
 
+    public static final RegistryObject<LootItemConditionType> CONTAINER_Y_BELOW_CONDITION =
+            LOOT_CONDITIONS.register("y_below_only_container",
+                    () -> new LootItemConditionType(new ContainerYBelowCondition.Serializer()));
+
 }
