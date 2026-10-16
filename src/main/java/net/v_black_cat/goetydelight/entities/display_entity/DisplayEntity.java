@@ -1,9 +1,11 @@
 package net.v_black_cat.goetydelight.entities.display_entity;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -17,6 +19,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
+
+import javax.annotation.Nullable;
 
 public class DisplayEntity extends LivingEntity {
 
@@ -24,26 +30,25 @@ public class DisplayEntity extends LivingEntity {
     // 同步数据
     // ------------------------------------------------------------------
 
-    private static final EntityDataAccessor<Integer> DATA_SKIN_REVISION =
-            SynchedEntityData.defineId(DisplayEntity.class, EntityDataSerializers.INT);
-
     private static final EntityDataAccessor<String> DATA_ANIMATION =
             SynchedEntityData.defineId(DisplayEntity.class, EntityDataSerializers.STRING);
 
     // ------------------------------------------------------------------
-    // 时停期间的手动 tick 计数（由动态 Mixin 的 updateSkill 推进）
+    // 时停期间的手动 tick 计数
     // ------------------------------------------------------------------
 
     private int timeStopTickCount = 0;
 
-    // ------------------------------------------------------------------
-    // TimeStopImmune 存活倒计时（单位：tick，10 秒 = 200 tick）
-    // -1 表示尚未启动
-    // ------------------------------------------------------------------
-
     private static final int TIME_STOP_IMMUNE_LIFETIME = 200;
-
     private int timeStopImmuneTicks = -1;
+
+    // ------------------------------------------------------------------
+    // 皮肤缓存（仅客户端使用，不写 NBT，不同步）
+    // 渲染器 render() 每帧直接读这个字段，零判断。
+    // ------------------------------------------------------------------
+
+    @Nullable
+    private ResourceLocation cachedSkin = null;
 
     public DisplayEntity(EntityType<? extends DisplayEntity> entityType, Level level) {
         super(entityType, level);
@@ -52,8 +57,48 @@ public class DisplayEntity extends LivingEntity {
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.entityData.define(DATA_SKIN_REVISION, 0);
         this.entityData.define(DATA_ANIMATION, "");
+    }
+
+    // ------------------------------------------------------------------
+    // 皮肤缓存读写
+    // ------------------------------------------------------------------
+
+    @Nullable
+    public ResourceLocation getCachedSkin() {
+        return cachedSkin;
+    }
+
+    public void setCachedSkin(@Nullable ResourceLocation skin) {
+        this.cachedSkin = skin;
+    }
+
+    // ------------------------------------------------------------------
+    // 命名牌：名字变化时通知客户端刷新皮肤
+    // ------------------------------------------------------------------
+
+    @Override
+    public void setCustomName(@Nullable Component name) {
+        super.setCustomName(name);
+        notifyClientSkinRefresh(name);
+    }
+
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
+        super.onSyncedDataUpdated(key);
+        if (DATA_CUSTOM_NAME.equals(key)) {
+            notifyClientSkinRefresh(this.getCustomName());
+        }
+    }
+
+    private void notifyClientSkinRefresh(@Nullable Component name) {
+        if (!this.level().isClientSide()) {
+            return;
+        }
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+            net.v_black_cat.goetydelight.entities.display_entity.DisplayEntityRender
+                    .onNameChanged(this, name);
+        });
     }
 
     // ------------------------------------------------------------------
@@ -81,7 +126,7 @@ public class DisplayEntity extends LivingEntity {
     }
 
     // ------------------------------------------------------------------
-    // /kill 时自清除（不触发死亡动画、不掉落）
+    // /kill 时自清除
     // ------------------------------------------------------------------
 
     @Override
@@ -103,9 +148,8 @@ public class DisplayEntity extends LivingEntity {
         ItemStack stack = player.getItemInHand(hand);
         if (stack.is(Items.NAME_TAG) && stack.hasCustomHoverName()) {
             if (!this.level().isClientSide) {
-                this.setCustomName(stack.getHoverName());
+                this.setCustomName(stack.getHoverName()); // 内部会触发 onNameChanged
                 this.setCustomNameVisible(true);
-                this.bumpSkinRevision();
                 if (!player.getAbilities().instabuild) {
                     stack.shrink(1);
                 }
@@ -113,14 +157,6 @@ public class DisplayEntity extends LivingEntity {
             return InteractionResult.sidedSuccess(this.level().isClientSide);
         }
         return super.interact(player, hand);
-    }
-
-    public int getSkinRevision() {
-        return this.entityData.get(DATA_SKIN_REVISION);
-    }
-
-    public void bumpSkinRevision() {
-        this.entityData.set(DATA_SKIN_REVISION, this.getSkinRevision() + 1);
     }
 
     // ------------------------------------------------------------------
@@ -139,10 +175,6 @@ public class DisplayEntity extends LivingEntity {
     // 时停期间手动 tick
     // ------------------------------------------------------------------
 
-    /**
-     * 由动态 Mixin 的 TimeStopEntity.updateSkill 每 tick 调用。
-     * 时停期间 tickCount 不涨，这个计数用来推进动画时间，避免动画卡住。
-     */
     public void tickTimeStop() {
         this.timeStopTickCount++;
         tickTimeStopImmuneLifetime();
@@ -156,23 +188,16 @@ public class DisplayEntity extends LivingEntity {
     // TimeStopImmune 存活倒计时逻辑
     // ------------------------------------------------------------------
 
-    /**
-     * 推进 TimeStopImmune 存活倒计时。
-     * 若实体身上带有 TimeStopImmune 标记，则从首次检测到开始计 200 tick（10 秒），
-     * 计时结束后自我清除。标记被移除时倒计时重置。
-     */
     private void tickTimeStopImmuneLifetime() {
         if (this.level().isClientSide) {
             return;
         }
 
         if (!isTimeStopImmune()) {
-            // 标记不存在，重置倒计时
             timeStopImmuneTicks = -1;
             return;
         }
 
-        // 首次检测到，启动倒计时
         if (timeStopImmuneTicks < 0) {
             timeStopImmuneTicks = TIME_STOP_IMMUNE_LIFETIME;
         }
@@ -210,6 +235,8 @@ public class DisplayEntity extends LivingEntity {
         if (tag.contains("TimeStopImmuneTicks")) {
             timeStopImmuneTicks = tag.getInt("TimeStopImmuneTicks");
         }
+        // 注意：readAdditionalSaveData 里 setCustomName 会被父类从 NBT 恢复时调用，
+        // 从而触发 onNameChanged，皮肤会被重新解析。无需额外处理。
     }
 
     public boolean isTimeStopImmune() {
