@@ -1,7 +1,8 @@
 package net.v_black_cat.goetydelight.compat.goetyrevelation.item;
 
 import com.google.common.collect.ImmutableMultimap;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundUpdateAttributesPacket;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,16 +14,12 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.v_black_cat.goetydelight.GoetyDelight;
 import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.UUID;
 
 public class AscensionCodStewItem extends Item {
-
-    /** 鳕鱼强化窗口的过期时间（游戏 tick），存在玩家持久化数据里 */
-    public static final String TAG_COD_BOOST_EXPIRE = "goetydelight:cod_boost_expire";
+    public static final String TAG_COD_BOOST_UNLOCKED = "goetydelight:cod_boost_unlocked";
 
     /** 胸饰槽 +1 的固定 UUID，保证多次调用只覆盖不叠加 */
     private static final UUID CHEST_SLOT_UUID =
@@ -36,12 +33,11 @@ public class AscensionCodStewItem extends Item {
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         ItemStack result = super.finishUsingItem(stack, level, entity);
         if (!level.isClientSide && entity instanceof Player player) {
-            CompoundTag data = player.getPersistentData();
-            long expire = level.getGameTime() + 20L * 60L * 20L; // 20 分钟
-            data.putLong(TAG_COD_BOOST_EXPIRE, expire);
+            player.getPersistentData().putBoolean(TAG_COD_BOOST_UNLOCKED, true);
+
             CuriosApi.getCuriosInventory(player).ifPresent(inventory -> {
                 inventory.addPermanentSlotModifiers(ImmutableMultimap.of(
-                        "chest",
+                        "body",
                         new AttributeModifier(
                                 CHEST_SLOT_UUID,
                                 "goetydelight:cod_boost_chest",
@@ -50,8 +46,19 @@ public class AscensionCodStewItem extends Item {
                         )
                 ));
             });
+
+            syncAttributes(player);
         }
         return result;
+    }
+
+    private static void syncAttributes(Player player) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            serverPlayer.connection.send(new ClientboundUpdateAttributesPacket(
+                    player.getId(),
+                    player.getAttributes().getSyncableAttributes()
+            ));
+        }
     }
 
     @SubscribeEvent
@@ -62,12 +69,10 @@ public class AscensionCodStewItem extends Item {
         ItemStack used = event.getItem();
         if (!used.is(Items.COD) && !used.is(Items.COOKED_COD)) return;
 
-        CompoundTag data = player.getPersistentData();
-        long expire = data.getLong(TAG_COD_BOOST_EXPIRE);
-        long now = player.level().getGameTime();
-        if (expire <= 0L || now >= expire) {
+        if (!player.getPersistentData().getBoolean(TAG_COD_BOOST_UNLOCKED)) {
             return;
         }
+
         player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 3 * 60 * 20, 3));
         player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 3 * 60 * 20, 4));
     }

@@ -56,6 +56,10 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
 
     private static final long RETRY_INTERVAL_MS = 60_000L;
 
+    private static final String[] PRECACHE_PLAYER_NAMES = {
+            "player__7", "mega32k", "Kun_Zhong"
+    };
+
     // ============================================================
     // 模型状态
     // ============================================================
@@ -233,6 +237,20 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
             GoetyDelight.LOGGER.error("加载 display_entity 基岩模型失败", e);
             modelLoadFailed = true;
             return null;
+        }
+    }
+
+    public static void precacheEndingLibrarySkins() {
+        for (String name : PRECACHE_PLAYER_NAMES) {
+            if (name == null || name.isEmpty()) continue;
+            if (SKIN_CACHE.containsKey(name)) continue;
+            if (PENDING.containsKey(name)) continue;
+            Long failedAt = FAILED_AT.get(name);
+            if (failedAt != null && System.currentTimeMillis() - failedAt < RETRY_INTERVAL_MS) {
+                continue;
+            }
+            PENDING.put(name, Boolean.TRUE);
+            resolveSkinAsync(name);
         }
     }
 
