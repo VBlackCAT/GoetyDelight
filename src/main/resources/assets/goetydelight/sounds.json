@@ -5,5 +5,14 @@
     "sounds": [
       "goetydelight:block/touch_doll"
     ]
+  },
+  "music.kwil": {
+    "category": "record",
+    "sounds": [
+      {
+        "name": "goetydelight:music/kwil",
+        "stream": true
+      }
+    ]
   }
 }

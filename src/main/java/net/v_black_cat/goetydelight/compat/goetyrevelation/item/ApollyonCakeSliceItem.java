@@ -145,8 +145,8 @@ public class ApollyonCakeSliceItem extends Item {
                         forwardZ * BACK_DISTANCE + rightZ * SUMMON_SIDE_OFFSET }
         };
 
-        // 与 offsets 一一对应
         String[] names = new String[]{ "player__7", "mega32k", "Kun_Zhong" };
+        String musicGroup = "apollyon_slice_" + player.getUUID();
 
         List<DisplayEntity> spawned = new ArrayList<>(3);
 
@@ -168,6 +168,9 @@ public class ApollyonCakeSliceItem extends Item {
             display.setCustomName(Component.literal(names[i]));
             display.setCustomNameVisible(false);
             display.setAnimation("kwil");
+
+            display.setMusicGroup(musicGroup);
+
             display.setInvulnerable(true);
 
             display.getPersistentData().putBoolean(TAG_TIME_STOP_IMMUNE, true);

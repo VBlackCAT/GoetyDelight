@@ -12,4 +12,9 @@ public class ModSounds {
 
     public static RegistryObject<SoundEvent> TOUCH_DOLL = SOUND_EVENTS.register("block.touch_doll",
             () -> SoundEvent.createFixedRangeEvent(new ResourceLocation(GoetyDelight.MODID, "block.touch_doll"), 16));
+
+    public static RegistryObject<SoundEvent> MUSIC_KWIL = SOUND_EVENTS.register(
+            "music.kwil",
+            () -> SoundEvent.createVariableRangeEvent(
+                    new ResourceLocation(GoetyDelight.MODID, "music.kwil")));
 }

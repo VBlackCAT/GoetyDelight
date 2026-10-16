@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
@@ -33,8 +34,12 @@ public class DisplayEntity extends LivingEntity {
     private static final EntityDataAccessor<String> DATA_ANIMATION =
             SynchedEntityData.defineId(DisplayEntity.class, EntityDataSerializers.STRING);
 
+    /** 音乐分组名。空字符串表示独立播放；非空表示同组共享一份音乐 */
+    private static final EntityDataAccessor<String> DATA_MUSIC_GROUP =
+            SynchedEntityData.defineId(DisplayEntity.class, EntityDataSerializers.STRING);
+
     // ------------------------------------------------------------------
-    // 时停期间的手动 tick 计数
+    // 时停
     // ------------------------------------------------------------------
 
     private int timeStopTickCount = 0;
@@ -43,8 +48,7 @@ public class DisplayEntity extends LivingEntity {
     private int timeStopImmuneTicks = -1;
 
     // ------------------------------------------------------------------
-    // 皮肤缓存（仅客户端使用，不写 NBT，不同步）
-    // 渲染器 render() 每帧直接读这个字段，零判断。
+    // 皮肤缓存（仅客户端）
     // ------------------------------------------------------------------
 
     @Nullable
@@ -58,10 +62,11 @@ public class DisplayEntity extends LivingEntity {
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(DATA_ANIMATION, "");
+        this.entityData.define(DATA_MUSIC_GROUP, "");
     }
 
     // ------------------------------------------------------------------
-    // 皮肤缓存读写
+    // 皮肤缓存
     // ------------------------------------------------------------------
 
     @Nullable
@@ -74,7 +79,7 @@ public class DisplayEntity extends LivingEntity {
     }
 
     // ------------------------------------------------------------------
-    // 命名牌：名字变化时通知客户端刷新皮肤
+    // 命名牌
     // ------------------------------------------------------------------
 
     @Override
@@ -83,26 +88,50 @@ public class DisplayEntity extends LivingEntity {
         notifyClientSkinRefresh(name);
     }
 
-    @Override
-    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
-        super.onSyncedDataUpdated(key);
-        if (DATA_CUSTOM_NAME.equals(key)) {
-            notifyClientSkinRefresh(this.getCustomName());
-        }
-    }
-
     private void notifyClientSkinRefresh(@Nullable Component name) {
-        if (!this.level().isClientSide()) {
-            return;
-        }
+        if (!this.level().isClientSide()) return;
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-            net.v_black_cat.goetydelight.entities.display_entity.DisplayEntityRender
-                    .onNameChanged(this, name);
+            DisplayEntityRender.onNameChanged(this, name);
         });
     }
 
     // ------------------------------------------------------------------
-    // tick：正常推进 TimeStopImmune 存活倒计时
+    // 同步数据变化
+    // ------------------------------------------------------------------
+
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
+        super.onSyncedDataUpdated(key);
+
+        if (!this.level().isClientSide()) return;
+
+        if (DATA_ANIMATION.equals(key)) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+                DisplayEntityMusicManager.onAnimationChanged(this, this.getAnimation());
+            });
+        } else if (DATA_MUSIC_GROUP.equals(key)) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+                DisplayEntityMusicManager.onMusicGroupChanged(this, this.getMusicGroup());
+            });
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // 移除：通知音乐管理器
+    // ------------------------------------------------------------------
+
+    @Override
+    public void remove(Entity.RemovalReason reason) {
+        super.remove(reason);
+        if (this.level().isClientSide()) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+                DisplayEntityMusicManager.onEntityRemoved(this);
+            });
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // tick
     // ------------------------------------------------------------------
 
     @Override
@@ -125,10 +154,6 @@ public class DisplayEntity extends LivingEntity {
         return true;
     }
 
-    // ------------------------------------------------------------------
-    // /kill 时自清除
-    // ------------------------------------------------------------------
-
     @Override
     public void kill() {
         this.discard();
@@ -136,7 +161,6 @@ public class DisplayEntity extends LivingEntity {
 
     @Override
     protected void dropAllDeathLoot(DamageSource source) {
-        // 空实现，不掉落
     }
 
     // ------------------------------------------------------------------
@@ -148,7 +172,7 @@ public class DisplayEntity extends LivingEntity {
         ItemStack stack = player.getItemInHand(hand);
         if (stack.is(Items.NAME_TAG) && stack.hasCustomHoverName()) {
             if (!this.level().isClientSide) {
-                this.setCustomName(stack.getHoverName()); // 内部会触发 onNameChanged
+                this.setCustomName(stack.getHoverName());
                 this.setCustomNameVisible(true);
                 if (!player.getAbilities().instabuild) {
                     stack.shrink(1);
@@ -172,7 +196,20 @@ public class DisplayEntity extends LivingEntity {
     }
 
     // ------------------------------------------------------------------
-    // 时停期间手动 tick
+    // 音乐分组
+    // ------------------------------------------------------------------
+
+    /** 空字符串表示独立播放 */
+    public String getMusicGroup() {
+        return this.entityData.get(DATA_MUSIC_GROUP);
+    }
+
+    public void setMusicGroup(String group) {
+        this.entityData.set(DATA_MUSIC_GROUP, group == null ? "" : group);
+    }
+
+    // ------------------------------------------------------------------
+    // 时停
     // ------------------------------------------------------------------
 
     public void tickTimeStop() {
@@ -184,41 +221,27 @@ public class DisplayEntity extends LivingEntity {
         return timeStopTickCount;
     }
 
-    // ------------------------------------------------------------------
-    // TimeStopImmune 存活倒计时逻辑
-    // ------------------------------------------------------------------
-
     private void tickTimeStopImmuneLifetime() {
-        if (this.level().isClientSide) {
-            return;
-        }
+        if (this.level().isClientSide) return;
 
         if (!isTimeStopImmune()) {
             timeStopImmuneTicks = -1;
             return;
         }
-
-        if (timeStopImmuneTicks < 0) {
-            timeStopImmuneTicks = TIME_STOP_IMMUNE_LIFETIME;
-        }
-
-        if (timeStopImmuneTicks > 0) {
-            timeStopImmuneTicks--;
-        }
-
-        if (timeStopImmuneTicks == 0) {
-            this.discard();
-        }
+        if (timeStopImmuneTicks < 0) timeStopImmuneTicks = TIME_STOP_IMMUNE_LIFETIME;
+        if (timeStopImmuneTicks > 0) timeStopImmuneTicks--;
+        if (timeStopImmuneTicks == 0) this.discard();
     }
 
     // ------------------------------------------------------------------
-    // NBT 持久化
+    // NBT
     // ------------------------------------------------------------------
 
     @Override
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putString("Animation", getAnimation());
+        tag.putString("MusicGroup", getMusicGroup());
         tag.putInt("TimeStopTickCount", timeStopTickCount);
         tag.putInt("TimeStopImmuneTicks", timeStopImmuneTicks);
     }
@@ -226,17 +249,10 @@ public class DisplayEntity extends LivingEntity {
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
-        if (tag.contains("Animation")) {
-            setAnimation(tag.getString("Animation"));
-        }
-        if (tag.contains("TimeStopTickCount")) {
-            timeStopTickCount = tag.getInt("TimeStopTickCount");
-        }
-        if (tag.contains("TimeStopImmuneTicks")) {
-            timeStopImmuneTicks = tag.getInt("TimeStopImmuneTicks");
-        }
-        // 注意：readAdditionalSaveData 里 setCustomName 会被父类从 NBT 恢复时调用，
-        // 从而触发 onNameChanged，皮肤会被重新解析。无需额外处理。
+        if (tag.contains("Animation")) setAnimation(tag.getString("Animation"));
+        if (tag.contains("MusicGroup")) setMusicGroup(tag.getString("MusicGroup"));
+        if (tag.contains("TimeStopTickCount")) timeStopTickCount = tag.getInt("TimeStopTickCount");
+        if (tag.contains("TimeStopImmuneTicks")) timeStopImmuneTicks = tag.getInt("TimeStopImmuneTicks");
     }
 
     public boolean isTimeStopImmune() {
@@ -244,7 +260,7 @@ public class DisplayEntity extends LivingEntity {
     }
 
     // ------------------------------------------------------------------
-    // LivingEntity 抽象方法
+    // LivingEntity 抽象
     // ------------------------------------------------------------------
 
     @Override
