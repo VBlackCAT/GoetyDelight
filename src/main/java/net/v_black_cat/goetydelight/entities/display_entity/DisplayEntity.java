@@ -106,13 +106,14 @@ public class DisplayEntity extends LivingEntity {
         if (!this.level().isClientSide()) return;
 
         if (DATA_ANIMATION.equals(key)) {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-                DisplayEntityMusicManager.onAnimationChanged(this, this.getAnimation());
-            });
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
+                    DisplayEntityMusicManager.onAnimationChanged(this, this.getAnimation()));
         } else if (DATA_MUSIC_GROUP.equals(key)) {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-                DisplayEntityMusicManager.onMusicGroupChanged(this, this.getMusicGroup());
-            });
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
+                    DisplayEntityMusicManager.onMusicGroupChanged(this, this.getMusicGroup()));
+        } else if (DATA_CUSTOM_NAME.equals(key)) {          // ← 新增
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
+                    DisplayEntityRender.onNameChanged(this, this.getCustomName()));
         }
     }
 
