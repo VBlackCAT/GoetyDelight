@@ -37,6 +37,10 @@ public class DisplayEntity extends LivingEntity {
     private static final EntityDataAccessor<String> DATA_MUSIC_GROUP =
             SynchedEntityData.defineId(DisplayEntity.class, EntityDataSerializers.STRING);
 
+    /** 客户端用于驱动音乐"时停开始"的同步标记 */
+    private static final EntityDataAccessor<Boolean> DATA_TIME_STOP_IMMUNE =
+            SynchedEntityData.defineId(DisplayEntity.class, EntityDataSerializers.BOOLEAN);
+
     // ------------------------------------------------------------------
     // 时停
     // ------------------------------------------------------------------
@@ -62,6 +66,7 @@ public class DisplayEntity extends LivingEntity {
         super.defineSynchedData();
         this.entityData.define(DATA_ANIMATION, "");
         this.entityData.define(DATA_MUSIC_GROUP, "");
+        this.entityData.define(DATA_TIME_STOP_IMMUNE, false);
     }
 
     // ------------------------------------------------------------------
@@ -104,9 +109,10 @@ public class DisplayEntity extends LivingEntity {
 
         if (!this.level().isClientSide()) return;
 
-        boolean isAnim  = DATA_ANIMATION.equals(key);
-        boolean isGroup = DATA_MUSIC_GROUP.equals(key);
-        boolean isName  = DATA_CUSTOM_NAME.equals(key);
+        boolean isAnim   = DATA_ANIMATION.equals(key);
+        boolean isGroup  = DATA_MUSIC_GROUP.equals(key);
+        boolean isName   = DATA_CUSTOM_NAME.equals(key);
+        boolean isImmune = DATA_TIME_STOP_IMMUNE.equals(key);
 
         if (isAnim) {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
@@ -117,25 +123,28 @@ public class DisplayEntity extends LivingEntity {
         } else if (isName) {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
                     DisplayEntityRender.onNameChanged(this, this.getCustomName()));
+        } else if (isImmune && this.isTimeStopImmuneClient()) {
+            // 只需驱动"时停开始"；结束由 TimeStopMusicInstance 到点自动完成
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
+                    DisplayEntityMusicManager.onImmuneEntitySpawned(this));
         }
     }
 
     // ------------------------------------------------------------------
-    // 移除：通知音乐管理器 + 清理渲染缓存
+    // 移除：客户端只清理普通实体音乐，不参与时停结束
     // ------------------------------------------------------------------
 
     @Override
     public void remove(Entity.RemovalReason reason) {
         super.remove(reason);
         if (this.level().isClientSide()) {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-                DisplayEntityMusicManager.onEntityRemoved(this);
-            });
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
+                    DisplayEntityMusicManager.onEntityRemoved(this));
         }
     }
 
     // ------------------------------------------------------------------
-    // tick（已删除强制测试音乐 + 周期日志）
+    // tick
     // ------------------------------------------------------------------
 
     @Override
@@ -239,6 +248,26 @@ public class DisplayEntity extends LivingEntity {
     }
 
     // ------------------------------------------------------------------
+    // 时停免疫：服务端判定 + 客户端同步标记
+    // ------------------------------------------------------------------
+
+    /** 服务端逻辑判定（沿用原有持久化数据） */
+    public boolean isTimeStopImmune() {
+        return this.getPersistentData().getBoolean("TimeStopImmune");
+    }
+
+    /** 客户端同步标记（用于驱动音乐切换） */
+    public boolean isTimeStopImmuneClient() {
+        return this.entityData.get(DATA_TIME_STOP_IMMUNE);
+    }
+
+    /** 设置为时停免疫：服务端写持久化数据 + 同步标记 */
+    public void setTimeStopImmune(boolean v) {
+        this.getPersistentData().putBoolean("TimeStopImmune", v);
+        this.entityData.set(DATA_TIME_STOP_IMMUNE, v);
+    }
+
+    // ------------------------------------------------------------------
     // NBT
     // ------------------------------------------------------------------
 
@@ -258,10 +287,6 @@ public class DisplayEntity extends LivingEntity {
         if (tag.contains("MusicGroup")) setMusicGroup(tag.getString("MusicGroup"));
         if (tag.contains("TimeStopTickCount")) timeStopTickCount = tag.getInt("TimeStopTickCount");
         if (tag.contains("TimeStopImmuneTicks")) timeStopImmuneTicks = tag.getInt("TimeStopImmuneTicks");
-    }
-
-    public boolean isTimeStopImmune() {
-        return this.getPersistentData().getBoolean("TimeStopImmune");
     }
 
     // ------------------------------------------------------------------

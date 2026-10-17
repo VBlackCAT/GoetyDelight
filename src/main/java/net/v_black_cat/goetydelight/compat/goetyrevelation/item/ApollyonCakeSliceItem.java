@@ -122,7 +122,6 @@ public class ApollyonCakeSliceItem extends Item {
     // ------------------------------------------------------------------
 
     private static void summonDisplayTrio(Player player, ServerLevel level) {
-        // 关键：EL 未加载或版本 < 2.2.2 时不召唤
         if (!EndingLibraryCompat.isAtLeastMinVersion()) {
             return;
         }
@@ -168,12 +167,11 @@ public class ApollyonCakeSliceItem extends Item {
             display.setCustomName(Component.literal(names[i]));
             display.setCustomNameVisible(false);
             display.setAnimation("kwil");
-
             display.setMusicGroup(musicGroup);
 
             display.setInvulnerable(true);
 
-            display.getPersistentData().putBoolean(TAG_TIME_STOP_IMMUNE, true);
+            display.setTimeStopImmune(true);
 
             level.addFreshEntity(display);
             spawned.add(display);
