@@ -57,6 +57,9 @@ public class DisplayEntity extends LivingEntity {
     @Nullable
     private ResourceLocation cachedSkin = null;
 
+    /** 客户端是否已经主动触发过一次名字刷新（用于区块重载/读档后补皮肤） */
+    private boolean clientSkinRequested = false;
+
     public DisplayEntity(EntityType<? extends DisplayEntity> entityType, Level level) {
         super(entityType, level);
     }
@@ -131,7 +134,7 @@ public class DisplayEntity extends LivingEntity {
     }
 
     // ------------------------------------------------------------------
-    // 移除：客户端只清理普通实体音乐，不参与时停结束
+    // 移除
     // ------------------------------------------------------------------
 
     @Override
@@ -150,6 +153,18 @@ public class DisplayEntity extends LivingEntity {
     @Override
     public void tick() {
         super.tick();
+
+        // ★ 修复：客户端首次 tick 时若还没触发过皮肤刷新（区块重载 / 读档后
+        //   DATA_CUSTOM_NAME 同步可能不触发），主动补一次。
+        if (this.level().isClientSide() && !clientSkinRequested) {
+            clientSkinRequested = true;
+            Component name = this.getCustomName();
+            if (name != null) {
+                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
+                        DisplayEntityRender.onNameChanged(this, name));
+            }
+        }
+
         tickTimeStopImmuneLifetime();
     }
 
@@ -251,17 +266,14 @@ public class DisplayEntity extends LivingEntity {
     // 时停免疫：服务端判定 + 客户端同步标记
     // ------------------------------------------------------------------
 
-    /** 服务端逻辑判定（沿用原有持久化数据） */
     public boolean isTimeStopImmune() {
         return this.getPersistentData().getBoolean("TimeStopImmune");
     }
 
-    /** 客户端同步标记（用于驱动音乐切换） */
     public boolean isTimeStopImmuneClient() {
         return this.entityData.get(DATA_TIME_STOP_IMMUNE);
     }
 
-    /** 设置为时停免疫：服务端写持久化数据 + 同步标记 */
     public void setTimeStopImmune(boolean v) {
         this.getPersistentData().putBoolean("TimeStopImmune", v);
         this.entityData.set(DATA_TIME_STOP_IMMUNE, v);
@@ -287,6 +299,15 @@ public class DisplayEntity extends LivingEntity {
         if (tag.contains("MusicGroup")) setMusicGroup(tag.getString("MusicGroup"));
         if (tag.contains("TimeStopTickCount")) timeStopTickCount = tag.getInt("TimeStopTickCount");
         if (tag.contains("TimeStopImmuneTicks")) timeStopImmuneTicks = tag.getInt("TimeStopImmuneTicks");
+
+        // ★ 修复：客户端读档后主动补一次皮肤刷新
+        if (this.level().isClientSide()) {
+            Component name = this.getCustomName();
+            if (name != null) {
+                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
+                        DisplayEntityRender.onNameChanged(this, name));
+            }
+        }
     }
 
     // ------------------------------------------------------------------

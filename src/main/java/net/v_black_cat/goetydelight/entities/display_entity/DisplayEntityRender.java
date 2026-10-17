@@ -16,6 +16,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.bedrock.BedrockModel;
 import net.v_black_cat.goetydelight.bedrock.model.BedrockPart;
@@ -28,6 +31,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
@@ -59,6 +63,10 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
             "player__7", "mega32k", "Kun_Zhong"
     };
 
+    /** 合法 Minecraft 用户名（避免用带颜色码/空格的名字去查 API） */
+    private static final Pattern VALID_USERNAME =
+            Pattern.compile("^[A-Za-z0-9_]{3,16}$");
+
     // ============================================================
     // 模型状态
     // ============================================================
@@ -74,6 +82,7 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
 
     // ============================================================
     // 皮肤状态
+    //   ★ 所有 key 一律是 cleanName() 之后的名字
     // ============================================================
 
     private static final Map<String, ResourceLocation> SKIN_CACHE = new ConcurrentHashMap<>();
@@ -81,7 +90,7 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
     private static final Map<String, Long> FAILED_AT = new ConcurrentHashMap<>();
     private static final Map<ResourceLocation, DynamicTexture> REGISTERED_TEXTURES = new ConcurrentHashMap<>();
 
-    private static final Map<String, java.util.Set<DisplayEntity>> WAITING_ENTITIES =
+    private static final Map<String, Set<DisplayEntity>> WAITING_ENTITIES =
             new ConcurrentHashMap<>();
 
     public DisplayEntityRender(EntityRendererProvider.Context context) {
@@ -95,44 +104,57 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
     public static void onNameChanged(DisplayEntity entity, @Nullable Component name) {
         if (entity == null) return;
 
-        String cleaned = cleanName(name == null ? "" : name.getString());
+        String key = cleanName(name == null ? "" : name.getString());
 
-        if (cleaned == null) {
-            entity.setCachedSkin(null);
-            return;
-        }
+        // 名字空/无意义：不动 cachedSkin，交给 render 的 fallback 即可
+        if (key == null) return;
 
-        ResourceLocation cached = SKIN_CACHE.get(cleaned);
+        // 1) 已缓存 → 直接设置
+        ResourceLocation cached = SKIN_CACHE.get(key);
         if (cached != null) {
             entity.setCachedSkin(cached);
             return;
         }
 
-        if (cleaned.equalsIgnoreCase(WU1WU2_NAME)) {
+        // 2) 特殊贴图
+        if (key.equalsIgnoreCase(WU1WU2_NAME)) {
             entity.setCachedSkin(WU1WU2_TEXTURE);
             return;
         }
 
-        entity.setCachedSkin(DEFAULT_STEVE);
+        // 3) 未命中：不写 DEFAULT_STEVE 到 cachedSkin，只登记等待 + 触发解析
+        //    （渲染时用 fallback 临时显示）
+        requestSkinForKey(key, entity);
+    }
 
-        if (PENDING.containsKey(cleaned)) {
-            WAITING_ENTITIES
-                    .computeIfAbsent(cleaned, k -> java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>()))
-                    .add(entity);
-            return;
-        }
-
-        Long failedAt = FAILED_AT.get(cleaned);
+    /**
+     * 为某个清洗后的名字登记等待者并（必要时）发起异步解析。
+     * 不会修改实体的 cachedSkin。
+     */
+    private static void requestSkinForKey(String key, DisplayEntity entity) {
+        // 失败冷却中：不重试，但也不污染 cachedSkin
+        Long failedAt = FAILED_AT.get(key);
         if (failedAt != null && System.currentTimeMillis() - failedAt < RETRY_INTERVAL_MS) {
             return;
         }
 
-        PENDING.put(cleaned, Boolean.TRUE);
-        java.util.Set<DisplayEntity> waiters =
-                java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>());
-        waiters.add(entity);
-        WAITING_ENTITIES.put(cleaned, waiters);
-        resolveSkinAsync(cleaned);
+        // 非法用户名：直接标记失败，避免拿脏名字去查 API
+        if (!VALID_USERNAME.matcher(key).matches()) {
+            FAILED_AT.put(key, System.currentTimeMillis());
+            return;
+        }
+
+        // 登记等待者
+        WAITING_ENTITIES
+                .computeIfAbsent(key, k -> java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>()))
+                .add(entity);
+
+        // 已在请求中：等回调即可
+        if (PENDING.containsKey(key)) return;
+
+        // 发起异步
+        PENDING.put(key, Boolean.TRUE);
+        resolveSkinAsync(key);
     }
 
     // ============================================================
@@ -149,7 +171,11 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
             return;
         }
 
+        // ★ 只读 cachedSkin；为 null 时用 fallback 临时画，绝不在渲染路径里写回 cachedSkin
         ResourceLocation texture = entity.getCachedSkin();
+        if (texture == null) {
+            texture = resolveSkinFallback(entity, entity.getCustomName());
+        }
         if (texture == null) {
             texture = DEFAULT_STEVE;
         }
@@ -182,6 +208,32 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
     }
 
+    /**
+     * 渲染 fallback 解析：只返回本次渲染用的贴图，不写 entity.cachedSkin。
+     * 命中缓存时也可以顺手写回（这是安全的，因为命中的就是正确皮肤）。
+     */
+    @Nullable
+    private static ResourceLocation resolveSkinFallback(DisplayEntity entity, @Nullable Component name) {
+        String key = cleanName(name == null ? "" : name.getString());
+        if (key == null) return null;
+
+        // 命中缓存：写回是安全的
+        ResourceLocation cached = SKIN_CACHE.get(key);
+        if (cached != null) {
+            entity.setCachedSkin(cached);
+            return cached;
+        }
+
+        if (key.equalsIgnoreCase(WU1WU2_NAME)) {
+            entity.setCachedSkin(WU1WU2_TEXTURE);
+            return WU1WU2_TEXTURE;
+        }
+
+        // 未命中：登记等待 + 触发解析，但本次返回 null（上层用 DEFAULT_STEVE 临时画）
+        requestSkinForKey(key, entity);
+        return null;
+    }
+
     // ============================================================
     // 模型姿态重置
     // ============================================================
@@ -212,7 +264,7 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
     }
 
     // ============================================================
-    // 动画应用（已删除一次性日志）
+    // 动画应用
     // ============================================================
 
     private static void applyAnimation(DisplayEntity entity, BedrockModel model, float partialTick) {
@@ -287,27 +339,45 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
 
     // ============================================================
     // 提前缓存皮肤
+    //   ★ 先 cleanName，保证 key 与实体侧一致
     // ============================================================
 
     public static void precacheEndingLibrarySkins() {
-        for (String name : PRECACHE_PLAYER_NAMES) {
-            if (name == null || name.isEmpty()) continue;
-            if (SKIN_CACHE.containsKey(name)) continue;
-            if (PENDING.containsKey(name)) continue;
-            Long failedAt = FAILED_AT.get(name);
+        for (String raw : PRECACHE_PLAYER_NAMES) {
+            String key = cleanName(raw);
+            if (key == null) continue;
+
+            if (SKIN_CACHE.containsKey(key)) continue;
+            if (PENDING.containsKey(key)) continue;
+
+            Long failedAt = FAILED_AT.get(key);
             if (failedAt != null && System.currentTimeMillis() - failedAt < RETRY_INTERVAL_MS) {
                 continue;
             }
-            PENDING.put(name, Boolean.TRUE);
-            resolveSkinAsync(name);
+
+            if (!VALID_USERNAME.matcher(key).matches()) {
+                FAILED_AT.put(key, System.currentTimeMillis());
+                continue;
+            }
+
+            PENDING.put(key, Boolean.TRUE);
+            resolveSkinAsync(key);
         }
     }
 
     // ============================================================
     // 异步皮肤解析
+    //   playerName 必须是 cleanName 后的合法用户名
     // ============================================================
 
     private static void resolveSkinAsync(String playerName) {
+        // 双保险：非法名字直接失败，不发请求
+        if (!VALID_USERNAME.matcher(playerName).matches()) {
+            FAILED_AT.put(playerName, System.currentTimeMillis());
+            PENDING.remove(playerName);
+            return;
+        }
+
         CompletableFuture
                 .supplyAsync(() -> {
                     try {
@@ -333,7 +403,9 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
                             ResourceLocation loc = registerDynamicSkin(playerName, hash);
                             if (loc != null) {
                                 SKIN_CACHE.put(playerName, loc);
-                                java.util.Set<DisplayEntity> waiters = WAITING_ENTITIES.remove(playerName);
+
+                                // 回写登记过的等待者
+                                Set<DisplayEntity> waiters = WAITING_ENTITIES.remove(playerName);
                                 if (waiters != null) {
                                     for (DisplayEntity e : waiters) {
                                         if (e != null && e.isAlive()) {
@@ -341,6 +413,9 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
                                         }
                                     }
                                 }
+
+                                // 兜底扫一遍当前世界同名实体
+                                refreshAllEntitiesWithName(playerName, loc);
                             } else {
                                 FAILED_AT.put(playerName, System.currentTimeMillis());
                                 WAITING_ENTITIES.remove(playerName);
@@ -363,6 +438,23 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
                 });
     }
 
+    /**
+     * 扫描当前世界所有 DisplayEntity，把 cleanName 后等于 key 的实体皮肤设好。
+     * ★ 两边都 cleanName 后比较，避免颜色码/空格/零宽字符差异导致匹配失败。
+     */
+    private static void refreshAllEntitiesWithName(String key, ResourceLocation loc) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null) return;
+        for (var e : mc.level.entitiesForRendering()) {
+            if (!(e instanceof DisplayEntity de)) continue;
+            Component custom = de.getCustomName();
+            String cleaned = cleanName(custom == null ? "" : custom.getString());
+            if (cleaned != null && cleaned.equalsIgnoreCase(key)) {
+                de.setCachedSkin(loc);
+            }
+        }
+    }
+
     @Nullable
     private static ResourceLocation registerDynamicSkin(String playerName, String skinHash) {
         try {
@@ -383,6 +475,9 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
                     "goetydelight", "skins/" + sanitize(playerName));
 
             Minecraft.getInstance().getTextureManager().register(loc, dynamicTexture);
+            // DynamicTexture 必须显式 upload()，否则 GPU 上无像素数据
+            dynamicTexture.upload();
+
             REGISTERED_TEXTURES.put(loc, dynamicTexture);
             return loc;
         } catch (Exception e) {
@@ -392,7 +487,7 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
     }
 
     // ============================================================
-    // 名字清洗
+    // 名字清洗（唯一入口，所有 key 都经过它）
     // ============================================================
 
     @Nullable
@@ -500,5 +595,13 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
         PENDING.clear();
         FAILED_AT.clear();
         WAITING_ENTITIES.clear();
+    }
+
+    @Mod.EventBusSubscriber(modid = GoetyDelight.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+    public static class ClientEvents {
+        @SubscribeEvent
+        public static void onPlayerLogin(ClientPlayerNetworkEvent.LoggingIn event) {
+            DisplayEntityRender.precacheEndingLibrarySkins();
+        }
     }
 }
