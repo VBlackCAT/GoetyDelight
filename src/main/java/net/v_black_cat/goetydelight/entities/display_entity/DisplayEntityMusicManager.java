@@ -57,7 +57,41 @@ public final class DisplayEntityMusicManager {
     }
 
     // ============================================================
-    // 原有事件
+    // 统一延迟执行助手
+    // ------------------------------------------------------------
+    // SoundEngine.tickNonPaused 会在遍历 instanceList 期间调用每个实例的 tick()。
+    // 如果在任何 tick 上下文（实体 tick / sound tick / 网络包处理等）直接调用
+    // SoundManager.stop() 或 .play()，都可能命中该遍历期间的 list 修改，抛出 CME。
+    // 这里统一把 stop/play 投递到 Minecraft.execute 队列，在下一帧 runTick 的
+    // 任务处理阶段执行——那时 SoundEngine.tick 早已返回，修改 list 是安全的。
+    // ============================================================
+
+    private static void execOnRenderThread(Runnable r) {
+        Minecraft.getInstance().execute(r);
+    }
+
+    private static void safeStop(DisplayEntityMusicInstance inst) {
+        if (inst == null) return;
+        execOnRenderThread(() -> Minecraft.getInstance().getSoundManager().stop(inst));
+    }
+
+    private static void safeStop(TimeStopMusicInstance inst) {
+        if (inst == null) return;
+        execOnRenderThread(() -> Minecraft.getInstance().getSoundManager().stop(inst));
+    }
+
+    private static void safePlay(DisplayEntityMusicInstance inst) {
+        if (inst == null) return;
+        execOnRenderThread(() -> Minecraft.getInstance().getSoundManager().play(inst));
+    }
+
+    private static void safePlay(TimeStopMusicInstance inst) {
+        if (inst == null) return;
+        execOnRenderThread(() -> Minecraft.getInstance().getSoundManager().play(inst));
+    }
+
+    // ============================================================
+    // 事件入口
     // ============================================================
 
     public static void onAnimationChanged(DisplayEntity entity, @Nullable String animation) {
@@ -112,14 +146,13 @@ public final class DisplayEntityMusicManager {
             return;
         }
 
-        // 1) 停掉所有实体实例（时停期间不再有实体实例在跑）
+        // 1) 停掉所有实体实例（延迟执行，避免 soundEngine 遍历期间改 list）
         for (DisplayEntityMusicInstance inst : PLAYING.values()) {
-            if (inst != null) mc.getSoundManager().stop(inst);
+            safeStop(inst);
         }
         PLAYING.clear();
 
         // 2) 对每个已知 group，创建唯一的玩家实例
-        //    GROUP_SOUND 可能尚未填充（同步顺序不保证），此时回退到 leader.getAnimation()
         for (Map.Entry<String, DisplayEntity> e : GROUP_LEADER.entrySet()) {
             String key = e.getKey();
             DisplayEntity leader = e.getValue();
@@ -140,7 +173,7 @@ public final class DisplayEntityMusicManager {
                     sound, player, timeStopEndAtMs,
                     () -> onOneTimeStopInstanceFinished(groupKey));
             TIME_STOP_PLAYING.put(key, tsInst);
-            mc.getSoundManager().play(tsInst);
+            safePlay(tsInst);
         }
     }
 
@@ -167,7 +200,7 @@ public final class DisplayEntityMusicManager {
         Minecraft mc = Minecraft.getInstance();
 
         for (TimeStopMusicInstance inst : TIME_STOP_PLAYING.values()) {
-            if (inst != null) mc.getSoundManager().stop(inst);
+            safeStop(inst);
         }
         TIME_STOP_PLAYING.clear();
 
@@ -188,7 +221,7 @@ public final class DisplayEntityMusicManager {
 
             DisplayEntityMusicInstance inst = new DisplayEntityMusicInstance(sound, leader);
             PLAYING.put(leader, inst);
-            mc.getSoundManager().play(inst);
+            safePlay(inst);
         }
     }
 
@@ -269,7 +302,7 @@ public final class DisplayEntityMusicManager {
 
         DisplayEntityMusicInstance instance = new DisplayEntityMusicInstance(music, entity);
         PLAYING.put(entity, instance);
-        Minecraft.getInstance().getSoundManager().play(instance);
+        safePlay(instance);
     }
 
     // ============================================================
@@ -279,7 +312,7 @@ public final class DisplayEntityMusicManager {
     public static void stop(DisplayEntity entity) {
         DisplayEntityMusicInstance instance = PLAYING.remove(entity);
         if (instance != null) {
-            Minecraft.getInstance().getSoundManager().stop(instance);
+            safeStop(instance);
         }
         String group = ENTITY_GROUP.get(entity);
         if (group != null && !inTimeStop) {
@@ -289,10 +322,10 @@ public final class DisplayEntityMusicManager {
 
     public static void stopAll() {
         for (DisplayEntityMusicInstance instance : PLAYING.values()) {
-            Minecraft.getInstance().getSoundManager().stop(instance);
+            safeStop(instance);
         }
         for (TimeStopMusicInstance instance : TIME_STOP_PLAYING.values()) {
-            if (instance != null) Minecraft.getInstance().getSoundManager().stop(instance);
+            safeStop(instance);
         }
         PLAYING.clear();
         TIME_STOP_PLAYING.clear();

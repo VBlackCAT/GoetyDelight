@@ -64,7 +64,12 @@ public class DisplayEntityMusicInstance extends AbstractTickableSoundInstance {
     private void scheduleStop() {
         if (finished) return;
         finished = true;
-        Minecraft.getInstance().execute(this::stop);
+        Minecraft.getInstance().execute(this::stopSafely);
+    }
+
+    /** 再次延迟一层，确保一定不在 SoundEngine 遍历期间执行 */
+    private void stopSafely() {
+        Minecraft.getInstance().execute(super::stop);
     }
 
     @Override

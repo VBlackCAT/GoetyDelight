@@ -72,9 +72,12 @@ public class TimeStopMusicInstance extends AbstractTickableSoundInstance {
     }
 
     private void finishNow() {
-        stop();
-        Runnable cb = onFinished;
-        if (cb != null) cb.run();
+        // 再套一层延迟：确保 stop() 与回调中的 play/stop 都不在 SoundEngine 遍历期间
+        Minecraft.getInstance().execute(() -> {
+            super.stop();
+            Runnable cb = onFinished;
+            if (cb != null) cb.run();
+        });
     }
 
     @Override
