@@ -68,6 +68,7 @@ public class RevelationCompatRegistry {
     public static final RegistryObject<Item> APOCALYPTIUM_POPSICLE;
     public static final RegistryObject<Item> APOCALYPTIUM_LOLLIPOP;
     public static final RegistryObject<Item> ASCENSION_COD_STEW;
+    public static final RegistryObject<Item> DIMENSIONAL_JELL;
 
     static {
         APOCALYPTIUM_POT = BLOCKS.register("apocalyptium_pot_block", () -> new Block(
@@ -189,13 +190,21 @@ public class RevelationCompatRegistry {
                                 .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), sToTick(10), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, sToTick(10), 4), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, sToTick(10), 3), 1.0F)
-                                .effect(() -> new MobEffectInstance(MobEffects.LUCK, sToTick(10), 3), 1.0F)
                                 .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, sToTick(10), 4), 1.0F)
+                                .effect(() -> new MobEffectInstance(ModEffects.SPELL_MASTERY.get(), sToTick(10), 4), 1.0F)
+                                .effect(() -> new MobEffectInstance(ModEffects.SPELL_DURATION.get(), sToTick(10), 4), 1.0F)
                                 .build())));
 
         ASCENSION_COD_STEW = ITEMS.register("ascension_cod_stew",
                 () -> new AscensionCodStewItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).food(
                         simpleFoodItemProperties(15, 12)
+                                .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), sToTick(90), 0), 1.0F)
+                                .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(90), 0), 1.0F)
+                                .build())));
+
+        DIMENSIONAL_JELL = ITEMS.register("dimensional_jell",
+                () -> new DimensionalJellItem(basicItem().stacksTo(1).rarity(Rarity.EPIC).food(
+                        simpleFoodItemProperties(25, 20)
                                 .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), sToTick(90), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(90), 0), 1.0F)
                                 .build())));

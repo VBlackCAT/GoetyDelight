@@ -14,11 +14,12 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.v_black_cat.goetydelight.item.food.PotFoodItem;
 import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.UUID;
 
-public class AscensionCodStewItem extends Item {
+public class AscensionCodStewItem extends PotFoodItem {
     public static final String TAG_COD_BOOST_UNLOCKED = "goetydelight:cod_boost_unlocked";
 
     /** 胸饰槽 +1 的固定 UUID，保证多次调用只覆盖不叠加 */

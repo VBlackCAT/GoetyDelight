@@ -1,0 +1,42 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "type": "forge:partial_nbt",
+    "item": "goety_revelation:the_needle",
+    "nbt": "{\"isRealNeedle\": 1b}"
+  },
+  "craftType": "culinary",
+  "research": "lord",
+  "soulCost": 250,
+  "duration": 40,
+  "ingredients": [
+    {
+      "item": "goety_revelation:apocalyptium_ingot"
+    },
+    {
+      "item": "goety_revelation:apocalyptium_ingot"
+    },
+    {
+      "item": "goety:ice_cube"
+    },
+    {
+      "item": "goety:ice_cube"
+    },
+    {
+      "item": "goety:void_echo"
+    },
+    {
+      "item": "minecraft:blue_ice"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:apocalyptium_popsicle"
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "goety_revelation"
+    }
+  ]
+}

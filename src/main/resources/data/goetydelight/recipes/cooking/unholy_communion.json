@@ -1,0 +1,32 @@
+{
+  "type": "farmersdelight:cooking",
+  "cookingtime": 300,
+  "experience": 50,
+  "ingredients": [
+    {
+      "item": "goety:unholy_blood"
+    },
+    {
+      "item": "goety:raging_matter"
+    },
+    {
+      "item": "goety:berserk_fungus"
+    },
+    {
+      "item": "farmersdelight:tomato_sauce"
+    },
+    {
+      "tag": "goety:meat"
+    },
+    {
+      "tag": "goety:meat"
+    }
+  ],
+  "recipe_book_tab": "misc",
+  "result": {
+    "item": "goetydelight:unholy_communion"
+  },
+  "container": {
+    "item": "goety:unholy_hat"
+  }
+}

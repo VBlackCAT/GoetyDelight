@@ -1,0 +1,46 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "goety_revelation:revelation"
+  },
+  "craftType": "culinary",
+  "research": "lord",
+  "soulCost": 666,
+  "duration": 66,
+  "ingredients": [
+    {
+      "item": "goety_revelation:ascension_halo"
+    },
+    {
+      "item": "goety_revelation:eternal_watch"
+    },
+    {
+      "item": "goety_revelation:apollyon_robe"
+    },
+    {
+      "item": "minecraft:enchanted_golden_apple"
+    },
+    {
+      "item": "minecraft:enchanted_golden_apple"
+    },
+    {
+      "item": "minecraft:cake"
+    },
+    {
+      "item": "minecraft:cake"
+    },
+    {
+      "item": "minecraft:cake"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:apollyon_cake"
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "goety_revelation"
+    }
+  ]
+}
