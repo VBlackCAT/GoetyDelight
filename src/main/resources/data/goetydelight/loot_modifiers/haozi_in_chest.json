@@ -1,7 +1,14 @@
 {
   "type": "goetydelight:goetydelight_loot_modifier",
   "conditions": [
-    { "condition": "goetydelight:container_y_below", "max_y": 40 }
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:chests/abandoned_mineshaft"
+    },
+    {
+      "condition": "goetydelight:y_below_only_container",
+      "max_y": 40
+    }
   ],
   "itemToAdd": "goetydelight:hao_zi",
   "chance": 0.02,

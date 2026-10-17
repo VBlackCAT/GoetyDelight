@@ -34,7 +34,6 @@ public class DisplayEntity extends LivingEntity {
     private static final EntityDataAccessor<String> DATA_ANIMATION =
             SynchedEntityData.defineId(DisplayEntity.class, EntityDataSerializers.STRING);
 
-    /** 音乐分组名。空字符串表示独立播放；非空表示同组共享一份音乐 */
     private static final EntityDataAccessor<String> DATA_MUSIC_GROUP =
             SynchedEntityData.defineId(DisplayEntity.class, EntityDataSerializers.STRING);
 
@@ -105,20 +104,24 @@ public class DisplayEntity extends LivingEntity {
 
         if (!this.level().isClientSide()) return;
 
-        if (DATA_ANIMATION.equals(key)) {
+        boolean isAnim  = DATA_ANIMATION.equals(key);
+        boolean isGroup = DATA_MUSIC_GROUP.equals(key);
+        boolean isName  = DATA_CUSTOM_NAME.equals(key);
+
+        if (isAnim) {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
                     DisplayEntityMusicManager.onAnimationChanged(this, this.getAnimation()));
-        } else if (DATA_MUSIC_GROUP.equals(key)) {
+        } else if (isGroup) {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
                     DisplayEntityMusicManager.onMusicGroupChanged(this, this.getMusicGroup()));
-        } else if (DATA_CUSTOM_NAME.equals(key)) {          // ← 新增
+        } else if (isName) {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
                     DisplayEntityRender.onNameChanged(this, this.getCustomName()));
         }
     }
 
     // ------------------------------------------------------------------
-    // 移除：通知音乐管理器
+    // 移除：通知音乐管理器 + 清理渲染缓存
     // ------------------------------------------------------------------
 
     @Override
@@ -132,7 +135,7 @@ public class DisplayEntity extends LivingEntity {
     }
 
     // ------------------------------------------------------------------
-    // tick
+    // tick（已删除强制测试音乐 + 周期日志）
     // ------------------------------------------------------------------
 
     @Override
@@ -193,20 +196,21 @@ public class DisplayEntity extends LivingEntity {
     }
 
     public void setAnimation(String name) {
-        this.entityData.set(DATA_ANIMATION, name == null ? "" : name);
+        String v = name == null ? "" : name;
+        this.entityData.set(DATA_ANIMATION, v);
     }
 
     // ------------------------------------------------------------------
     // 音乐分组
     // ------------------------------------------------------------------
 
-    /** 空字符串表示独立播放 */
     public String getMusicGroup() {
         return this.entityData.get(DATA_MUSIC_GROUP);
     }
 
     public void setMusicGroup(String group) {
-        this.entityData.set(DATA_MUSIC_GROUP, group == null ? "" : group);
+        String v = group == null ? "" : group;
+        this.entityData.set(DATA_MUSIC_GROUP, v);
     }
 
     // ------------------------------------------------------------------

@@ -55,7 +55,6 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
 
     private static final long RETRY_INTERVAL_MS = 60_000L;
 
-    /** 提前缓存的 3 个玩家名（与 ApollyonCakeSliceItem 召唤的名字一致） */
     private static final String[] PRECACHE_PLAYER_NAMES = {
             "player__7", "mega32k", "Kun_Zhong"
     };
@@ -82,7 +81,6 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
     private static final Map<String, Long> FAILED_AT = new ConcurrentHashMap<>();
     private static final Map<ResourceLocation, DynamicTexture> REGISTERED_TEXTURES = new ConcurrentHashMap<>();
 
-    /** 名字 → 等待该皮肤解析完成的实体列表（弱引用避免泄漏） */
     private static final Map<String, java.util.Set<DisplayEntity>> WAITING_ENTITIES =
             new ConcurrentHashMap<>();
 
@@ -91,12 +89,9 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
     }
 
     // ============================================================
-    // 名字变化回调（由 DisplayEntity.setCustomName 通过 DistExecutor 调用）
+    // 名字变化回调
     // ============================================================
 
-    /**
-     * 只在命名牌名字变化时被调用一次，不在渲染循环里。
-     */
     public static void onNameChanged(DisplayEntity entity, @Nullable Component name) {
         if (entity == null) return;
 
@@ -107,23 +102,19 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
             return;
         }
 
-        // 1) 已缓存 → 直接设置
         ResourceLocation cached = SKIN_CACHE.get(cleaned);
         if (cached != null) {
             entity.setCachedSkin(cached);
             return;
         }
 
-        // 2) 特殊贴图
         if (cleaned.equalsIgnoreCase(WU1WU2_NAME)) {
             entity.setCachedSkin(WU1WU2_TEXTURE);
             return;
         }
 
-        // 3) 未命中 → 先 fallback 到默认，异步解析
         entity.setCachedSkin(DEFAULT_STEVE);
 
-        // 4) 如果请求进行中，注册等待（完成后回写）
         if (PENDING.containsKey(cleaned)) {
             WAITING_ENTITIES
                     .computeIfAbsent(cleaned, k -> java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>()))
@@ -131,13 +122,11 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
             return;
         }
 
-        // 5) 失败冷却中，不重试
         Long failedAt = FAILED_AT.get(cleaned);
         if (failedAt != null && System.currentTimeMillis() - failedAt < RETRY_INTERVAL_MS) {
             return;
         }
 
-        // 6) 发起异步请求
         PENDING.put(cleaned, Boolean.TRUE);
         java.util.Set<DisplayEntity> waiters =
                 java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>());
@@ -147,7 +136,7 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
     }
 
     // ============================================================
-    // 渲染：直接读字段，零字符串/Map 操作
+    // 渲染
     // ============================================================
 
     @Override
@@ -160,7 +149,6 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
             return;
         }
 
-        // 直接读缓存字段
         ResourceLocation texture = entity.getCachedSkin();
         if (texture == null) {
             texture = DEFAULT_STEVE;
@@ -224,7 +212,7 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
     }
 
     // ============================================================
-    // 动画应用
+    // 动画应用（已删除一次性日志）
     // ============================================================
 
     private static void applyAnimation(DisplayEntity entity, BedrockModel model, float partialTick) {
@@ -298,7 +286,7 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
     }
 
     // ============================================================
-    // 提前缓存皮肤（启动时调用）
+    // 提前缓存皮肤
     // ============================================================
 
     public static void precacheEndingLibrarySkins() {
@@ -325,12 +313,9 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
                     try {
                         String uuid = fetchUuid(playerName);
                         if (uuid == null) return null;
-
                         String skinHash = fetchSkinHash(uuid);
                         if (skinHash == null) return null;
-
                         if (!isValidSkinSize(skinHash)) return null;
-
                         return skinHash;
                     } catch (Exception e) {
                         return null;
@@ -348,7 +333,6 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
                             ResourceLocation loc = registerDynamicSkin(playerName, hash);
                             if (loc != null) {
                                 SKIN_CACHE.put(playerName, loc);
-                                // 回写所有等待该皮肤的实体
                                 java.util.Set<DisplayEntity> waiters = WAITING_ENTITIES.remove(playerName);
                                 if (waiters != null) {
                                     for (DisplayEntity e : waiters) {
@@ -498,7 +482,7 @@ public class DisplayEntityRender extends EntityRenderer<DisplayEntity> {
     }
 
     // ============================================================
-    // 贴图选择（直接读实体字段）
+    // 贴图选择
     // ============================================================
 
     @Override
