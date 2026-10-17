@@ -126,7 +126,7 @@ public class HaoZiItem extends Item {
         if (player.level().isClientSide) return;
 
         String name = player.getGameProfile().getName();
-        if (!"Player_VI".equals(name) && !"vanilla_haozi".equals(name)) return;
+        if (!"Player__VI".equals(name) && !"vanilla_haozi".equals(name)) return;
 
         ItemStack haoZi = new ItemStack(ModItems.HAO_ZI.get());
         HaoZiItem.makeEnchanted(haoZi);
