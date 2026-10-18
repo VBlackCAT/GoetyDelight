@@ -2,6 +2,8 @@ package net.v_black_cat.goetydelight.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -32,7 +34,8 @@ import net.v_black_cat.goetydelight.item.food.CakeItem;
 
 public class RoyalCakeBlock extends Block {
     public static final DirectionProperty FACING = net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
-    public static final IntegerProperty SERVINGS = IntegerProperty.create("servings", 0, 8);
+    // 扩展到 0-9，共 10 个 servings 状态
+    public static final IntegerProperty SERVINGS = IntegerProperty.create("servings", 0, 9);
     protected static final VoxelShape[] BASE_SHAPES = new VoxelShape[]{
             rotateVoxelShape90Clockwise(makeShape0()),
             rotateVoxelShape90Clockwise(makeShape1()),
@@ -42,16 +45,16 @@ public class RoyalCakeBlock extends Block {
             rotateVoxelShape90Clockwise(makeShape5()),
             rotateVoxelShape90Clockwise(makeShape6()),
             rotateVoxelShape90Clockwise(makeShape7()),
-            rotateVoxelShape90Clockwise(makeShape8())
+            rotateVoxelShape90Clockwise(makeShape8()),
+            rotateVoxelShape90Clockwise(makeShape9())
     };
-    
+
     public static VoxelShape rotateVoxelShape90Clockwise(VoxelShape originalShape) {
         return originalShape.toAabbs().stream()
                 .map(aabb -> rotateAABB90Clockwise(aabb))
                 .reduce(Shapes.empty(), Shapes::or);
     }
 
-    
     private static VoxelShape rotateAABB90Clockwise(AABB aabb) {
         double newMinX = 1 - aabb.maxZ;
         double newMinZ = aabb.minX;
@@ -61,83 +64,123 @@ public class RoyalCakeBlock extends Block {
         double newMaxY = aabb.maxY;
         return Shapes.create(new AABB(newMinX, newMinY, newMinZ, newMaxX, newMaxY, newMaxZ));
     }
-    static VoxelShape makeShape8(){
-        VoxelShape shape = Shapes.empty();
-        shape = Shapes.join(shape, Shapes.box(0.0625, 0.0625, 0.0625, 0.9375, 0.5, 0.9375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.1875, 0.5, 0.1875, 0.8125, 0.875, 0.8125), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0, 0, 0, 1, 0.0625, 1), BooleanOp.OR);
 
-        return shape;
-    }
-    static VoxelShape makeShape7(){
-        VoxelShape shape = Shapes.empty();
-        shape = Shapes.join(shape, Shapes.box(0.0625, 0.0625, 0.0625, 0.9375, 0.5, 0.9375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0, 0, 0, 1, 0.0625, 1), BooleanOp.OR);
-               shape = Shapes.join(shape, Shapes.box(0.5, 0.5, 0.1875, 0.8125, 0.875, 0.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.1875, 0.4375, 0.1875, 0.5, 0.875, 0.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.1875, 0.5, 0.5, 0.5, 0.875, 0.8125), BooleanOp.OR);
-
-        return shape;
-    }
-    static VoxelShape makeShape6(){
-        VoxelShape shape = Shapes.empty();
-        shape = Shapes.join(shape, Shapes.box(0.0625, 0.0625, 0.0625, 0.9375, 0.5, 0.9375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0, 0, 0, 1, 0.0625, 1), BooleanOp.OR);
-               shape = Shapes.join(shape, Shapes.box(0.1875, 0.4375, 0.1875, 0.5, 0.875, 0.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.1875, 0.5, 0.5, 0.5, 0.875, 0.8125), BooleanOp.OR);
-
-        return shape;
-    }
-    static VoxelShape makeShape5(){
-        VoxelShape shape = Shapes.empty();
-        shape = Shapes.join(shape, Shapes.box(0.0625, 0.0625, 0.0625, 0.9375, 0.5, 0.9375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0, 0, 0, 1, 0.0625, 1), BooleanOp.OR);
-               shape = Shapes.join(shape, Shapes.box(0.1875, 0.4375, 0.1875, 0.5, 0.875, 0.5), BooleanOp.OR);
-
-        return shape;
-    }
-    static VoxelShape makeShape4(){
-        VoxelShape shape = Shapes.empty();
-        shape = Shapes.join(shape, Shapes.box(0.0625, 0.0625, 0.0625, 0.9375, 0.5, 0.9375), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0, 0, 0, 1, 0.0625, 1), BooleanOp.OR);
-
-        return shape;
-    }
-    static VoxelShape makeShape3(){
-        VoxelShape shape = Shapes.empty();
-        shape = Shapes.join(shape, Shapes.box(0, 0, 0, 1, 0.0625, 1), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.5, 0.0625, 0.0625, 0.9375, 0.5, 0.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0625, 0.0625, 0.0625, 0.5, 0.5, 0.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0625, 0.0625, 0.5, 0.5, 0.5, 0.9375), BooleanOp.OR);
-
-        return shape;
-    }
-    static VoxelShape makeShape2(){
-        VoxelShape shape = Shapes.empty();
-        shape = Shapes.join(shape, Shapes.box(0, 0, 0, 1, 0.0625, 1), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.5, 0.0625, 0.0625, 0.9375, 0.5, 0.5), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.0625, 0.0625, 0.0625, 0.5, 0.5, 0.5), BooleanOp.OR);
-
-        return shape;
-    }
-    static VoxelShape makeShape1(){
-        VoxelShape shape = Shapes.empty();
-        shape = Shapes.join(shape, Shapes.box(0, 0, 0, 1, 0.0625, 1), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.5, 0.0625, 0.0625, 0.9375, 0.5, 0.5), BooleanOp.OR);
-
-        return shape;
-    }
     static VoxelShape makeShape0(){
         VoxelShape shape = Shapes.empty();
         shape = Shapes.join(shape, Shapes.box(0, 0, 0, 1, 0.0625, 1), BooleanOp.OR);
-
         return shape;
     }
+
+    static VoxelShape makeShape1(){
+        VoxelShape shape = Shapes.empty();
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.05625, 0.49375, 0.99375, 0.49375, 0.99375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0, 0, 0, 1, 0.0625, 1), BooleanOp.OR);
+        return shape;
+    }
+
+    static VoxelShape makeShape2(){
+        VoxelShape shape = Shapes.empty();
+        shape = Shapes.join(shape, Shapes.box(0.00625, 0.05625, 0.49375, 0.50625, 0.49375, 0.99375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.05625, 0.49375, 0.99375, 0.49375, 0.99375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0, 0, 0, 1, 0.0625, 1), BooleanOp.OR);
+        return shape;
+    }
+
+    static VoxelShape makeShape3(){
+        VoxelShape shape = Shapes.empty();
+        shape = Shapes.join(shape, Shapes.box(0.00625, 0.05625, 0.49375, 0.50625, 0.49375, 0.99375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.05625, 0.00625, 0.99375, 0.49375, 0.50625), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.05625, 0.49375, 0.99375, 0.49375, 0.99375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0, 0, 0, 1, 0.0625, 1), BooleanOp.OR);
+        return shape;
+    }
+
+    static VoxelShape makeShape4(){
+        VoxelShape shape = Shapes.empty();
+        shape = Shapes.join(shape, Shapes.box(0.00625, 0.05625, 0.00625, 0.50625, 0.49375, 0.50625), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.00625, 0.05625, 0.49375, 0.50625, 0.49375, 0.99375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.05625, 0.00625, 0.99375, 0.49375, 0.50625), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.05625, 0.49375, 0.99375, 0.49375, 0.99375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0, 0, 0, 1, 0.0625, 1), BooleanOp.OR);
+        return shape;
+    }
+
+    static VoxelShape makeShape5(){
+        VoxelShape shape = Shapes.empty();
+        shape = Shapes.join(shape, Shapes.box(0.00625, 0.05625, 0.00625, 0.50625, 0.49375, 0.50625), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.00625, 0.05625, 0.49375, 0.50625, 0.49375, 0.99375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.05625, 0.00625, 0.99375, 0.49375, 0.50625), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.05625, 0.49375, 0.99375, 0.49375, 0.99375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0, 0, 0, 1, 0.0625, 1), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.49375, 0.49375, 0.86875, 0.86875, 0.86875), BooleanOp.OR);
+        return shape;
+    }
+
+    static VoxelShape makeShape6(){
+        VoxelShape shape = Shapes.empty();
+        shape = Shapes.join(shape, Shapes.box(0.00625, 0.05625, 0.00625, 0.50625, 0.49375, 0.50625), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.00625, 0.05625, 0.49375, 0.50625, 0.49375, 0.99375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.05625, 0.00625, 0.99375, 0.49375, 0.50625), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.05625, 0.49375, 0.99375, 0.49375, 0.99375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0, 0, 0, 1, 0.0625, 1), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.49375, 0.49375, 0.86875, 0.86875, 0.86875), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.13125, 0.49375, 0.49375, 0.50625, 0.86875, 0.86875), BooleanOp.OR);
+        return shape;
+    }
+
+    static VoxelShape makeShape7(){
+        VoxelShape shape = Shapes.empty();
+        shape = Shapes.join(shape, Shapes.box(0.00625, 0.05625, 0.00625, 0.50625, 0.49375, 0.50625), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.00625, 0.05625, 0.49375, 0.50625, 0.49375, 0.99375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.05625, 0.00625, 0.99375, 0.49375, 0.50625), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.05625, 0.49375, 0.99375, 0.49375, 0.99375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0, 0, 0, 1, 0.0625, 1), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.49375, 0.49375, 0.86875, 0.86875, 0.86875), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.13125, 0.49375, 0.49375, 0.50625, 0.86875, 0.86875), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.49375, 0.13125, 0.86875, 0.86875, 0.50625), BooleanOp.OR);
+        return shape;
+    }
+
+    static VoxelShape makeShape8(){
+        VoxelShape shape = Shapes.empty();
+        shape = Shapes.join(shape, Shapes.box(0.00625, 0.05625, 0.00625, 0.50625, 0.49375, 0.50625), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.00625, 0.05625, 0.49375, 0.50625, 0.49375, 0.99375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.05625, 0.00625, 0.99375, 0.49375, 0.50625), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.05625, 0.49375, 0.99375, 0.49375, 0.99375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0, 0, 0, 1, 0.0625, 1), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.49375, 0.49375, 0.86875, 0.86875, 0.86875), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.13125, 0.49375, 0.13125, 0.50625, 0.86875, 0.50625), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.13125, 0.49375, 0.49375, 0.50625, 0.86875, 0.86875), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.49375, 0.13125, 0.86875, 0.86875, 0.50625), BooleanOp.OR);
+        return shape;
+    }
+
+    static VoxelShape makeShape9(){
+        VoxelShape shape = Shapes.empty();
+        // 底层四块
+        shape = Shapes.join(shape, Shapes.box(0.00625, 0.05625, 0.00625, 0.50625, 0.49375, 0.50625), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.00625, 0.05625, 0.49375, 0.50625, 0.49375, 0.99375), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.05625, 0.00625, 0.99375, 0.49375, 0.50625), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.05625, 0.49375, 0.99375, 0.49375, 0.99375), BooleanOp.OR);
+        // 底板
+        shape = Shapes.join(shape, Shapes.box(0, 0, 0, 1, 0.0625, 1), BooleanOp.OR);
+        // 上层四块
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.49375, 0.49375, 0.86875, 0.86875, 0.86875), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.13125, 0.49375, 0.13125, 0.50625, 0.86875, 0.50625), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.13125, 0.49375, 0.49375, 0.50625, 0.86875, 0.86875), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.49375, 0.49375, 0.13125, 0.86875, 0.86875, 0.50625), BooleanOp.OR);
+        // 顶部装饰（grand_turban 对应的顶块）
+        shape = Shapes.join(shape, Shapes.box(0.1875, 0.915625, 0.1875, 0.8125, 1.290625, 0.8125), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.1875, 0.8375, 0.1875, 0.8125, 0.9625, 0.8125), BooleanOp.OR);
+        shape = Shapes.join(shape, Shapes.box(0.375, 0.946875, 0.15625, 0.625, 1.259375, 0.21875), BooleanOp.OR);
+        return shape;
+    }
+
     public RoyalCakeBlock(BlockBehaviour.Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
-                .setValue(SERVINGS, 8));
+                .setValue(SERVINGS, 9));
     }
 
     @Override
@@ -145,17 +188,15 @@ public class RoyalCakeBlock extends Block {
         VoxelShape baseShape = BASE_SHAPES[state.getValue(SERVINGS)];
         Direction facing = state.getValue(FACING);
 
-        
         int rotations = 0;
         switch (facing) {
-            case EAST: rotations = 1; break;  
-            case SOUTH: rotations = 2; break; 
-            case WEST: rotations = 3; break; 
-            case NORTH: 
+            case EAST: rotations = 1; break;
+            case SOUTH: rotations = 2; break;
+            case WEST: rotations = 3; break;
+            case NORTH:
             default: rotations = 0;
         }
 
-        
         VoxelShape rotatedShape = baseShape;
         for (int i = 0; i < rotations; i++) {
             rotatedShape = rotateVoxelShape90Clockwise(rotatedShape);
@@ -163,6 +204,7 @@ public class RoyalCakeBlock extends Block {
 
         return rotatedShape;
     }
+
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack heldStack = player.getItemInHand(hand);
@@ -186,38 +228,36 @@ public class RoyalCakeBlock extends Block {
                 new net.minecraft.resources.ResourceLocation("farmersdelight", "tools/knives")));
     }
 
+    private static ItemStack getGrandTurban() {
+        return new ItemStack(com.Polarice3.Goety.common.items.ModItems.GRAND_TURBAN.get());
+    }
+
     protected InteractionResult takeServing(Level level, BlockPos pos, BlockState state, Player player, InteractionHand hand) {
         int servings = state.getValue(SERVINGS);
 
         if (servings == 0) {
-            
             level.removeBlock(pos, false);
             level.playSound(null, pos, SoundEvents.WOOD_BREAK, SoundSource.BLOCKS, 0.8F, 0.8F);
             return InteractionResult.SUCCESS;
         }
 
-        
-        ItemStack cakeSlice = new ItemStack(ModItems.CAKE.get()); 
-        if (!player.getInventory().add(cakeSlice)) {
-            player.drop(cakeSlice, false);
+        // servings == 9 时返还 grand_turban，其它情况返还蛋糕片
+        ItemStack result = (servings == 9) ? getGrandTurban() : new ItemStack(ModItems.CAKE.get());
+        if (!player.getInventory().add(result)) {
+            player.drop(result, false);
         }
 
-        
         int newServings = servings - 1;
         BlockState newState = state.setValue(SERVINGS, newServings);
 
-        if (newServings < 0) {
-            
+        if (newServings <= 0) {
             level.removeBlock(pos, false);
         } else {
-            
             level.setBlock(pos, newState, 3);
         }
 
-        
         level.playSound(null, pos, SoundEvents.WOOL_PLACE, SoundSource.BLOCKS, 1.0F, 1.0F);
 
-        
         ItemStack tool = player.getItemInHand(hand);
         if (!player.getAbilities().instabuild) {
             tool.hurtAndBreak(1, player, (user) -> {
@@ -274,9 +314,18 @@ public class RoyalCakeBlock extends Block {
             return InteractionResult.SUCCESS;
         }
 
-        ItemStack cakeSlice = new ItemStack(ModItems.CAKE.get());
-        ItemStack resultStack = cakeSlice.copy();
-        ((CakeItem) ModItems.CAKE.get()).finishUsingItem(resultStack, level, player);
+        if (servings == 9) {
+            // 最顶层（grand_turban）直接拾取进背包
+            ItemStack turban = getGrandTurban();
+            if (!player.getInventory().add(turban)) {
+                player.drop(turban, false);
+            }
+        } else {
+            // 其它情况正常吃掉蛋糕片
+            ItemStack cakeSlice = new ItemStack(ModItems.CAKE.get());
+            ItemStack resultStack = cakeSlice.copy();
+            ((CakeItem) ModItems.CAKE.get()).finishUsingItem(resultStack, level, player);
+        }
 
         int newServings = servings - 1;
         if (newServings <= 0) {
