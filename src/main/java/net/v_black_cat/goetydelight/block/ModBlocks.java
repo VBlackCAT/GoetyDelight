@@ -78,6 +78,12 @@ public class ModBlocks {
                     .strength(0.5F, 6.0F)
                     .sound(SoundType.LANTERN)));
 
+    public static final RegistryObject<Block> BLACK_IRON_POT = registerBlock("black_iron_cooking_pot",() ->
+            new BlackIronPotBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL)
+                    .strength(0.5F, 6.0F)
+                    .sound(SoundType.LANTERN)));
+
 
     //腐尸蛆虫盛宴方块
     public static final RegistryObject<Block> ROTTEN_CORPSE_MAGGOT_FEAST_BLOCK = registerBlock("rotten_corpse_maggot_feast_block",() ->

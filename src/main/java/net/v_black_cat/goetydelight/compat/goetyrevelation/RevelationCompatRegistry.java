@@ -3,6 +3,7 @@ package net.v_black_cat.goetydelight.compat.goetyrevelation;
 import com.Polarice3.Goety.common.effects.GoetyEffects;
 import com.mega.revelationfix.common.item.ModItemTiers;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.*;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
@@ -11,14 +12,14 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
-import net.v_black_cat.goetydelight.compat.goetyrevelation.block.ApollyonCakeBlock;
-import net.v_black_cat.goetydelight.compat.goetyrevelation.block.ApollyonCakeBlockEntity;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.block.*;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.item.*;
 import net.v_black_cat.goetydelight.effect.ModEffects;
 import net.v_black_cat.goetydelight.spell.MalevolentShrineSpell;
@@ -44,8 +45,13 @@ public class RevelationCompatRegistry {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
             DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, GoetyDelight.MODID);
 
+    public static final DeferredRegister<MenuType<?>> MENUS =
+            DeferredRegister.create(ForgeRegistries.MENU_TYPES, GoetyDelight.MODID);
+
     public static final RegistryObject<Block> APOCALYPTIUM_POT;
     public static final RegistryObject<Item> APOCALYPTIUM_POT_ITEM;
+    public static final RegistryObject<BlockEntityType<ApocalyptiumCookingPotBlockEntity>> APOCALYPTIUM_POT_BE;
+    public static final RegistryObject<MenuType<ApocalyptiumCookingPotMenu>> APOCALYPTIUM_POT_MENU;
 
     public static final RegistryObject<Block> APOLLYON_CAKE;
     public static final RegistryObject<BlockEntityType<ApollyonCakeBlockEntity>> APOLLYON_CAKE_BE;
@@ -72,12 +78,19 @@ public class RevelationCompatRegistry {
     public static final RegistryObject<Item> ROAST_NEEDLE;
 
     static {
-        APOCALYPTIUM_POT = BLOCKS.register("apocalyptium_pot_block", () -> new Block(
-                BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
-                        .noLootTable()
-                        .sound(SoundType.AMETHYST)));
-        APOCALYPTIUM_POT_ITEM = ITEMS.register("apocalyptium_pot",
+        APOCALYPTIUM_POT = BLOCKS.register("apocalyptium_cooking_pot",
+                () -> new ApocalyptiumCookingPotBlock(
+                        BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
+                                .noLootTable()
+                                .sound(SoundType.AMETHYST)));
+        APOCALYPTIUM_POT_ITEM = ITEMS.register("apocalyptium_cooking_pot",
                 () -> new BlockItem(APOCALYPTIUM_POT.get(), new Item.Properties()));
+        APOCALYPTIUM_POT_BE = BLOCK_ENTITIES.register("apocalyptium_cooking_pot",
+                () -> BlockEntityType.Builder
+                        .of(ApocalyptiumCookingPotBlockEntity::new, APOCALYPTIUM_POT.get())
+                        .build(null));
+        APOCALYPTIUM_POT_MENU = MENUS.register("apocalyptium_cooking_pot",
+                () -> IForgeMenuType.create(ApocalyptiumCookingPotMenu::new));
 
         APOLLYON_CAKE = BLOCKS.register("apollyon_cake",
                 () -> new ApollyonCakeBlock(
@@ -232,5 +245,6 @@ public class RevelationCompatRegistry {
         BLOCKS.register(eventBus);
         ITEMS.register(eventBus);
         BLOCK_ENTITIES.register(eventBus);
+        MENUS.register(eventBus);
     }
 }

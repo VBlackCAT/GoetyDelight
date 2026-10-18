@@ -22,6 +22,11 @@ public class ModBlockEntities {
                     BlockEntityType.Builder.of(CursedIngotPotBlockEntity::new,
                             ModBlocks.CURSED_INGOT_POT.get()).build(null));
 
+    public static final RegistryObject<BlockEntityType<BlackIronPotBlockEntity>> BLACK_IRON_POT_BE =
+            BLOCK_ENTITIES.register("black_iron_cooking_pot", () ->
+                    BlockEntityType.Builder.of(BlackIronPotBlockEntity::new,
+                            ModBlocks.BLACK_IRON_POT.get()).build(null));
+
     public static final RegistryObject<BlockEntityType<ShadeStoveBlockEntity>> SHADE_STOVE_BE =
             BLOCK_ENTITIES.register("shade_stove", () ->
                     BlockEntityType.Builder.of(ShadeStoveBlockEntity::new,

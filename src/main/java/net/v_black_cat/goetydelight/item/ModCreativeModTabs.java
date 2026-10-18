@@ -51,7 +51,7 @@ public class ModCreativeModTabs {
          BLACKLIST.add(ModBlocks.JUNGLE_MARBLE);
          BLACKLIST.add(ModBlocks.MARBLE_TRAPDOOR);
          BLACKLIST.add(ModBlocks.RENDER_BLOCK);
-
+         BLACKLIST.add(ModBlocks.BLACK_IRON_POT);
     }
 
     public static final RegistryObject<CreativeModeTab> GOETYDELIGHT_TAB = CREATIVE_MODE_TABS.register("goetydelight_tab",
