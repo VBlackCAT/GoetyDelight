@@ -6,7 +6,7 @@
     "item": "goety_revelation:the_needle",
     "nbt": "{\"isRealNeedle\": 1b}"
   },
-  "craftType": "culinary",
+  "craftType": "master_culinary",
   "research": "lord",
   "soulCost": 250,
   "duration": 40,

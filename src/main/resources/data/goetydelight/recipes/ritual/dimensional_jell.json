@@ -4,7 +4,7 @@
   "activation_item": {
     "item": "goety_revelation:dimensional_will"
   },
-  "craftType": "culinary",
+  "craftType": "master_culinary",
   "research": "lord",
   "soulCost": 1000,
   "duration": 20,
@@ -26,13 +26,13 @@
     },
     {
       "item": "minecraft:enchanted_golden_apple"
+    },
+    {
+      "item": "goetydelight:atonement_voucher_wraped_cod"
     }
   ],
   "result": {
     "item": "goetydelight:dimensional_jell"
-  },
-  "container": {
-    "item": "goetydelight:atonement_voucher_wraped_cod"
   },
   "conditions": [
     {

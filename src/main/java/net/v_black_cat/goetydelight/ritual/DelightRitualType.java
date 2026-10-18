@@ -115,10 +115,6 @@ public class DelightRitualType implements IRitualType {
             returnSpecialItems(world, darkAltarPos, castingPlayer,activationItem.copyWithCount(1));
         } else if (recipe.getId().toString().equals("goetydelight:ritual/undeath_potion")) {
             returnSpecialItems(world, darkAltarPos, castingPlayer,new ItemStack(UNDEATH_POTION.get()));
-        } else if (recipe.getId().toString().equals("goetydelight:ritual/apollyon_cake")) {
-            returnSpecialItems(world, darkAltarPos, castingPlayer, activationItem.copy());
-        }else if (recipe.getId().toString().equals("goetydelight:ritual/dimensional_jell")) {
-            returnSpecialItems(world, darkAltarPos, castingPlayer, activationItem.copy());
         }
 
         world.playSound(null, darkAltarPos, SoundEvents.BELL_RESONATE,

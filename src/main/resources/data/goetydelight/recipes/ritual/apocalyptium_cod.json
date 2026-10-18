@@ -11,7 +11,7 @@
       }
     }
   },
-  "craftType": "culinary",
+  "craftType": "master_culinary",
   "entity_to_sacrifice": {
     "tag": "goetydelight:apostle",
     "display_name": "entity.goety.apostle"

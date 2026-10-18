@@ -1,0 +1,36 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "goetydelight:cursed_ingot_pot"
+  },
+  "craftType": "master_forge",
+  "soulCost": 100,
+  "duration": 10,
+  "ingredients": [
+    {
+      "item": "goety_revelation:apocalyptium_ingot"
+    },
+    {
+      "item": "goety_revelation:apocalyptium_ingot"
+    },
+    {
+      "item": "goety_revelation:apocalyptium_ingot"
+    },
+    {
+      "item": "goety_revelation:apocalyptium_ingot"
+    },
+    {
+      "item": "goety:dark_metal_block"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:apocalyptium_cooking_pot"
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "goety_revelation"
+    }
+  ]
+}
