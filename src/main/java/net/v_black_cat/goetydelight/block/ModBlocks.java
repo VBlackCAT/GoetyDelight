@@ -175,9 +175,6 @@ public class ModBlocks {
                     .noLootTable()
                     .lightLevel(state -> 15)));
 
-    // apocalyptium_pot 已拆到联动模块：compat/goetyrevelation/RevelationCompatRegistry
-    //（仅当 goety_revelation 存在时才注册）
-
     //灵质瓜
     public static final RegistryObject<Block> ECTOPLASMIC_MELON_BLOCK = registerBlock("ectoplasmic_melon_block",
             () -> new EctoplasmicMelonBlock(BlockBehaviour.Properties.copy(Blocks.MELON)));

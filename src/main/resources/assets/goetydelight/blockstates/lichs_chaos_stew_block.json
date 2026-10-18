@@ -16,6 +16,14 @@
       "model": "goetydelight:block/lichs_chaos_stew_block_stage_3",
       "y": 90
     },
+    "facing=east,servings=4": {
+      "model": "goetydelight:block/lichs_chaos_stew_block_stage_4",
+      "y": 90
+    },
+    "facing=east,servings=5": {
+      "model": "goetydelight:block/lichs_chaos_stew_block_stage_5",
+      "y": 90
+    },
     "facing=north,servings=0": {
       "model": "goetydelight:block/lichs_chaos_stew_block_stage_0"
     },
@@ -27,6 +35,12 @@
     },
     "facing=north,servings=3": {
       "model": "goetydelight:block/lichs_chaos_stew_block_stage_3"
+    },
+    "facing=north,servings=4": {
+      "model": "goetydelight:block/lichs_chaos_stew_block_stage_4"
+    },
+    "facing=north,servings=5": {
+      "model": "goetydelight:block/lichs_chaos_stew_block_stage_5"
     },
     "facing=south,servings=0": {
       "model": "goetydelight:block/lichs_chaos_stew_block_stage_0",
@@ -44,6 +58,14 @@
       "model": "goetydelight:block/lichs_chaos_stew_block_stage_3",
       "y": 180
     },
+    "facing=south,servings=4": {
+      "model": "goetydelight:block/lichs_chaos_stew_block_stage_4",
+      "y": 180
+    },
+    "facing=south,servings=5": {
+      "model": "goetydelight:block/lichs_chaos_stew_block_stage_5",
+      "y": 180
+    },
     "facing=west,servings=0": {
       "model": "goetydelight:block/lichs_chaos_stew_block_stage_0",
       "y": 270
@@ -58,6 +80,14 @@
     },
     "facing=west,servings=3": {
       "model": "goetydelight:block/lichs_chaos_stew_block_stage_3",
+      "y": 270
+    },
+    "facing=west,servings=4": {
+      "model": "goetydelight:block/lichs_chaos_stew_block_stage_4",
+      "y": 270
+    },
+    "facing=west,servings=5": {
+      "model": "goetydelight:block/lichs_chaos_stew_block_stage_5",
       "y": 270
     }
   }
