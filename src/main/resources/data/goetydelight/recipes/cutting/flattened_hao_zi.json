@@ -1,0 +1,17 @@
+{
+  "type": "farmersdelight:cutting",
+  "ingredients": [
+    {
+      "item": "goetydelight:hao_zi"
+    }
+  ],
+  "result": [
+    {
+      "count": 1,
+      "item": "goetydelight:flattened_hao_zi"
+    }
+  ],
+  "tool": {
+    "item": "farmersdelight:skillet"
+  }
+}

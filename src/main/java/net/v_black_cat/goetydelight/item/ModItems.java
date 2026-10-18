@@ -163,6 +163,7 @@ public class ModItems {
     public static final RegistryObject<Item> HAO_ZI;
     public static final RegistryObject<Item> ROAST_HAO_ZI;
     public static final RegistryObject<Item> UNHOLY_COMMUNION;
+    public static final RegistryObject<Item> FLATTENED_HAO_ZI;
 
     //种子
     public static final RegistryObject<Item> ECTOPLASMIC_MELON_SEEDS;
@@ -882,6 +883,11 @@ public class ModItems {
         ROAST_HAO_ZI = ITEMS.register("roast_hao_zi",
                 () -> new RoastHaoZiItem(basicItem().stacksTo(64).rarity(Rarity.COMMON)
                         .food(simpleFoodItemProperties(5, 3)
+                                .build())));
+
+        FLATTENED_HAO_ZI = ITEMS.register("flattened_hao_zi",
+                () -> new FlattenedHaoZiItem(basicItem().stacksTo(64).rarity(Rarity.COMMON)
+                        .food(simpleFoodItemProperties(2, 2)
                                 .build())));
 
         UNHOLY_COMMUNION = ITEMS.register("unholy_communion",
