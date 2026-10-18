@@ -69,6 +69,7 @@ public class RevelationCompatRegistry {
     public static final RegistryObject<Item> APOCALYPTIUM_LOLLIPOP;
     public static final RegistryObject<Item> ASCENSION_COD_STEW;
     public static final RegistryObject<Item> DIMENSIONAL_JELL;
+    public static final RegistryObject<Item> ROAST_NEEDLE;
 
     static {
         APOCALYPTIUM_POT = BLOCKS.register("apocalyptium_pot_block", () -> new Block(
@@ -207,6 +208,12 @@ public class RevelationCompatRegistry {
                         simpleFoodItemProperties(25, 20)
                                 .effect(() -> new MobEffectInstance(ModEffects.THE_PALE_MESSRNGER.get(), sToTick(90), 0), 1.0F)
                                 .effect(() -> new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), sToTick(90), 0), 1.0F)
+                                .build())));
+
+        ROAST_NEEDLE = ITEMS.register("roast_needle",
+                () -> new RoastNeedleItem(basicItem().stacksTo(1).rarity(Rarity.UNCOMMON).food(
+                        simpleFoodItemProperties(5, 4)
+                                .effect(() -> new MobEffectInstance(MobEffects.UNLUCK, sToTick(90), 4), 1.0F)
                                 .build())));
 
 

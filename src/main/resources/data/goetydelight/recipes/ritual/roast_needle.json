@@ -1,0 +1,37 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "goety_revelation:the_needle"
+  },
+  "craftType": "culinary",
+  "research": "lord",
+  "soulCost": 100,
+  "duration": 10,
+  "ingredients": [
+    {
+      "item": "goety_revelation:apocalyptium_ingot"
+    },
+    {
+      "item": "minecraft:stick"
+    },
+    {
+      "item": "minecraft:honey_bottle"
+    },
+    {
+      "item": "minecraft:beetroot_soup"
+    },
+    {
+      "item": "goetydelight:ruby_syrup"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:roast_needle"
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "goety_revelation"
+    }
+  ]
+}
