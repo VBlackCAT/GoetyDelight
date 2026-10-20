@@ -513,6 +513,10 @@
   "item.goetydelight.apocalyptium_popsicle.tooltip.1": "“我必以公平为准绳，以公义为线铊”",
   "item.goetydelight.apocalyptium_popsicle.tooltip.2": "“冰雹必冲去谎言的避所”",
   "item.goetydelight.apocalyptium_popsicle.tooltip.3": "“大水必漫过藏身之处”",
-  "item.goetydelight.dimensional_jell.tooltip.1": "“神啊，求你恩待我，恩待我，因为我的心投靠你”",
-  "item.goetydelight.dimensional_jell.tooltip.2": "“我投靠在你翅膀的荫庇下，等到祸患过去”"
+  "item.goetydelight.dimensional_jell.tooltip.1": "食用后永久获得一个背饰槽位",
+  "item.goetydelight.dimensional_jell.tooltip.2": "免疫10次致命伤害",
+  "item.goetydelight.dimensional_jell.tooltip.3": "受到超过生命上限一半的伤害时，伤害减半",
+  "item.goetydelight.dimensional_jell.tooltip.4": "免死5次，触发时立即回满生命",
+  "item.goetydelight.dimensional_jell.tooltip.5": "“神啊，求你恩待我，恩待我，因为我的心投靠你”",
+  "item.goetydelight.dimensional_jell.tooltip.6": "“我投靠在你翅膀的荫庇下，等到祸患过去”"
 }

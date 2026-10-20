@@ -513,6 +513,10 @@
   "item.goetydelight.apocalyptium_popsicle.tooltip.1": "\"I will make justice the measuring line and righteousness the plumb line\"",
   "item.goetydelight.apocalyptium_popsicle.tooltip.2": "\"hail will sweep away your refuge of lies\"",
   "item.goetydelight.apocalyptium_popsicle.tooltip.3": "\"and water will overflow your hiding place\"",
-  "item.goetydelight.dimensional_jell.tooltip.1": "\"Have mercy on me, my God, have mercy on me, for in you I take refuge\"",
-  "item.goetydelight.dimensional_jell.tooltip.2": "\"I will take refuge in the shadow of your wings until the disaster has passed\""
+  "item.goetydelight.dimensional_jell.tooltip.1": "Permanently grants one back slot",
+  "item.goetydelight.dimensional_jell.tooltip.2": "Immune to 10 fatal blows",
+  "item.goetydelight.dimensional_jell.tooltip.3": "Damage above half your max health is halved",
+  "item.goetydelight.dimensional_jell.tooltip.4": "Cheats death 5 times, restoring full health each time",
+  "item.goetydelight.dimensional_jell.tooltip.5": "\"Have mercy on me, my God, have mercy on me, for in you I take refuge\"",
+  "item.goetydelight.dimensional_jell.tooltip.6": "\"I will take refuge in the shadow of your wings until the disaster has passed\""
 }
