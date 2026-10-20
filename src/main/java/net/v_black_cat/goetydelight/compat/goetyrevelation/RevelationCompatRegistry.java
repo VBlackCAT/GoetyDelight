@@ -33,7 +33,6 @@ import static net.v_black_cat.goetydelight.util.TimeConverter.minToTick;
 import static net.v_black_cat.goetydelight.util.TimeConverter.sToTick;
 import static vectorwing.farmersdelight.common.registry.ModItems.basicItem;
 
-@Mod.EventBusSubscriber(modid = GoetyRevelationCompat.ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class RevelationCompatRegistry {
 
     public static final DeferredRegister<Item> ITEMS =
@@ -68,7 +67,7 @@ public class RevelationCompatRegistry {
     public static final RegistryObject<Item> ATONEMENT_VOUCHER_WRAPED_COD;
     public static final RegistryObject<Item> ASCENSION_MOONCAKE;
     public static final RegistryObject<Item> QUIETUS_MARROW;
-    public static final RegistryObject<Item> MALEVOLENT_SHRINE_FOCUS;
+//    public static final RegistryObject<Item> MALEVOLENT_SHRINE_FOCUS;
     public static final RegistryObject<Item> APOLLYON_CAKE_ITEM;
     public static final RegistryObject<Item> APOLLYON_CAKE_SLICE;
     public static final RegistryObject<Item> APOCALYPTIUM_POPSICLE;
@@ -76,6 +75,7 @@ public class RevelationCompatRegistry {
     public static final RegistryObject<Item> ASCENSION_COD_STEW;
     public static final RegistryObject<Item> DIMENSIONAL_JELL;
     public static final RegistryObject<Item> ROAST_NEEDLE;
+    public static final RegistryObject<Item> CRYSTAL_CANDY;
 
     static {
         APOCALYPTIUM_POT = BLOCKS.register("apocalyptium_cooking_pot",
@@ -229,9 +229,15 @@ public class RevelationCompatRegistry {
                                 .effect(() -> new MobEffectInstance(MobEffects.UNLUCK, sToTick(90), 4), 1.0F)
                                 .build())));
 
+        CRYSTAL_CANDY = ITEMS.register("crystal_candy",
+                () -> new CrystalCandyItem(basicItem().stacksTo(1).rarity(Rarity.EPIC).food(
+                        simpleFoodItemProperties(12, 8)
+                                .effect(() -> new MobEffectInstance(MobEffects.LUCK, sToTick(90), 4), 1.0F)
+                                .build())));
 
-        MALEVOLENT_SHRINE_FOCUS = ITEMS.register("malevolent_shrine_focus",
-                () -> new PetroleumMistFocus(new MalevolentShrineSpell()));
+
+//        MALEVOLENT_SHRINE_FOCUS = ITEMS.register("malevolent_shrine_focus",
+//                () -> new PetroleumMistFocus(new MalevolentShrineSpell()));
     }
 
     private static FoodProperties.Builder simpleFoodItemProperties(int nutrition, float saturationMod) {

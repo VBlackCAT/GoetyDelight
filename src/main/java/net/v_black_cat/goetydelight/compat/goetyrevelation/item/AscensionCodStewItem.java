@@ -1,5 +1,6 @@
 package net.v_black_cat.goetydelight.compat.goetyrevelation.item;
 
+import com.Polarice3.Goety.common.effects.GoetyEffects;
 import com.google.common.collect.ImmutableMultimap;
 import com.mega.endinglib.api.client.text.TextColorUtils;
 import java.util.List;
@@ -82,6 +83,7 @@ public class AscensionCodStewItem extends PotFoodItem {
 
         player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 3 * 60 * 20, 3));
         player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 3 * 60 * 20, 4));
+        player.addEffect(new MobEffectInstance(GoetyEffects.DOOM.get(), 3 * 60 * 20, 20));
     }
 
         @Override

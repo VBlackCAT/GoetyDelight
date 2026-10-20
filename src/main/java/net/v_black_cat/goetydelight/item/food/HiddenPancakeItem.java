@@ -23,7 +23,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.v_black_cat.goetydelight.api.ITimedEntityManager;
-import net.v_black_cat.goetydelight.compat.goetyrevelation.ApocalyptiumData;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.util.ApocalyptiumData;
 import net.v_black_cat.goetydelight.item.ModItems;
 import net.v_black_cat.goetydelight.util.TimedEntityManager;
 

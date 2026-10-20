@@ -18,6 +18,7 @@
     "RecipeManagerMixin",
     "SummonApollyonMixin",
     "SummonSpellMixin",
+    "TheNeedleItemMixin",
     "WightSpawnerMixin"
   ],
   "client": [

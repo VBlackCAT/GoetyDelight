@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.compat.goetyrevelation;
+package net.v_black_cat.goetydelight.compat.goetyrevelation.util;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;

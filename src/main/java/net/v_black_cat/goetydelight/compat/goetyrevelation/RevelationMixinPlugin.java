@@ -25,17 +25,11 @@ public class RevelationMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        // goety_revelation 相关的 Mixin
-        if (mixinClassName.contains("SummonApollyonMixin")) {
+        if (mixinClassName.contains("SummonApollyonMixin")||mixinClassName.contains("TheNeedleItemMixin")) {
             return LoadingModList.get().getModFileById("goety_revelation") != null;
         }
 
-        // EndingLibrary 相关的 Mixin：只有 EL 加载且版本 >= 2.2.2 时才应用
         if (mixinClassName.contains("DisplayEntityTimeStopMixin")) {
-            // 注意：Mixin 应用发生在 Mod 加载早期，
-            // ModList.get() 可能还没就绪，所以这里只能做「是否加载」判断；
-            // 真正的版本号判断放在运行时（updateSkill / precache）里，
-            // 由 EndingLibraryCompat.isAtLeastMinVersion() 完成。
             return LoadingModList.get().getModFileById(ENDING_LIBRARY_MODID) != null;
         }
 
