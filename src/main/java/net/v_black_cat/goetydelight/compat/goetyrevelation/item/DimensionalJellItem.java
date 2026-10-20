@@ -1,6 +1,7 @@
 package net.v_black_cat.goetydelight.compat.goetyrevelation.item;
 
 import com.google.common.collect.ImmutableMultimap;
+import com.mega.endinglib.api.client.text.TextColorUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
@@ -118,21 +119,14 @@ public class DimensionalJellItem extends Item {
         }
     }
 
-    @Override
+        @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-//        tooltip.add(Component.literal(""));
-//        if (Screen.hasShiftDown()) {
-//            tooltip.add(Component.translatable("item.goetydelight.dimensional_jell.tooltip.1")
-//                    .withStyle(ChatFormatting.LIGHT_PURPLE));
-//            tooltip.add(Component.translatable("item.goetydelight.dimensional_jell.tooltip.2")
-//                    .withStyle(ChatFormatting.LIGHT_PURPLE));
-//            tooltip.add(Component.translatable("item.goetydelight.dimensional_jell.tooltip.3")
-//                    .withStyle(ChatFormatting.LIGHT_PURPLE));
-//            tooltip.add(Component.translatable("item.goetydelight.dimensional_jell.tooltip.4")
-//                    .withStyle(ChatFormatting.LIGHT_PURPLE));
-//        } else {
-//            tooltip.add(Component.translatable("item.goetydelight.tooltip.shift"));
-//        }
-//        tooltip.add(Component.literal(""));
+        tooltip.add(Component.literal(""));
+        tooltip.add(Component.translatable("item.goetydelight.dimensional_jell.tooltip.1")
+                .withStyle(TextColorUtils.MIDDLE)
+                .withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.add(Component.translatable("item.goetydelight.dimensional_jell.tooltip.2")
+                .withStyle(TextColorUtils.MIDDLE)
+                .withStyle(ChatFormatting.DARK_GRAY));
     }
 }

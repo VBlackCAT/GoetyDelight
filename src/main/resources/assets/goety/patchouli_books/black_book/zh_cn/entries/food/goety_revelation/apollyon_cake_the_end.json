@@ -1,0 +1,17 @@
+{
+    "name": "终末蛋糕",
+    "icon": "goetydelight:apollyon_cake{CakeIsTheEnd:1b}",
+    "flag": "mod:goety_revelation",
+    "category": "goety:goetydelight/food/goety_revelation",
+    "advancement": "goety_revelation:end",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "当$(thing)终末仪式$()在晋升蛋糕周围10格内完成时，蛋糕会被终末的气息浸染，化作终末蛋糕。$(br)此时的它不再是给人果腹的甜点，而是神阶的凭证。"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "终末蛋糕仍然可以切出3份，但只有$(thing)仪式的发起者$()才能取食。$(br)其余人伸手触碰，只会一无所获。"
+        }
+    ]
+}

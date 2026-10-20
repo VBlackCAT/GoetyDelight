@@ -1,0 +1,17 @@
+{
+    "name": "The-End Cake",
+    "icon": "goetydelight:apollyon_cake{CakeIsTheEnd:1b}",
+    "flag": "mod:goety_revelation",
+    "category": "goety:goetydelight/food/goety_revelation",
+    "advancement": "goety_revelation:end",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "When a $(thing)The End ritual$() is completed within 10 blocks of an Ascension Cake, the cake is steeped in the aura of the End and becomes a The-End Cake.$(br)It is no longer a mere dessert to sate hunger, but a proof of divinity."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "A The-End Cake still yields 3 slices, but only the $(thing)caster of the ritual$() may take from it.$(br)Anyone else who reaches for it will come away empty-handed."
+        }
+    ]
+}

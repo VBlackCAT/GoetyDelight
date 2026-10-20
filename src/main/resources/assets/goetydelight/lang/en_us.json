@@ -204,7 +204,7 @@
   "goetydelight.container.cursed_ingot_pot.served_on": "Served on: %s",
   "goetydelight.container.cursed_ingot_pot.heated": "Heated",
   "goetydelight.container.cursed_ingot_pot.not_heated": "Not Heated",
-  "goetydelight.container.cursed_ingot_pot.soul_infused":"Soul Infused",
+  "goetydelight.container.cursed_ingot_pot.soul_infused": "Soul Infused",
   "goetydelight.container.cursed_ingot_pot.soul_source.empty": "Soul Empty",
   "goetydelight.container.apocalyptium_cooking_pot": "Apocalyptium Ingot Pot",
   "goetydelight.container.apocalyptium_cooking_pot.served_on": "Served on: %s",
@@ -369,10 +369,8 @@
   "goetydelight.configuration.enableGoetyRevelationCompatibility": "Goety Revelation Compatibility",
   "goetydelight.configuration.playerModelScales": "Player Model Scales",
   "item.goetydelight.tooltip.shift": "§dHold §eShift §dfor details",
-
   "item.goetydelight.apocalyptium_ingot_brush.tooltip.1": "Brushes suspicious blocks at extreme speed",
   "item.goetydelight.apocalyptium_ingot_brush.tooltip.2": "Grants 2 additional items",
-
   "item.goetydelight.apocalyptium_cod.tooltip.1": "Summons a 30-minute Apostle Servant to fight for you",
   "item.goetydelight.apocalyptium_cod.tooltip.2": "Right-click an Apostle Servant to attract Apollyon to temporarily possess it",
   "item.goetydelight.apocalyptium_cod.tooltip.3": "Apollyon will depart after 5 minutes",
@@ -380,27 +378,21 @@
   "item.goetydelight.apocalyptium_cod.tooltip.5": "\"and were satisfied\"",
   "item.goetydelight.apocalyptium_cod.tooltip.6": "\"and picked up the leftover pieces\"",
   "item.goetydelight.apocalyptium_cod.tooltip.7": "\"and filled twelve baskets\"",
-
   "item.goetydelight.apocalyptium_knife.tooltip.1": "Attacks ignore armor, enchantments, and resistances",
   "item.goetydelight.apocalyptium_knife.tooltip.2": "Killing mobs produces more Delight drops",
   "item.goetydelight.apocalyptium_knife.tooltip.3": "Right-click to harvest crops and produce more drops",
-
   "item.goetydelight.ascension_mooncake.tooltip.1": "\"The bright moon rises over the sea; from afar, we share this moment\"",
-
   "item.goetydelight.atonement_voucher_wraped_cod.tooltip.1": "Avoids the world's gaze once",
-
   "item.goetydelight.doom_cookie.tooltip.1": "The next apostle summoning will inevitably attract the world's gaze",
   "item.goetydelight.doom_cookie.tooltip.2": "\"Therefore\"",
   "item.goetydelight.doom_cookie.tooltip.3": "\"keep watch\"",
   "item.goetydelight.doom_cookie.tooltip.4": "\"because you do not know on what day your Lord will come\"",
-
   "item.goetydelight.pi_pie.tooltip.1": "Effect lasts 10 minutes",
   "item.goetydelight.pi_pie.tooltip.2": "Shot arrows become triple-shot",
   "item.goetydelight.pi_pie.tooltip.3": "Shot arrows create a dense arrow rain at the landing point",
   "item.goetydelight.pi_pie.tooltip.4": "Arrows pierce projectile protection",
   "item.goetydelight.pi_pie.tooltip.5": "\"I will make my arrows drunk with blood\"",
   "item.goetydelight.pi_pie.tooltip.6": "\"the blood of the slain and the captives\"",
-
   "item.goetydelight.quietus_marrow.tooltip.1": "Permanent Quietus II",
   "item.goetydelight.quietus_marrow.tooltip.2": "Permanent Fasting",
   "item.goetydelight.quietus_marrow.tooltip.3": "Periodically take starvation damage",
@@ -411,7 +403,6 @@
   "item.goetydelight.quietus_marrow.tooltip.8": "\"There will be no more death\"",
   "item.goetydelight.quietus_marrow.tooltip.9": "\"or mourning, or crying, or pain\"",
   "item.goetydelight.quietus_marrow.tooltip.10": "\"for the old order of things has passed away\"",
-
   "item.goetydelight.shark_gummy.tooltip.1": "Effect lasts 10 minutes",
   "item.goetydelight.shark_gummy.tooltip.2": "Thrown tridents inflict on hit:",
   "item.goetydelight.shark_gummy.tooltip.3": "15 seconds of Darkness",
@@ -420,7 +411,6 @@
   "item.goetydelight.shark_gummy.tooltip.6": "\"He stood, and shook the earth\"",
   "item.goetydelight.shark_gummy.tooltip.7": "\"He looked, and made the nations tremble\"",
   "item.goetydelight.shark_gummy.tooltip.8": "\"The eternal mountains were shattered, the ancient hills collapsed\"",
-
   "item.goetydelight.stone_sword_skewer.tooltip.1": "Effect lasts 10 minutes",
   "item.goetydelight.stone_sword_skewer.tooltip.2": "Increases base attack damage; the bonus scales up as health decreases",
   "item.goetydelight.stone_sword_skewer.tooltip.3": "Grants 17% dodge chance",
@@ -432,7 +422,6 @@
   "tooltip.goetydelight.soul_energy_restore": "Restores %s Soul Energy upon consumption.",
   "goetydelight.configuration.save": "Save",
   "goetydelight.configuration.discard": "Discard",
-
   "goetydelight.configuration.food.polarice.polariceAffectsBosses": "Whether bosses are affected by Polarice item",
   "goetydelight.configuration.food.polarice.polariceHealthThreshold": "Maximum health threshold for entities to be affected by Polarice item (in half-hearts)",
   "goetydelight.configuration.food.polarice.polariceCooldown": "The cooldown for Polarice item to use",
@@ -497,7 +486,33 @@
   "goetydelight.configuration.default_text": "Default: ",
   "goetydelight.configuration.requires_world_restart": "Requires world restart",
   "goetydelight.configuration.element": "Element %s",
-
   "goetydelight.configuration.tools.spells.disableMarbleFocusInUltrawarm": "Disable Marble Focus casting in ultrawarm dimensions (e.g. the Nether)",
-  "goetydelight.configuration.group.tools.spells": "Spells"
+  "goetydelight.configuration.group.tools.spells": "Spells",
+  "item.goetydelight.apollyon_cake.tooltip.1": "\"Yet to all who did receive him, to those who believed in his name\"",
+  "item.goetydelight.apollyon_cake.tooltip.2": "\"he gave the right to become children of God\"",
+  "item.goetydelight.apollyon_cake.tooltip.3": "\"children born not of natural descent, nor of human decision\"",
+  "item.goetydelight.apollyon_cake.tooltip.4": "\"or of a husband will, but born of God\"",
+  "item.goetydelight.apollyon_cake_slice.tooltip.1": "\"Very truly I tell you\"",
+  "item.goetydelight.apollyon_cake_slice.tooltip.2": "\"no one can see the kingdom of God unless they are born again\"",
+  "item.goetydelight.apollyon_cake.the_end.tooltip.1": "\"Behold, he is coming with the clouds\"",
+  "item.goetydelight.apollyon_cake.the_end.tooltip.2": "\"Every eye will see him, even those who pierced him\"",
+  "item.goetydelight.apollyon_cake.the_end.tooltip.3": "\"and all the peoples of the earth will mourn because of him\"",
+  "item.goetydelight.apollyon_cake.the_end.tooltip.4": "\"So shall it be! Amen\"",
+  "item.goetydelight.apollyon_cake_slice.the_end.tooltip.1": "\"God says: In the last days\"",
+  "item.goetydelight.apollyon_cake_slice.the_end.tooltip.2": "\"I will pour out my Spirit on all people\"",
+  "item.goetydelight.apollyon_cake_slice.the_end.tooltip.3": "\"Your sons and daughters will prophesy, your young men will see visions\"",
+  "item.goetydelight.apollyon_cake_slice.the_end.tooltip.4": "\"your old men will dream dreams\"",
+  "item.goetydelight.unholy_communion.tooltip.1": "\"And when the Chief Shepherd appears\"",
+  "item.goetydelight.unholy_communion.tooltip.2": "\"you will receive the unfading crown of glory\"",
+  "item.goetydelight.ascension_lollipop.tooltip.1": "\"I am the bread of life\"",
+  "item.goetydelight.ascension_lollipop.tooltip.2": "\"Whoever comes to me will never go hungry\"",
+  "item.goetydelight.ascension_lollipop.tooltip.3": "\"and whoever believes in me will never be thirsty\"",
+  "item.goetydelight.ascension_cod_stew.tooltip.1": "\"Come, gather together for the great supper of God\"",
+  "item.goetydelight.ascension_cod_stew.tooltip.2": "\"so that you may eat the flesh of kings, generals, and the mighty, of horses and their riders\"",
+  "item.goetydelight.ascension_cod_stew.tooltip.3": "\"and the flesh of all people, free and slave, great and small\"",
+  "item.goetydelight.apocalyptium_popsicle.tooltip.1": "\"I will make justice the measuring line and righteousness the plumb line\"",
+  "item.goetydelight.apocalyptium_popsicle.tooltip.2": "\"hail will sweep away your refuge of lies\"",
+  "item.goetydelight.apocalyptium_popsicle.tooltip.3": "\"and water will overflow your hiding place\"",
+  "item.goetydelight.dimensional_jell.tooltip.1": "\"Have mercy on me, my God, have mercy on me, for in you I take refuge\"",
+  "item.goetydelight.dimensional_jell.tooltip.2": "\"I will take refuge in the shadow of your wings until the disaster has passed\""
 }

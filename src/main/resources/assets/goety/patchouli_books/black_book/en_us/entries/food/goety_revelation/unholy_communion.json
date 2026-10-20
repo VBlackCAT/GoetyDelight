@@ -7,6 +7,10 @@
         {
             "type": "patchouli:text",
             "text": "Upon consumption, grants the eater:$(br)$(li)100 seconds of Nourishment$(li)50 seconds of The Pale Messenger$(br2)The first consumption permanently grants an extra head slot, and doubles the duration of any The Pale Messenger already active.$(br)Eating it also returns one Unholy Hat."
+        },
+        {
+            "type": "patchouli:text",
+            "text": "After defeating the Nether apostles, you reproduced their power from their pure blood—though it still relies on externals. Perhaps you should find a way to wear one more hat?"
         }
     ]
 }

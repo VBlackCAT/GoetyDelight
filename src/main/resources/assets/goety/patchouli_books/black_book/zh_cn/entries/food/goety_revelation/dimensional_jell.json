@@ -1,0 +1,12 @@
+{
+    "name": "维度凝胶",
+    "icon": "goetydelight:dimensional_jell",
+    "flag": "mod:goety_revelation",
+    "category": "goety:goetydelight/food/goety_revelation",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "三界的奥秘被伟大的存在合而为一，纬度的意志已在你手心，用这无限为力量作为引导，让你用身躯背负天地！$(br)且吃下这沾染不灭的凝胶，而后执掌权柄的核心。"
+        }
+    ]
+}
