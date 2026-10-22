@@ -180,8 +180,6 @@
   "item.goetydelight.dimensional_jell": "Dimensional Jell",
   "item.goetydelight.roast_needle": "Roast Needle",
   "item.goetydelight.crystal_candy": "Crystal Candy",
-  "item.goetydelight.crystal_candy.empty": "Empty",
-  "item.goetydelight.crystal_candy.contains": "Contains %s Curios",
   "item.goetydelight.apollyon_cake": "Ascension Cake",
   "block.goetydelight.apollyon_cake": "Ascension Cake",
   "block.goetydelight.apollyon_cake.the_end": "The-End Cake",
@@ -521,5 +519,19 @@
   "item.goetydelight.dimensional_jell.tooltip.3": "Damage above half your max health is halved",
   "item.goetydelight.dimensional_jell.tooltip.4": "Cheats death 5 times, restoring full health each time",
   "item.goetydelight.dimensional_jell.tooltip.5": "\"Have mercy on me, my God, have mercy on me, for in you I take refuge\"",
-  "item.goetydelight.dimensional_jell.tooltip.6": "\"I will take refuge in the shadow of your wings until the disaster has passed\""
+  "item.goetydelight.dimensional_jell.tooltip.6": "\"I will take refuge in the shadow of your wings until the disaster has passed\"",
+  "item.goetydelight.crystal_candy.tooltip.1": "Holds up to 64 curio items",
+  "item.goetydelight.crystal_candy.tooltip.2": "Eating grants permanent bonuses based on stored rarities.",
+  "item.goetydelight.crystal_candy.tooltip.3": "Each curio can only take effect once.",
+  "item.goetydelight.crystal_candy.tooltip.4": "Duplicates are returned to the candy and not consumed.",
+  "item.goetydelight.crystal_candy.tooltip.5": "\"In that day the Lord will take away the bravery of their tinkling ornaments about their feet, and their cauls, and their round tires like the moon, the chains, and the bracelets, and the mufflers, the bonnets, and the ornaments of the legs, and the headbands, and the tablets, and the earrings, the rings, and nose jewels...\"",
+  "item.goetydelight.crystal_candy.tooltip.6": "— Isaiah 3:18-21",
+
+  "item.goetydelight.crystal_candy.empty": "Empty",
+  "item.goetydelight.crystal_candy.contains": "Stored curios: %s / 64",
+  "item.goetydelight.crystal_candy.how_to_use": "Right-click a curio with the candy to store it; right-click an empty slot to release one",
+
+  "item.goetydelight.roast_needle.tooltip.1": "Eating it clears the Needle stacks.",
+  "item.goetydelight.roast_needle.tooltip.2": "\"And there came out of the smoke locusts upon the earth: and unto them was given power, as the scorpions of the earth have power.\"",
+  "item.goetydelight.roast_needle.tooltip.3": "— Revelation 9:3"
 }

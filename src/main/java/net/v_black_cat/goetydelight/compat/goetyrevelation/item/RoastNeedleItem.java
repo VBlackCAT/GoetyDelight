@@ -1,10 +1,14 @@
 package net.v_black_cat.goetydelight.compat.goetyrevelation.item;
 
+import com.mega.endinglib.api.client.text.TextColorUtils;
 import com.mega.revelationfix.common.data.TimeStopSavedData;
 import com.mega.revelationfix.common.init.ModAttributes;
 import com.mega.revelationfix.common.item.curios.TheNeedleItem;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,10 +24,12 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
@@ -112,5 +118,25 @@ public class RoastNeedleItem extends Item {
                 .getHolderOrThrow(key);
 
         return new DamageSource(holder, entity, entity);  // (type, directEntity, causingEntity)
+    }
+    @Override
+    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
+        tooltip.add(Component.literal(""));
+        if (Screen.hasShiftDown()) {
+            tooltip.add(Component.translatable("item.goetydelight.roast_needle.tooltip.1")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+        } else {
+            tooltip.add(Component.translatable("item.goetydelight.tooltip.shift"));
+        }
+        tooltip.add(Component.literal(""));
+        // 经文（风味文本）
+        tooltip.add(Component.translatable("item.goetydelight.roast_needle.tooltip.2")
+                .withStyle(TextColorUtils.MIDDLE)
+                .withStyle(ChatFormatting.DARK_GRAY)
+                .withStyle(ChatFormatting.ITALIC));
+        tooltip.add(Component.translatable("item.goetydelight.roast_needle.tooltip.3")
+                .withStyle(TextColorUtils.MIDDLE)
+                .withStyle(ChatFormatting.DARK_GRAY)
+                .withStyle(ChatFormatting.ITALIC));
     }
 }

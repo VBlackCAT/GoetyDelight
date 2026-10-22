@@ -21,6 +21,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 
+import static org.apache.commons.lang3.math.IEEE754rUtils.max;
+
 public class AscensionLollipopItem extends Item {
     public AscensionLollipopItem(Properties properties) {
         super(properties);
@@ -51,7 +53,7 @@ public class AscensionLollipopItem extends Item {
                     if (Float.isNaN(current) || Float.isInfinite(current) || current < 0) {
                         data.setSaturation(0.0F);
                     }
-                    data.setSaturation(data.getSaturationLevel() + 20.0F);
+                    data.setSaturation(max(data.getSaturationLevel(),20.0F));
                 }
             }
             entity.gameEvent(GameEvent.EAT);

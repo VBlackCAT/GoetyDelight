@@ -180,8 +180,6 @@
   "item.goetydelight.dimensional_jell": "维度凝胶",
   "item.goetydelight.roast_needle": "烤制蛰针",
   "item.goetydelight.crystal_candy": "水晶糖",
-  "item.goetydelight.crystal_candy.empty": "空",
-  "item.goetydelight.crystal_candy.contains": "内含 %s 个饰品",
   "item.goetydelight.apollyon_cake": "晋升蛋糕",
   "block.goetydelight.apollyon_cake": "晋升蛋糕",
   "block.goetydelight.apollyon_cake.the_end": "终末蛋糕",
@@ -521,5 +519,19 @@
   "item.goetydelight.dimensional_jell.tooltip.3": "受到超过生命上限一半的伤害时，伤害减半",
   "item.goetydelight.dimensional_jell.tooltip.4": "免死5次，触发时立即回满生命",
   "item.goetydelight.dimensional_jell.tooltip.5": "“神啊，求你恩待我，恩待我，因为我的心投靠你”",
-  "item.goetydelight.dimensional_jell.tooltip.6": "“我投靠在你翅膀的荫庇下，等到祸患过去”"
+  "item.goetydelight.dimensional_jell.tooltip.6": "“我投靠在你翅膀的荫庇下，等到祸患过去”",
+  "item.goetydelight.crystal_candy.tooltip.1": "最多可容纳 64 件饰品",
+  "item.goetydelight.crystal_candy.tooltip.2": "食用后按存入饰品的稀有度给予永久加成。",
+  "item.goetydelight.crystal_candy.tooltip.3": "每件饰品只能生效一次。",
+  "item.goetydelight.crystal_candy.tooltip.4": "重复的饰品会保留在水晶糖中，不会消耗。",
+  "item.goetydelight.crystal_candy.tooltip.5": "“到那日，主必除掉她们华美的脚钏、发网、月牙圈、耳环、手镯、蒙脸的帕子、华冠、足链、华带、香盒、符囊、戒指、鼻环……”",
+  "item.goetydelight.crystal_candy.tooltip.6": "—— 以赛亚书 3:18-21",
+
+  "item.goetydelight.crystal_candy.empty": "空空如也",
+  "item.goetydelight.crystal_candy.contains": "内含饰品：%s / 64",
+  "item.goetydelight.crystal_candy.how_to_use": "手持水晶糖右键饰品以存入，右键空位以放出饰品",
+
+  "item.goetydelight.roast_needle.tooltip.1": "食用后清除恶蝗蛰针的层数。",
+  "item.goetydelight.roast_needle.tooltip.2": "“有蝗虫从烟中出来，飞到地上，有权柄赐给它们，好像地上的蝎子有权柄一样。”",
+  "item.goetydelight.roast_needle.tooltip.3": "—— 启示录 9:3"
 }

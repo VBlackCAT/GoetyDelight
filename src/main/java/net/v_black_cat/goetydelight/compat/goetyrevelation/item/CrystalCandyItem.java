@@ -1,6 +1,8 @@
 package net.v_black_cat.goetydelight.compat.goetyrevelation.item;
 
+import com.mega.endinglib.api.client.text.TextColorUtils;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
@@ -25,6 +27,7 @@ import net.v_black_cat.goetydelight.compat.goetyrevelation.util.CrystalCandySave
 import net.v_black_cat.goetydelight.compat.goetyrevelation.util.NeedleAttributeUtil;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class CrystalCandyItem extends Item {
@@ -58,8 +61,6 @@ public class CrystalCandyItem extends Item {
             tag.put(STORED, stored);
 
             other.shrink(1);
-            // 关键修复：other 是鼠标携带的物品，必须通过 carriedItem 回写，
-            // 而不是去清空 slot（slot 是糖所在的槽位！）
             carriedItem.set(other.isEmpty() ? ItemStack.EMPTY : other);
 
             player.playNotifySound(SoundEvents.BUNDLE_INSERT, SoundSource.PLAYERS, 1.0F, 1.0F);
@@ -177,7 +178,6 @@ public class CrystalCandyItem extends Item {
 
         if (!duplicateStored.isEmpty()) {
             tag.put(STORED, duplicateStored);
-            player.displayClientMessage(Component.literal("部分饰品已吃过，保留在水晶糖中未消耗").withStyle(ChatFormatting.GRAY), true);
         } else {
             tag.remove(STORED);
         }
@@ -212,20 +212,45 @@ public class CrystalCandyItem extends Item {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, Level level, @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
+    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
         CompoundTag tag = stack.getOrCreateTag();
         ListTag stored = tag.getList(STORED, 10);
         if (stored.isEmpty()) {
-            tooltip.add(Component.translatable("item.goetydelight.crystal_candy.empty").withStyle(ChatFormatting.GRAY));
-            tooltip.add(Component.translatable("item.goetydelight.crystal_candy.how_to_use").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC));
+            tooltip.add(Component.translatable("item.goetydelight.crystal_candy.empty")
+                    .withStyle(ChatFormatting.GRAY));
         } else {
-            tooltip.add(Component.translatable("item.goetydelight.crystal_candy.contains", stored.size()).withStyle(ChatFormatting.GOLD));
+            tooltip.add(Component.translatable("item.goetydelight.crystal_candy.contains", stored.size())
+                    .withStyle(ChatFormatting.GOLD));
             for (int i = 0; i < stored.size(); i++) {
                 ItemStack s = ItemStack.of(stored.getCompound(i));
-                tooltip.add(Component.literal(" - ").append(s.getHoverName()).withStyle(s.getRarity().color));
+                tooltip.add(Component.literal(" - ").append(s.getHoverName())
+                        .withStyle(s.getRarity().color));
             }
-            tooltip.add(Component.translatable("item.goetydelight.crystal_candy.eat_hint").withStyle(ChatFormatting.GRAY));
         }
+        tooltip.add(Component.literal(""));
+        if (Screen.hasShiftDown()) {
+            tooltip.add(Component.translatable("item.goetydelight.crystal_candy.tooltip.1")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+            tooltip.add(Component.translatable("item.goetydelight.crystal_candy.tooltip.2")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+            tooltip.add(Component.translatable("item.goetydelight.crystal_candy.tooltip.3")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+            tooltip.add(Component.translatable("item.goetydelight.crystal_candy.tooltip.4")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+
+        } else {
+            tooltip.add(Component.translatable("item.goetydelight.tooltip.shift"));
+        }
+        tooltip.add(Component.literal(""));
+        // 经文（风味文本）
+        tooltip.add(Component.translatable("item.goetydelight.crystal_candy.tooltip.5")
+                .withStyle(TextColorUtils.MIDDLE)
+                .withStyle(ChatFormatting.DARK_GRAY)
+                .withStyle(ChatFormatting.ITALIC));
+        tooltip.add(Component.translatable("item.goetydelight.crystal_candy.tooltip.6")
+                .withStyle(TextColorUtils.MIDDLE)
+                .withStyle(ChatFormatting.DARK_GRAY)
+                .withStyle(ChatFormatting.ITALIC));
     }
 
     public static class CrystalCandyEvents {
