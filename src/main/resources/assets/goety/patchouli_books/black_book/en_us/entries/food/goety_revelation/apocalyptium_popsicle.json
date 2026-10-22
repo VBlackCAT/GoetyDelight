@@ -9,6 +9,10 @@
             "text": "A nether Apocalyptium ice pop, hard enough to serve as a blade.$(br)Upon consumption, grants the eater:$(br)$(li)5 minutes of Rallied III$(li)30 seconds of Nourishment$(li)3 seconds of Resistance V$(br2)The first consumption permanently grants Apocalyptium Blessing: attacks ignore hurt invulnerability frames, potion effects, armor, enchantments, Resistance, and shields."
         },
         {
+            "type": "goety:ritual",
+            "recipe": "goetydelight:ritual/apocalyptium_popsicle"
+        },
+        {
             "type": "patchouli:text",
             "text": "Having endured the Nether merciless trials of the end, you ascended your own plane of life with the god-granted stinger—yet you often wonder whether something is still missing.$(br)By joining it with the principles of divine forging, you finally uncovered the deeper power of the Apocalyptium stinger: no ordinary defense in this world can restrain you any longer."
         }

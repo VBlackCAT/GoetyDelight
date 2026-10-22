@@ -7,6 +7,10 @@
         {
             "type": "patchouli:text",
             "text": "The secrets of the three realms have been unified by a great being; the will of the dimensions now rests in your palm. With this infinity as your guide, let your body bear heaven and earth!$(br)Eat this jelly steeped in the undying, and then hold the core of authority."
-        }
+        },
+      {
+        "type": "goety:ritual",
+        "recipe": "goetydelight:ritual/dimensional_jell"
+      }
     ]
 }

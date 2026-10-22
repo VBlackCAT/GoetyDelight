@@ -9,8 +9,8 @@
             "text": "以$(thing)七印$()为引，在$(thing)黑暗祭坛$()上完成$(l)大师烹饪$()仪式所得的甜点。$(br)右击可获得三片，可随时间推移缓慢恢复。"
         },
         {
-            "type": "patchouli:crafting",
-            "recipe": "goetydelight:ritual/apollyon_cake"
+          "type": "goety:ritual",
+          "recipe": "goetydelight:ritual/apollyon_cake"
         },
         {
             "type": "patchouli:text",

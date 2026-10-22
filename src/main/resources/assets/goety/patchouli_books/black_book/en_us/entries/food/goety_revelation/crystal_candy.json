@@ -1,0 +1,20 @@
+{
+  "name": "Rrystal Candy",
+  "icon": "goetydelight:crystal_candy",
+  "flag": "mod:goety_revelation",
+  "category": "goety:goetydelight/food/goety_revelation",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Holds up to 64 curio items$(br)$(br)Right-click a curio with the candy to store it; right-click an empty slot to release one$(br2)Eating grants permanent bonuses based on stored rarities.$(br2)Each curio can only take effect once.$(br2)Duplicates are returned to the candy and not consumed."
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetydelight:ritual/crystal_candy"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "“In that day the Lord will take away the bravery of their tinkling ornaments about their feet, and their cauls, and their round tires like the moon, the chains, and the bracelets, and the mufflers, the bonnets, and the ornaments of the legs, and the headbands, and the tablets, and the earrings, the rings, and nose jewels...” — Isaiah 3:18-21"
+    }
+  ]
+}

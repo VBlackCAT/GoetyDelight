@@ -9,7 +9,7 @@
             "text": "A confection obtained by completing the $(l)Master Culinary$() ritual at a $(thing)Dark Altar$(), with the $(thing)Seven Seals$() as its catalyst.$(br)Right-click to take three slices; the cake slowly restores itself over time."
         },
         {
-            "type": "patchouli:crafting",
+            "type": "goety:ritual",
             "recipe": "goetydelight:ritual/apollyon_cake"
         },
         {

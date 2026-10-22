@@ -1,0 +1,20 @@
+{
+  "name": "烤蛰针",
+  "icon": "goetydelight:roast_needle",
+  "flag": "mod:goety_revelation",
+  "category": "goety:goetydelight/food/goety_revelation",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "食用后清除恶蝗蛰针的层数。"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetydelight:ritual/roast_needle"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "“有蝗虫从烟中出来，飞到地上，有权柄赐给它们，好像地上的蝎子有权柄一样。”$(br2)—— 启示录 9:3"
+    }
+  ]
+}

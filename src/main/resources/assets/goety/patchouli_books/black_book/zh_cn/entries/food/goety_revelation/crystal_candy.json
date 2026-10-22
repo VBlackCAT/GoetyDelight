@@ -1,0 +1,20 @@
+{
+  "name": "水晶糖",
+  "icon": "goetydelight:crystal_candy",
+  "flag": "mod:goety_revelation",
+  "category": "goety:goetydelight/food/goety_revelation",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "最多可容纳 64 件饰品。$(br)$(br)手持水晶糖右键饰品以存入，右键空位以放出饰品。$(br2)食用后按存入饰品的稀有度给予永久加成，每件饰品只能生效一次。重复的饰品会保留在水晶糖中，不会消耗。"
+    },
+    {
+      "type": "goety:ritual",
+      "recipe": "goetydelight:ritual/crystal_candy"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "“到那日，主必除掉她们华美的脚钏、发网、月牙圈、耳环、手镯、蒙脸的帕子、华冠、足链、华带、香盒、符囊、戒指、鼻环……”$(br2)—— 以赛亚书 3:18-21"
+    }
+  ]
+}

@@ -9,6 +9,10 @@
             "text": "Can be eaten indefinitely, granting the eater:$(br)$(li)10 seconds of The Pale Messenger, Regeneration V, Resistance IV, Luck IV and Strength V$(br2)Eating it also restores 20 saturation.$(br)Right-clicking another player empties their hunger bar."
         },
         {
+          "type": "goety:ritual",
+          "recipe": "goetydelight:ritual/ascension_lollipop"
+        },
+        {
             "type": "patchouli:text",
             "text": "The glory of ascension is undying, even as a mere fragment of divinity—and this is no idle talk, for through certain experiments you have already found a way to turn it into endless sustenance.$(br)It is said the saints of the Nether Cult fed the masses with this very glory."
         }

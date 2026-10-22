@@ -6,7 +6,11 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "Upon consumption, grants the eater:$(br)$(li)90 seconds of The Pale Messenger and Nourishment$(br2)Permanently grants one chest slot.$(br)Eating raw or cooked cod within the following 20 minutes grants 3 minutes of Resistance IV and Regeneration V."
+            "text": "Upon consumption, grants the eater:$(br)$(li)90 seconds of The Pale Messenger and Nourishment$(br2)Permanently grants one chest slot.$(br)Eating raw or cooked cod within the following 20 minutes grants 3 minutes of Resistance IV,Regeneration V and Doom XX."
+        },
+        {
+          "type": "goety:cooking",
+          "recipe": "goetydelight:cooking/ascension_cod_stew"
         },
         {
             "type": "patchouli:text",
