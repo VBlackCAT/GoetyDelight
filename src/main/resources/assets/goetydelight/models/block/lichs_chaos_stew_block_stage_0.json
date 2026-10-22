@@ -1,10 +1,11 @@
 {
 	"format_version": "1.9.0",
 	"credit": "Made with Blockbench",
+    "render_type": "minecraft:cutout",
 	"texture_size": [128, 128],
 	"textures": {
 		"2": "goetydelight:block/lichs_chaos_stew_block",
-		"particle": "goetydelight:block/cursed_metal_block"
+		"particle": "goety:block/cursed_metal_block"
 	},
 	"elements": [
 		{
