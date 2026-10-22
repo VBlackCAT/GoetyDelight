@@ -1,0 +1,36 @@
+{
+  "type": "goety:ritual",
+  "ritual_type": "goety:craft",
+  "activation_item": {
+    "item": "goety_revelation:curios_storage_crystal"
+  },
+  "craftType": "master_culinary",
+  "research": "lord",
+  "soulCost": 500,
+  "duration": 20,
+  "ingredients": [
+    {
+      "item": "goety_revelation:ascension_hard_candy"
+    },
+    {
+      "type": "forge:nbt",
+      "item": "goety_revelation:the_needle",
+      "nbt": "{\"isRealNeedle\": 1b}"
+    },
+    {
+      "item": "minecraft:honey_bottle"
+    },
+    {
+      "item": "goetydelight:ruby_hard_candy"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:crystal_candy"
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "goety_revelation"
+    }
+  ]
+}
