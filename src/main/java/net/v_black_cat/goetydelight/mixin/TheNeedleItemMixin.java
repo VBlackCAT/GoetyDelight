@@ -32,7 +32,7 @@ public class TheNeedleItemMixin {
 
     // 直接在方法执行完毕后拦截，清点总抗性
     @Inject(
-            method = "m_5551_",
+            method = "releaseUsing",
             at = @At("RETURN"),
             remap = false
     )
@@ -81,7 +81,6 @@ public class TheNeedleItemMixin {
                                 AttributeModifier.Operation.MULTIPLY_BASE
                         ));
                     }
-                    LOGGER.info("[TheNeedleMixin] 已强制削减抗性，溢出 {} 转为生命值。", overflow);
                 }
             }
         }
