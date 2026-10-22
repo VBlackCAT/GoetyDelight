@@ -21,6 +21,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 
+import static org.apache.commons.lang3.math.IEEE754rUtils.max;
+
 public class AscensionLollipopItem extends Item {
     public AscensionLollipopItem(Properties properties) {
         super(properties);
@@ -51,7 +53,7 @@ public class AscensionLollipopItem extends Item {
                     if (Float.isNaN(current) || Float.isInfinite(current) || current < 0) {
                         data.setSaturation(0.0F);
                     }
-                    data.setSaturation(data.getSaturationLevel() + 20.0F);
+                    data.setSaturation(max(data.getSaturationLevel(),20.0F));
                 }
             }
             entity.gameEvent(GameEvent.EAT);
@@ -78,17 +80,25 @@ public class AscensionLollipopItem extends Item {
         return InteractionResult.SUCCESS;
     }
 
-        @Override
+    @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.literal(""));
-        tooltip.add(Component.translatable("item.goetydelight.ascension_lollipop.tooltip.1")
-                .withStyle(TextColorUtils.MIDDLE)
-                .withStyle(ChatFormatting.DARK_GRAY));
-        tooltip.add(Component.translatable("item.goetydelight.ascension_lollipop.tooltip.2")
-                .withStyle(TextColorUtils.MIDDLE)
-                .withStyle(ChatFormatting.DARK_GRAY));
+        if (Screen.hasShiftDown()) {
+            tooltip.add(Component.translatable("item.goetydelight.ascension_lollipop.tooltip.1")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+            tooltip.add(Component.translatable("item.goetydelight.ascension_lollipop.tooltip.2")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+        } else {
+            tooltip.add(Component.translatable("item.goetydelight.tooltip.shift"));
+        }
+        tooltip.add(Component.literal(""));
         tooltip.add(Component.translatable("item.goetydelight.ascension_lollipop.tooltip.3")
                 .withStyle(TextColorUtils.MIDDLE)
-                .withStyle(ChatFormatting.DARK_GRAY));
+                .withStyle(ChatFormatting.DARK_GRAY)
+                .withStyle(ChatFormatting.ITALIC));
+        tooltip.add(Component.translatable("item.goetydelight.ascension_lollipop.tooltip.4")
+                .withStyle(TextColorUtils.MIDDLE)
+                .withStyle(ChatFormatting.DARK_GRAY)
+                .withStyle(ChatFormatting.ITALIC));
     }
 }

@@ -27,7 +27,10 @@ import net.v_black_cat.goetydelight.item.food.PotFoodItem;
 import top.theillusivec4.curios.api.CuriosApi;
 
 public class AscensionCodStewItem extends PotFoodItem {
-    public static final String TAG_COD_BOOST_UNLOCKED = "goetydelight:cod_boost_unlocked";
+    /** 记录解锁时间戳（游戏刻），取代原来的布尔标记 */
+    public static final String TAG_COD_BOOST_UNLOCK_TIME = "goetydelight:cod_boost_unlock_time";
+    /** 能力有效时长：20 分钟（游戏刻） */
+    public static final long COD_BOOST_DURATION = 20 * 60 * 20L;
 
     /** 胸饰槽 +1 的固定 UUID，保证多次调用只覆盖不叠加 */
     private static final UUID CHEST_SLOT_UUID =
@@ -41,7 +44,8 @@ public class AscensionCodStewItem extends PotFoodItem {
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         ItemStack result = super.finishUsingItem(stack, level, entity);
         if (!level.isClientSide && entity instanceof Player player) {
-            player.getPersistentData().putBoolean(TAG_COD_BOOST_UNLOCKED, true);
+            // 记录本次解锁的时间戳（每次吃炖菜都会刷新 20 分钟窗口）
+            player.getPersistentData().putLong(TAG_COD_BOOST_UNLOCK_TIME, player.level().getGameTime());
 
             CuriosApi.getCuriosInventory(player).ifPresent(inventory -> {
                 inventory.addPermanentSlotModifiers(ImmutableMultimap.of(
@@ -77,7 +81,13 @@ public class AscensionCodStewItem extends PotFoodItem {
         ItemStack used = event.getItem();
         if (!used.is(Items.COD) && !used.is(Items.COOKED_COD)) return;
 
-        if (!player.getPersistentData().getBoolean(TAG_COD_BOOST_UNLOCKED)) {
+        // 判断是否已解锁，且当前时间仍在 20 分钟有效窗口内
+        if (!player.getPersistentData().contains(TAG_COD_BOOST_UNLOCK_TIME)) {
+            return;
+        }
+        long unlockTime = player.getPersistentData().getLong(TAG_COD_BOOST_UNLOCK_TIME);
+        long elapsed = player.level().getGameTime() - unlockTime;
+        if (elapsed < 0 || elapsed > COD_BOOST_DURATION) {
             return;
         }
 
@@ -86,17 +96,29 @@ public class AscensionCodStewItem extends PotFoodItem {
         player.addEffect(new MobEffectInstance(GoetyEffects.DOOM.get(), 3 * 60 * 20, 20));
     }
 
-        @Override
+    @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.literal(""));
-        tooltip.add(Component.translatable("item.goetydelight.ascension_cod_stew.tooltip.1")
+        if (Screen.hasShiftDown()) {
+            tooltip.add(Component.translatable("item.goetydelight.ascension_cod_stew.tooltip.1")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+            tooltip.add(Component.translatable("item.goetydelight.ascension_cod_stew.tooltip.2")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+            tooltip.add(Component.translatable("item.goetydelight.ascension_cod_stew.tooltip.3")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+            tooltip.add(Component.translatable("item.goetydelight.ascension_cod_stew.tooltip.4")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+        } else {
+            tooltip.add(Component.translatable("item.goetydelight.tooltip.shift"));
+        }
+        tooltip.add(Component.literal(""));
+        tooltip.add(Component.translatable("item.goetydelight.ascension_cod_stew.tooltip.5")
                 .withStyle(TextColorUtils.MIDDLE)
-                .withStyle(ChatFormatting.DARK_GRAY));
-        tooltip.add(Component.translatable("item.goetydelight.ascension_cod_stew.tooltip.2")
+                .withStyle(ChatFormatting.DARK_GRAY)
+                .withStyle(ChatFormatting.ITALIC));
+        tooltip.add(Component.translatable("item.goetydelight.ascension_cod_stew.tooltip.6")
                 .withStyle(TextColorUtils.MIDDLE)
-                .withStyle(ChatFormatting.DARK_GRAY));
-        tooltip.add(Component.translatable("item.goetydelight.ascension_cod_stew.tooltip.3")
-                .withStyle(TextColorUtils.MIDDLE)
-                .withStyle(ChatFormatting.DARK_GRAY));
+                .withStyle(ChatFormatting.DARK_GRAY)
+                .withStyle(ChatFormatting.ITALIC));
     }
 }

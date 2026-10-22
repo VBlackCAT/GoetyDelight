@@ -1,4 +1,4 @@
-package net.v_black_cat.goetydelight.compat.goetyrevelation;
+package net.v_black_cat.goetydelight.compat;
 
 import net.minecraftforge.fml.loading.LoadingModList;
 import net.v_black_cat.goetydelight.compat.EndingLibrary.EndingLibraryCompat;
@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import java.util.List;
 import java.util.Set;
 
-public class RevelationMixinPlugin implements IMixinConfigPlugin {
+public class GoetyDelightMixinPlugin implements IMixinConfigPlugin {
 
     /** EndingLibrary 的 modid */
     private static final String ENDING_LIBRARY_MODID = EndingLibraryCompat.ID;

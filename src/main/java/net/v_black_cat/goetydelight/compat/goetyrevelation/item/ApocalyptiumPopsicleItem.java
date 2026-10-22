@@ -110,17 +110,23 @@ public class ApocalyptiumPopsicleItem extends SwordItem {
         return persistentData.getCompound(Player.PERSISTED_NBT_TAG).getBoolean(PERSISTENT_TAG);
     }
 
-        @Override
+    @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.literal(""));
-        tooltip.add(Component.translatable("item.goetydelight.apocalyptium_popsicle.tooltip.1")
-                .withStyle(TextColorUtils.MIDDLE)
-                .withStyle(ChatFormatting.DARK_GRAY));
+        if (Screen.hasShiftDown()) {
+            tooltip.add(Component.translatable("item.goetydelight.apocalyptium_popsicle.tooltip.1")
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+        } else {
+            tooltip.add(Component.translatable("item.goetydelight.tooltip.shift"));
+        }
+        tooltip.add(Component.literal(""));
         tooltip.add(Component.translatable("item.goetydelight.apocalyptium_popsicle.tooltip.2")
                 .withStyle(TextColorUtils.MIDDLE)
-                .withStyle(ChatFormatting.DARK_GRAY));
+                .withStyle(ChatFormatting.DARK_GRAY)
+                .withStyle(ChatFormatting.ITALIC));
         tooltip.add(Component.translatable("item.goetydelight.apocalyptium_popsicle.tooltip.3")
                 .withStyle(TextColorUtils.MIDDLE)
-                .withStyle(ChatFormatting.DARK_GRAY));
+                .withStyle(ChatFormatting.DARK_GRAY)
+                .withStyle(ChatFormatting.ITALIC));
     }
 }

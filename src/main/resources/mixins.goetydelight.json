@@ -3,7 +3,7 @@
   "minVersion": "0.8.5",
   "package": "net.v_black_cat.goetydelight.mixin",
   "refmap": "goetydelight.refmap.json",
-  "plugin": "net.v_black_cat.goetydelight.compat.goetyrevelation.RevelationMixinPlugin",
+  "plugin": "net.v_black_cat.goetydelight.compat.GoetyDelightMixinPlugin",
   "mixins": [
     "AnvilBlockMixin",
     "ArtificialFlowerMixin",
