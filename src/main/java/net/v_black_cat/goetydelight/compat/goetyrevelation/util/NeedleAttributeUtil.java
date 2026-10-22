@@ -17,6 +17,7 @@ public final class NeedleAttributeUtil {
     public static final UUID NEEDLE_RES_UUID = UUID.fromString("af236f3f-f82a-4008-97f9-5af0173b2ec9");
 
     public static final double RES_CAP = 0.85;
+    public static final double CANDY_ATTR_CAP = 1.0; // 糖的属性加成上限 (100%)
 
     public static double amountOf(AttributeInstance inst, UUID id) {
         if (inst == null) return 0;
@@ -47,7 +48,7 @@ public final class NeedleAttributeUtil {
     }
 
     /**
-     * 把糖的加成强行写上去（附带抗性封顶）
+     * 把糖的加成强行写上去（附带属性上限限制、抗性上限限制）
      */
     public static void addCandyBonus(ServerPlayer player) {
         if (player.server == null) return;
@@ -69,22 +70,31 @@ public final class NeedleAttributeUtil {
         double curSpd = amountOf(spdInst, NEEDLE_SPD_UUID);
         double curRes = amountOf(resInst, NEEDLE_RES_UUID);
 
+        // 取出糖的原始加成
         double addRes = c[3];
         double addHp = c[0];
         double addAtk = c[1];
         double addSpd = c[2];
 
-        // 糖的抗性封顶检查
+        // 1. 限制糖提供的基础数值（生命、攻击、攻速）最多为 100%
+        addHp = Math.min(addHp, CANDY_ATTR_CAP);
+        addAtk = Math.min(addAtk, CANDY_ATTR_CAP);
+        addSpd = Math.min(addSpd, CANDY_ATTR_CAP);
+
+        // 2. 糖的抗性封顶检查（85%）
         double otherRes = getTotalResistance(player) - curRes;
         if (otherRes + curRes + addRes > RES_CAP) {
             double allowed = Math.max(0, RES_CAP - otherRes - curRes);
             double overflow = addRes - allowed;
             addRes = allowed;
-            addHp += overflow / 3.0;
-            addAtk += overflow / 3.0;
-            addSpd += overflow / 3.0;
+
+            // 注意：如果抗性溢出要转化为三维，转化后的三维也需要受限于 100% 上限
+            addHp = Math.min(addHp + overflow / 3.0, CANDY_ATTR_CAP);
+            addAtk = Math.min(addAtk + overflow / 3.0, CANDY_ATTR_CAP);
+            addSpd = Math.min(addSpd + overflow / 3.0, CANDY_ATTR_CAP);
         }
 
+        // 写入 Modifier（原版针的数值 curHp 等不受限制，直接加上限制后的糖）
         setModifier(player, Attributes.MAX_HEALTH,                 NEEDLE_HP_UUID,  "Needle modifier", curHp + addHp);
         setModifier(player, Attributes.ATTACK_DAMAGE,              NEEDLE_ATK_UUID, "Needle modifier", curAtk + addAtk);
         setModifier(player, Attributes.ATTACK_SPEED,               NEEDLE_SPD_UUID, "Needle modifier", curSpd + addSpd);
@@ -109,7 +119,7 @@ public final class NeedleAttributeUtil {
             // 把针的抗性砍到上限
             setModifier(player, ModAttributes.DAMAGE_RESISTANCE.get(), NEEDLE_RES_UUID, "Needle modifier", newRes);
 
-            // 溢出部分转给三维（除以3）
+            // 溢出部分转给三维（除以3）—— 这部分是原版针带来的溢出，不受糖的 100% 限制
             AttributeInstance hpInst = player.getAttribute(Attributes.MAX_HEALTH);
             AttributeInstance atkInst = player.getAttribute(Attributes.ATTACK_DAMAGE);
             AttributeInstance spdInst = player.getAttribute(Attributes.ATTACK_SPEED);
@@ -118,5 +128,12 @@ public final class NeedleAttributeUtil {
             setModifier(player, Attributes.ATTACK_DAMAGE, NEEDLE_ATK_UUID, "Needle modifier", amountOf(atkInst, NEEDLE_ATK_UUID) + overflow / 3.0);
             setModifier(player, Attributes.ATTACK_SPEED, NEEDLE_SPD_UUID, "Needle modifier", amountOf(spdInst, NEEDLE_SPD_UUID) + overflow / 3.0);
         }
+    }
+
+    /**
+     * 兼容旧名字（防止 CrystalCandyItem 报错）
+     */
+    public static void modifyCandyBonus(ServerPlayer player) {
+        addCandyBonus(player);
     }
 }
