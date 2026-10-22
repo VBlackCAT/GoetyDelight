@@ -204,8 +204,7 @@ public class CrystalCandyItem extends Item {
         CrystalCandySavedData data = CrystalCandySavedData.readOrCreate(player.server);
         data.addCandyBonus(player.getUUID(), hp, atk, spd, res);
 
-        // 修复：方法名改回 modifyCandyBonus
-        NeedleAttributeUtil.modifyCandyBonus(player);
+        NeedleAttributeUtil.addCandyBonus(player);
     }
 
     @Override
@@ -229,8 +228,7 @@ public class CrystalCandyItem extends Item {
         @SubscribeEvent
         public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
             if (event.getEntity() instanceof ServerPlayer player) {
-                // 修复：方法名改回 modifyCandyBonus
-                NeedleAttributeUtil.modifyCandyBonus(player);
+                NeedleAttributeUtil.addCandyBonus(player);
             }
         }
     }

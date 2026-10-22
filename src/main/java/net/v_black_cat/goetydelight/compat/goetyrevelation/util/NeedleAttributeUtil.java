@@ -16,6 +16,8 @@ public final class NeedleAttributeUtil {
     public static final UUID NEEDLE_SPD_UUID = UUID.fromString("44a1da2a-8219-49cf-a523-8b710f0464a1");
     public static final UUID NEEDLE_RES_UUID = UUID.fromString("af236f3f-f82a-4008-97f9-5af0173b2ec9");
 
+    public static final double RES_CAP = 0.85;
+
     public static double amountOf(AttributeInstance inst, UUID id) {
         if (inst == null) return 0;
         AttributeModifier m = inst.getModifier(id);
@@ -45,18 +47,17 @@ public final class NeedleAttributeUtil {
     }
 
     /**
-     * 刷新糖的加成（包含抗性 85% 封顶）
+     * 把糖的加成强行写上去（附带抗性封顶）
      */
-    public static void modifyCandyBonus(ServerPlayer player) {
+    public static void addCandyBonus(ServerPlayer player) {
         if (player.server == null) return;
         CrystalCandySavedData data = CrystalCandySavedData.readOrCreate(player.server);
         UUID id = player.getUUID();
         double[] c = data.getCandyBonus(id);
 
-        // 如果糖是 0，不用折腾
         if (c[0] == 0 && c[1] == 0 && c[2] == 0 && c[3] == 0) return;
 
-        data.isRefreshingSet.add(id); // 开启防叠加标记
+        data.isRefreshingSet.add(id); // 防叠加标记
 
         AttributeInstance hpInst = player.getAttribute(Attributes.MAX_HEALTH);
         AttributeInstance atkInst = player.getAttribute(Attributes.ATTACK_DAMAGE);
@@ -68,27 +69,54 @@ public final class NeedleAttributeUtil {
         double curSpd = amountOf(spdInst, NEEDLE_SPD_UUID);
         double curRes = amountOf(resInst, NEEDLE_RES_UUID);
 
-        double finalRes = curRes + c[3];
-        double finalHp = curHp + c[0];
-        double finalAtk = curAtk + c[1];
-        double finalSpd = curSpd + c[2];
+        double addRes = c[3];
+        double addHp = c[0];
+        double addAtk = c[1];
+        double addSpd = c[2];
 
-        // 抗性 85% 封顶判断
-        double totalRes = getTotalResistance(player);
-        if (totalRes + c[3] > 0.85) {
-            double allowed = Math.max(0, 0.85 - (totalRes - curRes));
-            double overflow = c[3] - allowed;
-            finalRes = curRes + allowed;
-            finalHp += overflow / 3.0;
-            finalAtk += overflow / 3.0;
-            finalSpd += overflow / 3.0;
+        // 糖的抗性封顶检查
+        double otherRes = getTotalResistance(player) - curRes;
+        if (otherRes + curRes + addRes > RES_CAP) {
+            double allowed = Math.max(0, RES_CAP - otherRes - curRes);
+            double overflow = addRes - allowed;
+            addRes = allowed;
+            addHp += overflow / 3.0;
+            addAtk += overflow / 3.0;
+            addSpd += overflow / 3.0;
         }
 
-        setModifier(player, Attributes.MAX_HEALTH,                 NEEDLE_HP_UUID,  "Needle modifier", finalHp);
-        setModifier(player, Attributes.ATTACK_DAMAGE,              NEEDLE_ATK_UUID, "Needle modifier", finalAtk);
-        setModifier(player, Attributes.ATTACK_SPEED,               NEEDLE_SPD_UUID, "Needle modifier", finalSpd);
-        setModifier(player, ModAttributes.DAMAGE_RESISTANCE.get(), NEEDLE_RES_UUID, "Needle modifier", finalRes);
+        setModifier(player, Attributes.MAX_HEALTH,                 NEEDLE_HP_UUID,  "Needle modifier", curHp + addHp);
+        setModifier(player, Attributes.ATTACK_DAMAGE,              NEEDLE_ATK_UUID, "Needle modifier", curAtk + addAtk);
+        setModifier(player, Attributes.ATTACK_SPEED,               NEEDLE_SPD_UUID, "Needle modifier", curSpd + addSpd);
+        setModifier(player, ModAttributes.DAMAGE_RESISTANCE.get(), NEEDLE_RES_UUID, "Needle modifier", curRes + addRes);
 
         data.isRefreshingSet.remove(id);
+    }
+
+    /**
+     * 扎针后，如果原版针把总抗性搞超了 85%，就强行砍掉针的抗性。
+     */
+    public static void capNeedleResistance(ServerPlayer player) {
+        AttributeInstance resInst = player.getAttribute(ModAttributes.DAMAGE_RESISTANCE.get());
+        if (resInst == null) return;
+
+        double totalRes = getTotalResistance(player);
+        if (totalRes > RES_CAP) {
+            double overflow = totalRes - RES_CAP;
+            double curRes = amountOf(resInst, NEEDLE_RES_UUID);
+            double newRes = Math.max(0, curRes - overflow);
+
+            // 把针的抗性砍到上限
+            setModifier(player, ModAttributes.DAMAGE_RESISTANCE.get(), NEEDLE_RES_UUID, "Needle modifier", newRes);
+
+            // 溢出部分转给三维（除以3）
+            AttributeInstance hpInst = player.getAttribute(Attributes.MAX_HEALTH);
+            AttributeInstance atkInst = player.getAttribute(Attributes.ATTACK_DAMAGE);
+            AttributeInstance spdInst = player.getAttribute(Attributes.ATTACK_SPEED);
+
+            setModifier(player, Attributes.MAX_HEALTH, NEEDLE_HP_UUID, "Needle modifier", amountOf(hpInst, NEEDLE_HP_UUID) + overflow / 3.0);
+            setModifier(player, Attributes.ATTACK_DAMAGE, NEEDLE_ATK_UUID, "Needle modifier", amountOf(atkInst, NEEDLE_ATK_UUID) + overflow / 3.0);
+            setModifier(player, Attributes.ATTACK_SPEED, NEEDLE_SPD_UUID, "Needle modifier", amountOf(spdInst, NEEDLE_SPD_UUID) + overflow / 3.0);
+        }
     }
 }
