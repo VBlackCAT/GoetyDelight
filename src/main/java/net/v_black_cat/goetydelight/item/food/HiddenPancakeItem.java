@@ -194,9 +194,7 @@ public class HiddenPancakeItem extends Item {
         boolean isHiddenPancakeCopy = false;
         if (entityId.equals(new ResourceLocation("goety:redstone_monstrosity")) ||
                 entityId.equals(new ResourceLocation("goety_cataclysm:netherite_monstrosity")) ||
-                entityId.equals(new ResourceLocation("goety_cataclysm:ancient_remnant")) ||
-                entityId.equals(new ResourceLocation("goetyawaken:ender_keeper_servant")) ||
-                entityId.equals(new ResourceLocation("goetyawaken:mushroom_monstrosity"))
+                entityId.equals(new ResourceLocation("goety_cataclysm:ancient_remnant"))
         ){isHiddenPancakeCopy = true;}else {isHiddenPancakeCopy = false;}
         return isHiddenPancakeCopy;
     }
