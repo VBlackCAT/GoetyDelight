@@ -6,7 +6,7 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "Sliced from an Ascension Cake; each cake yields 3 slices.$(br)Upon consumption, grants the eater:$(br)$(li)66 seconds of Nourishment$(li)66 seconds of The Pale Messenger$(li)66 seconds of Resistance IV$(li)66 seconds of Strength X$(li)66 seconds of Luck X$(br2)A slice marked with the End (The-End Cake Slice) additionally grants 66 seconds of Resistance VI, and stops time in the entire world."
+            "text": "Taken from an Ascension Cake by right-clicking; each cake yields 3 slices.$(br)Upon consumption, grants the eater:$(br)$(li)66 seconds of Nourishment, The Pale Messenger, Resistance IV, Strength X and Luck X"
         }
     ]
 }
