@@ -6,7 +6,11 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "放置后可右键获得一份晋升蛋糕切片$(br)给予食用者:$(br)$(li)66秒的滋养$(li)66秒的苍白使者$(li)66秒的抗性提升4$(li)66秒的力量10$(li)66秒的幸运10$(br2)当附近10格内完成终末仪式后，蛋糕会转变为终末蛋糕，此时只有仪式的发起者可以取食。"
+            "text": "以$(thing)七印$()为引，在$(thing)黑暗祭坛$()上完成$(l)大师烹饪$()仪式所得的甜点。$(br)右击可获得三片，可随时间推移缓慢恢复。"
+        },
+        {
+            "type": "patchouli:crafting",
+            "recipe": "goetydelight:ritual/apollyon_cake"
         },
         {
             "type": "patchouli:text",

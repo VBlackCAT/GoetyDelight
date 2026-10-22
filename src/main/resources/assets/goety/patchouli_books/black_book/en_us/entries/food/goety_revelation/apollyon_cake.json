@@ -6,7 +6,11 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "Right-click after placing to obtain one Ascension Cake Slice.$(br)Grants the eater:$(br)$(li)66 seconds of Nourishment$(li)66 seconds of The Pale Messenger$(li)66 seconds of Resistance IV$(li)66 seconds of Strength X$(li)66 seconds of Luck X$(br2)When a The End ritual is completed within 10 blocks, the cake turns into a The-End Cake, and only the ritual's caster may take from it."
+            "text": "A confection obtained by completing the $(l)Master Culinary$() ritual at a $(thing)Dark Altar$(), with the $(thing)Seven Seals$() as its catalyst.$(br)Right-click to take three slices; the cake slowly restores itself over time."
+        },
+        {
+            "type": "patchouli:crafting",
+            "recipe": "goetydelight:ritual/apollyon_cake"
         },
         {
             "type": "patchouli:text",

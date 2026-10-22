@@ -7,11 +7,7 @@
     "pages": [
         {
             "type": "patchouli:text",
-            "text": "A wedge cut from a The-End Cake.$(br)Grants the eater:$(br)$(li)66 seconds of Nourishment$(li)66 seconds of The Pale Messenger$(li)66 seconds of Resistance IV$(li)66 seconds of Strength X$(li)66 seconds of Luck X"
-        },
-        {
-            "type": "patchouli:text",
-            "text": "Beyond those, it also grants $(thing)66 seconds of Resistance VI$() and $(thing)stops time in the entire world$().$(br2)The last sweet bite the End Deity leaves for the faithful."
+            "text": "A piece taken from a The-End Cake.$(br)Upon consumption, grants the eater:$(br)$(li)66 seconds of Nourishment, The Pale Messenger, Resistance IV, Strength X and Luck X$(br)and brings the whole world's time to a halt for ten seconds"
         }
     ]
 }

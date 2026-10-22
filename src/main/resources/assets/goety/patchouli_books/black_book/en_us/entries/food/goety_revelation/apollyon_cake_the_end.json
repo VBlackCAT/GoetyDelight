@@ -11,7 +11,7 @@
         },
         {
             "type": "patchouli:text",
-            "text": "A The-End Cake still yields 3 slices, but only the $(thing)caster of the ritual$() may take from it.$(br)Anyone else who reaches for it will come away empty-handed."
+            "text": "A The-End Cake still offers 3 slices, but only the $(thing)caster of the ritual$() may take from it.$(br)Anyone else who reaches for it will come away empty-handed."
         }
     ]
 }
