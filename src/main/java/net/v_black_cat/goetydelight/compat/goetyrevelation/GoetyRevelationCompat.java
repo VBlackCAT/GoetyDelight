@@ -42,6 +42,7 @@ public final class GoetyRevelationCompat {
         MinecraftForge.EVENT_BUS.register(QuietusMarrowItem.class);
         MinecraftForge.EVENT_BUS.register(StoneSwordSkewerItem.class);
         MinecraftForge.EVENT_BUS.register(ApocalyptiumPopsicleItem.class);
+        MinecraftForge.EVENT_BUS.register(CrystalCandyItem.CrystalCandyEvents.class);
 
         MasterRitualRegistery.register();
     }

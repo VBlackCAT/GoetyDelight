@@ -9,8 +9,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class ConsumedCurio {
 
     public final ResourceLocation itemId;
-    public final int rarityOrdinal;    // Rarity.ordinal()
-    public final CompoundTag stackTag; // 可为 null
+    public final int rarityOrdinal;
+    public final CompoundTag stackTag;
 
     public ConsumedCurio(ResourceLocation itemId, int rarityOrdinal, CompoundTag stackTag) {
         this.itemId = itemId;

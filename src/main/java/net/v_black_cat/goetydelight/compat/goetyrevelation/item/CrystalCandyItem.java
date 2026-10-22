@@ -1,7 +1,5 @@
 package net.v_black_cat.goetydelight.compat.goetyrevelation.item;
 
-import com.mega.revelationfix.common.init.ModAttributes;
-import com.mojang.logging.LogUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -14,20 +12,18 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SlotAccess;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.util.ConsumedCurio;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.util.CrystalCandySavedData;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.util.NeedleAttributeUtil;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
 
 import java.util.List;
 
@@ -56,7 +52,6 @@ public class CrystalCandyItem extends Item {
         if (stored.size() >= MAX_STORAGE) return false;
 
         if (canStore(other)) {
-            // 不再做任何查重拦截，随便塞
             CompoundTag s = new CompoundTag();
             other.save(s);
             stored.add(s);
@@ -81,7 +76,6 @@ public class CrystalCandyItem extends Item {
         if (!other.isEmpty()) {
             if (stored.size() >= MAX_STORAGE) return false;
             if (canStore(other)) {
-                // 不再做任何查重拦截，随便塞
                 CompoundTag s = new CompoundTag();
                 other.save(s);
                 stored.add(s);
@@ -144,9 +138,7 @@ public class CrystalCandyItem extends Item {
 
         CrystalCandySavedData data = CrystalCandySavedData.readOrCreate(player.server);
 
-        // 用于结算属性的合法物品列表
         ListTag validStored = new ListTag();
-        // 用于塞回糖里的重复物品列表
         ListTag duplicateStored = new ListTag();
 
         for (int i = 0; i < stored.size(); i++) {
@@ -155,10 +147,9 @@ public class CrystalCandyItem extends Item {
             ResourceLocation id = ForgeRegistries.ITEMS.getKey(s.getItem());
             String targetId = id != null ? id.toString() : "null";
 
-            // 如果已经吃过，或者在这一颗糖里重复了，就放入保留区
             boolean isDuplicate = data.hasConsumedItem(player.getUUID(), targetId);
             if (!isDuplicate) {
-                for(int j=0; j<validStored.size(); j++) {
+                for (int j = 0; j < validStored.size(); j++) {
                     ItemStack v = ItemStack.of(validStored.getCompound(j));
                     ResourceLocation vid = ForgeRegistries.ITEMS.getKey(v.getItem());
                     if (vid != null && vid.toString().equals(targetId)) {
@@ -169,31 +160,29 @@ public class CrystalCandyItem extends Item {
             }
 
             if (isDuplicate) {
-                duplicateStored.add(itemTag); // 保留重复的，放回糖里
+                duplicateStored.add(itemTag);
             } else {
                 data.addConsumed(player.getUUID(), ConsumedCurio.fromStack(s));
-                validStored.add(itemTag); // 合法的，去结算
+                validStored.add(itemTag);
             }
         }
 
-        // 结算合法的物品
         if (!validStored.isEmpty()) {
             applyCrystalCandyBonuses(player, validStored);
         }
 
-        // 如果还有剩下的重复物品，就重新写回 NBT
         if (!duplicateStored.isEmpty()) {
             tag.put(STORED, duplicateStored);
             player.displayClientMessage(Component.literal("部分饰品已吃过，保留在水晶糖中未消耗").withStyle(ChatFormatting.GRAY), true);
         } else {
-            tag.remove(STORED); // 全都合法吃完了，清空糖
+            tag.remove(STORED);
         }
 
         level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.GENERIC_EAT, SoundSource.PLAYERS, 1.0F, 1.0F);
         player.getCooldowns().addCooldown(this, 20);
 
         player.getInventory().setChanged();
-        if (player.containerMenu != null) player.containerMenu.broadcastChanges();
+        player.containerMenu.broadcastChanges();
 
         return stack;
     }
@@ -203,41 +192,20 @@ public class CrystalCandyItem extends Item {
 
         for (int i = 0; i < stored.size(); i++) {
             ItemStack s = ItemStack.of(stored.getCompound(i));
-            double hpAdd, atkAdd, spdAdd, resAdd;
             switch (s.getRarity()) {
-                case COMMON   -> { hpAdd = 0.01; atkAdd = 0.01; spdAdd = 0;    resAdd = 0; }
-                case UNCOMMON -> { hpAdd = 0.02; atkAdd = 0.02; spdAdd = 0.02; resAdd = 0; }
-                case RARE     -> { hpAdd = 0.04; atkAdd = 0.04; spdAdd = 0.04; resAdd = 0.04; }
-                case EPIC     -> { hpAdd = 0.24; atkAdd = 0.24; spdAdd = 0.24; resAdd = 0.24; }
-                default       -> { hpAdd = 0;    atkAdd = 0;    spdAdd = 0;    resAdd = 0; }
+                case COMMON   -> { hp += 0.01; atk += 0.01; }
+                case UNCOMMON -> { hp += 0.02; atk += 0.02; spd += 0.02; }
+                case RARE     -> { hp += 0.04; atk += 0.04; spd += 0.04; res += 0.04; }
+                case EPIC     -> { hp += 0.24; atk += 0.24; spd += 0.24; res += 0.24; }
+                default       -> {}
             }
-            hp += hpAdd; atk += atkAdd; spd += spdAdd; res += resAdd;
         }
 
-        AttributeInstance hpInst = player.getAttribute(Attributes.MAX_HEALTH);
-        AttributeInstance atkInst = player.getAttribute(Attributes.ATTACK_DAMAGE);
-        AttributeInstance spdInst = player.getAttribute(Attributes.ATTACK_SPEED);
-        AttributeInstance resInst = player.getAttribute(ModAttributes.DAMAGE_RESISTANCE.get());
+        CrystalCandySavedData data = CrystalCandySavedData.readOrCreate(player.server);
+        data.addCandyBonus(player.getUUID(), hp, atk, spd, res);
 
-        double oldCandyHp = NeedleAttributeUtil.amountOf(hpInst, NeedleAttributeUtil.CANDY_HP_UUID);
-        double oldCandyAtk = NeedleAttributeUtil.amountOf(atkInst, NeedleAttributeUtil.CANDY_ATK_UUID);
-        double oldCandySpd = NeedleAttributeUtil.amountOf(spdInst, NeedleAttributeUtil.CANDY_SPD_UUID);
-        double oldCandyRes = NeedleAttributeUtil.amountOf(resInst, NeedleAttributeUtil.CANDY_RES_UUID);
-
-        double currentRes = NeedleAttributeUtil.getTotalResistance(player);
-        if (currentRes + res > NeedleAttributeUtil.RES_CAP) {
-            double allowed = Math.max(0, NeedleAttributeUtil.RES_CAP - currentRes);
-            double overflow = res - allowed;
-            res = allowed;
-            hp += overflow / 3.0;
-            atk += overflow / 3.0;
-            spd += overflow / 3.0;
-        }
-
-        NeedleAttributeUtil.applyModifier(player, Attributes.MAX_HEALTH, NeedleAttributeUtil.CANDY_HP_UUID, "Crystal Candy", oldCandyHp + hp);
-        NeedleAttributeUtil.applyModifier(player, Attributes.ATTACK_DAMAGE, NeedleAttributeUtil.CANDY_ATK_UUID, "Crystal Candy", oldCandyAtk + atk);
-        NeedleAttributeUtil.applyModifier(player, Attributes.ATTACK_SPEED, NeedleAttributeUtil.CANDY_SPD_UUID, "Crystal Candy", oldCandySpd + spd);
-        NeedleAttributeUtil.applyModifier(player, ModAttributes.DAMAGE_RESISTANCE.get(), NeedleAttributeUtil.CANDY_RES_UUID, "Crystal Candy", oldCandyRes + res);
+        // 修复：方法名改回 modifyCandyBonus
+        NeedleAttributeUtil.modifyCandyBonus(player);
     }
 
     @Override
@@ -254,6 +222,16 @@ public class CrystalCandyItem extends Item {
                 tooltip.add(Component.literal(" - ").append(s.getHoverName()).withStyle(s.getRarity().color));
             }
             tooltip.add(Component.translatable("item.goetydelight.crystal_candy.eat_hint").withStyle(ChatFormatting.GRAY));
+        }
+    }
+
+    public static class CrystalCandyEvents {
+        @SubscribeEvent
+        public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+            if (event.getEntity() instanceof ServerPlayer player) {
+                // 修复：方法名改回 modifyCandyBonus
+                NeedleAttributeUtil.modifyCandyBonus(player);
+            }
         }
     }
 }
