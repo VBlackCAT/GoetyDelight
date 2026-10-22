@@ -56,8 +56,12 @@ public class CrystalCandyItem extends Item {
             other.save(s);
             stored.add(s);
             tag.put(STORED, stored);
+
             other.shrink(1);
-            if (other.isEmpty()) slot.set(ItemStack.EMPTY);
+            // 关键修复：other 是鼠标携带的物品，必须通过 carriedItem 回写，
+            // 而不是去清空 slot（slot 是糖所在的槽位！）
+            carriedItem.set(other.isEmpty() ? ItemStack.EMPTY : other);
+
             player.playNotifySound(SoundEvents.BUNDLE_INSERT, SoundSource.PLAYERS, 1.0F, 1.0F);
             slot.setChanged();
             return true;

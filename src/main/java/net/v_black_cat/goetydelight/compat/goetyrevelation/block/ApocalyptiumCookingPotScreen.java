@@ -119,9 +119,15 @@ public class ApocalyptiumCookingPotScreen extends AbstractContainerScreen<Apocal
                                 "container.apocalyptium_cooking_pot.served_on", container)
                         .withStyle(ChatFormatting.GRAY));
 
+                // 检查是否有灵魂注入，并显示灵魂强度等级
                 if (mealStack.hasTag() && mealStack.getTag().getBoolean("SoulInfused")) {
-                    tooltip.add(net.v_black_cat.goetydelight.util.TextUtils.getTranslation(
-                                    "container.apocalyptium_cooking_pot.soul_infused")
+                    int level = mealStack.getTag().contains("SoulInfusedLevel")
+                            ? mealStack.getTag().getInt("SoulInfusedLevel") : 1;
+                    if (level < 1) {
+                        level = 1;
+                    }
+                    tooltip.add(net.v_black_cat.goetydelight.util.TextUtils
+                            .getTranslation("container.apocalyptium_cooking_pot.soul_infused", level)
                             .withStyle(ChatFormatting.DARK_PURPLE));
                 }
                 gui.renderComponentTooltip(this.font, tooltip, mouseX, mouseY);

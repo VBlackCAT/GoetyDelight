@@ -19,7 +19,10 @@ import net.v_black_cat.goetydelight.util.TextUtils;
  *  - 产出灵魂强度 ×10（SoulInfusedLevel = 10）
  *  - 烹饪时间 ×0.1（等效速度 ×10）
  *  - 自热（永远视为有热源）
+ *  - 不需要灵魂源
  * 其余逻辑复用 CursedIngotPotBlockEntity。
+ * 注意：不再覆写 processCooking。父类在 soulCost <= 0 时短路视为注入成功，
+ * 因此 modifySoulCost 返回 0 即可让天启锅无需灵魂即可正常烹饪并注入 SoulInfusedLevel=10。
  */
 public class ApocalyptiumCookingPotBlockEntity extends CursedIngotPotBlockEntity {
 
@@ -49,7 +52,7 @@ public class ApocalyptiumCookingPotBlockEntity extends CursedIngotPotBlockEntity
         return Math.max(1, original / 10);
     }
 
-    /** 不消耗灵魂：恒为 0，即 never 扣费。 */
+    /** 不消耗灵魂：恒为 0。父类 processCooking 在 soulCost <= 0 时短路成功。 */
     @Override
     protected int modifySoulCost(int original) {
         return 0;
@@ -64,21 +67,21 @@ public class ApocalyptiumCookingPotBlockEntity extends CursedIngotPotBlockEntity
         resultStack.setTag(tag);
     }
 
-    // ===================== 不消耗灵魂 + 自热 =====================
+    // ===================== 不需要灵魂 + 自热 =====================
 
-    /** 永远"有灵魂可用"：不读 soul_slot，直接返回极大值，使 cookingTick 的灵魂分支恒成立。 */
+    /** 不需要灵魂源：返回极大值，使 cookingTick 的灵魂可用判定恒成立。 */
     @Override
     protected int getSoulEnergyAvailable() {
         return Integer.MAX_VALUE / 2;
     }
 
-    /** 不消耗灵魂：始终返回 false（即从不真正扣灵魂），但烹饪判定用 getSoulEnergyAvailable。 */
+    /** 不消耗灵魂：始终返回 false（不真正扣灵魂）。 */
     @Override
     protected boolean consumeSoulEnergy(int amount) {
         return false;
     }
 
-    /** 不消耗灵魂：hasSoulEnergy 恒为 true，用于粒子特效判定。 */
+    /** 不需要灵魂：hasSoulEnergy 恒为 true，用于粒子特效判定。 */
     @Override
     public boolean hasSoulEnergy() {
         return true;
@@ -96,67 +99,10 @@ public class ApocalyptiumCookingPotBlockEntity extends CursedIngotPotBlockEntity
         return true;
     }
 
+    /** 天启锅不需要灵魂源，保持父类默认 false，无需覆写。 */
+
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory player, Player entity) {
         return new ApocalyptiumCookingPotMenu(id, player, this, this.cookingPotData);
-    }
-
-    /**
-     * 关键：父类 processCooking 里 "shouldUseSoul = hasSoulSource && remainingSoul >= soulCost"，
-     * 我们让 remainingSoul 极大、soulCost=0，所以 shouldUseSoul 恒 true，
-     * 随后调用 consumeSoulEnergy(soulCost=0) 返回 false 会导致烹饪失败。
-     * 这里覆写 processCooking 的"灵魂注入"环节：直接注入灵魂，不调用 consumeSoulEnergy。
-     */
-    @Override
-    protected boolean processCooking(vectorwing.farmersdelight.common.crafting.CookingPotRecipe recipe) {
-        if (this.level == null) {
-            return false;
-        }
-        this.cookTimeTotal = this.modifyCookTimeTotal(recipe.getCookTime());
-        if (this.cookTime < this.cookTimeTotal) {
-            return false;
-        }
-
-        ItemStack currentMeal = this.inventory.getStackInSlot(MEAL_DISPLAY_SLOT);
-        ItemStack outputStack = this.inventory.getStackInSlot(OUTPUT_SLOT);
-
-        ItemStack resultStack = recipe.getResultItem(this.level.registryAccess()).copy();
-
-        // 不消耗灵魂，直接注入 10 倍灵魂标记
-        this.applySoulInfusion(resultStack);
-
-        // 复用父类批量库存逻辑：这里为避免重复代码，直接走父类 processCooking 的库存段。
-        // 但父类会再次尝试 consumeSoulEnergy，因此我们改为手动执行库存结算：
-        this.deferInventoryEvents = true;
-        try {
-            if (currentMeal.isEmpty()) {
-                this.inventory.setStackInSlot(MEAL_DISPLAY_SLOT, resultStack.copy());
-            } else if (ItemStack.isSameItem(currentMeal, resultStack)) {
-                currentMeal.grow(resultStack.getCount());
-            } else {
-                return false;
-            }
-
-            this.cookTime = 0.0f;
-            this.mealContainerStack = recipe.getOutputContainer();
-            this.setRecipeUsed(recipe);
-
-            for (int i = 0; i < 6; ++i) {
-                ItemStack slotStack = this.inventory.getStackInSlot(i);
-                if (slotStack.hasCraftingRemainingItem()) {
-                    this.ejectIngredientRemainder(slotStack.getCraftingRemainingItem().copy().split(1));
-                } else if (INGREDIENT_REMAINDER_OVERRIDES.containsKey(slotStack.getItem())) {
-                    this.ejectIngredientRemainder(INGREDIENT_REMAINDER_OVERRIDES.get(slotStack.getItem()).getDefaultInstance());
-                }
-                if (!slotStack.isEmpty()) {
-                    slotStack.shrink(1);
-                }
-            }
-        } finally {
-            this.deferInventoryEvents = false;
-        }
-
-        this.inventoryChanged();
-        return true;
     }
 }

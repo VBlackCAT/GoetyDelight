@@ -4,11 +4,12 @@ import com.Polarice3.Goety.api.items.magic.ITotem;
 import com.Polarice3.Goety.utils.SEHelper;
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -361,10 +362,16 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
         return original;
     }
 
-    /** 给产物注入灵魂标记。默认写布尔 SoulInfused。 */
+    /** 本锅是否要求必须有真实灵魂源才能产出（黑铁锅 true，普通锅/天启锅 false）。 */
+    protected boolean requiresSoulSource() {
+        return false;
+    }
+
+    /** 给产物注入灵魂标记。默认写布尔 SoulInfused + 等级 1。 */
     protected void applySoulInfusion(ItemStack resultStack) {
         CompoundTag tag = resultStack.getOrCreateTag();
         tag.putBoolean("SoulInfused", true);
+        tag.putInt("SoulInfusedLevel", 1);
         resultStack.setTag(tag);
     }
 
@@ -399,6 +406,11 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
             } else {
                 // 已有灵魂注入的成品，必须继续供能，否则混合产出
                 needSoul = anyHasMark;
+            }
+
+            // 强制要求灵魂源的锅（黑铁锅）：无灵魂时不允许烹饪，避免产出无灵魂食物
+            if (cookingPot.requiresSoulSource() && !hasSoulEnergy) {
+                needSoul = true;   // 走"需要灵魂但没灵魂"分支 → canCook=false
             }
 
             boolean soulAvailable = hasSoulEnergy && (remainingSoul >= estimatedCost);
@@ -604,7 +616,8 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
         }
 
         if (shouldUseSoul) {
-            boolean soulInfused = this.consumeSoulEnergy(soulCost);
+            // soulCost <= 0 表示本锅不消耗灵魂（如天启锅），直接视为注入成功
+            boolean soulInfused = (soulCost <= 0) || this.consumeSoulEnergy(soulCost);
             if (soulInfused) {
                 // 通过钩子注入灵魂标记（子类可覆写为更强等级）
                 this.applySoulInfusion(resultStack);

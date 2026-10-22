@@ -29,14 +29,19 @@ public class PlayerEatEventHandler {
             SEHelper.increaseSouls(player, soulEnergy);
         }
 
-        // 检查食物是否带有"SoulInfused"标签
+        // 检查食物是否带有"SoulInfused"标签，并按 SoulInfusedLevel 倍乘
         CompoundTag tag = finishedItem.getTag();
         if (tag != null && tag.getBoolean("SoulInfused")) {
-            // 获取食物属性
             FoodProperties foodProperties = finishedItem.getFoodProperties(player);
             if (foodProperties != null) {
-                // 计算额外灵魂能量：5 * 饱食度
-                int bonusSoulEnergy = 5 * foodProperties.getNutrition();
+                // 读取灵魂强度等级：普通锅=1，黑铁锅=2，天启锅=10；
+                // 旧存档/未写等级的产物回退到 1，保证向后兼容
+                int soulLevel = tag.contains("SoulInfusedLevel") ? tag.getInt("SoulInfusedLevel") : 1;
+                if (soulLevel < 1) {
+                    soulLevel = 1;
+                }
+                // 基础额外灵魂能量：5 * 饱食度，再乘以灵魂强度等级
+                int bonusSoulEnergy = 5 * foodProperties.getNutrition() * soulLevel;
                 SEHelper.increaseSouls(player, bonusSoulEnergy);
             }
         }

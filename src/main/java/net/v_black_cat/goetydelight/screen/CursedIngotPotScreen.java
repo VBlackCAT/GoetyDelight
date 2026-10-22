@@ -88,8 +88,6 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
         this.renderHeatIndicatorTooltip(gui, mouseX, mouseY);
         this.renderSoulSourceTooltip(gui, mouseX, mouseY); //灵魂源插槽提示
         this.recipeBookComponent.renderTooltip(gui, this.leftPos, this.topPos, mouseX, mouseY);
-        Slot soulSlot = this.menu.getSlot(9);
-
     }
 
     private void renderHeatIndicatorTooltip(GuiGraphics gui, int mouseX, int mouseY) {
@@ -115,7 +113,6 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
         }
     }
 
-
     protected void renderMealDisplayTooltip(GuiGraphics gui, int mouseX, int mouseY) {
         if (this.minecraft != null && this.minecraft.player != null && ((CursedIngotPotMenu)this.menu).getCarried().isEmpty() && this.hoveredSlot != null && this.hoveredSlot.hasItem()) {
             if (this.hoveredSlot.index == 6) {
@@ -126,9 +123,16 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
                 String container = !containerStack.isEmpty() ? containerStack.getItem().getDescription().getString() : "";
                 tooltip.add(net.v_black_cat.goetydelight.util.TextUtils.getTranslation("container.cursed_ingot_pot.served_on", new Object[]{container}).withStyle(ChatFormatting.GRAY));
 
-                // 检查是否有灵魂注入
-                if (mealStack.hasTag() && mealStack.getTag().contains("SoulInfused") && mealStack.getTag().getBoolean("SoulInfused")) {
-                    tooltip.add(net.v_black_cat.goetydelight.util.TextUtils.getTranslation("container.cursed_ingot_pot.soul_infused").withStyle(ChatFormatting.DARK_PURPLE));
+                // 检查是否有灵魂注入，并显示灵魂强度等级
+                if (mealStack.hasTag() && mealStack.getTag().getBoolean("SoulInfused")) {
+                    int level = mealStack.getTag().contains("SoulInfusedLevel")
+                            ? mealStack.getTag().getInt("SoulInfusedLevel") : 1;
+                    if (level < 1) {
+                        level = 1;
+                    }
+                    tooltip.add(net.v_black_cat.goetydelight.util.TextUtils
+                            .getTranslation("container.cursed_ingot_pot.soul_infused", level)
+                            .withStyle(ChatFormatting.DARK_PURPLE));
                 }
 
                 gui.renderComponentTooltip(this.font, tooltip, mouseX, mouseY);
@@ -137,7 +141,6 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
             }
         }
     }
-
 
     protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
         super.renderLabels(guiGraphics, mouseX, mouseY);
@@ -192,7 +195,6 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
     public void recipesUpdated() {
         this.recipeBookComponent.recipesUpdated();
     }
-
 
     @Nonnull
     public RecipeBookComponent getRecipeBookComponent() {

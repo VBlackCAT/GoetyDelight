@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
  *  - 烹饪时间 ×0.5（等效速度 ×2）
  *  - 灵魂消耗 ×0.5
  *  - 产物灵魂强度 ×2（SoulInfusedLevel = 2）
+ *  - 必须存在真实灵魂源才能产出（避免产出无灵魂食物）
  * 其余逻辑全部复用 CursedIngotPotBlockEntity。
  */
 public class BlackIronPotBlockEntity extends CursedIngotPotBlockEntity {
@@ -44,5 +45,11 @@ public class BlackIronPotBlockEntity extends CursedIngotPotBlockEntity {
         tag.putBoolean("SoulInfused", true);
         tag.putInt(SOUL_LEVEL_TAG, SOUL_LEVEL);
         resultStack.setTag(tag);
+    }
+
+    /** 黑铁锅灵魂消耗减半但仍需灵魂源：无灵魂时不产出无灵魂食物。 */
+    @Override
+    protected boolean requiresSoulSource() {
+        return true;
     }
 }
