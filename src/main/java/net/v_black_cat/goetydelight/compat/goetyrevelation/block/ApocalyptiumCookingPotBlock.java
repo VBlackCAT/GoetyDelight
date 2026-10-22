@@ -163,6 +163,15 @@ public class ApocalyptiumCookingPotBlock extends Block implements SimpleWaterlog
                 Containers.dropContents(level, pos, potEntity.getDroppableInventory());
                 potEntity.getUsedRecipesAndPopExperience(level, Vec3.atCenterOf(pos));
                 level.updateNeighbourForOutputSignal(pos, this);
+                ItemStack potStack = new ItemStack(this);
+                CompoundTag nbt = potEntity.writeMeal(new CompoundTag());
+                if (!nbt.isEmpty()) {
+                    potStack.addTagElement("BlockEntityTag", nbt);
+                }
+                if (potEntity.hasCustomName()) {
+                    potStack.setHoverName(potEntity.getCustomName());
+                }
+                Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), potStack);
             }
             super.onRemove(state, level, pos, newState, isMoving);
         }

@@ -81,7 +81,6 @@ public class RevelationCompatRegistry {
         APOCALYPTIUM_POT = BLOCKS.register("apocalyptium_cooking_pot",
                 () -> new ApocalyptiumCookingPotBlock(
                         BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
-                                .noLootTable()
                                 .sound(SoundType.AMETHYST)));
         APOCALYPTIUM_POT_ITEM = ITEMS.register("apocalyptium_cooking_pot",
                 () -> new BlockItem(APOCALYPTIUM_POT.get(), new Item.Properties()));

@@ -29,15 +29,14 @@ import static net.v_black_cat.goetydelight.GoetyDelight.MODID;
 public class ApocalyptiumCookingPotScreen extends AbstractContainerScreen<ApocalyptiumCookingPotMenu>
         implements RecipeUpdateListener {
 
-    // 与内部名同名：assets/goetydelight/textures/gui/apocalyptium_cooking_pot.png
     private static final ResourceLocation RECIPE_BUTTON_LOCATION =
-            new ResourceLocation(MODID, "textures/gui/recipe_button.png");
+            new ResourceLocation(MODID, "textures/gui/apocalyptium_recipe_button.png");
+
     private static final ResourceLocation BACKGROUND_TEXTURE =
             new ResourceLocation(MODID, "textures/gui/apocalyptium_cooking_pot.png");
 
     private static final Rectangle HEAT_ICON = new Rectangle(47, 55, 17, 15);
     private static final Rectangle PROGRESS_ARROW = new Rectangle(89, 25, 0, 17);
-    // 不再有 SOUL_SOURCE_SLOT
 
     private final CookingPotRecipeBookComponent recipeBookComponent = new CookingPotRecipeBookComponent();
     private boolean widthTooNarrow;
@@ -54,6 +53,7 @@ public class ApocalyptiumCookingPotScreen extends AbstractContainerScreen<Apocal
         this.recipeBookComponent.init(this.width, this.height, this.minecraft, this.widthTooNarrow,
                 (RecipeBookMenu) this.menu);
         this.leftPos = this.recipeBookComponent.updateScreenPosition(this.width, this.imageWidth);
+
         if (Configuration.ENABLE_COOKING_POT_RECIPE_BOOK.get()) {
             this.addRenderableWidget(new ImageButton(this.leftPos + 5, this.height / 2 - 49, 20, 18,
                     0, 0, 19, RECIPE_BUTTON_LOCATION, (button) -> {
@@ -160,8 +160,6 @@ public class ApocalyptiumCookingPotScreen extends AbstractContainerScreen<Apocal
             gui.blit(BACKGROUND_TEXTURE,
                     this.leftPos + PROGRESS_ARROW.x, this.topPos + PROGRESS_ARROW.y,
                     176, 15, progress + 1, PROGRESS_ARROW.height);
-
-            // 不再绘制灵魂源插槽
         }
     }
 

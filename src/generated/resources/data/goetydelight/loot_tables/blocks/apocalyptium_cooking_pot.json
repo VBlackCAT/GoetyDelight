@@ -2,47 +2,20 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "rolls": 1,
-      "bonus_rolls": 0,
-      "entries": [
-        {
-          "type": "minecraft:item",
-          "name": "goetydelight:apocalyptium_cooking_pot",
-          "functions": [
-            {
-              "function": "minecraft:copy_nbt",
-              "source": "block_entity",
-              "ops": [
-                {
-                  "op": "copy",
-                  "source": "Inventory",
-                  "target": "BlockEntityTag.Inventory"
-                },
-                {
-                  "op": "copy",
-                  "source": "Container",
-                  "target": "BlockEntityTag.Container"
-                },
-                {
-                  "op": "copy",
-                  "source": "RecipesUsed",
-                  "target": "BlockEntityTag.RecipesUsed"
-                },
-                {
-                  "op": "copy",
-                  "source": "CustomName",
-                  "target": "BlockEntityTag.CustomName"
-                }
-              ]
-            }
-          ]
-        }
-      ],
+      "bonus_rolls": 0.0,
       "conditions": [
         {
           "condition": "minecraft:survives_explosion"
         }
-      ]
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "goetydelight:apocalyptium_cooking_pot"
+        }
+      ],
+      "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "goetydelight:blocks/apocalyptium_cooking_pot"
 }
