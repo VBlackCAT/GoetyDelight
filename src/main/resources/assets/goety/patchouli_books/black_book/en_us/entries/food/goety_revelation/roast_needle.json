@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:text",
-      "text": "Eating it clears the Needle stacks."
+      "text": "Eating it clears the Needle stacks.$(br)$(br)$(br)You passed the final trial of the Dark Supreme, were stung by the ferocious vicious insect, and finally achieved true ascension, becoming an apostle of the Lord—yet this is still not enough.\nBy fully digesting the Locust's Sting, you will be able to unleash the deeper power of the great title and enter the perfected level of the apostle."
     },
     {
       "type": "goety:ritual",
