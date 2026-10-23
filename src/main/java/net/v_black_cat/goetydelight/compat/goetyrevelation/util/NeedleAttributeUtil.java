@@ -17,12 +17,17 @@ public final class NeedleAttributeUtil {
     public static final UUID NEEDLE_RES_UUID = UUID.fromString("af236f3f-f82a-4008-97f9-5af0173b2ec9");
 
     public static final double RES_CAP = 0.85;
-    public static final double CANDY_ATTR_CAP = 1.0; // 糖的属性加成上限 (100%)
+    public static final double CANDY_ATTR_CAP = 1.0;
 
     public static double amountOf(AttributeInstance inst, UUID id) {
         if (inst == null) return 0;
         AttributeModifier m = inst.getModifier(id);
         return m == null ? 0 : m.getAmount();
+    }
+
+    public static boolean hasNeedleModifier(ServerPlayer player, Attribute attr, UUID uuid) {
+        AttributeInstance inst = player.getAttribute(attr);
+        return inst != null && inst.getModifier(uuid) != null;
     }
 
     public static void setModifier(ServerPlayer player, Attribute attr, UUID uuid, String name, double amount) {
@@ -48,12 +53,9 @@ public final class NeedleAttributeUtil {
     }
 
     /**
-     * 应用糖加成：
-     *   1. 从 consumedMap 现算糖原始总量 raw
-     *   2. 剥离"上次写入量" applied，得到针裸值 base
-     *   3. 对 raw 做单项 100% cap
-     *   4. 抗性 85% cap（针+糖合计），溢出转三维且过 100% cap
-     *   5. 覆盖写入 base + capped 糖，并回写 applied
+     * applied 语义：当前 modifier 里含有的糖量。
+     * - modifier 存在：base = cur - applied
+     * - modifier 不存在：base = 0
      */
     public static void addCandyBonus(ServerPlayer player) {
         if (player.server == null) return;
@@ -61,37 +63,38 @@ public final class NeedleAttributeUtil {
         UUID id = player.getUUID();
 
         double[] raw = data.computeCandyFromConsumed(id);
-        if (raw[0] == 0 && raw[1] == 0 && raw[2] == 0 && raw[3] == 0) {
-            // 无糖：也要把上次写入量剥离掉（防止残留）
-            double[] applied = data.getCandyBonus(id);
-            if (applied[0] != 0 || applied[1] != 0 || applied[2] != 0 || applied[3] != 0) {
-                data.isRefreshingSet.add(id);
-                try {
-                    stripApplied(player, applied);
-                    data.setCandyBonus(id, 0, 0, 0, 0);
-                } finally {
-                    data.isRefreshingSet.remove(id);
-                }
-            }
-            return;
-        }
+        boolean hasCandy = raw[0] != 0 || raw[1] != 0 || raw[2] != 0 || raw[3] != 0;
 
         data.isRefreshingSet.add(id);
         try {
-            // 1. 剥离上次写入的糖，得到"针裸值"
             double[] applied = data.getCandyBonus(id);
-            double baseHp  = amountOf(player.getAttribute(Attributes.MAX_HEALTH),  NEEDLE_HP_UUID)  - applied[0];
-            double baseAtk = amountOf(player.getAttribute(Attributes.ATTACK_DAMAGE), NEEDLE_ATK_UUID) - applied[1];
-            double baseSpd = amountOf(player.getAttribute(Attributes.ATTACK_SPEED),  NEEDLE_SPD_UUID) - applied[2];
-            double baseRes = amountOf(player.getAttribute(ModAttributes.DAMAGE_RESISTANCE.get()), NEEDLE_RES_UUID) - applied[3];
 
-            // 2. 对糖原始总量做单项 100% cap
+            boolean hasHp  = hasNeedleModifier(player, Attributes.MAX_HEALTH,  NEEDLE_HP_UUID);
+            boolean hasAtk = hasNeedleModifier(player, Attributes.ATTACK_DAMAGE, NEEDLE_ATK_UUID);
+            boolean hasSpd = hasNeedleModifier(player, Attributes.ATTACK_SPEED,  NEEDLE_SPD_UUID);
+            boolean hasRes = hasNeedleModifier(player, ModAttributes.DAMAGE_RESISTANCE.get(), NEEDLE_RES_UUID);
+
+            double baseHp  = hasHp  ? amountOf(player.getAttribute(Attributes.MAX_HEALTH),  NEEDLE_HP_UUID)  - applied[0] : 0;
+            double baseAtk = hasAtk ? amountOf(player.getAttribute(Attributes.ATTACK_DAMAGE), NEEDLE_ATK_UUID) - applied[1] : 0;
+            double baseSpd = hasSpd ? amountOf(player.getAttribute(Attributes.ATTACK_SPEED),  NEEDLE_SPD_UUID) - applied[2] : 0;
+            double baseRes = hasRes ? amountOf(player.getAttribute(ModAttributes.DAMAGE_RESISTANCE.get()), NEEDLE_RES_UUID) - applied[3] : 0;
+
+            if (!hasCandy) {
+                if (hasHp || hasAtk || hasSpd || hasRes) {
+                    setModifier(player, Attributes.MAX_HEALTH,  NEEDLE_HP_UUID,  "Needle modifier", baseHp);
+                    setModifier(player, Attributes.ATTACK_DAMAGE, NEEDLE_ATK_UUID, "Needle modifier", baseAtk);
+                    setModifier(player, Attributes.ATTACK_SPEED,  NEEDLE_SPD_UUID, "Needle modifier", baseSpd);
+                    setModifier(player, ModAttributes.DAMAGE_RESISTANCE.get(), NEEDLE_RES_UUID, "Needle modifier", baseRes);
+                    data.setCandyBonus(id, 0, 0, 0, 0);
+                }
+                return;
+            }
+
             double addHp  = Math.min(raw[0], CANDY_ATTR_CAP);
             double addAtk = Math.min(raw[1], CANDY_ATTR_CAP);
             double addSpd = Math.min(raw[2], CANDY_ATTR_CAP);
             double addRes = raw[3];
 
-            // 3. 抗性 85% cap：otherRes 是"非针非糖"来源
             double otherRes = getTotalResistance(player) - baseRes - applied[3];
             if (otherRes + baseRes + addRes > RES_CAP) {
                 double overflow = otherRes + baseRes + addRes - RES_CAP;
@@ -101,39 +104,50 @@ public final class NeedleAttributeUtil {
                 addSpd = Math.min(addSpd + overflow / 3.0, CANDY_ATTR_CAP);
             }
 
-            // 4. 覆盖写入
             setModifier(player, Attributes.MAX_HEALTH,  NEEDLE_HP_UUID,  "Needle modifier", baseHp  + addHp);
             setModifier(player, Attributes.ATTACK_DAMAGE, NEEDLE_ATK_UUID, "Needle modifier", baseAtk + addAtk);
             setModifier(player, Attributes.ATTACK_SPEED,  NEEDLE_SPD_UUID, "Needle modifier", baseSpd + addSpd);
             setModifier(player, ModAttributes.DAMAGE_RESISTANCE.get(), NEEDLE_RES_UUID, "Needle modifier", baseRes + addRes);
 
-            // 5. 回写"本次实际写入的糖量"
             data.setCandyBonus(id, addHp, addAtk, addSpd, addRes);
         } finally {
             data.isRefreshingSet.remove(id);
         }
     }
 
-    /** 把 applied 从当前 Modifier 里剥离掉（用于无糖或 Mixin 剥离）。 */
-    public static void stripApplied(ServerPlayer player, double[] applied) {
-        setModifier(player, Attributes.MAX_HEALTH,
-                NEEDLE_HP_UUID, "Needle modifier",
-                amountOf(player.getAttribute(Attributes.MAX_HEALTH), NEEDLE_HP_UUID) - applied[0]);
-        setModifier(player, Attributes.ATTACK_DAMAGE,
-                NEEDLE_ATK_UUID, "Needle modifier",
-                amountOf(player.getAttribute(Attributes.ATTACK_DAMAGE), NEEDLE_ATK_UUID) - applied[1]);
-        setModifier(player, Attributes.ATTACK_SPEED,
-                NEEDLE_SPD_UUID, "Needle modifier",
-                amountOf(player.getAttribute(Attributes.ATTACK_SPEED), NEEDLE_SPD_UUID) - applied[2]);
-        setModifier(player, ModAttributes.DAMAGE_RESISTANCE.get(),
-                NEEDLE_RES_UUID, "Needle modifier",
-                amountOf(player.getAttribute(ModAttributes.DAMAGE_RESISTANCE.get()), NEEDLE_RES_UUID) - applied[3]);
+    /** 剥离单项（供 Mixin 精确控制用）。modifier 不存在则跳过。 */
+    public static void stripOne(ServerPlayer player, Attribute attr, UUID uuid, double appliedAmount) {
+        if (appliedAmount <= 0) return;
+        AttributeInstance inst = player.getAttribute(attr);
+        if (inst == null || inst.getModifier(uuid) == null) return;
+        setModifier(player, attr, uuid, "Needle modifier", amountOf(inst, uuid) - appliedAmount);
     }
 
-    /**
-     * 扎针后，如果原版针把总抗性搞超了 85%，就强行砍掉针的抗性，溢出转三维。
-     * 调用前应已剥离糖（applied 已清零），此时 NEEDLE_RES_UUID 的值 = 针裸值 + 本次随机增量。
-     */
+    /** 兼容旧调用：剥离四项，返回实际剥离量。 */
+    public static double[] stripApplied(ServerPlayer player, double[] applied) {
+        double[] stripped = new double[4];
+        for (int i = 0; i < 4; i++) {
+            Attribute attr = switch (i) {
+                case 0 -> Attributes.MAX_HEALTH;
+                case 1 -> Attributes.ATTACK_DAMAGE;
+                case 2 -> Attributes.ATTACK_SPEED;
+                default -> ModAttributes.DAMAGE_RESISTANCE.get();
+            };
+            UUID uuid = switch (i) {
+                case 0 -> NEEDLE_HP_UUID;
+                case 1 -> NEEDLE_ATK_UUID;
+                case 2 -> NEEDLE_SPD_UUID;
+                default -> NEEDLE_RES_UUID;
+            };
+            AttributeInstance inst = player.getAttribute(attr);
+            if (inst != null && inst.getModifier(uuid) != null && applied[i] > 0) {
+                stripOne(player, attr, uuid, applied[i]);
+                stripped[i] = applied[i];
+            }
+        }
+        return stripped;
+    }
+
     public static void capNeedleResistance(ServerPlayer player) {
         AttributeInstance resInst = player.getAttribute(ModAttributes.DAMAGE_RESISTANCE.get());
         if (resInst == null) return;
@@ -159,7 +173,6 @@ public final class NeedleAttributeUtil {
         }
     }
 
-    /** 兼容旧名字。 */
     public static void modifyCandyBonus(ServerPlayer player) {
         addCandyBonus(player);
     }
