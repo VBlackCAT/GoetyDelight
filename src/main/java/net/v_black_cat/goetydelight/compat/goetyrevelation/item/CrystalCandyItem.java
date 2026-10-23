@@ -191,23 +191,11 @@ public class CrystalCandyItem extends Item {
         return stack;
     }
 
+    /**
+     * 饰品已经通过 addConsumed 写入 consumedMap。
+     * 糖总量由 computeCandyFromConsumed 现算，这里只需触发一次 addCandyBonus。
+     */
     private static void applyCrystalCandyBonuses(ServerPlayer player, ListTag stored) {
-        double hp = 0, atk = 0, spd = 0, res = 0;
-
-        for (int i = 0; i < stored.size(); i++) {
-            ItemStack s = ItemStack.of(stored.getCompound(i));
-            switch (s.getRarity()) {
-                case COMMON   -> { hp += 0.01; atk += 0.01; }
-                case UNCOMMON -> { hp += 0.02; atk += 0.02; spd += 0.02; }
-                case RARE     -> { hp += 0.04; atk += 0.04; spd += 0.04; res += 0.04; }
-                case EPIC     -> { hp += 0.24; atk += 0.24; spd += 0.24; res += 0.24; }
-                default       -> {}
-            }
-        }
-
-        CrystalCandySavedData data = CrystalCandySavedData.readOrCreate(player.server);
-        data.addCandyBonus(player.getUUID(), hp, atk, spd, res);
-
         NeedleAttributeUtil.addCandyBonus(player);
     }
 
@@ -237,12 +225,10 @@ public class CrystalCandyItem extends Item {
                     .withStyle(ChatFormatting.LIGHT_PURPLE));
             tooltip.add(Component.translatable("item.goetydelight.crystal_candy.tooltip.4")
                     .withStyle(ChatFormatting.LIGHT_PURPLE));
-
         } else {
             tooltip.add(Component.translatable("item.goetydelight.tooltip.shift"));
         }
         tooltip.add(Component.literal(""));
-        // 经文（风味文本）
         tooltip.add(Component.translatable("item.goetydelight.crystal_candy.tooltip.5")
                 .withStyle(TextColorUtils.MIDDLE)
                 .withStyle(ChatFormatting.DARK_GRAY)

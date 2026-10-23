@@ -13,9 +13,10 @@ public class CrystalCandySavedData extends SavedData {
     public static final String DATA_NAME = "goetydelight_crystal_candy";
 
     public final Map<UUID, List<ConsumedCurio>> consumedMap = new HashMap<>();
-    // 存糖的加成 [hp, atk, spd, res]
+    // 语义变更：存"上次实际写入 Modifier 的糖量" [hp, atk, spd, res]，用于剥离
+    // （不再是"糖的原始总加成"——原始总加成由 computeCandyFromConsumed 从 consumedMap 现算）
     public final Map<UUID, double[]> bonusMap = new HashMap<>();
-    // 布尔标记：当内部（吃糖/登录）刷新属性时设为 true，防止 Mixin 重复叠加
+    // 纯内存防重入标记，不持久化（重启清空无影响）
     public final Set<UUID> isRefreshingSet = new HashSet<>();
 
     public static CrystalCandySavedData create(CompoundTag tag) {
@@ -79,17 +80,36 @@ public class CrystalCandySavedData extends SavedData {
                 DATA_NAME);
     }
 
+    /** 返回"上次写入 Modifier 的糖量"，用于剥离。无记录则为 0。 */
     public double[] getCandyBonus(UUID id) {
         return bonusMap.getOrDefault(id, new double[]{0, 0, 0, 0});
     }
 
-    public void addCandyBonus(UUID id, double hp, double atk, double spd, double res) {
-        double[] b = bonusMap.computeIfAbsent(id, k -> new double[]{0, 0, 0, 0});
-        b[0] += hp; b[1] += atk; b[2] += spd; b[3] += res;
+    /** 覆盖写入"本次实际写入 Modifier 的糖量"（不再累加）。 */
+    public void setCandyBonus(UUID id, double hp, double atk, double spd, double res) {
+        bonusMap.put(id, new double[]{hp, atk, spd, res});
         this.setDirty();
     }
 
-    // ======= 补充丢失的饰品记录方法 =======
+    /**
+     * 从 consumedMap 现算"糖的原始总加成"，按 rarity ordinal 累加。
+     * 与 CrystalCandyItem.applyCrystalCandyBonuses 的 switch 保持一致。
+     */
+    public double[] computeCandyFromConsumed(UUID id) {
+        double hp = 0, atk = 0, spd = 0, res = 0;
+        for (ConsumedCurio cc : getConsumed(id)) {
+            switch (cc.rarityOrdinal) {
+                case 0 -> { hp += 0.01; atk += 0.01; }                                  // COMMON
+                case 1 -> { hp += 0.02; atk += 0.02; spd += 0.02; }                     // UNCOMMON
+                case 2 -> { hp += 0.04; atk += 0.04; spd += 0.04; res += 0.04; }        // RARE
+                case 3 -> { hp += 0.24; atk += 0.24; spd += 0.24; res += 0.24; }        // EPIC
+                default -> {}
+            }
+        }
+        return new double[]{hp, atk, spd, res};
+    }
+
+    // ======= 饰品记录方法 =======
     public List<ConsumedCurio> getConsumed(UUID playerId) {
         return consumedMap.getOrDefault(playerId, Collections.emptyList());
     }

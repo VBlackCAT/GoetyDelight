@@ -23,9 +23,7 @@ import java.util.Map;
 import static com.Polarice3.Goety.common.items.ModItems.*;
 
 /**
- * 大师烹饪仪式：
- * 在普通烹饪仪式（culinary）的方块要求基础上，额外需要
- * 1 个 APOCALYPTIUM_POT 与 1 个 NIGHT_STOVE。
+ * 大师烹饪仪式
  */
 public class MasterDelightRitualType implements IRitualType {
 
@@ -50,12 +48,7 @@ public class MasterDelightRitualType implements IRitualType {
     }
 
     /**
-     * 大师烹饪仪式方块要求：
-     *   - 2 个烟熏炉（SMOKER）
-     *   - 1 个阴影炉灶（SHADE_STOVE）
-     *   - 1 个诅咒金属锅（CURSED_INGOT_POT）
-     *   - 1 个 APOCALYPTIUM_POT
-     *   - 1 个 NIGHT_STOVE
+     * 大师烹饪仪式方块要求
      */
     private boolean checkMasterRequirements(BlockPos pos, Level level) {
         if (!GoetyRevelationCompat.IS_LOADED || RevelationCompatRegistry.APOCALYPTIUM_POT == null || ModBlocks.NIGHT_STOVE == null || ModBlocks.NIGHT_STOVE.get() == null) {
@@ -65,7 +58,8 @@ public class MasterDelightRitualType implements IRitualType {
         final int RANGE = 8;
 
         Map<Block, Integer> blockRequirements = new HashMap<>();
-        blockRequirements.put(Blocks.SMOKER, 2);
+        blockRequirements.put(vectorwing.farmersdelight.common.registry.ModBlocks.COOKING_POT.get(), 1);
+        blockRequirements.put(vectorwing.farmersdelight.common.registry.ModBlocks.STOVE.get(), 1);
         blockRequirements.put(ModBlocks.SHADE_STOVE.get(), 1);
         blockRequirements.put(ModBlocks.CURSED_INGOT_POT.get(), 1);
         blockRequirements.put(RevelationCompatRegistry.APOCALYPTIUM_POT.get(), 1);

@@ -1,0 +1,22 @@
+{
+  "flag": "mod:goety_revelation",
+  "name": "大师烹饪仪式",
+  "icon": "goetydelight:apocalyptium_cooking_pot",
+  "category": "goety:rituals",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "需要: $(li)1个神灵金属锅 $(li)1个暗夜炉灶$(li)1个诅咒金属锅 $(li)1个阴影炉灶$(li)1个厨锅$(li)1个炉灶"
+    },
+    {
+      "type": "patchouli:image",
+      "images": ["goety:textures/gui/master_culinary.png"],
+      "border": true,
+      "text": "一个摆放仪式的例子."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "踏足神灵的美食领域"
+    }
+  ]
+}

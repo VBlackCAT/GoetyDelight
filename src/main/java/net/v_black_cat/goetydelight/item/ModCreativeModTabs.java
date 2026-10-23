@@ -73,8 +73,7 @@ public class ModCreativeModTabs {
                             // apocalyptium_pot 暂无模型/材质，隐藏它的 BlockItem
                             Set<RegistryObject<?>> compatBlacklist = Set.of(
                                     RevelationCompatRegistry.SPECTRE_KNIFE,
-                                    RevelationCompatRegistry.VENOMOUS_SPIDER_KNIFE,
-                                    RevelationCompatRegistry.APOCALYPTIUM_POT_ITEM
+                                    RevelationCompatRegistry.VENOMOUS_SPIDER_KNIFE
                             );
                             RevelationCompatRegistry.ITEMS.getEntries().forEach(item -> {
                                 if (item.isPresent() && !compatBlacklist.contains(item)) {

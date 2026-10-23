@@ -1,0 +1,22 @@
+{
+  "flag": "mod:goety_revelation",
+  "name": "Master Culinary",
+  "icon": "goetydelight:apocalyptium_cooking_pot",
+  "category": "goety:rituals",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "Requirements: $(li)1 Apocalyptium Cooking Pot $(li)1 Night Stove$(li)1 Cursed Ingot Pot$(li)1 Shade Stove$(li)1 Cooking Pot$(li)1 Stove"
+    },
+    {
+      "type": "patchouli:image",
+      "images": ["goety:textures/gui/master_culinary.png"],
+      "border": true,
+      "text": "An example of ritual arrangement."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Stepped into the realm of divine cuisine."
+    }
+  ]
+}
