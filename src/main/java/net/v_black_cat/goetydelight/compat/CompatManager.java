@@ -48,6 +48,8 @@ public final class CompatManager {
         return isLoaded("goety_revelation");
     }
 
+    public static boolean isCarryOnLoaded() {return isLoaded("carryon");}
+
     // ==================== "存在 + 启动配置开启" 组合判断（仅运行期调用） ====================
 
     /**
@@ -69,6 +71,7 @@ public final class CompatManager {
         append(compatload, "enigmaticdelicacy", isEnigmaticDelicacyLoaded());
         append(compatload, "goety_cataclysm", isGoetyCataclysmLoaded());
         append(compatload, "goety_revelation", isGoetyRevelationLoaded());
+        append(compatload, "carryon", isCarryOnLoaded());
         GoetyDelight.LOGGER.info("[compat] 已检测到联动：{}", compatload.length() == 0 ? "（无）" : compatload.toString());
     }
 

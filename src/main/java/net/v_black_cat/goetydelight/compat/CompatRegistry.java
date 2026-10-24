@@ -1,6 +1,7 @@
 package net.v_black_cat.goetydelight.compat;
 
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.v_black_cat.goetydelight.compat.carryon.CarryOnCompat;
 import net.v_black_cat.goetydelight.compat.enigmaticdelicacy.EnigmaticDelicacyCompat;
 import net.v_black_cat.goetydelight.compat.goetycataclysm.GoetyCataclysmCompat;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.GoetyRevelationCompat;
@@ -26,6 +27,9 @@ public final class CompatRegistry {
         }
         if (CompatManager.isGoetyRevelationLoaded()) {
             GoetyRevelationCompat.register(modBus);
+        }
+        if (CompatManager.isCarryOnLoaded()) {
+            CarryOnCompat.register(modBus);
         }
     }
 
