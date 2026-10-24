@@ -1,8 +1,13 @@
 package net.v_black_cat.goetydelight.compat.carryon;
 
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.compat.CompatManager;
+
+import java.lang.reflect.Field;
+import java.util.Set;
 
 /**
  * Carry On 联动模块入口。
@@ -22,11 +27,8 @@ public final class CarryOnCompat {
         GoetyDelight.LOGGER.info("[compat] carryon 联动已挂载");
     }
 
-    /** 注册表冻结后：挂载事件监听器 */
     public static void commonSetup() {
     }
 
-    /** 客户端初始化 */
-    public static void clientSetup() {
-    }
+
 }

@@ -33,6 +33,10 @@ public class GoetyDelightMixinPlugin implements IMixinConfigPlugin {
             return LoadingModList.get().getModFileById(ENDING_LIBRARY_MODID) != null;
         }
 
+        if (mixinClassName.contains("CarryOnListHandlerMixin")) {
+            return LoadingModList.get().getModFileById("carryon") != null;
+        }
+
         return true;
     }
 
