@@ -46,9 +46,14 @@ public class CrystalCandyItem extends Item {
         return r == Rarity.COMMON || r == Rarity.UNCOMMON || r == Rarity.RARE || r == Rarity.EPIC;
     }
 
+    private static boolean isPlayerInventorySlot(@NotNull Slot slot, @NotNull Player player) {
+        return slot.container == player.getInventory();
+    }
+
     @Override
     public boolean overrideOtherStackedOnMe(@NotNull ItemStack candy, @NotNull ItemStack other, @NotNull Slot slot, @NotNull ClickAction action, @NotNull Player player, @NotNull SlotAccess carriedItem) {
         if (action != ClickAction.SECONDARY || candy.getCount() != 1) return false;
+        if (!isPlayerInventorySlot(slot, player)) return false;
 
         CompoundTag tag = candy.getOrCreateTag();
         ListTag stored = tag.getList(STORED, 10);
@@ -73,6 +78,7 @@ public class CrystalCandyItem extends Item {
     @Override
     public boolean overrideStackedOnOther(@NotNull ItemStack candy, @NotNull Slot slot, @NotNull ClickAction action, @NotNull Player player) {
         if (action != ClickAction.SECONDARY || candy.getCount() != 1) return false;
+        if (!isPlayerInventorySlot(slot, player)) return false;
 
         CompoundTag tag = candy.getOrCreateTag();
         ListTag stored = tag.getList(STORED, 10);
