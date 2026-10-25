@@ -20,7 +20,14 @@ public final class SpellCastUtil {
     /** 视线所指的方块；对着空气时返回 null */
     @Nullable
     public static BlockPos aimedBlock(LivingEntity caster) {
-        double reach = caster.getAttributeValue(ForgeMod.BLOCK_REACH.get());
+        double reach;
+        // 检查施法者是否拥有 BLOCK_REACH 属性
+        if (caster.getAttributes().hasAttribute(ForgeMod.BLOCK_REACH.get())) {
+            reach = caster.getAttributeValue(ForgeMod.BLOCK_REACH.get());
+        } else {
+            reach = 3.0D;
+        }
+
         HitResult hit = caster.pick(reach, 1.0F, false);
         if (hit.getType() == HitResult.Type.BLOCK && hit instanceof BlockHitResult blockHit) {
             return blockHit.getBlockPos();
