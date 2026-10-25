@@ -1,0 +1,7 @@
+{
+  "type": "goetydelight:abandoned_camp",
+  "biomes": "#goetydelight:has_structure/abandoned_camp",
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "beard_thin"
+}

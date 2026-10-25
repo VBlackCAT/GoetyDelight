@@ -1,0 +1,17 @@
+{
+  "name": "废弃营地",
+  "icon": "farmersdelight:stove",
+  "category": "goety:goetydelight/world",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "曾是先民逃难时的营地，因未知的变故，变成了现在的荒地"
+    },
+    {
+      "type": "patchouli:image",
+      "images": ["goety:textures/structure/abandoned_camp.png"],
+      "border": true,
+      "text": "早已人去楼空的营地"
+    }
+  ]
+}

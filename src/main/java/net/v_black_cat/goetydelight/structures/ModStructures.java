@@ -19,6 +19,10 @@ public class ModStructures {
             STRUCTURES.register("ectoplasmic_melon_field",
                     () -> explicitStructureTypeTyping(EctoplasmicMelonFieldStructure.CODEC));
 
+    public static final RegistryObject<StructureType<AbandonedCampStructure>> ABANDONED_CAMP =
+            STRUCTURES.register("abandoned_camp",
+                    () -> explicitStructureTypeTyping(AbandonedCampStructure.CODEC));
+
     
     private static <T extends Structure> StructureType<T> explicitStructureTypeTyping(Codec<T> structureCodec) {
         return () -> structureCodec;

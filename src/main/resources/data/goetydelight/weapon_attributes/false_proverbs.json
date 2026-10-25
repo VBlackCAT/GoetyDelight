@@ -1,6 +1,6 @@
 {
   "attributes": {
-    "attack_range": 4.75,
+    "attack_range": 3.75,
     "two_handed": false,
     "pose": "bettercombat:pose_one_handed_backwards",
     "attacks": [

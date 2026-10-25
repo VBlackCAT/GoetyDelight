@@ -1,0 +1,15 @@
+{
+  "structures": [
+    {
+      "structure": "goetydelight:abandoned_camp",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 40,
+    "separation": 20,
+    "salt": 123456789,
+    "frequency": 0.3
+  }
+}

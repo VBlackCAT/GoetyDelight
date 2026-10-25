@@ -1,0 +1,17 @@
+{
+  "name": "Abandoned Camp",
+  "icon": "farmersdelight:stove",
+  "category": "goety:goetydelight/world",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "It was once a camp where the ancestors took refuge during their escape. Due to unknown circumstances, it has now become wasteland."
+    },
+    {
+      "type": "patchouli:image",
+      "images": ["goety:textures/structure/abandoned_camp.png"],
+      "border": true,
+      "text": "A camp long since deserted."
+    }
+  ]
+}

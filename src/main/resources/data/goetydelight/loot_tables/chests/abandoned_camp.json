@@ -1,0 +1,230 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 8,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "goetydelight:poached_nether_wart_egg",
+          "weight": 5,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": { "min": 0, "max": 1 }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "goetydelight:boiling_blood_brew",
+          "weight": 5,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": { "min": 0, "max": 1 }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "goetydelight:nether_style_fried_egg_sandwich",
+          "weight": 5,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": { "min": 0, "max": 1 }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "goetydelight:exotic_breakfast",
+          "weight": 5,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": { "min": 0, "max": 1 }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "goetydelight:nether_wart_omelette",
+          "weight": 5,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": { "min": 0, "max": 1 }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "goetydelight:warped_wart_omelette",
+          "weight": 5,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": { "min": 0, "max": 1 }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "goetydelight:magic_quartz_cookie",
+          "weight": 5,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": { "min": 0, "max": 1 }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "goety:raging_matter",
+          "weight": 5,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": { "min": 0, "max": 1 }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "goety:snap_fungus",
+          "weight": 5,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": { "min": 0, "max": 1 }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "goety:snap_warts",
+          "weight": 5,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": { "min": 0, "max": 2 }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "goety:firethorn_berries",
+          "weight": 5,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": { "min": 0, "max": 3 }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "goety:warped_wartful_egg",
+          "weight": 5,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": { "min": 0, "max": 1 }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "goety:wartful_egg",
+          "weight": 5,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": { "min": 0, "max": 1 }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:gold_nugget",
+          "weight": 10,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": { "min": 1, "max": 4 }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:rotten_flesh",
+          "weight": 10,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": { "min": 1, "max": 6 }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:wither_rose",
+          "weight": 10,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": { "min": 0, "max": 1 }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:coal",
+          "weight": 10,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": { "min": 1, "max": 3 }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:porkchop",
+          "weight": 10,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": { "min": 0, "max": 3 }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:cooked_porkchop",
+          "weight": 10,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": { "min": 0, "max": 2 }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:nether_wart",
+          "weight": 10,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": { "min": 0, "max": 3 }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -6,6 +6,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.structures.pieces.AbandonedCampPiece;
 import net.v_black_cat.goetydelight.structures.pieces.EctoplasmicMelonFieldPiece;
 
 public class ModStructurePieceTypes {
@@ -15,6 +16,10 @@ public class ModStructurePieceTypes {
     public static final RegistryObject<StructurePieceType> ECTOPLASMIC_MELON_FIELD_PIECE =
             STRUCTURE_PIECE_TYPES.register("ectoplasmic_melon_field_piece",
                     () -> EctoplasmicMelonFieldPiece::new);
+
+    public static final RegistryObject<StructurePieceType> ABANDONED_CAMP_PIECE =
+            STRUCTURE_PIECE_TYPES.register("abandoned_camp_piece",
+                    () -> AbandonedCampPiece::new);
 
     public static void register(IEventBus eventBus) {
         STRUCTURE_PIECE_TYPES.register(eventBus);
