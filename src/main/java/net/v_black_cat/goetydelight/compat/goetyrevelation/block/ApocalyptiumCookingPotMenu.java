@@ -22,11 +22,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.RecipeWrapper;
+import net.v_black_cat.goetydelight.compat.farmersdelight.FarmersDelightItemTags;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.RevelationCompatRegistry;
-import net.v_black_cat.goetydelight.compat.goetyrevelation.block.ApocalyptiumCookingPotBlockEntity;
 import vectorwing.farmersdelight.FarmersDelight;
 import vectorwing.farmersdelight.common.block.entity.container.CookingPotMealSlot;
-import vectorwing.farmersdelight.common.tag.ModTags;
 
 import static net.v_black_cat.goetydelight.GoetyDelight.MODID;
 
@@ -141,7 +140,7 @@ public class ApocalyptiumCookingPotMenu extends RecipeBookMenu<RecipeWrapper> {
                     return ItemStack.EMPTY;
                 }
             } else {
-                boolean isValidContainer = slotStack.is(ModTags.Items.SERVING_CONTAINERS)
+                boolean isValidContainer = FarmersDelightItemTags.isServingContainer(slotStack)
                         || slotStack.is(this.blockEntity.getContainer().getItem());
                 if (isValidContainer && !this.moveItemStackTo(slotStack, indexContainerInput, indexContainerInput + 1, false)) {
                     return ItemStack.EMPTY;

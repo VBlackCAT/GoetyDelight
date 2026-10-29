@@ -37,7 +37,7 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import vectorwing.farmersdelight.common.tag.ModTags;
+import net.v_black_cat.goetydelight.compat.farmersdelight.FarmersDelightKnifeTags;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -293,7 +293,7 @@ public class RoastLaowangBlock extends HorizontalDirectionalBlock {
         ItemStack heldItem = player.getItemInHand(hand);
 
         // 检查是否持有小刀 (使用 FarmersDelight 的刀具标签)
-        boolean isKnife = heldItem.is(ModTags.Items.KNIVES);
+        boolean isKnife = FarmersDelightKnifeTags.isKnife(heldItem);
         boolean isBowl = heldItem.is(Items.BOWL);
 
         // 情况1: servings 为 13 或 12，需要使用小刀

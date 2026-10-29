@@ -42,6 +42,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.network.NetworkHooks;
+import net.v_black_cat.goetydelight.compat.farmersdelight.FarmersDelightTrayTags;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.RevelationCompatRegistry;
 import vectorwing.farmersdelight.common.block.state.CookingPotSupport;
 import vectorwing.farmersdelight.common.registry.ModSounds;
@@ -135,8 +136,9 @@ public class ApocalyptiumCookingPotBlock extends Block implements SimpleWaterlog
     }
 
     private CookingPotSupport getTrayState(LevelAccessor level, BlockPos pos) {
-        return level.getBlockState(pos.below()).is(ModTags.Blocks.TRAY_HEAT_SOURCES)
-                ? CookingPotSupport.TRAY : CookingPotSupport.NONE;
+        return FarmersDelightTrayTags.isTrayHeatSource(level.getBlockState(pos.below()))
+                ? CookingPotSupport.TRAY
+                : CookingPotSupport.NONE;
     }
 
     @Override

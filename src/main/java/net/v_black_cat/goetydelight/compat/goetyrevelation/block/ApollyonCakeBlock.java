@@ -4,8 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -16,6 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
@@ -30,11 +29,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.v_black_cat.goetydelight.compat.farmersdelight.FeastServingHelper;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.item.ApollyonCakeItem;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.item.ApollyonCakeSliceItem;
 import vectorwing.farmersdelight.common.block.FeastBlock;
-import vectorwing.farmersdelight.common.registry.ModSounds;
-import vectorwing.farmersdelight.common.utility.TextUtils;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -125,45 +123,48 @@ public class ApollyonCakeBlock extends FeastBlock implements EntityBlock {
         return owner != null && owner.equals(player.getUUID());
     }
 
-    @Override
-    protected InteractionResult takeServing(Level level, BlockPos pos, BlockState state, Player player, InteractionHand hand) {
-        if (!level.isClientSide && !canInteract(level, pos, state, player)) {
+    // ==================== 跨版本 takeServing ====================
+
+    /**
+     * 内部逻辑，统一挂载到 FeastServingHelper。
+     * 因为这里不需要联动“多方块结构”，所以传入简单的 setServings 和 breakStructure 即可。
+     */
+    private InteractionResult takeServingInternal(LevelAccessor level, BlockPos pos, BlockState state, Player player, InteractionHand hand) {
+        // 1. 前置权限校验（只有 1.3+ 终末模式才有意义，放置到 LevelAccessor 上没问题）
+        if (!level.isClientSide() && !canInteract((Level) level, pos, state, player)) {
             return InteractionResult.PASS;
         }
 
-        int servings = state.getValue(SERVINGS);
-
-        if (servings == 0) {
+        // 2. 份数为 0 时不取餐（ApollyonCakeBlock 特性：0 份不直接破坏）
+        if (state.getValue(SERVINGS) == 0) {
             return InteractionResult.PASS;
         }
 
-        ItemStack serving = this.getServingItem(state);
-        ItemStack heldStack = player.getItemInHand(hand);
-
-        if (servings > 0) {
-            if (!serving.hasCraftingRemainingItem() || ItemStack.isSameItem(heldStack, serving.getCraftingRemainingItem())) {
-                level.setBlock(pos, state.setValue(SERVINGS, servings - 1), 3);
-                player.awardStat(Stats.ITEM_USED.get(heldStack.getItem()));
-                if (!player.getAbilities().instabuild && serving.hasCraftingRemainingItem()) {
-                    heldStack.shrink(1);
-                }
-                if (!player.getInventory().add(serving)) {
-                    player.drop(serving, false);
-                }
-                if (servings - 1 == 0 && !this.hasLeftovers) {
-                    level.removeBlock(pos, false);
-                }
-                level.playSound(null, pos, ModSounds.BLOCK_FOOD_TAKE_PORTION.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-                return InteractionResult.SUCCESS;
-            } else {
-                player.displayClientMessage(TextUtils.block("feast.use_container", serving.getCraftingRemainingItem().getHoverName()), true);
-            }
-        }
-        return InteractionResult.PASS;
+        // 3. 复用通用取餐逻辑
+        return FeastServingHelper.takeServing(
+                level, pos, state, player, hand, this,
+                // setServings: 直接修改自身的份数
+                (lvl, p, st, servings) -> lvl.setBlock(p, st.setValue(SERVINGS, servings), 3),
+                // breakStructure: 当 servings - 1 == 0 且无残留时，拆除方块本身
+                (lvl, p, st, ply) -> lvl.removeBlock(p, false)
+        );
     }
+
+    // FD 1.2.x 覆写（LevelAccessor）
+    protected InteractionResult takeServing(LevelAccessor level, BlockPos pos, BlockState state, Player player, InteractionHand hand) {
+        return takeServingInternal(level, pos, state, player, hand);
+    }
+
+    // FD 1.3.0+ 覆写（Level）
+    protected InteractionResult takeServing(Level level, BlockPos pos, BlockState state, Player player, InteractionHand hand) {
+        return takeServingInternal(level, pos, state, player, hand);
+    }
+
+    // ==================== 交互重定向与客户端预测 ====================
 
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        // 客户端预测，服务端执行
         if (level.isClientSide) {
             if (this.takeServing(level, pos, state, player, hand).consumesAction()) {
                 return InteractionResult.SUCCESS;
@@ -208,7 +209,6 @@ public class ApollyonCakeBlock extends FeastBlock implements EntityBlock {
         return Collections.emptyList();
     }
 
-    /** 中键取方块时也要带上全部数据，否则取到的是白板蛋糕（名字、份数、终末标记、主人全丢） */
     @Override
     public ItemStack getCloneItemStack(BlockGetter level, BlockPos pos, BlockState state) {
         int servings = state.getValue(SERVINGS);
@@ -255,7 +255,7 @@ public class ApollyonCakeBlock extends FeastBlock implements EntityBlock {
         return Shapes.empty();
     }
 
-    // ==================== 放置时注册到世界数据 ====================
+    // ==================== 放置、破坏与再生 ====================
 
     @Override
     public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
@@ -267,14 +267,9 @@ public class ApollyonCakeBlock extends FeastBlock implements EntityBlock {
         }
     }
 
-    // ==================== 破坏时从世界数据注销 ====================
-
-    // ==================== 破坏时：注销数据 + 掉落带数据物品 ====================
-
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock()) && level instanceof ServerLevel serverLevel) {
-            // 1. 从世界数据注销
             ApollyonCakeData.get(serverLevel).removeCake(serverLevel.dimension(), pos);
             int servings = state.getValue(SERVINGS);
             boolean isTheEnd = state.hasProperty(IS_THE_END) && state.getValue(IS_THE_END);
@@ -285,7 +280,6 @@ public class ApollyonCakeBlock extends FeastBlock implements EntityBlock {
         }
         super.onRemove(state, level, pos, newState, isMoving);
     }
-    // ==================== 再生 tick ====================
 
     @Override
     public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
@@ -296,11 +290,12 @@ public class ApollyonCakeBlock extends FeastBlock implements EntityBlock {
         level.scheduleTick(pos, this, REGEN_INTERVAL);
     }
 
+    // ==================== 形状工具 ====================
+
     private static VoxelShape rotateVoxelShapeStatic(VoxelShape shape, Direction facing) {
         if (facing == Direction.NORTH) {
             return shape;
         }
-
         return shape.toAabbs().stream()
                 .map(aabb -> rotateAABBStatic(aabb, facing))
                 .map(Shapes::create)

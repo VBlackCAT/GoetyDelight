@@ -26,6 +26,7 @@ import net.minecraft.world.inventory.RecipeBookMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.compat.farmersdelight.FarmersDelightConfigLegacy;
 import vectorwing.farmersdelight.client.gui.CookingPotRecipeBookComponent;
 import vectorwing.farmersdelight.common.Configuration;
 
@@ -53,7 +54,7 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
         this.titleLabelX = 28;
         this.recipeBookComponent.init(this.width, this.height, this.minecraft, this.widthTooNarrow, (RecipeBookMenu)this.menu);
         this.leftPos = this.recipeBookComponent.updateScreenPosition(this.width, this.imageWidth);
-        if ((Boolean)Configuration.ENABLE_COOKING_POT_RECIPE_BOOK.get()) {
+        if (FarmersDelightConfigLegacy.isCookingPotRecipeBookEnabled()) {
             this.addRenderableWidget(new ImageButton(this.leftPos + 5, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_LOCATION, (button) -> {
                 this.recipeBookComponent.toggleVisibility();
                 this.leftPos = this.recipeBookComponent.updateScreenPosition(this.width, this.imageWidth);

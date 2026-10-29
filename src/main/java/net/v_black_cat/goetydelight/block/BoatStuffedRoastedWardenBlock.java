@@ -32,9 +32,9 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.v_black_cat.goetydelight.compat.farmersdelight.FarmersDelightTextUtilsLegacy;
+import net.v_black_cat.goetydelight.compat.farmersdelight.FeastServingHelper;
 import vectorwing.farmersdelight.common.block.FeastBlock;
-import vectorwing.farmersdelight.common.registry.ModSounds;
-import vectorwing.farmersdelight.common.utility.TextUtils;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -147,54 +147,57 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
           return this.takeServing(level, pos, state, player, hand);
      }
 
-     @Override
-     protected InteractionResult takeServing(Level level, BlockPos pos, BlockState state, Player player, InteractionHand hand) {
-          int servings = state.getValue(SERVINGS);
+    private InteractionResult takeServingInternal(LevelAccessor level, BlockPos pos,
+                                                  BlockState state, Player player, InteractionHand hand) {
+        return FeastServingHelper.takeServing(
+                level, pos, state, player, hand, this,
+                this::setServingsAcrossStructure,
+                this::breakEntireStructure
+        );
+    }
 
-          if (servings == 0) {
-               level.playSound(null, pos, SoundEvents.WOOD_BREAK, SoundSource.PLAYERS, 0.8F, 0.8F);
-               breakEntireStructure(level, pos, state, null);
-               return InteractionResult.SUCCESS;
-          }
+    // FD 1.2.x
+    protected InteractionResult takeServing(LevelAccessor level, BlockPos pos,
+                                            BlockState state, Player player, InteractionHand hand) {
+        return takeServingInternal(level, pos, state, player, hand);
+    }
 
-          ItemStack serving = this.getServingItem(state);
-          ItemStack heldStack = player.getItemInHand(hand);
+    // FD 1.3.0+
+    protected InteractionResult takeServing(Level level, BlockPos pos,
+                                            BlockState state, Player player, InteractionHand hand) {
+        return takeServingInternal(level, pos, state, player, hand);
+    }
 
-          if (servings > 0) {
-               if (!serving.hasCraftingRemainingItem() || ItemStack.isSameItem(heldStack, serving.getCraftingRemainingItem())) {
-                    setServingsAcrossStructure(level, pos, servings - 1);
-                    player.awardStat(Stats.ITEM_USED.get(heldStack.getItem()));
-                    if (!player.getAbilities().instabuild && serving.hasCraftingRemainingItem()) {
-                         heldStack.shrink(1);
-                    }
-                    if (!player.getInventory().add(serving)) {
-                         player.drop(serving, false);
-                    }
-                    if (servings - 1 == 0 && !this.hasLeftovers) {
-                         breakEntireStructure(level, pos, state, null);
-                    }
-                    level.playSound(null, pos, ModSounds.BLOCK_FOOD_TAKE_PORTION.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-                    return InteractionResult.SUCCESS;
-               } else {
-                    player.displayClientMessage(TextUtils.block("feast.use_container", serving.getCraftingRemainingItem().getHoverName()), true);
-               }
-          }
-          return InteractionResult.PASS;
-     }
+    private void setServingsAcrossStructure(LevelAccessor level, BlockPos pos, BlockState state, int servings) {
+        Part part = state.getValue(PART);
+        BlockPos centerPos = getCenterPos(pos, part);
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                BlockPos partPos = centerPos.offset(dx, 0, dz);
+                BlockState partState = level.getBlockState(partPos);
+                if (partState.getBlock() instanceof BoatStuffedRoastedWardenBlock) {
+                    level.setBlock(partPos, partState.setValue(SERVINGS, servings), 3);
+                }
+            }
+        }
+    }
 
-     private void setServingsAcrossStructure(Level level, BlockPos pos, int servings) {
-          Part part = level.getBlockState(pos).getValue(PART);
-          BlockPos centerPos = getCenterPos(pos, part);
-          for (int dx = -1; dx <= 1; dx++) {
-               for (int dz = -1; dz <= 1; dz++) {
-                    BlockPos partPos = centerPos.offset(dx, 0, dz);
-                    BlockState partState = level.getBlockState(partPos);
-                    if (partState.getBlock() instanceof BoatStuffedRoastedWardenBlock) {
-                         level.setBlock(partPos, partState.setValue(SERVINGS, servings), 3);
+    private void breakEntireStructure(LevelAccessor level, BlockPos pos, BlockState state, @Nullable Player player) {
+        Part part = state.getValue(PART);
+        BlockPos centerPos = getCenterPos(pos, part);
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                BlockPos partPos = centerPos.offset(dx, 0, dz);
+                BlockState partState = level.getBlockState(partPos);
+                if (partState.getBlock() instanceof BoatStuffedRoastedWardenBlock) {
+                    if (player != null && level instanceof Level realLevel) {
+                        realLevel.levelEvent(player, 2001, partPos, Block.getId(partState));
                     }
-               }
-          }
-     }
+                    level.setBlock(partPos, Blocks.AIR.defaultBlockState(), 3);
+                }
+            }
+        }
+    }
 
      @Override
      public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {

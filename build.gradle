@@ -299,6 +299,7 @@ tasks.withType(JavaCompile).configureEach {
 
 dependencies {
     modImplementation "curse.maven:curios-309927:6418456"//5.14.1
+//    modImplementation "curse.maven:farmers-delight-398521:6917255"//1.2.9
     modImplementation "curse.maven:farmers-delight-398521:8007609"//1.3.1
 //    modImplementation "curse.maven:goety-586095:7966952"// 2.5.52.4
 //    modImplementation "curse.maven:goety-586095:8242254"//2.5.54.5
@@ -308,6 +309,7 @@ dependencies {
 //    compileOnly "blank:[Forge]RevelationFix-1.20.1-4.4"//启示录内置的jar，单独弄出来是因为直接用启示录会导致工作区被肘击
     compileOnly "blank:[Forge]RevelationFix-1.20.1-4.6"
 //    compileOnly "blank:goety-2.5.55.2"//我没活了，真连不上cf库
+//    compileOnly "curse.maven:farmers-delight-398521:6917255"//1.2.9
     compileOnly "blank:FarmersDelight-1.20.1-1.3.1"//理由同上
     compileOnly "curse.maven:jade-324717:6855440"
 //    compileOnly "curse.maven:endinglibrary-1471165:8292038"//endinglibrary-1.20.1-2.0.3.jar

@@ -29,6 +29,7 @@ import net.minecraftforge.items.wrapper.RecipeWrapper;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.CursedIngotPotBlockEntity;
 import net.v_black_cat.goetydelight.block.ModBlocks;
+import net.v_black_cat.goetydelight.compat.farmersdelight.FarmersDelightItemTags;
 import vectorwing.farmersdelight.FarmersDelight;
 
 import vectorwing.farmersdelight.common.block.entity.container.CookingPotMealSlot;
@@ -153,7 +154,7 @@ public class CursedIngotPotMenu extends RecipeBookMenu<RecipeWrapper> {
                     return ItemStack.EMPTY;
                 }
             } else {
-                boolean isValidContainer = slotStack.is(ModTags.Items.SERVING_CONTAINERS) || slotStack.is(this.blockEntity.getContainer().getItem());
+                boolean isValidContainer = FarmersDelightItemTags.isServingContainer(slotStack) || slotStack.is(this.blockEntity.getContainer().getItem());
                 if (isValidContainer && !this.moveItemStackTo(slotStack, indexContainerInput, indexContainerInput + 1, false)) {
                     return ItemStack.EMPTY;
                 }
