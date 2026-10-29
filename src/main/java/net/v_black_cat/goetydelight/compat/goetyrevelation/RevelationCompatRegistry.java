@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -80,8 +81,10 @@ public class RevelationCompatRegistry {
     static {
         APOCALYPTIUM_POT = BLOCKS.register("apocalyptium_cooking_pot",
                 () -> new ApocalyptiumCookingPotBlock(
-                        BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK)
-                                .sound(SoundType.AMETHYST)));
+                        BlockBehaviour.Properties.of()
+                                .mapColor(MapColor.METAL)
+                                .strength(0.5F, 6.0F)
+                                .sound(SoundType.LANTERN)));
         APOCALYPTIUM_POT_ITEM = ITEMS.register("apocalyptium_cooking_pot",
                 () -> new BlockItem(APOCALYPTIUM_POT.get(), new Item.Properties()));
         APOCALYPTIUM_POT_BE = BLOCK_ENTITIES.register("apocalyptium_cooking_pot",

@@ -1,5 +1,6 @@
 package net.v_black_cat.goetydelight.item;
 
+import com.Polarice3.Goety.api.ritual.IRitualType;
 import com.Polarice3.Goety.common.blocks.entities.RitualBlockEntity;
 import com.Polarice3.Goety.common.crafting.RitualRecipe;
 import com.mojang.datafixers.util.Pair;
@@ -19,6 +20,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
@@ -190,6 +192,9 @@ public class MetamorphicScentGrassItem extends Item {
         if (activationItem.getFoodProperties(player)==null){
             return ritualRecipe;
         }
+        if (isCrystalCandy(activationItem)) {
+            return ritualRecipe;
+        }
         //验证幻味草配方
         List<ItemStack> itemsOnPedestals = getItemsOnPedestals(world, pos);
         if (itemsOnPedestals.size()!=12){
@@ -207,9 +212,16 @@ public class MetamorphicScentGrassItem extends Item {
         }
 
 
-        String craftType = "culinary";
-        if(!(getRitualType(craftType)
-                .getRequirement((RitualBlockEntity) world.getBlockEntity( pos), player, pos,world))){
+        RitualBlockEntity ritualBlockEntity = (RitualBlockEntity) world.getBlockEntity(pos);
+
+        String craftType;
+        boolean culinaryOk = getRitualType("culinary")
+                .getRequirement(ritualBlockEntity, player, pos, world);
+        if (culinaryOk) {
+            craftType = "culinary";
+        } else if (checkMasterCulinaryRequirement(ritualBlockEntity, player, pos, world)) {
+            craftType = "master_culinary";
+        } else {
             return ritualRecipe;
         }
 
@@ -284,7 +296,35 @@ public class MetamorphicScentGrassItem extends Item {
 
     }
 
+    /**
+     * 安全地检查 master_culinary 仪式是否满足条件。
+     * 联动未加载 / 仪式未注册时返回 false，不抛异常。
+     */
+    private static boolean checkMasterCulinaryRequirement(RitualBlockEntity ritualBlockEntity,
+                                                          Player player, BlockPos pos, Level world) {
+        try {
+            IRitualType masterType = getRitualType("master_culinary");
+            if (masterType == null) {
+                return false;
+            }
+            return masterType.getRequirement(ritualBlockEntity, player, pos, world);
+        } catch (Throwable t) {
+            // 联动未加载或类型未注册
+            return false;
+        }
+    }
 
-
-
+    /**
+     * 安全地判断物品是否为联动内容 crystal_candy。
+     * 通过注册名比较，避免直接引用联动类。
+     */
+    private static boolean isCrystalCandy(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return false;
+        }
+        ResourceLocation id = ForgeRegistries.ITEMS.getKey(stack.getItem());
+        return id != null
+                && id.getNamespace().equals("goetydelight")
+                && id.getPath().equals("crystal_candy");
+    }
 }

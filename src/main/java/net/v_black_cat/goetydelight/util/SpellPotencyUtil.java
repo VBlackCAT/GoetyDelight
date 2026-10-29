@@ -1,9 +1,14 @@
 package net.v_black_cat.goetydelight.util;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.api.GetSpellAttributeFactory;
 
 import java.util.HashMap;
@@ -36,6 +41,9 @@ public class SpellPotencyUtil {
             SPELL_ATTRIBUTE, ABYSS_ATTRIBUTE, FROST_ATTRIBUTE, GEOMANCY_ATTRIBUTE,
             NECROMANCY_ATTRIBUTE, NETHER_ATTRIBUTE, STORM_ATTRIBUTE, VOID_ATTRIBUTE, WILD_ATTRIBUTE
     };
+
+    // 死亡时的临时数据备份（Key 为玩家 UUID）
+    private static final Map<UUID, CompoundTag> DEATH_DATA_BACKUP = new HashMap<>();
 
     static {
         // 使用硬糖原有的UUID（保持向后兼容）
@@ -128,5 +136,71 @@ public class SpellPotencyUtil {
                 AttributeModifier.Operation.ADDITION
         );
         attrInstance.addPermanentModifier(modifier);
+    }
+
+    /**
+     * 静态内部类：用于监听玩家事件，防止 NBT 数据丢失
+     */
+    @Mod.EventBusSubscriber(modid = "goetydelight", bus = Mod.EventBusSubscriber.Bus.FORGE)
+    public static class EventHandler {
+
+        /**
+         * 死亡事件：在玩家死亡瞬间，把 NBT 数据备份到静态 Map 中
+         */
+        @SubscribeEvent
+        public static void onPlayerDeath(LivingDeathEvent event) {
+            if (!(event.getEntity() instanceof Player player)) return;
+            if (player.level().isClientSide) return;
+
+            CompoundTag data = player.getPersistentData();
+            CompoundTag backup = new CompoundTag();
+
+            // 备份三个关键标签
+            if (data.contains(CANDY_POTENCY_LEVEL_TAG)) {
+                backup.putInt(CANDY_POTENCY_LEVEL_TAG, data.getInt(CANDY_POTENCY_LEVEL_TAG));
+            }
+            if (data.contains(CANDY_POTENCY_VALUE_TAG)) {
+                backup.putDouble(CANDY_POTENCY_VALUE_TAG, data.getDouble(CANDY_POTENCY_VALUE_TAG));
+            }
+            if (data.contains(EFFECT_BONUS_TAG)) {
+                backup.putDouble(EFFECT_BONUS_TAG, data.getDouble(EFFECT_BONUS_TAG));
+            }
+
+            // 存入备份 Map
+            DEATH_DATA_BACKUP.put(player.getUUID(), backup);
+        }
+
+        /**
+         * 克隆事件：玩家重生或从末地返回时，恢复 NBT 数据并重新应用属性
+         */
+        @SubscribeEvent
+        public static void onPlayerClone(PlayerEvent.Clone event) {
+            Player oldPlayer = event.getOriginal();
+            Player newPlayer = event.getEntity();
+            UUID playerUUID = newPlayer.getUUID();
+
+            CompoundTag newData = newPlayer.getPersistentData();
+
+            // 优先尝试从死亡备份中恢复（如果是死亡重生）
+            if (event.isWasDeath() && DEATH_DATA_BACKUP.containsKey(playerUUID)) {
+                CompoundTag backup = DEATH_DATA_BACKUP.remove(playerUUID); // 取出并移除
+                newData.merge(backup);
+            } else {
+                // 如果不是死亡重生（比如从末地返回），直接从旧玩家实体复制
+                CompoundTag oldData = oldPlayer.getPersistentData();
+                if (oldData.contains(CANDY_POTENCY_LEVEL_TAG)) {
+                    newData.putInt(CANDY_POTENCY_LEVEL_TAG, oldData.getInt(CANDY_POTENCY_LEVEL_TAG));
+                }
+                if (oldData.contains(CANDY_POTENCY_VALUE_TAG)) {
+                    newData.putDouble(CANDY_POTENCY_VALUE_TAG, oldData.getDouble(CANDY_POTENCY_VALUE_TAG));
+                }
+                if (oldData.contains(EFFECT_BONUS_TAG)) {
+                    newData.putDouble(EFFECT_BONUS_TAG, oldData.getDouble(EFFECT_BONUS_TAG));
+                }
+            }
+
+            // 数据恢复/复制完成后，重新计算并应用属性修饰符到新玩家
+            recalculateAndApply(newPlayer);
+        }
     }
 }

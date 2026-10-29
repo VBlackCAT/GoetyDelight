@@ -17,6 +17,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.v_black_cat.goetydelight.entities.spell.RichSoilSpellEntity;
 import net.v_black_cat.goetydelight.util.SpellCastUtil;
 import vectorwing.farmersdelight.common.registry.ModBlocks;
@@ -33,6 +34,9 @@ public class RichSoilSpell extends Spell {
 
     private static final TagKey<Block> FARMLAND = TagKey.create(Registries.BLOCK,
             new ResourceLocation("goetydelight", "rich_soil_focus/farmland"));
+
+    private static final Block INFINISOIL_FARMLAND = ForgeRegistries.BLOCKS.getValue(
+            new ResourceLocation("enigmaticdelicacy", "infinisoil_farmland"));
 
     @Override
     public SpellStat defaultStats() {
@@ -111,6 +115,10 @@ public class RichSoilSpell extends Spell {
 
     /** 返回转换后的方块状态；不满足转换条件时返回 null */
     public static BlockState convertState(BlockState state) {
+        if (INFINISOIL_FARMLAND != null && state.is(INFINISOIL_FARMLAND)) {
+            return null;
+        }
+
         // 泥土/草方块/灰化土等原版土 → 沃土
         if (state.is(BlockTags.DIRT)) {
             return ModBlocks.RICH_SOIL.get().defaultBlockState();

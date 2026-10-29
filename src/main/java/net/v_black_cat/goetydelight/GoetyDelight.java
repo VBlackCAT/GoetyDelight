@@ -141,11 +141,11 @@ public class GoetyDelight
         event.enqueueWork(CompatRegistry::commonSetup);
 
         event.enqueueWork(() -> {
-            ComposterBlock.COMPOSTABLES.put(ModItems.METAMORPHIC_SCENT_GRASS.get(), 0.2F);
-            ComposterBlock.COMPOSTABLES.put(ModItems.METAMORPHIC_SCENT_FRUIT.get(), 0.75F);
-            ComposterBlock.COMPOSTABLES.put(ModItems.METAMORPHIC_SCENT_GRASS_SEEDS.get(), 0.05F);
+            ComposterBlock.COMPOSTABLES.put(ModItems.METAMORPHIC_SCENT_GRASS.get(), 0.5F);
+            ComposterBlock.COMPOSTABLES.put(ModItems.METAMORPHIC_SCENT_FRUIT.get(), 1.0F);
+            ComposterBlock.COMPOSTABLES.put(ModItems.METAMORPHIC_SCENT_GRASS_SEEDS.get(), 0.35F);
             ComposterBlock.COMPOSTABLES.put(ModItems.ECTOPLASMIC_MELON.get(), 0.50F);
-            ComposterBlock.COMPOSTABLES.put(ModItems.ECTOPLASMIC_MELON_SEEDS.get(), 0.09F);
+            ComposterBlock.COMPOSTABLES.put(ModItems.ECTOPLASMIC_MELON_SEEDS.get(), 0.25F);
             ComposterBlock.COMPOSTABLES.put(ModBlocks.ECTOPLASMIC_MELON_BLOCK.get().asItem(), 0.95F);
             DelightRitualType.registerRitualType();
         });
