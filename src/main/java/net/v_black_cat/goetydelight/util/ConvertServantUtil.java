@@ -41,6 +41,8 @@ public final class ConvertServantUtil {
             new ResourceLocation("twilightforest:lich"),
             new ResourceLocation("goetyawaken:hostile_mushroom_monstrosity"),
             new ResourceLocation("goetyawaken:nameless_one"),
+            new ResourceLocation("goety_supreme:wither_warlord"),
+            new ResourceLocation("goety_supreme:green_smith"),
             new ResourceLocation("irons_spellbooks:fire_boss")
     );
 
