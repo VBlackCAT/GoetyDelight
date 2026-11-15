@@ -6,6 +6,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -51,13 +52,18 @@ public class DollEntity extends Entity {
     private static final String TAG_SCALE = "doll_scale";
     private static final String TAG_TRANSLATION = "doll_translation";
 
+    /** 共用右键文本提示的玩偶 ID */
+    private static final java.util.Set<String> MESSAGE_DOLL_IDS = java.util.Set.of("doll_p0", "doll_p7");
+    /** 共用文本条数（message.goetydelight.doll_p7.1 ~ .63） */
+    private static final int MESSAGE_COUNT = 63;
+    /** 记录上一次的文本索引，避免连续重复（仅服务端使用，无需同步/存档） */
+    private int lastDollMessageIndex = -1;
 
     private long bounceTime = 0;
     private static final int TOUCH_ANIMATION_DURATION = 17;
 
     public final AnimationState touchAnimationState = new AnimationState();
     public int touchAnimationTimeout = 0;
-
 
     public DollEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
@@ -98,11 +104,39 @@ public class DollEntity extends Entity {
             serverLevel.sendParticles(ParticleTypes.NOTE, notePos.x(), notePos.y(), notePos.z(), 0, color, 0, 0, 1);
             applyWu1WU2Wu3DollEffect(player);
 
+            // 特定玩偶的右键文本提示（共用一套文本）
+            sendDollMessage(player, randomSource);
+
             this.setTouchAnimationTick(TOUCH_ANIMATION_DURATION);
 
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;
+    }
+
+    /**
+     * 对 doll_p0 / doll_p7 发送随机文本提示。
+     * 两个玩偶共用语言键：message.goetydelight.doll_p7.<1~63>
+     * 使用 Component.translatable 让客户端完成本地化。
+     */
+    private void sendDollMessage(Player player, RandomSource random) {
+        String customDollId = getCustomDollId();
+        if (StringUtils.isBlank(customDollId) || !MESSAGE_DOLL_IDS.contains(customDollId)) {
+            return;
+        }
+
+        int index;
+        if (MESSAGE_COUNT <= 1) {
+            index = 1;
+        } else {
+            do {
+                index = random.nextInt(MESSAGE_COUNT) + 1;
+            } while (index == lastDollMessageIndex);
+        }
+        lastDollMessageIndex = index;
+
+        String key = "message.goetydelight.doll_p7." + index;
+        player.displayClientMessage(Component.translatable(key), false);
     }
 
     @Override
@@ -273,7 +307,6 @@ public class DollEntity extends Entity {
         return tag;
     }
 
-
     public BlockState getDisplayBlockState() {
         return this.entityData.get(DATA_BLOCK_STATE);
     }
@@ -310,7 +343,6 @@ public class DollEntity extends Entity {
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
-
 
     @Override
     public void setRot(float yRot, float xRot) {
