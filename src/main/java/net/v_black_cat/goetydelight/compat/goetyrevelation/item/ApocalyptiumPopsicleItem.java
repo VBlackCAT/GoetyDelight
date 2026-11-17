@@ -23,7 +23,6 @@ import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -35,7 +34,6 @@ public class ApocalyptiumPopsicleItem extends SwordItem {
 
     public ApocalyptiumPopsicleItem(Tiers tiers, int attackDamageModifier, float attackSpeedModifier, Properties properties) {
         super(tiers, attackDamageModifier, attackSpeedModifier, properties);
-        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override

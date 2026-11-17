@@ -17,9 +17,11 @@
     "LivingEntityBuffMixin",
     "MobMixin",
     "RecipeManagerMixin",
+    "SophisticatedFeedingUpgradeMixin",
     "SummonApollyonMixin",
     "SummonSpellMixin",
     "TheNeedleItemMixin",
+    "TravelersBackpackFeedingUpgradeMixin",
     "WightSpawnerMixin"
   ],
   "client": [

@@ -28,7 +28,6 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.player.ArrowLooseEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.GoetyRevelationCompat;
 
 import javax.annotation.Nullable;
@@ -46,6 +45,9 @@ public class PiPieItem extends Item {
     private static final String CUSTOM_DAMAGE_TAG = "CustomDamage";
 
     private static final Map<UUID, List<ArrowRainTask>> pendingArrowRains = new ConcurrentHashMap<>();
+
+    /** 玩家 UUID -> 上次触发箭雨的游戏刻；同一玩家 5 tick 内最多触发一次。 */
+    private static final Map<UUID, Long> lastRainTriggerTick = new ConcurrentHashMap<>();
 
     private static final Set<AbstractArrow> trackedArrows = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
@@ -91,12 +93,14 @@ public class PiPieItem extends Item {
         playerData.remove(PI_PIE_ACTIVE_TAG);
         playerData.remove(PI_PIE_END_TIME_TAG);
         pendingArrowRains.remove(player.getUUID());
+        lastRainTriggerTick.remove(player.getUUID());
     }
 
     @SubscribeEvent
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         UUID playerId = event.getEntity().getUUID();
         pendingArrowRains.remove(playerId);
+        lastRainTriggerTick.remove(playerId);
     }
 
     @SubscribeEvent
@@ -146,7 +150,6 @@ public class PiPieItem extends Item {
         return damageSource;
     }
 
-    @Mod.EventBusSubscriber
     public static class PiPieEvents {
 
         @SubscribeEvent
@@ -237,9 +240,14 @@ public class PiPieItem extends Item {
                         }
                     }
 
-                    // 无论击中什么，非箭雨箭矢都触发箭雨
+                    // 无论击中什么，非箭雨箭矢都触发箭雨；同一玩家 5 tick 内只触发一次。
                     if (!isRainArrow) {
-                        createArrowRainTasks((ServerLevel) arrow.level(), impactPos, shooter);
+                        long now = arrow.level().getGameTime();
+                        Long lastTrigger = lastRainTriggerTick.get(shooterId);
+                        if (lastTrigger == null || now - lastTrigger >= 5L) {
+                            lastRainTriggerTick.put(shooterId, now);
+                            createArrowRainTasks((ServerLevel) arrow.level(), impactPos, shooter);
+                        }
                     }
 
                     // 确保箭矢被清除
@@ -339,7 +347,10 @@ public class PiPieItem extends Item {
             int currentTick = event.getServer().getTickCount();
 
             processArrowRainTasks(overworld, currentTick);
-            cleanupArrows();
+            // 箭矢清理不必每 tick 全量遍历；每 5 tick 一次即可，降低箭雨期间的遍历开销。
+            if (currentTick % 5 == 0) {
+                cleanupArrows();
+            }
         }
 
         private static void processArrowRainTasks(ServerLevel level, int currentTick) {

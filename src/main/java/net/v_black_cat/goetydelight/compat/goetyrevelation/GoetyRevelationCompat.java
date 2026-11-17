@@ -39,10 +39,17 @@ public final class GoetyRevelationCompat {
         MinecraftForge.EVENT_BUS.register(ApocalyptiumKnifeItem.class);
         MinecraftForge.EVENT_BUS.register(AscensionMooncakeItem.class);
         MinecraftForge.EVENT_BUS.register(PiPieItem.class);
+        MinecraftForge.EVENT_BUS.register(PiPieItem.PiPieEvents.class);
         MinecraftForge.EVENT_BUS.register(QuietusMarrowItem.class);
-        MinecraftForge.EVENT_BUS.register(StoneSwordSkewerItem.class);
         MinecraftForge.EVENT_BUS.register(ApocalyptiumPopsicleItem.class);
-        MinecraftForge.EVENT_BUS.register(CrystalCandyItem.CrystalCandyEvents.class);
+        MinecraftForge.EVENT_BUS.register(AscensionCodStewItem.class);
+        MinecraftForge.EVENT_BUS.register(new CrystalCandyItem.CrystalCandyEvents());
+
+        // 这些类同时有实例 @SubscribeEvent 方法，必须注册物品实例而不是 Class。
+        MinecraftForge.EVENT_BUS.register(RevelationCompatRegistry.APOCALYPTIUM_COD.get());
+        MinecraftForge.EVENT_BUS.register(RevelationCompatRegistry.DIMENSIONAL_JELL.get());
+        MinecraftForge.EVENT_BUS.register(RevelationCompatRegistry.SHARK_GUMMY.get());
+        MinecraftForge.EVENT_BUS.register(RevelationCompatRegistry.STONE_SWORD_SKEWER.get());
 
         MasterRitualRegistery.register();
     }

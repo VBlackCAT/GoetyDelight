@@ -1,6 +1,7 @@
 package net.v_black_cat.goetydelight.compat.goetyrevelation.item;
 
 import com.Polarice3.Goety.common.entities.boss.Apostle;
+import com.Polarice3.Goety.common.entities.projectiles.DeathArrow;
 import com.mega.endinglib.api.client.text.TextColorUtils;
 import com.mega.revelationfix.common.entity.boss.ApostleServant;
 import com.mega.revelationfix.common.init.ModEntities;
@@ -20,9 +21,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -51,7 +53,6 @@ public class ApocalyptiumCodItem extends Item {
 
     public ApocalyptiumCodItem(Properties properties) {
         super(properties);
-        MinecraftForge.EVENT_BUS.register(this);
     }
 
     // ==================== 使用 / 交互 ====================
@@ -274,6 +275,28 @@ public class ApocalyptiumCodItem extends Item {
 
             // 4. 清理该玩家身上关于这个实体的所有记录
             MANAGER.untrackAll(owner, entityUUID);
+        }
+    }
+
+    // ==================== 死亡之箭落地清理 ====================
+
+    /**
+     * Goety 的 {@link DeathArrow} 在 {@code tick()} 中只在“飞在空中超过 200 tick”时 discard，
+     * 一旦落地（inGround=true）就永远不会被移除，会一直插在地上。
+     * <p>
+     * 这里在它命中方块（落地）的瞬间直接移除；通过 Forge 的 ProjectileImpactEvent 实现，
+     * 不依赖开发/生产环境的反射或方法名。
+     */
+    @SubscribeEvent
+    public void onDeathArrowImpact(ProjectileImpactEvent event) {
+        if (!(event.getProjectile() instanceof DeathArrow arrow)) {
+            return;
+        }
+        if (arrow.level().isClientSide) {
+            return;
+        }
+        if (event.getRayTraceResult().getType() == HitResult.Type.BLOCK) {
+            arrow.discard();
         }
     }
 

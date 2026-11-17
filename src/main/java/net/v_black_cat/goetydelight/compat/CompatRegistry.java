@@ -1,9 +1,13 @@
 package net.v_black_cat.goetydelight.compat;
 
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.v_black_cat.goetydelight.compat.bossesdelight.BossesDelightCompat;
 import net.v_black_cat.goetydelight.compat.carryon.CarryOnCompat;
 import net.v_black_cat.goetydelight.compat.enigmaticdelicacy.EnigmaticDelicacyCompat;
 import net.v_black_cat.goetydelight.compat.goetycataclysm.GoetyCataclysmCompat;
+import net.v_black_cat.goetydelight.compat.goetyrevelation.ClientRegistery;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.GoetyRevelationCompat;
 
 /**
@@ -27,6 +31,10 @@ public final class CompatRegistry {
         }
         if (CompatManager.isGoetyRevelationLoaded()) {
             GoetyRevelationCompat.register(modBus);
+            // 仅客户端注册 GR 的客户端初始化监听器；服务端不加载这个类。
+            if (FMLEnvironment.dist == Dist.CLIENT) {
+                modBus.register(ClientRegistery.class);
+            }
         }
         if (CompatManager.isCarryOnLoaded()) {
             CarryOnCompat.register(modBus);
@@ -43,6 +51,9 @@ public final class CompatRegistry {
         }
         if (CompatManager.isGoetyRevelationLoaded()) {
             GoetyRevelationCompat.commonSetup();
+        }
+        if (CompatManager.isBossesDelightLoaded()) {
+            BossesDelightCompat.registerEvents();
         }
     }
 }

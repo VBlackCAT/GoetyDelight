@@ -5,7 +5,33 @@
       "bonus_rolls": 0.0,
       "conditions": [
         {
-          "condition": "minecraft:survives_explosion"
+          "block": "goetydelight:stuffed_tall_skull_rice_block",
+          "condition": "minecraft:block_state_property",
+          "properties": {
+            "servings": "4"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "goetydelight:stuffed_tall_skull_rice_block"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:inverted",
+          "term": {
+            "block": "goetydelight:stuffed_tall_skull_rice_block",
+            "condition": "minecraft:block_state_property",
+            "properties": {
+              "servings": "4"
+            }
+          }
         }
       ],
       "entries": [
@@ -17,5 +43,5 @@
       "rolls": 1.0
     }
   ],
-  "random_sequence": "goetydelight:blocks/void_gel_jelly_block"
+  "random_sequence": "goetydelight:blocks/stuffed_tall_skull_rice_block"
 }

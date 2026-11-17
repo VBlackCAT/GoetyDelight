@@ -5,8 +5,8 @@ import net.minecraft.world.item.ItemStack;
 /**
  * 统一入口：判断物品是否属于 Farmer's Delight 的各类物品标签。
  * <p>
- * 内部走反射“先试 1.3.0+ 的 {@code ModTags$Items.SERVING_CONTAINERS}，
- * 失败再试 &lt;1.3.0 的 {@code ModTags.SERVING_CONTAINERS}”。
+ * 直接使用数据包标签 {@code farmersdelight:serving_containers}，不依赖版本号，
+ * 也不会在生产环境因为反射 Minecraft 方法名（SRG 重映射）而失效。
  */
 public final class FarmersDelightItemTags {
 

@@ -16,7 +16,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -56,7 +55,6 @@ public class SharkGummyItem extends Item {
 
     public SharkGummyItem(Properties properties) {
         super(properties);
-        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override

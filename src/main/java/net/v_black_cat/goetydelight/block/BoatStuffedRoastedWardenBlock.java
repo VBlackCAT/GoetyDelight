@@ -2,12 +2,15 @@ package net.v_black_cat.goetydelight.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -32,6 +35,7 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.v_black_cat.goetydelight.compat.farmersdelight.FarmersDelightTextUtilsLegacy;
 import net.v_black_cat.goetydelight.compat.farmersdelight.FeastServingHelper;
 import vectorwing.farmersdelight.common.block.FeastBlock;
@@ -44,6 +48,8 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
 
      public static final IntegerProperty SERVINGS = IntegerProperty.create("servings", 0, 10);
      public static final EnumProperty<Part> PART = EnumProperty.create("part", Part.class);
+     /** 方块物品 NBT：记录被破坏时剩余的份数。 */
+     public static final String SERVINGS_TAG = "Servings";
      // 每个方块（中心 + 8 个外围）各自独立的碰撞/轮廓箱，均不越出自身格子 [0,1]：
      // [part][servings][facing]
      private static final VoxelShape[][][] PART_SHAPES = new VoxelShape[Part.values().length][11][4];
@@ -89,7 +95,7 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
      @Override
      public ItemStack getServingItem(BlockState state) {
           int servings = state.getValue(SERVINGS);
-          // 根据剩余份数选择不同的物品
+          // 根据剩余份数选择不同的物品（满盘时先取到蜘蛛卵，这是原本的设计）
           int itemIndex = (getMaxServings() - servings) % servingItems.size();
           return new ItemStack(servingItems.get(itemIndex).get());
      }
@@ -140,11 +146,37 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
 
           // Follow Farmer's Delight FeastBlock gating: predict on the client, execute on the server.
           if (level.isClientSide) {
-               if (this.takeServing(level, pos, state, player, hand).consumesAction()) {
+               return InteractionResult.SUCCESS;
+          }
+
+          // 与 BOMD 乐事（Bosses Delight）的花蜜果冻冰兼容：
+          // 该物品原本通过把单个方块替换成 defaultBlockState() 来“回满”，
+          // 但烤全监是 9 格多方块，直接替换会把某个外围格变成 CENTER，
+          // 结构校验失败后整盘被拆掉/变成空盘。这里改为一次回满整个结构。
+          ItemStack heldItem = player.getItemInHand(hand);
+          if (isNectarJelly(heldItem)) {
+               int servings = state.getValue(SERVINGS);
+               if (servings < getMaxServings()) {
+                    setServingsAcrossStructure(level, pos, state, getMaxServings());
+                    if (!player.getAbilities().instabuild) {
+                         heldItem.shrink(1);
+                    }
+                    level.playSound(null, pos, SoundEvents.SLIME_BLOCK_PLACE,
+                            SoundSource.PLAYERS, 1.0F, 1.0F);
                     return InteractionResult.SUCCESS;
                }
+               return InteractionResult.CONSUME;
           }
+
           return this.takeServing(level, pos, state, player, hand);
+     }
+
+     private static final ResourceLocation NECTAR_JELLY_ID =
+             new ResourceLocation("bosses_delight", "nectar_jelly");
+
+     private static boolean isNectarJelly(ItemStack stack) {
+          return !stack.isEmpty()
+                  && NECTAR_JELLY_ID.equals(ForgeRegistries.ITEMS.getKey(stack.getItem()));
      }
 
     private InteractionResult takeServingInternal(LevelAccessor level, BlockPos pos,
@@ -201,10 +233,37 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
 
      @Override
      public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
-          if (state.getValue(PART) == Part.CENTER) {
-               super.playerDestroy(level, player, pos, state, blockEntity, tool);
+          Part part = state.getValue(PART);
+          BlockPos centerPos;
+          BlockState centerState;
+          if (part == Part.CENTER) {
+               // playerDestroy 在方块已被移除后调用，中心方块必须使用传入的旧状态。
+               centerPos = pos;
+               centerState = state;
+          } else {
+               centerPos = getCenterPos(pos, part);
+               centerState = level.getBlockState(centerPos);
           }
-          
+          if (!(centerState.getBlock() instanceof BoatStuffedRoastedWardenBlock)
+                  || centerState.getValue(PART) != Part.CENTER) {
+               return;
+          }
+
+          int servings = centerState.getValue(SERVINGS);
+          if (servings <= 0) {
+               // 份数为 0 的空盘被破坏时不掉落任何东西。
+               return;
+          }
+
+          ItemStack drop = new ItemStack(ModBlocks.BOAT_STUFFED_ROASTED_WARDEN_BlOCK.get());
+          CompoundTag tag = drop.getOrCreateTag();
+          tag.putInt(SERVINGS_TAG, servings);
+
+          Containers.dropItemStack(level,
+                  centerPos.getX() + 0.5D, centerPos.getY() + 0.5D, centerPos.getZ() + 0.5D,
+                  drop);
+          player.awardStat(Stats.BLOCK_MINED.get(this));
+          player.causeFoodExhaustion(0.005F);
      }
 
      
@@ -281,7 +340,17 @@ public class BoatStuffedRoastedWardenBlock extends FeastBlock {
                }
           }
 
-          return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection());
+          return this.defaultBlockState()
+                  .setValue(FACING, context.getHorizontalDirection())
+                  .setValue(SERVINGS, getPlacementServings(context.getItemInHand()));
+     }
+
+     private int getPlacementServings(ItemStack stack) {
+          CompoundTag tag = stack.getTag();
+          if (tag != null && tag.contains(SERVINGS_TAG)) {
+               return Math.max(0, Math.min(getMaxServings(), tag.getInt(SERVINGS_TAG)));
+          }
+          return getMaxServings();
      }
 
      @Override

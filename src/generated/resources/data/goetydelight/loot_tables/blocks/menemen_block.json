@@ -5,7 +5,33 @@
       "bonus_rolls": 0.0,
       "conditions": [
         {
-          "condition": "minecraft:survives_explosion"
+          "block": "goetydelight:menemen_block",
+          "condition": "minecraft:block_state_property",
+          "properties": {
+            "servings": "5"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "goetydelight:menemen_block"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:inverted",
+          "term": {
+            "block": "goetydelight:menemen_block",
+            "condition": "minecraft:block_state_property",
+            "properties": {
+              "servings": "5"
+            }
+          }
         }
       ],
       "entries": [

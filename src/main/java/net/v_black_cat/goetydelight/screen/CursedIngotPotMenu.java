@@ -133,7 +133,11 @@ public class CursedIngotPotMenu extends RecipeBookMenu<RecipeWrapper> {
         int indexContainerInput = 7;
         int indexOutput = 8;
         int indexSoulSource = 9; // 新增灵魂源插槽索引
-        int startPlayerInv = indexOutput + 1;
+        // 锅本体一共有 10 个槽位（0-9，包含灵魂源槽），玩家背包从 10 开始。
+        // 之前错误地写成 indexOutput + 1（=9），会把灵魂源槽自身也包含进目标区间，
+        // shift 取出连接宝石时 moveItemStackTo 会把槽位里的同一个 ItemStack 与自身合并，
+        // 导致数量翻倍。这里改成真正的玩家背包起点。
+        int startPlayerInv = indexSoulSource + 1;
         int endPlayerInv = startPlayerInv + 36;
         ItemStack slotStackCopy = ItemStack.EMPTY;
         Slot slot = (Slot)this.slots.get(index);

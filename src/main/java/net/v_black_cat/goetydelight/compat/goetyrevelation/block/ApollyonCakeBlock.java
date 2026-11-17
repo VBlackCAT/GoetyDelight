@@ -103,6 +103,11 @@ public class ApollyonCakeBlock extends FeastBlock implements EntityBlock {
         BlockEntity be = level.getBlockEntity(pos);
         if (be instanceof ApollyonCakeBlockEntity cakeBe) {
             cakeBe.setOwnerUuid(ownerUuid);
+            // 同步 BlockEntity 数据，让客户端也能知道 owner（用于交互预测/提示）。
+            if (level instanceof ServerLevel serverLevel) {
+                BlockState state = level.getBlockState(pos);
+                serverLevel.sendBlockUpdated(pos, state, state, Block.UPDATE_ALL);
+            }
         }
     }
 
@@ -164,12 +169,18 @@ public class ApollyonCakeBlock extends FeastBlock implements EntityBlock {
 
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        // 客户端预测，服务端执行
+        // 客户端只做挥手表现，绝不能在客户端执行取餐：
+        // 非 owner 的客户端预测会本地减少份数、增加蛋糕片，而服务端拒绝后不会回滚，
+        // 在多人游戏里就会表现为“非 owner 也能取走蛋糕”（创造模式还会把幽灵物品同步成真）。
         if (level.isClientSide) {
-            if (this.takeServing(level, pos, state, player, hand).consumesAction()) {
-                return InteractionResult.SUCCESS;
-            }
+            return InteractionResult.SUCCESS;
         }
+
+        // 服务端再次做 owner 校验，作为最后一道防线。
+        if (!canInteract(level, pos, state, player)) {
+            return InteractionResult.PASS;
+        }
+
         return this.takeServing(level, pos, state, player, hand);
     }
 

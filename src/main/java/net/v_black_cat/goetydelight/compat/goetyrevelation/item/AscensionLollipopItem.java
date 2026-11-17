@@ -2,6 +2,9 @@ package net.v_black_cat.goetydelight.compat.goetyrevelation.item;
 
 import com.mega.endinglib.api.client.text.TextColorUtils;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
@@ -24,9 +27,36 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import static org.apache.commons.lang3.math.IEEE754rUtils.max;
 
 public class AscensionLollipopItem extends Item {
+    /** 喂食插件冷却：5 秒。 */
+    private static final long FEED_COOLDOWN_TICKS = 100L;
+
+    /** 玩家 UUID -> 冷却结束的游戏刻。仅用于精妙背包/旅行者背包的自动喂食。 */
+    private static final Map<UUID, Long> FEED_COOLDOWN_UNTIL = new ConcurrentHashMap<>();
+
     public AscensionLollipopItem(Properties properties) {
         super(properties);
     }
+
+    /** 自动喂食冷却是否还在生效。 */
+    public static boolean isFeedOnCooldown(Player player) {
+        Long until = FEED_COOLDOWN_UNTIL.get(player.getUUID());
+        if (until == null) {
+            return false;
+        }
+        long now = player.level().getGameTime();
+        if (now >= until) {
+            FEED_COOLDOWN_UNTIL.remove(player.getUUID(), until);
+            return false;
+        }
+        return true;
+    }
+
+    /** 自动喂食成功后开始 5 秒冷却。 */
+    public static void startFeedCooldown(Player player) {
+        FEED_COOLDOWN_UNTIL.put(player.getUUID(),
+                player.level().getGameTime() + FEED_COOLDOWN_TICKS);
+    }
+
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         if (stack.isEdible()) {

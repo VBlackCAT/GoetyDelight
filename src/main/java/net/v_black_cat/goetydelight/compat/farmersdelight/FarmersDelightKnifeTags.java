@@ -5,9 +5,9 @@ import net.minecraft.world.item.ItemStack;
 /**
  * 统一入口：判断物品是否为 Farmer's Delight 的小刀。
  * <p>
- * 内部走反射"先试 1.3.0+ 的 {@code ModTags$Items.KNIVES}，
- * 失败再试 &lt;1.3.0 的 {@code ModTags.KNIVES}"，
- * 不依赖版本号，也不会因 import/类引用导致 NoClassDefFoundError。
+ * 直接使用数据包标签 {@code farmersdelight:tools/knives}，不再反射
+ * Farmer's Delight 的 {@code ModTags} 字段或 Minecraft 的 {@code ItemStack#is}。
+ * 这样既兼容 1.2.x / 1.3.x，也能在生产环境（方法名被重映射为 SRG）正常工作。
  */
 public final class FarmersDelightKnifeTags {
 

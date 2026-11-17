@@ -1,26 +1,19 @@
 package net.v_black_cat.goetydelight.compat.goetyrevelation;
 
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.v_black_cat.goetydelight.GoetyDelight;
 
-@Mod.EventBusSubscriber(
-        modid = GoetyDelight.MODID,
-        bus = Mod.EventBusSubscriber.Bus.MOD,
-        value = Dist.CLIENT
-)
+/**
+ * goety_revelation 客户端注册。
+ * <p>
+ * 不在类上使用 {@code @Mod.EventBusSubscriber}：只有检测到 goety_revelation 时，
+ * CompatRegistry 才会把它注册到 mod 事件总线；未安装时该类不会加载。
+ */
 public class ClientRegistery {
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
-        // 只在这里判断，不触发任何目标类的加载
-        if (!GoetyRevelationCompat.IS_LOADED) {
-            GoetyDelight.LOGGER.info("[compat] goety_revelation 未加载，跳过客户端注册");
-            return;
-        }
-
         // 延迟到 enqueueWork，且通过独立的 Holder 类访问目标类
         event.enqueueWork(ClientRegistery::doClientSetup);
     }

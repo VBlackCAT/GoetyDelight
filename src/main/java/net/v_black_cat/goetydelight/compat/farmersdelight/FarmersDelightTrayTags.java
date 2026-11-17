@@ -5,9 +5,8 @@ import net.minecraft.world.level.block.state.BlockState;
 /**
  * 统一入口：判断方块状态是否属于 Farmer's Delight 的“托盘热源”标签。
  * <p>
- * 内部走反射“先试 1.3.0+ 的 {@code ModTags$Blocks.TRAY_HEAT_SOURCES}，
- * 失败再试 &lt;1.3.0 的 {@code ModTags.TRAY_HEAT_SOURCES}”，
- * 不依赖版本号，也不会因 import/类引用导致 NoClassDefFoundError。
+ * 直接使用数据包标签 {@code farmersdelight:tray_heat_sources}，不依赖版本号，
+ * 也不会在生产环境因为反射 Minecraft 方法名（SRG 重映射）而失效。
  */
 public final class FarmersDelightTrayTags {
 

@@ -17,18 +17,23 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.MetamorphicScentGrassBlock;
 import net.v_black_cat.goetydelight.block.ModBlocks;
+import net.v_black_cat.goetydelight.block.RoastLaowangBlock;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.properties.BedPart;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
+import net.minecraft.world.level.storage.loot.predicates.InvertedLootItemCondition;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraftforge.registries.RegistryObject;
 import net.v_black_cat.goetydelight.item.ModItems;
+import vectorwing.farmersdelight.common.block.FeastBlock;
 import vectorwing.farmersdelight.common.item.CookingPotItem;
 
 import java.util.Set;
@@ -75,24 +80,94 @@ public class ModBlockLootTables extends BlockLootSubProvider {
                 createFruitBlockDrops(ModBlocks.ECTOPLASMIC_MELON_BLOCK.get(),
                         ModItems.ECTOPLASMIC_MELON.get(), 3.0F, 7.0F, 9));
 
-        this.dropOther(ModBlocks.ROTTEN_CORPSE_MAGGOT_FEAST_BLOCK.get(), Items.BOWL);
         this.dropOther(ModBlocks.ATTACHED_ECTOPLASMIC_MELON_STEM.get(), ModItems.ECTOPLASMIC_MELON_SEEDS.get());
         this.dropOther(ModBlocks.ECTOPLASMIC_MELON_STEM.get(), ModItems.ECTOPLASMIC_MELON_SEEDS.get());
-        this.dropOther(ModBlocks.ROTTEN_CORPSE_MAGGOT_FEAST_BLOCK.get(), Items.BOWL);
-        this.dropOther(ModBlocks.BOAT_STUFFED_ROASTED_WARDEN_BlOCK.get(), Items.DARK_OAK_BOAT);
-        this.dropOther(ModBlocks.ROAST_LAOWANG_BLOCK.get(), Items.BOWL);
-        this.dropOther(ModBlocks.VOID_GEL_JELLY_BLOCK.get(), Items.BOWL);
-        this.dropOther(ModBlocks.STUFFED_TALL_SKULL_RICE_BLOCK.get(), com.Polarice3.Goety.common.blocks.ModBlocks.TALL_SKULL_ITEM.get());
-//        this.dropOther(ModBlocks.LICHS_CHAOS_STEW_BLOCK.get(), vectorwing.farmersdelight.common.registry.ModItems.COOKING_POT.get());
-        this.dropOther(ModBlocks.LICHS_CHAOS_STEW_BLOCK.get(), ModBlocks.CURSED_INGOT_POT.get());
-        this.dropOther(ModBlocks.NIGHT_HEART_PEA_SOUP_BLOCK.get(), ModBlocks.CURSED_INGOT_POT.get());
-        this.dropOther(ModBlocks.BONE_LORD_ASH_RICE_BLOCK.get(), ModBlocks.CURSED_INGOT_POT.get());
-        this.dropOther(ModBlocks.MENEMEN_BLOCK.get(), vectorwing.farmersdelight.common.registry.ModItems.COOKING_POT.get());
-        this.dropOther(ModBlocks.SNAP_UNHOLY_TRIPE_BLOCK.get(), vectorwing.farmersdelight.common.registry.ModItems.COOKING_POT.get());
+
+        // 方块食物掉落：与农夫乐事一致——满盘时掉方块本体，取过餐后只掉容器/残留物。
+        this.add(ModBlocks.ROTTEN_CORPSE_MAGGOT_FEAST_BLOCK.get(),
+                createFeastBlockDrops(ModBlocks.ROTTEN_CORPSE_MAGGOT_FEAST_BLOCK.get(),
+                        FeastBlock.SERVINGS, 3, Items.BOWL));
+        this.add(ModBlocks.VOID_GEL_JELLY_BLOCK.get(),
+                createFeastBlockDrops(ModBlocks.VOID_GEL_JELLY_BLOCK.get(),
+                        FeastBlock.SERVINGS, 3, Items.BOWL));
+        this.add(ModBlocks.STUFFED_TALL_SKULL_RICE_BLOCK.get(),
+                createFeastBlockDrops(ModBlocks.STUFFED_TALL_SKULL_RICE_BLOCK.get(),
+                        FeastBlock.SERVINGS, 4, com.Polarice3.Goety.common.blocks.ModBlocks.TALL_SKULL_ITEM.get()));
+        this.add(ModBlocks.LICHS_CHAOS_STEW_BLOCK.get(),
+                createFeastBlockDrops(ModBlocks.LICHS_CHAOS_STEW_BLOCK.get(),
+                        net.v_black_cat.goetydelight.block.LichsChaosStewBlock.SERVINGS, 5,
+                        ModBlocks.CURSED_INGOT_POT.get()));
+        this.add(ModBlocks.NIGHT_HEART_PEA_SOUP_BLOCK.get(),
+                createFeastBlockDrops(ModBlocks.NIGHT_HEART_PEA_SOUP_BLOCK.get(),
+                        net.v_black_cat.goetydelight.block.NightHeartPeaSoupBlock.SERVINGS, 3,
+                        ModBlocks.CURSED_INGOT_POT.get()));
+        this.add(ModBlocks.BONE_LORD_ASH_RICE_BLOCK.get(),
+                createFeastBlockDrops(ModBlocks.BONE_LORD_ASH_RICE_BLOCK.get(),
+                        net.v_black_cat.goetydelight.block.BoneLordAshRiceBlock.SERVINGS, 3,
+                        ModBlocks.CURSED_INGOT_POT.get()));
+        this.add(ModBlocks.SNAP_UNHOLY_TRIPE_BLOCK.get(),
+                createFeastBlockDrops(ModBlocks.SNAP_UNHOLY_TRIPE_BLOCK.get(),
+                        net.v_black_cat.goetydelight.block.SnapUnholyTripeBlock.SERVINGS, 3,
+                        vectorwing.farmersdelight.common.registry.ModItems.COOKING_POT.get()));
+        this.add(ModBlocks.MENEMEN_BLOCK.get(),
+                createFeastBlockDrops(ModBlocks.MENEMEN_BLOCK.get(),
+                        net.v_black_cat.goetydelight.block.MenemenBlock.SERVINGS, 5,
+                        vectorwing.farmersdelight.common.registry.ModItems.COOKING_POT.get()));
+        this.add(ModBlocks.ROAST_LAOWANG_BLOCK.get(),
+                createRoastLaowangDrops(ModBlocks.ROAST_LAOWANG_BLOCK.get(),
+                        RoastLaowangBlock.SERVINGS, 13, Items.BOWL));
         this.add(ModBlocks.MARBLE_SLAB.get(),
                 block -> createSlabItemTable(ModBlocks.MARBLE_SLAB.get()));
         this.add(ModBlocks.MARBLE_DOOR.get(),
                 block -> createDoorTable(ModBlocks.MARBLE_DOOR.get()));
+    }
+
+    /**
+     * 农夫乐事式方块食物掉落：
+     * <ul>
+     *     <li>份数 == 满盘：掉落方块本体；</li>
+     *     <li>份数 != 满盘（已经被取过餐）：掉落容器/残留物。</li>
+     * </ul>
+     */
+    private LootTable.Builder createRoastLaowangDrops(Block block, IntegerProperty servings, int maxServings,
+                                                       net.minecraft.world.level.ItemLike container) {
+        // 烤老王是 HEAD/FOOT 两格结构。只让 HEAD 产生掉落，
+        // 这样无论玩家拆哪一格、爆炸还是其他方式同时处理两格，都不会出现双倍战利品。
+        LootItemCondition.Builder head = LootItemBlockStatePropertyCondition
+                .hasBlockStateProperties(block)
+                .setProperties(StatePropertiesPredicate.Builder.properties()
+                        .hasProperty(RoastLaowangBlock.PART, BedPart.HEAD));
+        LootItemCondition.Builder full = LootItemBlockStatePropertyCondition
+                .hasBlockStateProperties(block)
+                .setProperties(StatePropertiesPredicate.Builder.properties()
+                        .hasProperty(RoastLaowangBlock.PART, BedPart.HEAD)
+                        .hasProperty(servings, maxServings));
+
+        return LootTable.lootTable()
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(block).when(full)))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(container)
+                                .when(head)
+                                .when(InvertedLootItemCondition.invert(full))));
+    }
+
+    private LootTable.Builder createFeastBlockDrops(Block block, IntegerProperty servings, int maxServings,
+                                                    net.minecraft.world.level.ItemLike container) {
+        LootItemCondition.Builder full = LootItemBlockStatePropertyCondition
+                .hasBlockStateProperties(block)
+                .setProperties(StatePropertiesPredicate.Builder.properties()
+                        .hasProperty(servings, maxServings));
+
+        return LootTable.lootTable()
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(block).when(full)))
+                .withPool(LootPool.lootPool()
+                        .setRolls(ConstantValue.exactly(1.0F))
+                        .add(LootItem.lootTableItem(container).when(InvertedLootItemCondition.invert(full))));
     }
 
     protected LootTable.Builder createCopperLikeOreDrops(Block pBlock, Item item) {

@@ -5,7 +5,33 @@
       "bonus_rolls": 0.0,
       "conditions": [
         {
-          "condition": "minecraft:survives_explosion"
+          "block": "goetydelight:lichs_chaos_stew_block",
+          "condition": "minecraft:block_state_property",
+          "properties": {
+            "servings": "5"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "goetydelight:lichs_chaos_stew_block"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:inverted",
+          "term": {
+            "block": "goetydelight:lichs_chaos_stew_block",
+            "condition": "minecraft:block_state_property",
+            "properties": {
+              "servings": "5"
+            }
+          }
         }
       ],
       "entries": [

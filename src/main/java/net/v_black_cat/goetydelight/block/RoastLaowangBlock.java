@@ -148,7 +148,7 @@ public class RoastLaowangBlock extends HorizontalDirectionalBlock {
     }
 
     private Direction getDirectionToOther(BedPart part, Direction direction) {
-        return part == BedPart.HEAD ? direction : direction.getOpposite();
+        return part == BedPart.HEAD ? direction.getOpposite() : direction;
     }
 
     private void giveOrDropItem(Player player, ItemStack stack, Level level, BlockPos pos) {
@@ -172,7 +172,7 @@ public class RoastLaowangBlock extends HorizontalDirectionalBlock {
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         Direction direction = context.getHorizontalDirection().getOpposite();
         BlockPos pos = context.getClickedPos();
-        BlockPos footPos = pos.relative(direction);
+        BlockPos footPos = pos.relative(direction.getOpposite());
         Level level = context.getLevel();
 
         if (!level.getBlockState(footPos).canBeReplaced(context) ||
@@ -190,7 +190,7 @@ public class RoastLaowangBlock extends HorizontalDirectionalBlock {
         super.setPlacedBy(level, pos, state, placer, stack);
         if (!level.isClientSide) {
             Direction direction = state.getValue(FACING);
-            BlockPos footPos = pos.relative(direction);
+            BlockPos footPos = pos.relative(direction.getOpposite());
 
             BlockState footState = this.defaultBlockState()
                     .setValue(PART, BedPart.FOOT)
@@ -220,14 +220,16 @@ public class RoastLaowangBlock extends HorizontalDirectionalBlock {
 
     private BlockPos getOtherPartPos(BlockPos pos, BedPart part, Direction facing) {
         if (part == BedPart.HEAD) {
-            return pos.relative(facing);
-        } else {
             return pos.relative(facing.getOpposite());
+        } else {
+            return pos.relative(facing);
         }
     }
 
     @Override
     public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        // 这里只负责创造模式下的结构清理，绝对不能掉落物品；
+        // 掉落统一由 playerDestroy 中 HEAD 的战利品表处理，且战利品表只接受 part=head。
         if (!level.isClientSide && player.isCreative()) {
             BedPart part = state.getValue(PART);
             if (part == BedPart.FOOT) {
@@ -245,10 +247,9 @@ public class RoastLaowangBlock extends HorizontalDirectionalBlock {
     private void breakEntireStructure(Level level, BlockPos pos, BlockState state, @Nullable Player player) {
         BedPart part = state.getValue(PART);
         Direction facing = state.getValue(FACING);
-        BlockPos headPos = part == BedPart.HEAD ? pos : pos.relative(facing.getOpposite());
-        BlockPos footPos = headPos.relative(facing);
+        BlockPos headPos = part == BedPart.HEAD ? pos : pos.relative(facing);
+        BlockPos footPos = headPos.relative(facing.getOpposite());
 
-        // 破坏 HEAD
         if (level.getBlockState(headPos).getBlock() instanceof RoastLaowangBlock) {
             BlockState oldState = level.getBlockState(headPos);
             level.setBlock(headPos, Blocks.AIR.defaultBlockState(), 3);
@@ -257,7 +258,6 @@ public class RoastLaowangBlock extends HorizontalDirectionalBlock {
             }
         }
 
-        // 破坏 FOOT
         if (level.getBlockState(footPos).getBlock() instanceof RoastLaowangBlock) {
             BlockState oldState = level.getBlockState(footPos);
             level.setBlock(footPos, Blocks.AIR.defaultBlockState(), 3);
@@ -269,6 +269,7 @@ public class RoastLaowangBlock extends HorizontalDirectionalBlock {
 
     @Override
     public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
+        // 只由 HEAD 走一次战利品表，避免 FOOT/HEAD 两个部件都触发掉落造成双倍。
         if (state.getValue(PART) == BedPart.HEAD) {
             super.playerDestroy(level, player, pos, state, blockEntity, tool);
         }
@@ -339,8 +340,8 @@ public class RoastLaowangBlock extends HorizontalDirectionalBlock {
         // 减少份数
         int newServings = servings - 1;
         Direction facing = state.getValue(FACING);
-        BlockPos headPos = state.getValue(PART) == BedPart.HEAD ? pos : pos.relative(facing.getOpposite());
-        BlockPos footPos = headPos.relative(facing);
+        BlockPos headPos = state.getValue(PART) == BedPart.HEAD ? pos : pos.relative(facing);
+        BlockPos footPos = headPos.relative(facing.getOpposite());
 
         // 更新两个方块
         BlockState headState = level.getBlockState(headPos);
@@ -370,8 +371,8 @@ public class RoastLaowangBlock extends HorizontalDirectionalBlock {
     protected InteractionResult takeServing(Level level, BlockPos pos, BlockState state, Player player, InteractionHand hand) {
         int servings = state.getValue(SERVINGS);
         Direction facing = state.getValue(FACING);
-        BlockPos headPos = state.getValue(PART) == BedPart.HEAD ? pos : pos.relative(facing.getOpposite());
-        BlockPos footPos = headPos.relative(facing);
+        BlockPos headPos = state.getValue(PART) == BedPart.HEAD ? pos : pos.relative(facing);
+        BlockPos footPos = headPos.relative(facing.getOpposite());
 
         // 获取食物
         ItemStack servingItem = getServingItem(state);

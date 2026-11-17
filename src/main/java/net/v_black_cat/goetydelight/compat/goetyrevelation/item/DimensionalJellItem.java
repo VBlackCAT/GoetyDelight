@@ -13,7 +13,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -35,7 +34,6 @@ public class DimensionalJellItem extends Item {
 
     public DimensionalJellItem(Properties properties) {
         super(properties);
-        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override

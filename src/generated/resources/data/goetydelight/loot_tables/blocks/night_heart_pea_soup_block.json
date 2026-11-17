@@ -5,7 +5,33 @@
       "bonus_rolls": 0.0,
       "conditions": [
         {
-          "condition": "minecraft:survives_explosion"
+          "block": "goetydelight:night_heart_pea_soup_block",
+          "condition": "minecraft:block_state_property",
+          "properties": {
+            "servings": "3"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "goetydelight:night_heart_pea_soup_block"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:inverted",
+          "term": {
+            "block": "goetydelight:night_heart_pea_soup_block",
+            "condition": "minecraft:block_state_property",
+            "properties": {
+              "servings": "3"
+            }
+          }
         }
       ],
       "entries": [

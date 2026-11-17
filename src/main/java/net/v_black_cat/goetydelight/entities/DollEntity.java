@@ -63,7 +63,10 @@ public class DollEntity extends Entity {
     private static final int TOUCH_ANIMATION_DURATION = 17;
 
     public final AnimationState touchAnimationState = new AnimationState();
+    /** 服务端本地倒计时，不参与同步；避免触摸动画期间每 tick 都写 SynchedEntityData。 */
     public int touchAnimationTimeout = 0;
+    /** 客户端本地倒计时，用于渲染插值；只在开始/结束时接收同步包。 */
+    private int clientTouchAnimationTick = 0;
 
     public DollEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
@@ -108,6 +111,7 @@ public class DollEntity extends Entity {
             sendDollMessage(player, randomSource);
 
             this.setTouchAnimationTick(TOUCH_ANIMATION_DURATION);
+            this.touchAnimationTimeout = TOUCH_ANIMATION_DURATION;
 
             return InteractionResult.SUCCESS;
         }
@@ -188,11 +192,14 @@ public class DollEntity extends Entity {
         super.tick();
 
         if (this.level().isClientSide()) {
+            if (this.clientTouchAnimationTick > 0) {
+                this.clientTouchAnimationTick--;
+            }
             setupTouchAnimationState();
-        } else {
-            int tick = this.getTouchAnimationTick();
-            if (tick > 0) {
-                this.setTouchAnimationTick(tick - 1);
+        } else if (this.touchAnimationTimeout > 0) {
+            // 只在动画开始和结束时同步，中间由客户端本地倒计时。
+            if (--this.touchAnimationTimeout == 0) {
+                this.setTouchAnimationTick(0);
             }
         }
     }
@@ -210,6 +217,9 @@ public class DollEntity extends Entity {
     }
 
     public int getTouchAnimationTick() {
+        if (this.level().isClientSide()) {
+            return this.clientTouchAnimationTick;
+        }
         return this.entityData.get(TOUCH_ANIMATION_TICK);
     }
 
@@ -261,6 +271,9 @@ public class DollEntity extends Entity {
     public void onSyncedDataUpdated(EntityDataAccessor<?> pKey) {
         if (DATA_SCALE.equals(pKey)) {
             this.refreshDimensions();
+        }
+        if (TOUCH_ANIMATION_TICK.equals(pKey)) {
+            this.clientTouchAnimationTick = this.entityData.get(TOUCH_ANIMATION_TICK);
         }
         super.onSyncedDataUpdated(pKey);
     }

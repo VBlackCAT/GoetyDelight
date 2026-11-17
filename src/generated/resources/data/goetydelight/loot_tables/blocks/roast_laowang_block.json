@@ -1,0 +1,56 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "block": "goetydelight:roast_laowang_block",
+          "condition": "minecraft:block_state_property",
+          "properties": {
+            "part": "head",
+            "servings": "13"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "goetydelight:roast_laowang_block"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "block": "goetydelight:roast_laowang_block",
+          "condition": "minecraft:block_state_property",
+          "properties": {
+            "part": "head"
+          }
+        },
+        {
+          "condition": "minecraft:inverted",
+          "term": {
+            "block": "goetydelight:roast_laowang_block",
+            "condition": "minecraft:block_state_property",
+            "properties": {
+              "part": "head",
+              "servings": "13"
+            }
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:bowl"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "goetydelight:blocks/roast_laowang_block"
+}

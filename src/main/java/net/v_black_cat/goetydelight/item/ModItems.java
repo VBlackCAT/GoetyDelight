@@ -314,7 +314,7 @@ public class ModItems {
         FROG_LEG_SANDWICH = ITEMS.register("frog_leg_sandwich",
                 () -> simpleFoodItem(10, 8, false));
         ROAST_LAOWANG_EAR = ITEMS.register("roast_laowang_ear",
-                () -> simpleFoodItem(4, 3, false));
+                () -> simpleFoodItem(6, 6, false));
 
         SPIDER_EGG_BUBBLE_TEA = ITEMS.register("spider_egg_bubble_tea",
                 () -> new CustomDrinkItem(basicItem().stacksTo(16).food(
@@ -720,7 +720,7 @@ public class ModItems {
 
         ROAST_LAOWANG = ITEMS.register("roast_laowang",
                 () -> new RoastLaowangItem(basicItem().stacksTo(64).rarity(Rarity.EPIC)
-                        .food(simpleFoodItemProperties(20, 15)
+                        .food(simpleFoodItemProperties(22, 18)
                                 .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .build())));
 
@@ -810,19 +810,19 @@ public class ModItems {
 
         ROAST_LAOWANG_HEAD = ITEMS.register("roast_laowang_head",
                 () -> new Item(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
-                        .food(simpleFoodItemProperties(20, 13)
+                        .food(simpleFoodItemProperties(22, 16)
                                 .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .build())));
 
         ROAST_LAOWANG_FEET = ITEMS.register("roast_laowang_feet",
                 () -> new Item(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
-                        .food(simpleFoodItemProperties(10, 6)
+                        .food(simpleFoodItemProperties(12, 9)
                                 .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .build())));
 
         ROAST_LAOWANG_LEG = ITEMS.register("roast_laowang_leg",
                 () -> new Item(basicItem().stacksTo(16).rarity(Rarity.COMMON).craftRemainder(Items.BOWL)
-                        .food(simpleFoodItemProperties(10, 6)
+                        .food(simpleFoodItemProperties(12, 9)
                                 .effect(() ->new MobEffectInstance(NOURISHMENT_EFFECT_SUPPLIER.get(), minToTick(5), 0), 1.0F)
                                 .build())));
 

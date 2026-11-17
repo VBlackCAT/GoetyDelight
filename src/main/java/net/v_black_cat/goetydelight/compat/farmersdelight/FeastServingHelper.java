@@ -8,7 +8,9 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import vectorwing.farmersdelight.common.block.FeastBlock;
 
@@ -40,6 +42,11 @@ public final class FeastServingHelper {
         // 份数为 0：播放音效并拆除整个结构
         if (servings == 0) {
             level.playSound(null, pos, SoundEvents.WOOD_BREAK, SoundSource.PLAYERS, 0.8F, 0.8F);
+            // 与农夫乐事 FeastBlock 的 destroyBlock(pos, true) 保持一致：
+            // 空盘拆除时也要走掉落表（通常是容器），否则吃完后容器会凭空消失。
+            if (level instanceof Level realLevel) {
+                Block.dropResources(state, realLevel, pos, null, null, ItemStack.EMPTY);
+            }
             breakStructure.breakStructure(level, pos, state, null);
             return InteractionResult.SUCCESS;
         }

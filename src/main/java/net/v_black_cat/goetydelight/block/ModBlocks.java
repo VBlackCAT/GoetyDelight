@@ -122,7 +122,7 @@ public class ModBlocks {
     //坚守者
     public static final RegistryObject<Block>  BOAT_STUFFED_ROASTED_WARDEN_BlOCK= registerBlock("boat_stuffed_roasted_warden_block",
             () -> new BoatStuffedRoastedWardenBlock(
-                    BlockBehaviour.Properties.copy(Blocks.CAKE),
+                    BlockBehaviour.Properties.copy(Blocks.CAKE).noLootTable(),
                     Arrays.asList(
                             ModItems.ROAST_SPIDER_EGG,
                             ModItems.BOAT_STUFFED_ROASTED_WARDEN_HEAD,
