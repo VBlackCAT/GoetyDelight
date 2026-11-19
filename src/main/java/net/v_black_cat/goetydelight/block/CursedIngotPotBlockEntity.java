@@ -66,6 +66,8 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
     public static final int OUTPUT_SLOT = 8;
     public static final int SOUL_SOURCE_SLOT = 9; //图腾/宝石插槽
     public static final int INVENTORY_SIZE = 10;
+    /** 亡灵注入 NBT 键。物品与方块 BlockEntity 使用同一个键。 */
+    public static final String NECROTIC_INFUSED_TAG = "NecroticInfused";
     public static final Map<Item, Item> INGREDIENT_REMAINDER_OVERRIDES;
 
     public final ItemStackHandler inventory = this.createHandler();
@@ -92,6 +94,10 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
     // 随配方一起刷新的衍生结果：省掉每 tick 拷贝结果栈与重复计算灵魂消耗
     public ItemStack cachedResultStack = ItemStack.EMPTY;
     public int cachedSoulCost;
+    /** 亡灵注入锅使用亡灵火炉配方时的每秒灵魂扣除计时。 */
+    public int soulDrainTicks;
+    /** 是否已通过特殊配方注入亡灵火炉之力。 */
+    private boolean necroticInfused;
     // 批量修改库存（加载 / 一次烹饪结算）期间挂起逐槽事件，结束后统一刷新一次
     public boolean deferInventoryEvents;
 
@@ -175,6 +181,8 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
         // 兼容旧存档：CookTime 过去是 int，现在按任意数字读取
         this.cookTime = compound.contains("CookTime", 99) ? compound.getFloat("CookTime") : 0.0F;
         this.cookTimeTotal = compound.getInt("CookTimeTotal");
+        this.soulDrainTicks = compound.getInt("SoulDrainTicks");
+        this.necroticInfused = compound.getBoolean(NECROTIC_INFUSED_TAG);
         this.mealContainerStack = compound.contains("Container") ? ItemStack.of(compound.getCompound("Container")) : ItemStack.EMPTY;
 
         if (compound.contains("CustomName", 8)) {
@@ -197,6 +205,8 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
         super.saveAdditional(compound);
         compound.putFloat("CookTime", this.cookTime);
         compound.putInt("CookTimeTotal", this.cookTimeTotal);
+        compound.putInt("SoulDrainTicks", this.soulDrainTicks);
+        compound.putBoolean(NECROTIC_INFUSED_TAG, this.necroticInfused);
 
         if (this.mealContainerStack != null && !this.mealContainerStack.isEmpty()) {
             compound.put("Container", this.mealContainerStack.serializeNBT());
@@ -218,7 +228,20 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
         super.saveAdditional(compound);
         compound.put("Container", this.mealContainerStack.serializeNBT());
         compound.put("Inventory", this.inventory.serializeNBT());
+        compound.putInt("SoulDrainTicks", this.soulDrainTicks);
+        compound.putBoolean(NECROTIC_INFUSED_TAG, this.necroticInfused);
         return compound;
+    }
+
+    public boolean isNecroticInfused() {
+        return this.necroticInfused;
+    }
+
+    public void setNecroticInfused(boolean necroticInfused) {
+        if (this.necroticInfused != necroticInfused) {
+            this.necroticInfused = necroticInfused;
+            this.setChanged();
+        }
     }
 
     public CompoundTag writeMeal(CompoundTag compound) {
@@ -438,12 +461,38 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
             }
         }
 
+        boolean necroticBrazier = currentRecipe != null
+                && cookingPot.isNecroticInfused()
+                && isNecroticBrazierRecipe(currentRecipe);
+        if (necroticBrazier) {
+            if (cookingPot.getSoulEnergyAvailable() < 4) {
+                canCook = false;
+                speedMultiplier = 0.0f;
+            } else {
+                canCook = true;
+                speedMultiplier = 1.0f;
+                // 亡灵火炉配方：每秒（20 tick）从灵魂槽扣除 4 点灵魂。
+                cookingPot.soulDrainTicks++;
+                if (cookingPot.soulDrainTicks >= 20) {
+                    cookingPot.soulDrainTicks = 0;
+                    if (!cookingPot.consumeSoulEnergy(4)) {
+                        canCook = false;
+                        speedMultiplier = 0.0f;
+                    }
+                }
+            }
+        } else {
+            cookingPot.soulDrainTicks = 0;
+        }
+
         if (canCook && cookingPot.hasInput() && currentRecipe != null) {
             cookingPot.cookTime += 1.0f * speedMultiplier;
             if (cookingPot.cookTime >= cookingPot.cookTimeTotal) {
                 boolean success = cookingPot.processCooking(currentRecipe);
                 if (!success) {
                     cookingPot.cookTime = 0;
+                } else {
+                    cookingPot.soulDrainTicks = 0;
                 }
             }
         } else if (cookingPot.cookTime > 0) {
@@ -538,8 +587,8 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
             if (this.cachedRecipe != null) {
                 // 同样取副本：cachedResultStack 只读，但不与配方内部栈共享引用
                 this.cachedResultStack = this.cachedRecipe.getResultItem(this.level.registryAccess()).copy();
-                this.cachedSoulCost = this.calculateSoulCost(this.cachedResultStack);
-                this.cookTimeTotal = this.modifyCookTimeTotal(this.cachedRecipe.getCookTime());
+                this.cachedSoulCost = this.calculateSoulCost(this.cachedRecipe, this.cachedResultStack);
+                this.cookTimeTotal = this.getCookTimeTotalFor(this.cachedRecipe);
                 if (this.cookTime > this.cookTimeTotal) {
                     this.cookTime = this.cookTimeTotal;
                 }
@@ -584,7 +633,36 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
     }
 
     protected boolean canUseWorkstation(WorkstationCookingRecipe recipe) {
-        return recipe.matchesWorkstation(this.getBlockState().getBlock());
+        return recipe.matchesWorkstation(this.getBlockState().getBlock())
+                || (this.isNecroticInfused() && isNecroticBrazierRecipe(recipe));
+    }
+
+    /** 亡灵注入锅专用的亡灵火炉配方判断。 */
+    public static boolean isNecroticBrazierRecipe(CookingPotRecipe recipe) {
+        return recipe instanceof WorkstationCookingRecipe workstationRecipe
+                && workstationRecipe.getSoulCost() > 0;
+    }
+
+    protected int getCookTimeTotalFor(CookingPotRecipe recipe) {
+        if (this.isNecroticInfused() && isNecroticBrazierRecipe(recipe)) {
+            return Math.max(1, ((WorkstationCookingRecipe) recipe).getSoulCost());
+        }
+        return this.modifyCookTimeTotal(recipe.getCookTime());
+    }
+
+    protected int calculateSoulCost(CookingPotRecipe recipe, ItemStack resultStack) {
+        // 亡灵注入锅的亡灵火炉配方不再在完成时一次性扣魂，改为烹饪过程中每秒扣 4 点。
+        if (this.isNecroticInfused() && isNecroticBrazierRecipe(recipe)) {
+            return 0;
+        }
+        return this.calculateSoulCost(resultStack);
+    }
+
+    protected float getExperienceForRecipe(CookingPotRecipe recipe) {
+        if (this.isNecroticInfused() && isNecroticBrazierRecipe(recipe)) {
+            return (float) Math.floor(((WorkstationCookingRecipe) recipe).getSoulCost() * 0.05F);
+        }
+        return recipe.getExperience();
     }
 
     protected boolean canCook(CookingPotRecipe recipe) {
@@ -628,7 +706,7 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
             return false;
         }
 
-        this.cookTimeTotal = this.modifyCookTimeTotal(recipe.getCookTime());
+        this.cookTimeTotal = this.getCookTimeTotalFor(recipe);
         if (this.cookTime < this.cookTimeTotal) {
             return false;
         }
@@ -640,7 +718,7 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
         // 往它身上写 NBT 会永久污染这条配方，因此必须 copy。
         ItemStack resultStack = recipe.getResultItem(this.level.registryAccess()).copy();
 
-        int soulCost = this.calculateSoulCost(resultStack);
+        int soulCost = this.calculateSoulCost(recipe, resultStack);
         // 合并灵魂查询：一次调用同时判断"灵魂源是否可用"与"剩余数量"
         int remainingSoul = this.getSoulEnergyAvailable();
         boolean hasSoulSource = remainingSoul > 0;
@@ -737,8 +815,8 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
                 list.add(recipe);
                 // 仅烹饪锅配方给经验；避免非烹饪配方被强转
                 if (recipe instanceof CookingPotRecipe cookingRecipe) {
-                    int expTotal = Mth.floor((float) entry.getIntValue() * cookingRecipe.getExperience());
-                    float expFraction = Mth.frac((float) entry.getIntValue() * cookingRecipe.getExperience());
+                    int expTotal = Mth.floor((float) entry.getIntValue() * this.getExperienceForRecipe(cookingRecipe));
+                    float expFraction = Mth.frac((float) entry.getIntValue() * this.getExperienceForRecipe(cookingRecipe));
                     if (expFraction != 0.0F && level.random.nextDouble() < (double) expFraction) {
                         ++expTotal;
                     }

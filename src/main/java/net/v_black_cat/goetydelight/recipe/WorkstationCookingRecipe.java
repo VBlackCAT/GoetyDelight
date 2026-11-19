@@ -27,6 +27,7 @@ import javax.annotation.Nullable;
 public class WorkstationCookingRecipe extends CookingPotRecipe {
 
     public static final String WORKSTATION = "workstation";
+    public static final String SOUL_COST = "soulCost";
 
     public static final ResourceLocation CURSED_INGOT_POT =
             new ResourceLocation(GoetyDelight.MODID, "cursed_ingot_pot");
@@ -34,6 +35,7 @@ public class WorkstationCookingRecipe extends CookingPotRecipe {
             new ResourceLocation(GoetyDelight.MODID, "apocalyptium_cooking_pot");
 
     private final ResourceLocation workstation;
+    private final int soulCost;
 
     public WorkstationCookingRecipe(ResourceLocation id, String group,
                                     @Nullable CookingPotRecipeBookTab tab,
@@ -41,12 +43,27 @@ public class WorkstationCookingRecipe extends CookingPotRecipe {
                                     ItemStack output, ItemStack container,
                                     float experience, int cookTime,
                                     ResourceLocation workstation) {
+        this(id, group, tab, inputItems, output, container, experience, cookTime, workstation, 0);
+    }
+
+    public WorkstationCookingRecipe(ResourceLocation id, String group,
+                                    @Nullable CookingPotRecipeBookTab tab,
+                                    NonNullList<Ingredient> inputItems,
+                                    ItemStack output, ItemStack container,
+                                    float experience, int cookTime,
+                                    ResourceLocation workstation,
+                                    int soulCost) {
         super(id, group, tab, inputItems, output, container, experience, cookTime);
         this.workstation = workstation;
+        this.soulCost = soulCost;
     }
 
     public ResourceLocation getWorkstation() {
         return workstation;
+    }
+
+    public int getSoulCost() {
+        return soulCost;
     }
 
     public boolean isCursedIngotPot() {
@@ -81,6 +98,7 @@ public class WorkstationCookingRecipe extends CookingPotRecipe {
             ResourceLocation workstation = new ResourceLocation(
                     GsonHelper.getAsString(json, WORKSTATION,
                             APOCALYPTIUM_COOKING_POT.toString()));
+            int soulCost = GsonHelper.getAsInt(json, SOUL_COST, 0);
 
             return new WorkstationCookingRecipe(
                     id,
@@ -91,7 +109,8 @@ public class WorkstationCookingRecipe extends CookingPotRecipe {
                     base.getOutputContainer().copy(),
                     base.getExperience(),
                     base.getCookTime(),
-                    workstation
+                    workstation,
+                    soulCost
             );
         }
 
@@ -99,6 +118,7 @@ public class WorkstationCookingRecipe extends CookingPotRecipe {
         public WorkstationCookingRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buffer) {
             CookingPotRecipe base = delegate.fromNetwork(id, buffer);
             ResourceLocation workstation = buffer.readResourceLocation();
+            int soulCost = buffer.readInt();
 
             return new WorkstationCookingRecipe(
                     id,
@@ -109,15 +129,17 @@ public class WorkstationCookingRecipe extends CookingPotRecipe {
                     base.getOutputContainer().copy(),
                     base.getExperience(),
                     base.getCookTime(),
-                    workstation
+                    workstation,
+                    soulCost
             );
         }
 
         @Override
         public void toNetwork(FriendlyByteBuf buffer, WorkstationCookingRecipe recipe) {
-            // 先写农夫乐事的标准字段，再追加工作方块字段。
+            // 先写农夫乐事的标准字段，再追加工作方块与灵魂消耗字段。
             delegate.toNetwork(buffer, recipe);
             buffer.writeResourceLocation(recipe.getWorkstation());
+            buffer.writeInt(recipe.getSoulCost());
         }
     }
 }

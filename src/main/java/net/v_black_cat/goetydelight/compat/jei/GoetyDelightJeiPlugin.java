@@ -15,6 +15,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.v_black_cat.goetydelight.GoetyDelight;
+import net.v_black_cat.goetydelight.block.CursedIngotPotBlockEntity;
 import net.v_black_cat.goetydelight.block.ModBlocks;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.GoetyRevelationCompat;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.RevelationCompatRegistry;
@@ -38,6 +39,8 @@ public class GoetyDelightJeiPlugin implements IModPlugin {
 
     public static final RecipeType<CookingPotRecipe> CURSED_COOKING =
             RecipeType.create(GoetyDelight.MODID, "cursed_cooking", CookingPotRecipe.class);
+    public static final RecipeType<CookingPotRecipe> CURSED_BRAZIER =
+            RecipeType.create(GoetyDelight.MODID, "cursed_brazier", CookingPotRecipe.class);
     public static final RecipeType<CookingPotRecipe> APOCALYPTIUM_COOKING =
             RecipeType.create(GoetyDelight.MODID, "apocalyptium_cooking", CookingPotRecipe.class);
     public static final RecipeType<CookingPotRecipe> APOCALYPTIUM_BRAZIER =
@@ -57,6 +60,12 @@ public class GoetyDelightJeiPlugin implements IModPlugin {
                 CURSED_COOKING,
                 guiHelper.createDrawableItemStack(new ItemStack(ModBlocks.CURSED_INGOT_POT.get())),
                 Component.translatable("jei.goetydelight.cursed_cooking")
+        ));
+        registration.addRecipeCategories(new WorkstationCookingRecipeCategory(
+                guiHelper,
+                CURSED_BRAZIER,
+                guiHelper.createDrawableItemStack(infusedCursedPot()),
+                Component.translatable("jei.goetydelight.cursed_brazier")
         ));
 
         if (GoetyRevelationCompat.IS_LOADED) {
@@ -106,6 +115,9 @@ public class GoetyDelightJeiPlugin implements IModPlugin {
         if (!cursedRecipes.isEmpty()) {
             registration.addRecipes(CURSED_COOKING, cursedRecipes);
         }
+        if (!brazier.isEmpty()) {
+            registration.addRecipes(CURSED_BRAZIER, brazier);
+        }
 
         if (GoetyRevelationCompat.IS_LOADED) {
             // 神灵烹饪：在诅咒烹饪基础上追加天启锅专属（不含亡灵火炉）
@@ -124,10 +136,17 @@ public class GoetyDelightJeiPlugin implements IModPlugin {
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addRecipeCatalyst(
                 new ItemStack(ModBlocks.CURSED_INGOT_POT.get()), CURSED_COOKING);
+        registration.addRecipeCatalyst(infusedCursedPot(), CURSED_BRAZIER);
 
         if (GoetyRevelationCompat.IS_LOADED) {
             ApocCategory.addCatalysts(registration);
         }
+    }
+
+    private static ItemStack infusedCursedPot() {
+        ItemStack stack = new ItemStack(ModBlocks.CURSED_INGOT_POT.get());
+        stack.getOrCreateTag().putBoolean(CursedIngotPotBlockEntity.NECROTIC_INFUSED_TAG, true);
+        return stack;
     }
 
     private static ItemStack necroBrazierIcon() {

@@ -94,6 +94,9 @@ public class GoetyDelight
         GLOBAL_LOOT_MODIFIER_CODECS.register(modEventBus);
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+        if (net.minecraftforge.fml.loading.FMLEnvironment.dist == Dist.CLIENT) {
+            MinecraftForge.EVENT_BUS.register(net.v_black_cat.goetydelight.event.CursedIngotPotTooltipEvents.class);
+        }
         RegHelper.LOOT_CONDITIONS.register(modEventBus);
         ModEnchantments.ENCHANTMENTS.register(modEventBus);
         ModEffects.register(modEventBus);

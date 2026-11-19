@@ -1,8 +1,10 @@
 {
+  "tooltip.goetydelight.cursed_ingot_pot.necrotic_infused": "亡灵注入：允许你使用亡灵火炉的配方",
   "tooltip.goetydelight.night_heart_pea_soup.shadow_walk": "食用后：%s III (1:00)",
   "jei.goetydelight.apocalyptium_cooking": "神灵烹饪",
   "jei.goetydelight.apocalyptium_brazier": "神灵烹饪：亡灵火炉",
   "jei.goetydelight.cursed_cooking": "诅咒烹饪",
+  "jei.goetydelight.cursed_brazier": "诅咒烹饪：亡灵火炉",
   "block.goetydelight.marble": "大理石",
   "block.goetydelight.blue_marble": "青金大理石",
   "block.goetydelight.jungle_marble": "丛林大理石",

@@ -139,11 +139,13 @@ public class CursedIngotPotBlock extends Block implements SimpleWaterloggedBlock
     @Override
     public ItemStack getCloneItemStack(BlockGetter level, BlockPos pos, BlockState state) {
         ItemStack stack = super.getCloneItemStack(level, pos, state);
-        CursedIngotPotBlockEntity cookingPotEntity = (CursedIngotPotBlockEntity) level.getBlockEntity(pos);
-        if (cookingPotEntity != null) {
+        if (level.getBlockEntity(pos) instanceof CursedIngotPotBlockEntity cookingPotEntity) {
             CompoundTag nbt = cookingPotEntity.writeMeal(new CompoundTag());
             if (!nbt.isEmpty()) {
                 stack.addTagElement("BlockEntityTag", nbt);
+            }
+            if (cookingPotEntity.isNecroticInfused()) {
+                stack.getOrCreateTag().putBoolean(CursedIngotPotBlockEntity.NECROTIC_INFUSED_TAG, true);
             }
             if (cookingPotEntity.hasCustomName()) {
                 stack.setHoverName(cookingPotEntity.getCustomName());
@@ -173,12 +175,33 @@ public class CursedIngotPotBlock extends Block implements SimpleWaterloggedBlock
 
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        if (stack.hasCustomHoverName()) {
-            BlockEntity tileEntity = level.getBlockEntity(pos);
-            if (tileEntity instanceof CursedIngotPotBlockEntity) {
-                ((CursedIngotPotBlockEntity) tileEntity).setCustomName(stack.getHoverName());
+        BlockEntity tileEntity = level.getBlockEntity(pos);
+        if (tileEntity instanceof CursedIngotPotBlockEntity cookingPotEntity) {
+            CompoundTag tag = stack.getTag();
+            if (tag != null && tag.getBoolean(CursedIngotPotBlockEntity.NECROTIC_INFUSED_TAG)) {
+                cookingPotEntity.setNecroticInfused(true);
+            }
+            if (stack.hasCustomHoverName()) {
+                cookingPotEntity.setCustomName(stack.getHoverName());
             }
         }
+    }
+
+    @Override
+    public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state,
+                              @Nullable BlockEntity blockEntity, ItemStack tool) {
+        if (blockEntity instanceof CursedIngotPotBlockEntity cookingPotEntity
+                && cookingPotEntity.isNecroticInfused()) {
+            if (!player.isCreative()) {
+                player.awardStat(net.minecraft.stats.Stats.BLOCK_MINED.get(this));
+                player.causeFoodExhaustion(0.005F);
+                ItemStack drop = new ItemStack(this);
+                drop.getOrCreateTag().putBoolean(CursedIngotPotBlockEntity.NECROTIC_INFUSED_TAG, true);
+                Block.popResource(level, pos, drop);
+            }
+            return;
+        }
+        super.playerDestroy(level, player, pos, state, blockEntity, tool);
     }
 
     @Override

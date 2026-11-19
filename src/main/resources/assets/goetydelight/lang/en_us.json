@@ -1,8 +1,10 @@
 {
   "tooltip.goetydelight.night_heart_pea_soup.shadow_walk": "When eaten: %s III (1:00)",
+  "tooltip.goetydelight.cursed_ingot_pot.necrotic_infused": "Necrotic Infusion: Allows you to use Necrotic Brazier recipes",
   "jei.goetydelight.apocalyptium_cooking": "Divine Cooking",
-  "jei.goetydelight.apocalyptium_brazier": "Divine Cooking: Necro Brazier",
+  "jei.goetydelight.apocalyptium_brazier": "Divine Cooking: Necrotic Brazier",
   "jei.goetydelight.cursed_cooking": "Cursed Cooking",
+  "jei.goetydelight.cursed_brazier": "Cursed Cooking: Necrotic Brazier",
   "block.goetydelight.marble": "Marble",
   "block.goetydelight.blue_marble": "Blue Marble",
   "block.goetydelight.jungle_marble": "Jungle Marble",

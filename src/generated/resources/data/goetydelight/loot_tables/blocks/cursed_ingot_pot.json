@@ -14,6 +14,19 @@
           "name": "goetydelight:cursed_ingot_pot"
         }
       ],
+      "functions": [
+        {
+          "function": "minecraft:copy_nbt",
+          "source": "block_entity",
+          "ops": [
+            {
+              "source": "NecroticInfused",
+              "target": "NecroticInfused",
+              "op": "replace"
+            }
+          ]
+        }
+      ],
       "rolls": 1.0
     }
   ],

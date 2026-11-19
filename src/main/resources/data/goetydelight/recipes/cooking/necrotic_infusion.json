@@ -1,0 +1,26 @@
+{
+  "type": "goetydelight:workstation_cooking",
+  "workstation": "goetydelight:cursed_ingot_pot",
+  "ingredients": [
+    {
+      "item": "goety:grim_infuser"
+    },
+    {
+      "item": "minecraft:beacon"
+    },
+    {
+      "item": "goety:necro_brazier"
+    },
+    {
+      "item": "goetydelight:cursed_ingot_pot"
+    }
+  ],
+  "result": {
+    "item": "goetydelight:cursed_ingot_pot",
+    "count": 1,
+    "nbt": "{NecroticInfused:1b}"
+  },
+  "experience": 0.0,
+  "cookingtime": 200,
+  "recipe_book_tab": "misc"
+}

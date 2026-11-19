@@ -166,7 +166,8 @@ public final class WorkstationRecipeManager {
                             ItemStack.EMPTY,
                             experience,
                             cookTime,
-                            WorkstationCookingRecipe.APOCALYPTIUM_COOKING_POT
+                            WorkstationCookingRecipe.APOCALYPTIUM_COOKING_POT,
+                            soulCost
                     ));
                     generatedBrazierIds.add(generatedId);
                     changed = true;
