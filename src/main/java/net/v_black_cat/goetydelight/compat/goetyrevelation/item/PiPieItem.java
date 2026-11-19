@@ -343,6 +343,10 @@ public class PiPieItem extends Item {
         public static void onServerTick(TickEvent.ServerTickEvent event) {
             if (event.phase != TickEvent.Phase.END) return;
 
+            if (pendingArrowRains.isEmpty() && trackedArrows.isEmpty()) {
+                return;
+            }
+
             ServerLevel overworld = event.getServer().overworld();
             int currentTick = event.getServer().getTickCount();
 

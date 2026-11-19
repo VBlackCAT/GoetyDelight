@@ -351,12 +351,12 @@ public class ApocalyptiumCodItem extends Item {
             if (MANAGER.isEmpty(player)) continue;
 
             // 仆从过期：直接移除
-            for (UUID uuid : MANAGER.getSnapshot(player, ITimedEntityManager.Category.SERVANT).keySet()) {
+            for (UUID uuid : MANAGER.getTrackedUUIDs(player, ITimedEntityManager.Category.SERVANT)) {
                 MANAGER.handleExpiry(player, uuid, ITimedEntityManager.Category.SERVANT, null);
             }
 
             // 亚形态过期：恢复形态
-            for (UUID uuid : MANAGER.getSnapshot(player, ITimedEntityManager.Category.APOLLYON).keySet()) {
+            for (UUID uuid : MANAGER.getTrackedUUIDs(player, ITimedEntityManager.Category.APOLLYON)) {
                 MANAGER.handleExpiry(player, uuid, ITimedEntityManager.Category.APOLLYON,
                         living -> restoreFromApollyon(living, player));
             }

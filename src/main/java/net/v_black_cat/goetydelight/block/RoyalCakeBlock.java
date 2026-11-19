@@ -49,6 +49,19 @@ public class RoyalCakeBlock extends Block {
             rotateVoxelShape90Clockwise(makeShape9())
     };
 
+    /** [servings][facing 0..3]，避免每次 getShape 都旋转 VoxelShape。 */
+    private static final VoxelShape[][] SHAPES = new VoxelShape[10][4];
+
+    static {
+        for (int servings = 0; servings < BASE_SHAPES.length; servings++) {
+            VoxelShape shape = BASE_SHAPES[servings];
+            for (int facing = 0; facing < 4; facing++) {
+                SHAPES[servings][facing] = shape;
+                shape = rotateVoxelShape90Clockwise(shape);
+            }
+        }
+    }
+
     public static VoxelShape rotateVoxelShape90Clockwise(VoxelShape originalShape) {
         return originalShape.toAabbs().stream()
                 .map(aabb -> rotateAABB90Clockwise(aabb))
@@ -185,24 +198,9 @@ public class RoyalCakeBlock extends Block {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        VoxelShape baseShape = BASE_SHAPES[state.getValue(SERVINGS)];
-        Direction facing = state.getValue(FACING);
-
-        int rotations = 0;
-        switch (facing) {
-            case EAST: rotations = 1; break;
-            case SOUTH: rotations = 2; break;
-            case WEST: rotations = 3; break;
-            case NORTH:
-            default: rotations = 0;
-        }
-
-        VoxelShape rotatedShape = baseShape;
-        for (int i = 0; i < rotations; i++) {
-            rotatedShape = rotateVoxelShape90Clockwise(rotatedShape);
-        }
-
-        return rotatedShape;
+        int servings = state.getValue(SERVINGS);
+        int facing = Math.floorMod(state.getValue(FACING).get2DDataValue(), 4);
+        return SHAPES[servings][facing];
     }
 
     @Override

@@ -10,6 +10,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.v_black_cat.goetydelight.item.ModItems;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -122,7 +123,6 @@ public class HealthDataInterceptor {
                 if (value instanceof Float) {
                     float currentHealth = (Float) value;
                     if (currentHealth < 20.0f) {
-                        LOGGER.info("Player {} health intercepted: {} -> 20.0f", entity.getName().getString(), currentHealth);
                         super.set(key, (T) Float.valueOf(InterHealth));
                         return;
                     }
@@ -139,36 +139,52 @@ public class HealthDataInterceptor {
 
         @SubscribeEvent
         public static void LivingTickEvent(LivingEvent.LivingTickEvent event) {
-            if (event.getEntity() instanceof Player player && player.isCreative()) {
-                boolean hasNotAnything = false;
-                for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-                    if (player.getInventory().getItem(i).getItem().getDescriptionId().equals("item.goetydelight.not_anything")) {
-                        hasNotAnything = true;
-                        break;
-                    }
+            if (!(event.getEntity() instanceof Player player) || !player.isCreative()) {
+                return;
+            }
+
+            // 已经替换过就不再每 tick 检查/重建；这是之前最大的重复开销之一。
+            if (player.getEntityData() instanceof CustomSynchedEntityData) {
+                return;
+            }
+
+            // 没找到物品前也最多每秒检查一次背包，避免每 tick 全背包扫描。
+            if (player.tickCount % 20 != 0) {
+                return;
+            }
+
+            boolean hasNotAnything = false;
+            for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+                if (player.getInventory().getItem(i).is(ModItems.NOT_ANYTHING.get())) {
+                    hasNotAnything = true;
+                    break;
                 }
+            }
 
-                if (hasNotAnything) {
-                    LOGGER.debug("Player {} joined with Not Anything item", player.getName().getString());
-                    SynchedEntityData originalEntityData = player.getEntityData();
-                    CustomSynchedEntityData customData = new CustomSynchedEntityData(player, originalEntityData);
-                    long currentTime = player.level().getGameTime();
+            if (hasNotAnything) {
+                LOGGER.debug("Player {} joined with Not Anything item", player.getName().getString());
+                SynchedEntityData originalEntityData = player.getEntityData();
+                CustomSynchedEntityData customData = new CustomSynchedEntityData(player, originalEntityData);
+                long currentTime = player.level().getGameTime();
 
-                    try {
-                        Field field = Entity.class.getDeclaredField("f_19805_");
-                        field.setAccessible(true);
-                        field.set(player, customData);
-                        if (currentTime - lastLogTime >= LOG_INTERVAL) {
-                        LOGGER.info("Replaced SynchedEntityData for player {}", player.getName().getString());}
-                    } catch (NoSuchFieldException e) {
-                        if (currentTime - lastLogTime >= LOG_INTERVAL) {
-                        LOGGER.error("Field 'entityData' not found in Entity class", e);}
-                    } catch (IllegalAccessException e) {
-                        if (currentTime - lastLogTime >= LOG_INTERVAL) {
-                        LOGGER.error("Illegal access to 'entityData' field", e);}
-                    } catch (Exception e) {
-                        if (currentTime - lastLogTime >= LOG_INTERVAL) {
-                        LOGGER.error("Unexpected error during SynchedEntityData replacement", e);}
+                try {
+                    Field field = Entity.class.getDeclaredField("f_19805_");
+                    field.setAccessible(true);
+                    field.set(player, customData);
+                    if (currentTime - lastLogTime >= LOG_INTERVAL) {
+                        LOGGER.info("Replaced SynchedEntityData for player {}", player.getName().getString());
+                    }
+                } catch (NoSuchFieldException e) {
+                    if (currentTime - lastLogTime >= LOG_INTERVAL) {
+                        LOGGER.error("Field 'entityData' not found in Entity class", e);
+                    }
+                } catch (IllegalAccessException e) {
+                    if (currentTime - lastLogTime >= LOG_INTERVAL) {
+                        LOGGER.error("Illegal access to 'entityData' field", e);
+                    }
+                } catch (Exception e) {
+                    if (currentTime - lastLogTime >= LOG_INTERVAL) {
+                        LOGGER.error("Unexpected error during SynchedEntityData replacement", e);
                     }
                 }
             }

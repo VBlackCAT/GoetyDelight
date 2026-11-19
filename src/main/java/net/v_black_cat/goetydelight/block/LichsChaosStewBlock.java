@@ -21,6 +21,27 @@ import static net.v_black_cat.goetydelight.block.RoyalCakeBlock.rotateVoxelShape
 public class LichsChaosStewBlock extends FeastBlock {
     public static final IntegerProperty SERVINGS = IntegerProperty.create("servings", 0, 5);
 
+    private static final VoxelShape BASE_SHAPE = Shapes.join(
+            Shapes.join(
+                    Shapes.box(0.125, 0, 0.125, 0.875, 0.125, 0.875),
+                    Shapes.box(0.125, 0.75, 0.125, 0.875, 0.875, 0.875),
+                    BooleanOp.OR),
+            Shapes.box(0, 0.125, 0, 1, 0.75, 1),
+            BooleanOp.OR);
+
+    /** 按 FACING 预计算，避免每次 getShape 都重新 union/旋转。 */
+    private static final VoxelShape[] SHAPES = new VoxelShape[4];
+
+    static {
+        for (int i = 0; i < SHAPES.length; i++) {
+            VoxelShape shape = BASE_SHAPE;
+            for (int j = 0; j < i; j++) {
+                shape = rotateVoxelShape90Clockwise(shape);
+            }
+            SHAPES[i] = shape;
+        }
+    }
+
     public LichsChaosStewBlock(Properties properties, Supplier<Item> servingItem, boolean hasLeftovers) {
         super(properties, servingItem, hasLeftovers);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(SERVINGS, 5));
@@ -42,31 +63,12 @@ public class LichsChaosStewBlock extends FeastBlock {
     }
 
     public VoxelShape makeShape() {
-        VoxelShape shape = Shapes.empty();
-        shape = Shapes.join(shape, Shapes.box(0.125, 0, 0.125, 0.875, 0.125, 0.875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0.125, 0.75, 0.125, 0.875, 0.875, 0.875), BooleanOp.OR);
-        shape = Shapes.join(shape, Shapes.box(0, 0.125, 0, 1, 0.75, 1), BooleanOp.OR);
-        return shape;
+        return BASE_SHAPE;
     }
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        // 统一使用同一个碰撞箱，不随 servings 变化
-        VoxelShape baseShape = makeShape();
-        Direction facing = state.getValue(FACING);
-
-        int rotations = 0;
-        switch (facing) {
-            case EAST: rotations = 1; break;
-            case SOUTH: rotations = 2; break;
-            case WEST: rotations = 3; break;
-            case NORTH:
-            default: rotations = 0;
-        }
-        VoxelShape rotatedShape = baseShape;
-        for (int i = 0; i < rotations; i++) {
-            rotatedShape = rotateVoxelShape90Clockwise(rotatedShape);
-        }
-        return rotatedShape;
+        // 统一使用同一个碰撞箱，不随 servings 变化。
+        return SHAPES[Math.floorMod(state.getValue(FACING).get2DDataValue(), SHAPES.length)];
     }
 }

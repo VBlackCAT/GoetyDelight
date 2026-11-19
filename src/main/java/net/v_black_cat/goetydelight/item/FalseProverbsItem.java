@@ -42,7 +42,6 @@ import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.IntStream;
 
 @Mod.EventBusSubscriber
 public class FalseProverbsItem extends SwordItem {
@@ -55,9 +54,7 @@ public class FalseProverbsItem extends SwordItem {
     private static final Map<UUID, Boolean> lastSentBackModelStatus = new ConcurrentHashMap<>();
 
     private static final int CACHE_DURATION = 20; // tick缓存时间
-    private static final int CLEANUP_INTERVAL = 1200; // 60秒清理一次
     private static final int SYNC_DISTANCE_SQR = 4096; // 64格内同步
-    private static int cleanupCounter = 0;
 
     // 玩家数据封装类
     private static class PlayerFalseProverbsData {
@@ -84,12 +81,14 @@ public class FalseProverbsItem extends SwordItem {
     private static class CachedInventoryResult {
         boolean shouldShowBack;
         long lastCheckTick;
-        int inventoryHash;
+        boolean mainHandSword;
+        boolean offHandSword;
 
         boolean isValid(Player player) {
-            int currentHash = calculateInventoryHash(player.getInventory());
-            return lastCheckTick + CACHE_DURATION > player.tickCount &&
-                    inventoryHash == currentHash;
+            // 每 tick 只做时间 + 主/副手判断，绝对不要在这里遍历背包。
+            return lastCheckTick + CACHE_DURATION > player.tickCount
+                    && mainHandSword == (player.getMainHandItem().getItem() instanceof FalseProverbsItem)
+                    && offHandSword == (player.getOffhandItem().getItem() instanceof FalseProverbsItem);
         }
     }
 
@@ -103,11 +102,13 @@ public class FalseProverbsItem extends SwordItem {
     }
 
     public static boolean getPlayerTeleportStatus(UUID playerUUID) {
-        return getPlayerData(playerUUID).teleportStatus;
+        PlayerFalseProverbsData data = playerDataMap.get(playerUUID);
+        return data != null && data.teleportStatus;
     }
 
     public static boolean getPlayerBackModelStatus(UUID playerUUID) {
-        return getPlayerData(playerUUID).backModelStatus;
+        PlayerFalseProverbsData data = playerDataMap.get(playerUUID);
+        return data != null && data.backModelStatus;
     }
 
     public static void setPlayerTeleportStatus(UUID playerUUID, boolean status) {
@@ -134,17 +135,6 @@ public class FalseProverbsItem extends SwordItem {
     }
 
     // 优化后的背包检查方法
-    private static int calculateInventoryHash(Inventory inventory) {
-        int hash = 0;
-        for (int i = 0; i < inventory.getContainerSize(); i++) {
-            ItemStack stack = inventory.getItem(i);
-            if (stack.getItem() instanceof FalseProverbsItem) {
-                hash = 31 * hash + i;
-            }
-        }
-        return hash;
-    }
-
     public static boolean shouldShowBackModel(Player player) {
         UUID uuid = player.getUUID();
         CachedInventoryResult cached = inventoryCache.get(uuid);
@@ -153,24 +143,37 @@ public class FalseProverbsItem extends SwordItem {
             return cached.shouldShowBack;
         }
 
-        // 计算新结果
+        // 缓存过期（每 20 tick）或主/副手变化时才扫描背包。
         Inventory inventory = player.getInventory();
         boolean hasInMainHand = player.getMainHandItem().getItem() instanceof FalseProverbsItem;
         boolean hasInOffHand = player.getOffhandItem().getItem() instanceof FalseProverbsItem;
 
-        // 使用Stream API优化遍历
-        int falseProverbsCount = (hasInMainHand ? 1 : 0) + (hasInOffHand ? 1 : 0);
-        falseProverbsCount += IntStream.range(0, inventory.getContainerSize())
-                .filter(i -> i != inventory.selected)
-                .mapToObj(inventory::getItem)
-                .filter(stack -> stack.getItem() instanceof FalseProverbsItem)
-                .count();
+        if (hasInOffHand) {
+            CachedInventoryResult result = new CachedInventoryResult();
+            result.shouldShowBack = false;
+            result.lastCheckTick = player.tickCount;
+            result.mainHandSword = hasInMainHand;
+            result.offHandSword = true;
+            inventoryCache.put(uuid, result);
+            return false;
+        }
+
+        int falseProverbsCount = hasInMainHand ? 1 : 0;
+        for (int i = 0; i < inventory.getContainerSize(); i++) {
+            if (i == inventory.selected) {
+                continue;
+            }
+            if (inventory.getItem(i).getItem() instanceof FalseProverbsItem) {
+                falseProverbsCount++;
+            }
+        }
 
         CachedInventoryResult result = new CachedInventoryResult();
-        result.shouldShowBack = hasInOffHand ? false :
-                (falseProverbsCount > 1 || (falseProverbsCount == 1 && !hasInMainHand));
+        result.shouldShowBack = falseProverbsCount > 1
+                || (falseProverbsCount == 1 && !hasInMainHand);
         result.lastCheckTick = player.tickCount;
-        result.inventoryHash = calculateInventoryHash(inventory);
+        result.mainHandSword = hasInMainHand;
+        result.offHandSword = false;
 
         inventoryCache.put(uuid, result);
         return result.shouldShowBack;
@@ -228,9 +231,9 @@ public class FalseProverbsItem extends SwordItem {
         if (player.level().isClientSide) return;
 
         UUID playerUUID = player.getUUID();
-        PlayerFalseProverbsData data = getPlayerData(playerUUID);
 
         if (player.getMainHandItem().getItem() instanceof FalseProverbsItem) {
+            PlayerFalseProverbsData data = getPlayerData(playerUUID);
             CompoundTag persistentData = player.getPersistentData();
 
             if (player.isShiftKeyDown()) {
@@ -261,13 +264,17 @@ public class FalseProverbsItem extends SwordItem {
                 }
             }
         } else {
-            if (player.getPersistentData().getBoolean(SHIFT_KEY_TAG)) {
-                resetShiftState(player, player.getPersistentData(), data);
+            CompoundTag persistentData = player.getPersistentData();
+            if (persistentData.getBoolean(SHIFT_KEY_TAG)) {
+                resetShiftState(player, persistentData, getPlayerData(playerUUID));
             }
         }
 
-        // 优化后的背部模型同步
-        syncBackModelStatus(player, playerUUID);
+        // 背部模型状态使用 20 tick 缓存；缓存有效时只做 O(1) 判断。
+        // 同步不需要每 tick 检查，5 tick 一次足够，进一步降低常态开销。
+        if (player.tickCount % 5 == 0) {
+            syncBackModelStatus(player, playerUUID);
+        }
     }
 
     private static void resetShiftState(Player player, CompoundTag persistentData, PlayerFalseProverbsData data) {
@@ -282,18 +289,22 @@ public class FalseProverbsItem extends SwordItem {
         boolean newBackStatus = shouldShowBackModel(player);
         Boolean lastStatus = lastSentBackModelStatus.get(playerUUID);
 
-        if (lastStatus == null || lastStatus != newBackStatus) {
-            getPlayerData(playerUUID).backModelStatus = newBackStatus;
-            lastSentBackModelStatus.put(playerUUID, newBackStatus);
+        // 状态没变化直接返回；首次（lastStatus == null）仍然发送一次，
+        // 用于清理玩家重进/换维度后客户端可能残留的旧背部模型状态。
+        if (lastStatus != null && lastStatus == newBackStatus) {
+            return;
+        }
 
-            SyncBackModelPacket packet = new SyncBackModelPacket(player.getId(), newBackStatus);
-            ServerLevel serverLevel = (ServerLevel) player.level();
+        getPlayerData(playerUUID).backModelStatus = newBackStatus;
+        lastSentBackModelStatus.put(playerUUID, newBackStatus);
 
-            for (ServerPlayer serverPlayer : serverLevel.players()) {
-                // 距离优化，减少不必要的网络传输
-                if (serverPlayer.distanceToSqr(player) < SYNC_DISTANCE_SQR) {
-                    NetworkHandler.sendToClient(packet, serverPlayer);
-                }
+        SyncBackModelPacket packet = new SyncBackModelPacket(player.getId(), newBackStatus);
+        ServerLevel serverLevel = (ServerLevel) player.level();
+
+        for (ServerPlayer serverPlayer : serverLevel.players()) {
+            // 距离优化，减少不必要的网络传输
+            if (serverPlayer.distanceToSqr(player) < SYNC_DISTANCE_SQR) {
+                NetworkHandler.sendToClient(packet, serverPlayer);
             }
         }
     }
@@ -389,30 +400,5 @@ public class FalseProverbsItem extends SwordItem {
         playerDataMap.remove(uuid);
         inventoryCache.remove(uuid);
         lastSentBackModelStatus.remove(uuid);
-    }
-
-    // 定期清理过期数据
-    @SubscribeEvent
-    public static void onServerTick(TickEvent.ServerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END) return;
-
-        cleanupCounter++;
-        if (cleanupCounter >= CLEANUP_INTERVAL) {
-            cleanupCounter = 0;
-
-            // 清理过期的缓存数据
-            long currentTick = event.getServer().getTickCount();
-            inventoryCache.entrySet().removeIf(entry ->
-                    entry.getValue().lastCheckTick + CACHE_DURATION < currentTick
-            );
-
-            // 清理离线玩家的数据
-            lastSentBackModelStatus.keySet().removeIf(uuid ->
-                    event.getServer().getPlayerList().getPlayer(uuid) == null
-            );
-            playerDataMap.keySet().removeIf(uuid ->
-                    event.getServer().getPlayerList().getPlayer(uuid) == null
-            );
-        }
     }
 }

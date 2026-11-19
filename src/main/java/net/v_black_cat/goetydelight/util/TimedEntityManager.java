@@ -13,7 +13,9 @@ import net.v_black_cat.goetydelight.api.ITimedEntityManager;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -43,6 +45,12 @@ public class TimedEntityManager implements ITimedEntityManager {
 
     // 运行时缓存，不参与序列化
     private final ConcurrentHashMap<UUID, LivingEntity> liveEntityCache = new ConcurrentHashMap<>();
+
+    /** 只为“确实有计时数据”的玩家保留；避免每个 level tick 都解析 NBT。 */
+    private final Set<UUID> ownersWithData = ConcurrentHashMap.newKeySet();
+
+    /** 已经检查过且确认没有计时数据的玩家；从 NBT 恢复前也不会重复解析。 */
+    private final Set<UUID> ownersKnownEmpty = ConcurrentHashMap.newKeySet();
 
     private TimedEntityManager() {
     }
@@ -101,6 +109,8 @@ public class TimedEntityManager implements ITimedEntityManager {
         entry.putString("EntityType", typeId);
         list.add(entry);
         root.put(category.getNbtKey(), list);
+        ownersWithData.add(owner.getUUID());
+        ownersKnownEmpty.remove(owner.getUUID());
     }
 
     @Override
@@ -109,6 +119,7 @@ public class TimedEntityManager implements ITimedEntityManager {
         ListTag list = root.getList(category.getNbtKey(), Tag.TAG_COMPOUND);
         removeEntry(list, entityUUID);
         root.put(category.getNbtKey(), list);
+        refreshOwner(owner);
     }
 
     @Override
@@ -141,12 +152,59 @@ public class TimedEntityManager implements ITimedEntityManager {
         return map;
     }
 
+    /**
+     * 只需要 UUID 时使用，避免 getSnapshot 为每条记录复制 CompoundTag。
+     */
+    public Set<UUID> getTrackedUUIDs(Player owner, Category category) {
+        ListTag list = getRoot(owner).getList(category.getNbtKey(), Tag.TAG_COMPOUND);
+        if (list.isEmpty()) {
+            return Set.of();
+        }
+        Set<UUID> ids = new HashSet<>(list.size());
+        for (int i = 0; i < list.size(); i++) {
+            CompoundTag entry = list.getCompound(i);
+            if (entry.hasUUID("UUID")) {
+                ids.add(entry.getUUID("UUID"));
+            }
+        }
+        return ids;
+    }
+
     @Override
     public boolean isEmpty(Player owner) {
+        UUID ownerId = owner.getUUID();
+        if (ownersKnownEmpty.contains(ownerId)) {
+            return true;
+        }
+
         CompoundTag root = getRoot(owner);
-        return root.getList(Category.SERVANT.getNbtKey(), Tag.TAG_COMPOUND).isEmpty()
+        boolean empty = root.getList(Category.SERVANT.getNbtKey(), Tag.TAG_COMPOUND).isEmpty()
                 && root.getList(Category.APOLLYON.getNbtKey(), Tag.TAG_COMPOUND).isEmpty()
                 && root.getList(PREVENT_DROPS, Tag.TAG_STRING).isEmpty();
+
+        if (empty) {
+            ownersWithData.remove(ownerId);
+            ownersKnownEmpty.add(ownerId);
+        } else {
+            ownersKnownEmpty.remove(ownerId);
+            ownersWithData.add(ownerId);
+        }
+        return empty;
+    }
+
+    /** 在移除一条记录后刷新“是否还有数据”的快速标记。 */
+    private void refreshOwner(Player owner) {
+        CompoundTag root = getRoot(owner);
+        boolean hasData = !root.getList(Category.SERVANT.getNbtKey(), Tag.TAG_COMPOUND).isEmpty()
+                || !root.getList(Category.APOLLYON.getNbtKey(), Tag.TAG_COMPOUND).isEmpty()
+                || !root.getList(PREVENT_DROPS, Tag.TAG_STRING).isEmpty();
+        if (hasData) {
+            ownersWithData.add(owner.getUUID());
+            ownersKnownEmpty.remove(owner.getUUID());
+        } else {
+            ownersWithData.remove(owner.getUUID());
+            ownersKnownEmpty.add(owner.getUUID());
+        }
     }
 
     // ==================== 到点处理 ====================
@@ -217,6 +275,8 @@ public class TimedEntityManager implements ITimedEntityManager {
         }
         list.add(StringTag.valueOf(s));
         root.put(PREVENT_DROPS, list);
+        ownersWithData.add(player.getUUID());
+        ownersKnownEmpty.remove(player.getUUID());
     }
 
     public void removePreventDrop(Player player, UUID uuid) {
@@ -227,6 +287,7 @@ public class TimedEntityManager implements ITimedEntityManager {
             if (list.getString(i).equals(s)) list.remove(i);
         }
         root.put(PREVENT_DROPS, list);
+        refreshOwner(player);
     }
 
     public boolean shouldPreventDrop(Player player, UUID uuid) {

@@ -20,6 +20,15 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid = "goetydelight")
 public class SoulMendingEnchantment extends Enchantment {
 
+    private static final EquipmentSlot[] REPAIR_SLOTS = new EquipmentSlot[]{
+            EquipmentSlot.MAINHAND,
+            EquipmentSlot.OFFHAND,
+            EquipmentSlot.HEAD,
+            EquipmentSlot.CHEST,
+            EquipmentSlot.LEGS,
+            EquipmentSlot.FEET
+    };
+
     public SoulMendingEnchantment(Rarity rarity, EnchantmentCategory category, EquipmentSlot... slots) {
         super(rarity, category, slots);
     }
@@ -90,13 +99,9 @@ public class SoulMendingEnchantment extends Enchantment {
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.END && event.player.tickCount % 4 == 0 && !event.player.level().isClientSide()) {
             if (event.player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                repairEquipment(serverPlayer, serverPlayer);
+
                 java.util.Optional<SearchServant.ServantData> servantDataOpt = SearchServant.getServantData(serverPlayer);
-                for (ItemStack stack : serverPlayer.getAllSlots()) {
-                    int enchantmentLevel = stack.getEnchantmentLevel(ModEnchantments.SOUL_MENDING.get());
-                    if (enchantmentLevel > 0) {
-                        repairItemWithSoulEnergy(serverPlayer, stack, enchantmentLevel);
-                    }
-                }
                 if (servantDataOpt.isPresent()) {
                     SearchServant.ServantData servantData = servantDataOpt.get();
                     net.minecraft.server.level.ServerLevel level = (net.minecraft.server.level.ServerLevel) serverPlayer.level();
@@ -104,23 +109,26 @@ public class SoulMendingEnchantment extends Enchantment {
                         Entity entity = level.getEntity(servantUUID);
                         if (entity instanceof LivingEntity servant) {
                             if (servant instanceof IOwned owned && owned.getTrueOwner() instanceof Player owner) {
-                                for (ItemStack stack : servant.getAllSlots()) {
-                                    int enchantmentLevel = stack.getEnchantmentLevel(ModEnchantments.SOUL_MENDING.get());
-                                    if (enchantmentLevel > 0) {
-                                        repairItemWithSoulEnergy(owner, stack, enchantmentLevel);
-                                    }
-                                }
-                            }else if (servant instanceof OwnableEntity ownableEntity && ownableEntity.getOwner() instanceof Player owner) {
-                                for (ItemStack stack : servant.getAllSlots()) {
-                                    int enchantmentLevel = stack.getEnchantmentLevel(ModEnchantments.SOUL_MENDING.get());
-                                    if (enchantmentLevel > 0) {
-                                        repairItemWithSoulEnergy(owner, stack, enchantmentLevel);
-                                    }
-                                }
+                                repairEquipment(owner, servant);
+                            } else if (servant instanceof OwnableEntity ownableEntity && ownableEntity.getOwner() instanceof Player owner) {
+                                repairEquipment(owner, servant);
                             }
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private static void repairEquipment(Player owner, LivingEntity entity) {
+        for (EquipmentSlot slot : REPAIR_SLOTS) {
+            ItemStack stack = entity.getItemBySlot(slot);
+            if (stack.isEmpty()) {
+                continue;
+            }
+            int enchantmentLevel = stack.getEnchantmentLevel(ModEnchantments.SOUL_MENDING.get());
+            if (enchantmentLevel > 0) {
+                repairItemWithSoulEnergy(owner, stack, enchantmentLevel);
             }
         }
     }
