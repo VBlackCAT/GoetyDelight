@@ -13,6 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.NetherWartBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.item.ApocalyptiumKnifeItem;
 
 /**
@@ -29,6 +30,7 @@ public final class FtbUltimineCompat {
 
     public static void register() {
         CropLikeRegistry.getInstance().registerHandler(new NetherWartAndSnapWartsHandler());
+        GoetyDelight.LOGGER.info("[compat] FTB Ultimine 作物处理器已注册");
     }
 
     /** FTB Ultimine 连锁键是否按下。 */

@@ -325,10 +325,10 @@ dependencies {
     compileOnly "curse.maven:sophisticated-core-618298:9279280"
     compileOnly "curse.maven:sophisticated-backpacks-422301:9271152"
     // FTB Ultimine API（可选联动；运行期由模组存在性判断）
-    compileOnly "blank:ftb-ultimine-forge:2001.1.6"
-    compileOnly "blank:ftb-library-forge:2001.2.10"
-    // RCGC 可选 Mixin 目标的编译期占位类；不会进入最终 jar
-    compileOnly files('libs/rcgc-stub.jar')
+    compileOnly "curse.maven:ftb-library-forge-404465:7296748"
+    compileOnly "curse.maven:ftb-ultimine-forge-386134:7880472"
+    compileOnly "maven.modrinth:lhGA9TYQ:1MKTLiiG"
+    compileOnly "curse.maven:right-click-get-crops-552442:4970693"
 
     //帕秋莉
     modCompileOnly "vazkii.patchouli:Patchouli:1.20.1-84.1-FORGE:api"
@@ -348,9 +348,13 @@ dependencies {
     modRuntimeOnly  "curse.maven:selene-499980:8261419" //moonlight-1.20-2.16.34-forge.jar
     modRuntimeOnly  "curse.maven:jade-324717:6855440"//Jade-1.20.1-Forge-11.13.2.jar
     modRuntimeOnly  "curse.maven:l2library-620203:6806000" //l2library-2.5.3.jar
+    modRuntimeOnly  "curse.maven:right-click-get-crops-552442:4970693"
+    modRuntimeOnly "curse.maven:ftb-library-forge-404465:7296748"
+    modRuntimeOnly "curse.maven:ftb-ultimine-forge-386134:7880472"
+    modRuntimeOnly "maven.modrinth:lhGA9TYQ:1MKTLiiG"
     modRuntimeOnly  "tschipp.carryon:carryon-forge-1.20.1:2.1.2.7"
-    modRuntimeOnly "curse.maven:sophisticated-core-618298:9279280"
-    modRuntimeOnly "curse.maven:sophisticated-backpacks-422301:9271152"
+    modRuntimeOnly "curse.maven:sophisticated-core-618298:9524671"
+    modRuntimeOnly "curse.maven:sophisticated-backpacks-422301:9524801"
 //    modRuntimeOnly  "curse.maven:goety-revelation-1236817:8311906" //goety_revelation_2.3.3fix(1)
 //    modRuntimeOnly  "curse.maven:endinglibrary-1471165:8292038" //endinglibrary-1.20.1-2.0.3.jar
     modRuntimeOnly  "curse.maven:goety-revelation-1236817:9039503" //goety_revelation_2.3.4
