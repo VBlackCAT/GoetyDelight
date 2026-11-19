@@ -54,6 +54,14 @@ public final class CompatManager {
         return isLoaded("bosses_delight");
     }
 
+    public static boolean isFtbUltimineLoaded() {
+        return isLoaded("ftbultimine");
+    }
+
+    public static boolean isRightClickGetCropsLoaded() {
+        return isLoaded("right_click_get_crops");
+    }
+
     // ==================== "存在 + 启动配置开启" 组合判断（仅运行期调用） ====================
 
     /**
@@ -77,6 +85,8 @@ public final class CompatManager {
         append(compatload, "goety_revelation", isGoetyRevelationLoaded());
         append(compatload, "carryon", isCarryOnLoaded());
         append(compatload, "bosses_delight", isBossesDelightLoaded());
+        append(compatload, "ftbultimine", isFtbUltimineLoaded());
+        append(compatload, "right_click_get_crops", isRightClickGetCropsLoaded());
         GoetyDelight.LOGGER.info("[compat] 已检测到联动：{}", compatload.length() == 0 ? "（无）" : compatload.toString());
     }
 

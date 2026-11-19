@@ -6,6 +6,7 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.v_black_cat.goetydelight.compat.bossesdelight.BossesDelightCompat;
 import net.v_black_cat.goetydelight.compat.carryon.CarryOnCompat;
 import net.v_black_cat.goetydelight.compat.enigmaticdelicacy.EnigmaticDelicacyCompat;
+import net.v_black_cat.goetydelight.compat.ftbultimine.FtbUltimineCompat;
 import net.v_black_cat.goetydelight.compat.goetycataclysm.GoetyCataclysmCompat;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.ClientRegistery;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.GoetyRevelationCompat;
@@ -54,6 +55,9 @@ public final class CompatRegistry {
         }
         if (CompatManager.isBossesDelightLoaded()) {
             BossesDelightCompat.registerEvents();
+        }
+        if (CompatManager.isFtbUltimineLoaded()) {
+            FtbUltimineCompat.register();
         }
     }
 }

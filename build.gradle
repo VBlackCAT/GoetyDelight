@@ -324,6 +324,11 @@ dependencies {
     compileOnly "tschipp.carryon:carryon-forge-1.20.1:2.1.2.7"
     compileOnly "curse.maven:sophisticated-core-618298:9279280"
     compileOnly "curse.maven:sophisticated-backpacks-422301:9271152"
+    // FTB Ultimine API（可选联动；运行期由模组存在性判断）
+    compileOnly "blank:ftb-ultimine-forge:2001.1.6"
+    compileOnly "blank:ftb-library-forge:2001.2.10"
+    // RCGC 可选 Mixin 目标的编译期占位类；不会进入最终 jar
+    compileOnly files('libs/rcgc-stub.jar')
 
     //帕秋莉
     modCompileOnly "vazkii.patchouli:Patchouli:1.20.1-84.1-FORGE:api"

@@ -31,6 +31,8 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.v_black_cat.goetydelight.compat.CompatManager;
+import net.v_black_cat.goetydelight.compat.ftbultimine.FtbUltimineCompat;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.GoetyRevelationCompat;
 import vectorwing.farmersdelight.common.item.KnifeItem;
 import net.v_black_cat.goetydelight.util.DelightLootTableCache;
@@ -82,60 +84,75 @@ public class ApocalyptiumKnifeItem extends KnifeItem {
         Player player = event.getEntity();
         ItemStack heldItem = player.getMainHandItem();
 
-        if (heldItem.getItem() instanceof ApocalyptiumKnifeItem) {
-            Level level = event.getLevel();
-            BlockPos pos = event.getPos();
-            BlockState blockState = level.getBlockState(pos);
-            Block block = blockState.getBlock();
-            if (block instanceof CropBlock cropBlock) {
-                if (cropBlock.isMaxAge(blockState)) {
-                    if (!level.isClientSide() && level instanceof ServerLevel serverLevel) {
-                        for (int i = 0; i < 2; i++) {
-                            simulateCropDrops(serverLevel, pos, blockState, cropBlock, heldItem);
-                        }
-                        int currentAge = cropBlock.getAge(blockState);
-                        int newAge = Math.max(0, currentAge - 1);
-                        BlockState newState = cropBlock.getStateForAge(newAge);
-                        level.setBlock(pos, newState, 3);
-                        level.levelEvent(2001, pos, Block.getId(blockState));
-                    }
-                    event.setCanceled(true);
-                }
-            }
-            else if (block instanceof NetherWartBlock netherWartBlock) {
-                int currentAge = blockState.getValue(NetherWartBlock.AGE);
-                if (currentAge >= NetherWartBlock.MAX_AGE) {
-                    if (!level.isClientSide() && level instanceof ServerLevel serverLevel) {
-                        for (int i = 0; i < 2; i++) {
-                            simulateCropDrops(serverLevel, pos, blockState, netherWartBlock, heldItem);
-                        }
-                        int newAge = Math.max(0, currentAge - 1);
-                        BlockState newState = blockState.setValue(NetherWartBlock.AGE, newAge);
-                        level.setBlock(pos, newState, 3);
-
-                        level.levelEvent(2001, pos, Block.getId(blockState));
-                    }
-
-                    event.setCanceled(true);
-                }
-            }
-            else if (block instanceof SnapWartsBlock snapWartsBlock) {
-                int currentAge = blockState.getValue(SnapWartsBlock.AGE);
-                if (currentAge >= 2) {
-                    if (!level.isClientSide() && level instanceof ServerLevel serverLevel) {
-                        for (int i = 0; i < 2; i++) {
-                            simulateSnapWartsDrops(serverLevel, pos, blockState, snapWartsBlock, heldItem);
-                        }
-                        int newAge = Math.max(0, currentAge - 1);
-                        BlockState newState = blockState.setValue(SnapWartsBlock.AGE, newAge);
-                        level.setBlock(pos, newState, 3);
-                        level.levelEvent(2001, pos, Block.getId(blockState));
-                    }
-
-                    event.setCanceled(true);
-                }
-            }
+        if (!(heldItem.getItem() instanceof ApocalyptiumKnifeItem)) {
+            return;
         }
+
+        // FTB Ultimine 激活时交给连锁逻辑处理，避免这里 cancel 掉连锁事件。
+        if (CompatManager.isFtbUltimineLoaded() && FtbUltimineCompat.isActive(player)) {
+            return;
+        }
+
+        Level level = event.getLevel();
+        BlockPos pos = event.getPos();
+        BlockState blockState = level.getBlockState(pos);
+        if (!isHarvestable(blockState)) {
+            return;
+        }
+
+        if (!level.isClientSide() && level instanceof ServerLevel serverLevel) {
+            harvestKnife(serverLevel, pos, blockState, heldItem);
+        }
+        event.setCanceled(true);
+    }
+
+    /** 判断方块是否是本刀可收割的成熟作物。 */
+    public static boolean isHarvestable(BlockState state) {
+        Block block = state.getBlock();
+        if (block instanceof CropBlock cropBlock) {
+            return cropBlock.isMaxAge(state);
+        }
+        if (block instanceof NetherWartBlock) {
+            return state.getValue(NetherWartBlock.AGE) >= NetherWartBlock.MAX_AGE;
+        }
+        if (block instanceof SnapWartsBlock) {
+            return state.getValue(SnapWartsBlock.AGE) >= 2;
+        }
+        return false;
+    }
+
+    private static void harvestKnife(ServerLevel level, BlockPos pos, BlockState state, ItemStack tool) {
+        spawnDropsInWorld(level, pos, collectKnifeDrops(level, pos, state, tool));
+        shrinkHarvestState(level, pos, state);
+    }
+
+    /** 供 FTB Ultimine 连锁逻辑取用：不直接在世界中生成掉落物。 */
+    public static List<ItemStack> collectKnifeDrops(ServerLevel level, BlockPos pos,
+                                                    BlockState state, ItemStack tool) {
+        List<ItemStack> drops = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            drops.addAll(getBlockDrops(level, pos, state, tool));
+        }
+        return drops;
+    }
+
+    /** 收割后只降低一级年龄，和右键单块收割行为保持一致。 */
+    public static void shrinkHarvestState(ServerLevel level, BlockPos pos, BlockState state) {
+        Block block = state.getBlock();
+        BlockState newState;
+        if (block instanceof CropBlock cropBlock) {
+            newState = cropBlock.getStateForAge(Math.max(0, cropBlock.getAge(state) - 1));
+        } else if (block instanceof NetherWartBlock) {
+            newState = state.setValue(NetherWartBlock.AGE,
+                    Math.max(0, state.getValue(NetherWartBlock.AGE) - 1));
+        } else if (block instanceof SnapWartsBlock) {
+            newState = state.setValue(SnapWartsBlock.AGE,
+                    Math.max(0, state.getValue(SnapWartsBlock.AGE) - 1));
+        } else {
+            return;
+        }
+        level.setBlock(pos, newState, 3);
+        level.levelEvent(2001, pos, Block.getId(state));
     }
 
     @SubscribeEvent
@@ -209,7 +226,7 @@ public class ApocalyptiumKnifeItem extends KnifeItem {
     /**
      * 获取方块掉落物列表（通用方法）
      */
-    private static List<ItemStack> getBlockDrops(ServerLevel level, BlockPos pos, BlockState state, ItemStack tool) {
+    public static List<ItemStack> getBlockDrops(ServerLevel level, BlockPos pos, BlockState state, ItemStack tool) {
         List<ItemStack> drops = new ArrayList<>();
 
         try {

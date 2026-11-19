@@ -53,6 +53,14 @@ public class GoetyDelightMixinPlugin implements IMixinConfigPlugin {
             return isModFilePresent("travelersbackpack");
         }
 
+        if (mixinClassName.contains("FtbUltimineVanillaCropMixin")) {
+            return isModFilePresent("ftbultimine") && isModFilePresent("goety_revelation");
+        }
+
+        if (mixinClassName.contains("RightClickGetCropsMixin")) {
+            return isModFilePresent("right_click_get_crops") && isModFilePresent("goety_revelation");
+        }
+
         return true;
     }
 
