@@ -32,6 +32,12 @@ public class BlackIronPotBlockEntity extends CursedIngotPotBlockEntity {
         return Math.max(1, original / 2);
     }
 
+    /** 灵魂燃烧额外 2 倍速（黑铁锅保留旧机制）。 */
+    @Override
+    protected float getSoulSpeedMultiplier() {
+        return 2.0f;
+    }
+
     /** 灵魂消耗 0.5 倍：向下取整，至少 1。 */
     @Override
     protected int modifySoulCost(int original) {

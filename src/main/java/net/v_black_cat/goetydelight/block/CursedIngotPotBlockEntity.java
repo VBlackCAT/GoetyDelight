@@ -46,6 +46,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.RecipeWrapper;
 import net.v_black_cat.goetydelight.screen.CursedIngotPotMenu;
+import net.v_black_cat.goetydelight.recipe.WorkstationCookingRecipe;
 import vectorwing.farmersdelight.common.block.CookingPotBlock;
 import vectorwing.farmersdelight.common.block.entity.HeatableBlockEntity;
 import vectorwing.farmersdelight.common.block.entity.SyncedBlockEntity;
@@ -352,9 +353,14 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
 
     // ======================== 倍率钩子（子类覆写） ========================
 
-    /** 烹饪总时长倍率钩子。默认不修改。 */
+    /** 烹饪总时长倍率钩子。诅咒金属锅：总时长减半，等效农夫乐事锅 2 倍速度。 */
     protected int modifyCookTimeTotal(int original) {
-        return original;
+        return Math.max(1, original / 2);
+    }
+
+    /** 灵魂供能带来的额外烹饪速度倍率。诅咒金属锅默认 1.0（基础速度已由时长/2 提供）。 */
+    protected float getSoulSpeedMultiplier() {
+        return 1.0f;
     }
 
     /** 灵魂消耗倍率钩子。默认不修改。 */
@@ -362,17 +368,14 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
         return original;
     }
 
-    /** 本锅是否要求必须有真实灵魂源才能产出（黑铁锅 true，普通锅/天启锅 false）。 */
+    /** 本锅是否要求必须有真实灵魂源才能产出（诅咒金属锅 true，普通锅/天启锅 false）。 */
     protected boolean requiresSoulSource() {
         return false;
     }
 
-    /** 给产物注入灵魂标记。默认写布尔 SoulInfused + 等级 1。 */
+    /** 诅咒金属锅/天启锅不再给产物写入 SoulInfused 能量。 */
     protected void applySoulInfusion(ItemStack resultStack) {
-        CompoundTag tag = resultStack.getOrCreateTag();
-        tag.putBoolean("SoulInfused", true);
-        tag.putInt("SoulInfusedLevel", 1);
-        resultStack.setTag(tag);
+        // 灵魂值改为通过 FoodSoulEnergyConfig 在食用时发放。
     }
 
     // ======================== 核心Tick逻辑 ========================
@@ -408,7 +411,7 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
                 needSoul = anyHasMark;
             }
 
-            // 强制要求灵魂源的锅（黑铁锅）：无灵魂时不允许烹饪，避免产出无灵魂食物
+            // 强制要求灵魂源的锅（诅咒金属锅）：无灵魂时不允许烹饪，避免产出无灵魂食物
             if (cookingPot.requiresSoulSource() && !hasSoulEnergy) {
                 needSoul = true;   // 走"需要灵魂但没灵魂"分支 → canCook=false
             }
@@ -421,13 +424,13 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
             } else {
                 if (isHeated && needSoul && soulAvailable) {
                     canCook = true;
-                    speedMultiplier = 2.0f;   // 有灵魂 + 热源：2 倍速
+                    speedMultiplier = cookingPot.getSoulSpeedMultiplier();
                 } else if (isHeated && !needSoul) {
                     canCook = true;
-                    speedMultiplier = 1.0f;   // 仅热源：1 倍速
+                    speedMultiplier = 1.0f;   // 仅热源：基础速度（诅咒金属锅已由时长/2 达到 2 倍）
                 } else if (needSoul && soulAvailable) {
                     canCook = true;
-                    speedMultiplier = 1.2f;   // 仅灵魂：1.2 倍速
+                    speedMultiplier = cookingPot.getSoulSpeedMultiplier();
                 } else {
                     canCook = false;
                     speedMultiplier = 0f;
@@ -530,8 +533,7 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
 
         if (this.hasInputCache) {
             RecipeWrapper wrapper = new RecipeWrapper(this.inventory);
-            this.cachedRecipe = this.level.getRecipeManager()
-                    .getRecipeFor(ModRecipeTypes.COOKING.get(), wrapper, this.level).orElse(null);
+            this.cachedRecipe = this.findRecipe(wrapper);
 
             if (this.cachedRecipe != null) {
                 // 同样取副本：cachedResultStack 只读，但不与配方内部栈共享引用
@@ -547,6 +549,42 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
         if (this.cachedRecipe == null && this.cookTime > 0) {
             this.cookTime = 0;
         }
+    }
+
+    /**
+     * 先找带工作方块要求的自定义配方，再回退到普通农夫乐事锅配方。
+     * 这样诅咒金属锅仍能烹饪普通配方，而特殊配方不会出现在错误的锅里。
+     */
+    @Nullable
+    protected CookingPotRecipe findRecipe(RecipeWrapper wrapper) {
+        if (this.level == null) {
+            return null;
+        }
+
+        for (WorkstationCookingRecipe recipe : this.level.getRecipeManager()
+                .getRecipesFor(net.v_black_cat.goetydelight.recipe.ModRecipeTypes.WORKSTATION_COOKING.get(),
+                        wrapper, this.level)) {
+            if (this.canUseWorkstation(recipe)) {
+                return recipe;
+            }
+        }
+
+        // 兜底：即使某些环境下自定义 RecipeType 的 byType 索引异常，也直接遍历
+        // RecipeManager 中的工作站配方，保证配方仍然可用。
+        for (net.minecraft.world.item.crafting.Recipe<?> recipe : this.level.getRecipeManager().getRecipes()) {
+            if (recipe instanceof WorkstationCookingRecipe workstationRecipe
+                    && workstationRecipe.matches(wrapper, this.level)
+                    && this.canUseWorkstation(workstationRecipe)) {
+                return workstationRecipe;
+            }
+        }
+
+        return this.level.getRecipeManager()
+                .getRecipeFor(ModRecipeTypes.COOKING.get(), wrapper, this.level).orElse(null);
+    }
+
+    protected boolean canUseWorkstation(WorkstationCookingRecipe recipe) {
+        return recipe.matchesWorkstation(this.getBlockState().getBlock());
     }
 
     protected boolean canCook(CookingPotRecipe recipe) {

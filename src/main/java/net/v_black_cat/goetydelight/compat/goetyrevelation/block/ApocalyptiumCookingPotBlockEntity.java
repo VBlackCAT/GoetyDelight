@@ -1,35 +1,28 @@
 package net.v_black_cat.goetydelight.compat.goetyrevelation.block;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.v_black_cat.goetydelight.block.CursedIngotPotBlockEntity;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.RevelationCompatRegistry;
+import net.v_black_cat.goetydelight.recipe.WorkstationCookingRecipe;
 import net.v_black_cat.goetydelight.util.TextUtils;
 
 /**
  * 天启烹饪锅：
  *  - 不消耗灵魂（灵魂源槽位被完全忽略）
- *  - 产出灵魂强度 ×10（SoulInfusedLevel = 10）
+ *  - 不再给产物附加 SoulInfused 能量
  *  - 烹饪时间 ×0.1（等效速度 ×10）
  *  - 自热（永远视为有热源）
  *  - 不需要灵魂源
  * 其余逻辑复用 CursedIngotPotBlockEntity。
- * 注意：不再覆写 processCooking。父类在 soulCost <= 0 时短路视为注入成功，
- * 因此 modifySoulCost 返回 0 即可让天启锅无需灵魂即可正常烹饪并注入 SoulInfusedLevel=10。
+ * 注意：不再覆写 processCooking。父类在 soulCost <= 0 时短路视为成功。
  */
 public class ApocalyptiumCookingPotBlockEntity extends CursedIngotPotBlockEntity {
-
-    /** 产物灵魂强度等级：普通锅为 1，黑铁锅为 2，天启锅为 10。 */
-    public static final int SOUL_LEVEL = 10;
-    /** 产物灵魂强度 NBT 键。 */
-    public static final String SOUL_LEVEL_TAG = "SoulInfusedLevel";
 
     public ApocalyptiumCookingPotBlockEntity(BlockPos pos, BlockState state) {
         super(RevelationCompatRegistry.APOCALYPTIUM_POT_BE.get(), pos, state);
@@ -58,14 +51,8 @@ public class ApocalyptiumCookingPotBlockEntity extends CursedIngotPotBlockEntity
         return 0;
     }
 
-    /** 产出灵魂 ×10：写入 SoulInfused + SoulInfusedLevel=10。 */
-    @Override
-    protected void applySoulInfusion(ItemStack resultStack) {
-        CompoundTag tag = resultStack.getOrCreateTag();
-        tag.putBoolean("SoulInfused", true);
-        tag.putInt(SOUL_LEVEL_TAG, SOUL_LEVEL);
-        resultStack.setTag(tag);
-    }
+    /** 天启锅不再给产物写入 SoulInfused 能量。 */
+    // applySoulInfusion 继承 CursedIngotPotBlockEntity 的空实现。
 
     // ===================== 不需要灵魂 + 自热 =====================
 
@@ -100,6 +87,12 @@ public class ApocalyptiumCookingPotBlockEntity extends CursedIngotPotBlockEntity
     }
 
     /** 天启锅不需要灵魂源，保持父类默认 false，无需覆写。 */
+
+    @Override
+    protected boolean canUseWorkstation(WorkstationCookingRecipe recipe) {
+        // 天启锅是诅咒金属锅的升级版本：诅咒金属锅能做的特殊配方，天启锅也能做。
+        return super.canUseWorkstation(recipe) || recipe.isCursedIngotPot();
+    }
 
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory player, Player entity) {

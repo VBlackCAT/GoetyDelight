@@ -238,16 +238,13 @@ public class FalseProverbsItem extends SwordItem {
 
             if (player.isShiftKeyDown()) {
                 if (!persistentData.getBoolean(SHIFT_KEY_TAG)) {
-                    // 添加属性加成
                     addBonusAttributes(player);
                     persistentData.putBoolean(SHIFT_KEY_TAG, true);
 
-                    // 设置传送状态
                     data.originalPosition = player.position();
                     data.worldLevel = new WeakReference<>(player.level());
                     data.teleportStatus = true;
 
-                    // 视觉效果
                     player.setInvisible(true);
                     spawnShiftParticles(player);
                     ModNetwork.sendTo(player, new SPlayPlayerSoundPacket(
@@ -270,9 +267,7 @@ public class FalseProverbsItem extends SwordItem {
             }
         }
 
-        // 背部模型状态使用 20 tick 缓存；缓存有效时只做 O(1) 判断。
-        // 同步不需要每 tick 检查，5 tick 一次足够，进一步降低常态开销。
-        if (player.tickCount % 5 == 0) {
+        if (player.tickCount % 2 == 0) {
             syncBackModelStatus(player, playerUUID);
         }
     }
@@ -289,8 +284,6 @@ public class FalseProverbsItem extends SwordItem {
         boolean newBackStatus = shouldShowBackModel(player);
         Boolean lastStatus = lastSentBackModelStatus.get(playerUUID);
 
-        // 状态没变化直接返回；首次（lastStatus == null）仍然发送一次，
-        // 用于清理玩家重进/换维度后客户端可能残留的旧背部模型状态。
         if (lastStatus != null && lastStatus == newBackStatus) {
             return;
         }
@@ -302,7 +295,6 @@ public class FalseProverbsItem extends SwordItem {
         ServerLevel serverLevel = (ServerLevel) player.level();
 
         for (ServerPlayer serverPlayer : serverLevel.players()) {
-            // 距离优化，减少不必要的网络传输
             if (serverPlayer.distanceToSqr(player) < SYNC_DISTANCE_SQR) {
                 NetworkHandler.sendToClient(packet, serverPlayer);
             }

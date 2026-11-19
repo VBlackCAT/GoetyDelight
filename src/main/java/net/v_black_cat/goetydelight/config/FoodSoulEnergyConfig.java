@@ -26,6 +26,13 @@ public class FoodSoulEnergyConfig {
         FOOD_ENERGY_MAP.put("goetydelight:boat_stuffed_roasted_warden_body", 4000);
         FOOD_ENERGY_MAP.put("goetydelight:boat_stuffed_roasted_warden_leg", 4000);
 
+        FOOD_ENERGY_MAP.put("goetydelight:tainted_drink", 1000);
+        FOOD_ENERGY_MAP.put("goetydelight:pure_drink", 3000);
+        FOOD_ENERGY_MAP.put("goetydelight:unholy_communion", 6000);
+
+        FOOD_ENERGY_MAP.put("goetydelight:doom_cookie", 8000);
+        FOOD_ENERGY_MAP.put("goetydelight:ascension_cod_stew", 20000);
+
     }
 
      

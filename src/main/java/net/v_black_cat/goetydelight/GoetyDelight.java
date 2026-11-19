@@ -49,6 +49,8 @@ import net.v_black_cat.goetydelight.item.ModItems;
 import net.v_black_cat.goetydelight.loot.RegHelper;
 import net.v_black_cat.goetydelight.network.NetworkHandler;
 import net.v_black_cat.goetydelight.recipe.ModRecipeSerializers;
+import net.v_black_cat.goetydelight.recipe.ModRecipeTypes;
+import net.v_black_cat.goetydelight.recipe.WorkstationRecipeManager;
 import net.v_black_cat.goetydelight.render.item.DollEntityRender;
 import net.v_black_cat.goetydelight.render.animation.RotationEffectHandler;
 
@@ -96,6 +98,8 @@ public class GoetyDelight
         ModEnchantments.ENCHANTMENTS.register(modEventBus);
         ModEffects.register(modEventBus);
         ModRecipeSerializers.SERIALIZERS.register(modEventBus);
+        ModRecipeTypes.RECIPE_TYPES.register(modEventBus);
+        MinecraftForge.EVENT_BUS.addListener(WorkstationRecipeManager::onServerStarted);
         ModEntities.register(modEventBus);
         ModBuffTypes.register(modEventBus);
         ModBlockEntities.register(modEventBus);
