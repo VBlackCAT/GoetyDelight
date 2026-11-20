@@ -465,7 +465,13 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
                 && cookingPot.isNecroticInfused()
                 && isNecroticBrazierRecipe(currentRecipe);
         if (necroticBrazier) {
-            if (cookingPot.getSoulEnergyAvailable() < 4) {
+            int availableSoul = cookingPot.getSoulEnergyAvailable();
+            int requiredSoul = ((WorkstationCookingRecipe) currentRecipe).getSoulCost();
+            if (cookingPot.cookTime <= 0.0F && availableSoul < requiredSoul) {
+                // 启动前必须拥有整套配方所需的灵魂能量，否则不开始消耗原料。
+                canCook = false;
+                speedMultiplier = 0.0f;
+            } else if (availableSoul < 4) {
                 canCook = false;
                 speedMultiplier = 0.0f;
             } else {
@@ -1004,6 +1010,22 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
         };
     }
 
+    /** 当前锅配方需要灵魂、尚未开始，且灵魂槽能量不足。 */
+    public boolean isSoulInsufficientForStart() {
+        if (this.level == null || this.cachedRecipe == null || this.cookTime > 0.0F) {
+            return false;
+        }
+
+        int requiredSoul;
+        if (this.isNecroticInfused() && isNecroticBrazierRecipe(this.cachedRecipe)) {
+            requiredSoul = ((WorkstationCookingRecipe) this.cachedRecipe).getSoulCost();
+        } else {
+            requiredSoul = this.cachedSoulCost;
+        }
+
+        return requiredSoul > 0 && this.getSoulEnergyAvailable() < requiredSoul;
+    }
+
     private ContainerData createIntArray() {
         return new ContainerData() {
             public int get(int index) {
@@ -1011,6 +1033,7 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
                 switch (index) {
                     case 0 -> var10000 = (int) CursedIngotPotBlockEntity.this.cookTime;
                     case 1 -> var10000 = CursedIngotPotBlockEntity.this.cookTimeTotal;
+                    case 2 -> var10000 = CursedIngotPotBlockEntity.this.isSoulInsufficientForStart() ? 1 : 0;
                     default -> var10000 = 0;
                 }
 
@@ -1026,7 +1049,7 @@ public class CursedIngotPotBlockEntity extends SyncedBlockEntity implements Menu
             }
 
             public int getCount() {
-                return 2;
+                return 3;
             }
         };
     }

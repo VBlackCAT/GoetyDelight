@@ -1,5 +1,6 @@
 package net.v_black_cat.goetydelight.recipe;
 
+import com.Polarice3.Goety.common.crafting.BrazierRecipe;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -18,7 +19,6 @@ import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.v_black_cat.goetydelight.GoetyDelight;
-import net.v_black_cat.goetydelight.compat.goetyrevelation.GoetyRevelationCompat;
 import vectorwing.farmersdelight.client.recipebook.CookingPotRecipeBookTab;
 import vectorwing.farmersdelight.common.crafting.CookingPotRecipe;
 
@@ -62,6 +62,7 @@ public final class WorkstationRecipeManager {
             ids.add(recipe.getId());
         }
         Set<ResourceLocation> generatedBrazierIds = new HashSet<>();
+        Set<ResourceLocation> brazierSourceIds = new HashSet<>();
         Set<ResourceLocation> convertedIds = new HashSet<>();
 
         boolean changed = false;
@@ -77,11 +78,6 @@ public final class WorkstationRecipeManager {
 
             ResourceLocation workstation = requiredWorkstation(cookingPotRecipe);
             if (workstation == null) {
-                continue;
-            }
-            // 天启锅/天启材料只在联动存在时才有意义。
-            if (WorkstationCookingRecipe.APOCALYPTIUM_COOKING_POT.equals(workstation)
-                    && !GoetyRevelationCompat.IS_LOADED) {
                 continue;
             }
 
@@ -104,16 +100,16 @@ public final class WorkstationRecipeManager {
             recipes.addAll(converted);
         }
 
-        // 2) 扫描 goety:brazier JSON，转换为天启锅配方。
-        if (GoetyRevelationCompat.IS_LOADED) {
-            Map<ResourceLocation, Resource> resources = server.getResourceManager()
-                    .listResources("recipes", id -> true);
+        // 2) 扫描 goety:brazier JSON，转换为天启锅/亡灵注入锅可用的配方。
+        Map<ResourceLocation, Resource> resources = server.getResourceManager()
+                .listResources("recipes", id -> true);
 
-            for (Map.Entry<ResourceLocation, Resource> entry : resources.entrySet()) {
+        for (Map.Entry<ResourceLocation, Resource> entry : resources.entrySet()) {
                 ResourceLocation sourceId = entry.getKey();
                 // goety:brazier 是配方类型，不限定命名空间；生成 ID 带上来源命名空间避免冲突。
+                String sourcePath = normalizeSourcePath(sourceId);
                 String recipePath = sourceId.getNamespace() + "_"
-                        + sourceId.getPath().replace('/', '_');
+                        + sourcePath.replace('/', '_');
                 ResourceLocation generatedId = new ResourceLocation(
                         GoetyDelight.MODID, "apocalyptium_brazier/" + recipePath);
 
@@ -170,12 +166,64 @@ public final class WorkstationRecipeManager {
                             soulCost
                     ));
                     generatedBrazierIds.add(generatedId);
+                    brazierSourceIds.add(new ResourceLocation(sourceId.getNamespace(), sourcePath));
                     changed = true;
                 } catch (Exception exception) {
                     GoetyDelight.LOGGER.warn("[compat] 无法转换 brazier 配方 {}: {}",
                             sourceId, exception.toString());
                 }
             }
+
+        // 3) 兼容运行时注册的 goety:brazier 配方（包括其他模组以代码方式添加的配方）。
+        //    仅扫描 JSON 会漏掉这类配方，因此再从 RecipeManager 中读取实际的 BrazierRecipe。
+        for (Recipe<?> existing : recipeManager.getRecipes()) {
+            if (!(existing instanceof BrazierRecipe brazierRecipe)) {
+                continue;
+            }
+
+            ResourceLocation sourceId = brazierRecipe.getId();
+            String sourcePath = normalizeSourcePath(sourceId);
+            String recipePath = sourceId.getNamespace() + "_"
+                    + sourcePath.replace('/', '_');
+            ResourceLocation generatedId = new ResourceLocation(
+                    GoetyDelight.MODID, "apocalyptium_brazier/" + recipePath);
+            ResourceLocation normalizedSourceId = new ResourceLocation(
+                    sourceId.getNamespace(), sourcePath);
+
+            if (brazierSourceIds.contains(normalizedSourceId)
+                    || ids.contains(generatedId)
+                    || generatedBrazierIds.contains(generatedId)) {
+                continue;
+            }
+
+            NonNullList<Ingredient> ingredients = brazierRecipe.getIngredients();
+            if (ingredients.isEmpty() || ingredients.size() > CookingPotRecipe.INPUT_SLOTS) {
+                continue;
+            }
+            ItemStack result = brazierRecipe.getResultItem(registryAccess).copy();
+            if (result.isEmpty()) {
+                continue;
+            }
+
+            int soulCost = Math.max(1, brazierRecipe.getSoulCost());
+            int cookTime = Math.max(1, soulCost / 5);
+            float experience = soulCost / 2.0F;
+
+            recipes.add(new WorkstationCookingRecipe(
+                    generatedId,
+                    "brazier",
+                    CookingPotRecipeBookTab.MISC,
+                    ingredients,
+                    result,
+                    ItemStack.EMPTY,
+                    experience,
+                    cookTime,
+                    WorkstationCookingRecipe.APOCALYPTIUM_COOKING_POT,
+                    soulCost
+            ));
+            generatedBrazierIds.add(generatedId);
+            brazierSourceIds.add(normalizedSourceId);
+            changed = true;
         }
 
         if (changed) {
@@ -189,8 +237,19 @@ public final class WorkstationRecipeManager {
      * 判断一个普通烹饪配方需要哪个锅。天启材料优先于 unholy_blood，
      * 因为天启锅是诅咒金属锅的升级版本。
      */
-    private static ResourceLocation requiredWorkstation(CookingPotRecipe recipe) {
-        boolean hasApocalyptium = false;
+    /** 统一 datapack resource id（可能带 recipes/ 前缀和 .json 后缀）与运行时 Recipe id。 */
+    private static String normalizeSourcePath(ResourceLocation sourceId) {
+        String path = sourceId.getPath();
+        if (path.startsWith("recipes/")) {
+            path = path.substring("recipes/".length());
+        }
+        if (path.endsWith(".json")) {
+            path = path.substring(0, path.length() - 5);
+        }
+        return path;
+    }
+
+    private static ResourceLocation requiredWorkstation(CookingPotRecipe recipe) {        boolean hasApocalyptium = false;
         boolean hasUnholyBlood = false;
 
         for (Ingredient ingredient : recipe.getIngredients()) {

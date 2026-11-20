@@ -5,6 +5,8 @@
   "jei.goetydelight.apocalyptium_brazier": "Divine Cooking: Necrotic Brazier",
   "jei.goetydelight.cursed_cooking": "Cursed Cooking",
   "jei.goetydelight.cursed_brazier": "Cursed Cooking: Necrotic Brazier",
+  "jei.goetydelight.soul_cost": "Soul Cost: %s",
+  "container.cursed_ingot_pot.soul_insufficient": "Not enough soul energy",
   "block.goetydelight.marble": "Marble",
   "block.goetydelight.blue_marble": "Blue Marble",
   "block.goetydelight.jungle_marble": "Jungle Marble",

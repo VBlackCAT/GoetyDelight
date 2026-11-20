@@ -17,7 +17,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.v_black_cat.goetydelight.GoetyDelight;
 import net.v_black_cat.goetydelight.block.CursedIngotPotBlockEntity;
 import net.v_black_cat.goetydelight.block.ModBlocks;
-import net.v_black_cat.goetydelight.compat.goetyrevelation.GoetyRevelationCompat;
+import net.v_black_cat.goetydelight.compat.CompatManager;
 import net.v_black_cat.goetydelight.compat.goetyrevelation.RevelationCompatRegistry;
 import net.v_black_cat.goetydelight.recipe.WorkstationCookingRecipe;
 import vectorwing.farmersdelight.common.crafting.CookingPotRecipe;
@@ -65,10 +65,11 @@ public class GoetyDelightJeiPlugin implements IModPlugin {
                 guiHelper,
                 CURSED_BRAZIER,
                 guiHelper.createDrawableItemStack(infusedCursedPot()),
-                Component.translatable("jei.goetydelight.cursed_brazier")
+                Component.translatable("jei.goetydelight.cursed_brazier"),
+                true
         ));
 
-        if (GoetyRevelationCompat.IS_LOADED) {
+        if (CompatManager.isGoetyRevelationLoaded()) {
             ApocCategory.addCategories(registration, guiHelper);
         }
     }
@@ -119,7 +120,7 @@ public class GoetyDelightJeiPlugin implements IModPlugin {
             registration.addRecipes(CURSED_BRAZIER, brazier);
         }
 
-        if (GoetyRevelationCompat.IS_LOADED) {
+        if (CompatManager.isGoetyRevelationLoaded()) {
             // 神灵烹饪：在诅咒烹饪基础上追加天启锅专属（不含亡灵火炉）
             List<CookingPotRecipe> apocRecipes = new ArrayList<>(cursedRecipes);
             apocRecipes.addAll(apocalyptium);
@@ -138,7 +139,7 @@ public class GoetyDelightJeiPlugin implements IModPlugin {
                 new ItemStack(ModBlocks.CURSED_INGOT_POT.get()), CURSED_COOKING);
         registration.addRecipeCatalyst(infusedCursedPot(), CURSED_BRAZIER);
 
-        if (GoetyRevelationCompat.IS_LOADED) {
+        if (CompatManager.isGoetyRevelationLoaded()) {
             ApocCategory.addCatalysts(registration);
         }
     }

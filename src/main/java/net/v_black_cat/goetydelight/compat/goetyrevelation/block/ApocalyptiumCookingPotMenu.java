@@ -40,7 +40,7 @@ public class ApocalyptiumCookingPotMenu extends RecipeBookMenu<RecipeWrapper> {
     protected final Level level;
 
     public ApocalyptiumCookingPotMenu(int windowId, Inventory playerInventory, FriendlyByteBuf data) {
-        this(windowId, playerInventory, getTileEntity(playerInventory, data), new SimpleContainerData(2));
+        this(windowId, playerInventory, getTileEntity(playerInventory, data), new SimpleContainerData(3));
     }
 
     public ApocalyptiumCookingPotMenu(int windowId, Inventory playerInventory,

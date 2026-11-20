@@ -39,7 +39,7 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
     private static final ResourceLocation EMPTY_SOUL_SOURCE_SLOT =  new ResourceLocation(MODID, "textures/gui/soul_slot.png");
 
     private static final Rectangle HEAT_ICON = new Rectangle(47, 55, 17, 15);
-    private static final Rectangle PROGRESS_ARROW = new Rectangle(89, 25, 0, 17);
+    private static final Rectangle PROGRESS_ARROW = new Rectangle(89, 25, 24, 17);
     private static final Rectangle SOUL_SOURCE_SLOT = new Rectangle(8, 55, 16, 16); // 灵魂源插槽位置
     private final CookingPotRecipeBookComponent recipeBookComponent = new CookingPotRecipeBookComponent();
     private boolean widthTooNarrow;
@@ -88,6 +88,7 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
         this.renderMealDisplayTooltip(gui, mouseX, mouseY);
         this.renderHeatIndicatorTooltip(gui, mouseX, mouseY);
         this.renderSoulSourceTooltip(gui, mouseX, mouseY); //灵魂源插槽提示
+        this.renderSoulInsufficientTooltip(gui, mouseX, mouseY);
         this.recipeBookComponent.renderTooltip(gui, this.leftPos, this.topPos, mouseX, mouseY);
     }
 
@@ -111,6 +112,16 @@ public class CursedIngotPotScreen extends AbstractContainerScreen<CursedIngotPot
                 tooltip.add(net.v_black_cat.goetydelight.util.TextUtils.getTranslation("container.cursed_ingot_pot.soul_source.empty"));
                 gui.renderComponentTooltip(this.font, tooltip, mouseX, mouseY);
             }
+        }
+    }
+
+    private void renderSoulInsufficientTooltip(GuiGraphics gui, int mouseX, int mouseY) {
+        if (this.isHovering(PROGRESS_ARROW.x, PROGRESS_ARROW.y,
+                PROGRESS_ARROW.width, PROGRESS_ARROW.height, mouseX, mouseY)
+                && ((CursedIngotPotMenu) this.menu).isSoulInsufficient()) {
+            gui.renderTooltip(this.font,
+                    Component.translatable("container.cursed_ingot_pot.soul_insufficient"),
+                    mouseX, mouseY);
         }
     }
 

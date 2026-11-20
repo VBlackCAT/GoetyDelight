@@ -47,7 +47,7 @@ public class CursedIngotPotMenu extends RecipeBookMenu<RecipeWrapper> {
     protected final Level level;
 
     public CursedIngotPotMenu(int windowId, Inventory playerInventory, FriendlyByteBuf data) {
-        this(windowId, playerInventory, getTileEntity(playerInventory, data), new SimpleContainerData(4));
+        this(windowId, playerInventory, getTileEntity(playerInventory, data), new SimpleContainerData(3));
     }
 
     public CursedIngotPotMenu(int windowId, Inventory playerInventory, CursedIngotPotBlockEntity blockEntity, ContainerData cookingPotDataIn) {
@@ -198,6 +198,10 @@ public class CursedIngotPotMenu extends RecipeBookMenu<RecipeWrapper> {
         int i = this.cookingPotData.get(0);
         int j = this.cookingPotData.get(1);
         return j != 0 && i != 0 ? i * 24 / j : 0;
+    }
+
+    public boolean isSoulInsufficient() {
+        return this.cookingPotData.get(2) != 0;
     }
 
     public boolean isHeated() {

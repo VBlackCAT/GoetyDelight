@@ -5,6 +5,8 @@
   "jei.goetydelight.apocalyptium_brazier": "神灵烹饪：亡灵火炉",
   "jei.goetydelight.cursed_cooking": "诅咒烹饪",
   "jei.goetydelight.cursed_brazier": "诅咒烹饪：亡灵火炉",
+  "jei.goetydelight.soul_cost": "灵魂消耗：%s",
+  "container.cursed_ingot_pot.soul_insufficient": "灵魂能量不足",
   "block.goetydelight.marble": "大理石",
   "block.goetydelight.blue_marble": "青金大理石",
   "block.goetydelight.jungle_marble": "丛林大理石",
