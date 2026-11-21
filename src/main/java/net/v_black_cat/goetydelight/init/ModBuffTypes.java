@@ -22,7 +22,10 @@ public class ModBuffTypes {
 
     public static final Registry<BuffType> BUFF_REGISTRY = BUFF_TYPES.makeRegistry(builder -> {
         builder.sync(true);
-        builder.defaultKey(ResourceLocation.withDefaultNamespace("empty"));
+        // 注意：默认值必须指向本模组真正注册的那个占位条目（goetydelight:empty），
+        // 写成 minecraft:empty 会让 defaultValue 永远为 null，
+        // 之后任何 get(未知 id) 都会在 DefaultedMappedRegistry 里 NPE。
+        builder.defaultKey(ResourceLocation.fromNamespaceAndPath(GoetyDelight.MODID, "empty"));
     });
 
     private static final Map<ResourceLocation, BuffEffect> EFFECTS = new HashMap<>();

@@ -36,9 +36,11 @@ public class BuffInstance {
         return !infinite && duration <= 0;
     }
 
-    // 通过注册表获取 BuffType（需要注入注册表）
+    // 通过注册表获取 BuffType（未知 id 返回 null，不再依赖注册表默认值回落）
     public BuffType getType() {
-        return ModBuffTypes.BUFF_REGISTRY.get(typeId);
+        return ModBuffTypes.BUFF_REGISTRY.containsKey(typeId)
+                ? ModBuffTypes.BUFF_REGISTRY.get(typeId)
+                : null;
     }
 
     // === 序列化 ===

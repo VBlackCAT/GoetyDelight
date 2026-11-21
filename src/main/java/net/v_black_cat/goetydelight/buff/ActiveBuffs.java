@@ -46,6 +46,9 @@ public class ActiveBuffs implements INBTSerializable<CompoundTag> {
 
     /** 添加 Buff 实例。若类型不可叠加，则覆盖原有实例。 当从无到有时，全局计数器增加。 */
     public void addBuff(ResourceLocation typeId, int duration, int amplifier) {
+        // 先用 containsKey 排除未知 id（旧存档残留、客户端/服务端版本不一致等），
+        // 不能直接 get() —— 注册表对未知 id 会走默认值回落，默认值配置出错时会直接 NPE。
+        if (typeId == null || !ModBuffTypes.BUFF_REGISTRY.containsKey(typeId)) return;
         BuffType type = ModBuffTypes.BUFF_REGISTRY.get(typeId);
         if (type == null) return;
 
@@ -197,6 +200,8 @@ public class ActiveBuffs implements INBTSerializable<CompoundTag> {
             int amplifier = instTag.getInt("amplifier");
             // 直接添加，但 addBuff 会更新缓存和计数器，我们希望在反序列化完后统一处理
             // 先添加到 buffs 列表（绕过 addBuff，以免计数器被错误修改）
+            // 同样先 containsKey：读档时可能残留已被删除的 buff 类型 id
+            if (!ModBuffTypes.BUFF_REGISTRY.containsKey(typeId)) continue;
             BuffType type = ModBuffTypes.BUFF_REGISTRY.get(typeId);
             if (type == null) continue;
             List<BuffInstance> list = buffs.computeIfAbsent(typeId, k -> new ArrayList<>());
